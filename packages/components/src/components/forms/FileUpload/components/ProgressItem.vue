@@ -27,35 +27,32 @@ const statusMapper = computed(() => {
     cancelled: ["Cancelled", CircleClose],
   };
 });
-
-const emit = defineEmits(["remove", "cancel"]);
+const emit = defineEmits<{
+  remove: [value: string];
+  cancel: [value: string];
+}>();
 const props = defineProps<ProgressItemProps>();
-
 const getFileExtension = (path: string) => {
   const basename = path.split(/[\\/]/).pop();
-  const pos = basename?.lastIndexOf(".") as number;
-  if (basename === "" || pos < 1) {
+  const position = basename?.lastIndexOf(".") as number;
+  if (basename === "" || position < 1) {
     return "";
   }
-  return basename?.slice(pos + 1);
+  return basename?.slice(position + 1);
 };
-
 const formatSize = partial({
   output: "string",
 });
-
 const fileSizeFormat = computed(() => {
   const parsedSize = formatSize(props.fileSize);
   return parsedSize;
 });
-
 const progressedFileSizeFormat = computed(() => {
   const parsedSize = formatSize(
     ((props.fileSize as number) / 100) * (props?.percentage as number),
   );
   return parsedSize;
 });
-
 const isProgressing = computed(() => {
   return (
     (props.percentage as number) < 100 &&
@@ -63,18 +60,16 @@ const isProgressing = computed(() => {
     props.status !== "cancelled"
   );
 });
-
 const icon = computed(() => {
   let candidate =
     `${getFileExtension(props.fileName)}Icon` as keyof typeof icons;
   return isIconExisting(candidate) ? icons[candidate] : FilePlusIcon;
 });
-
-const onRemove = (index: string) => {
-  emit("remove", index);
+const onRemove = (id: string) => {
+  emit("remove", id);
 };
-const onCancel = (index: string) => {
-  emit("cancel", index);
+const onCancel = (id: string) => {
+  emit("cancel", id);
 };
 </script>
 
@@ -100,10 +95,10 @@ const onCancel = (index: string) => {
           <component :is="statusMapper[props.status][1]" />
           {{ statusMapper[props.status][0] }}
         </Pill>
-        <FunctionButton v-if="isProgressing" @click="onCancel(fileName)">
+        <FunctionButton v-if="isProgressing" @click="onCancel(id)">
           <CloseIcon class="action-icon" />
         </FunctionButton>
-        <FunctionButton v-else @click="onRemove(fileName)">
+        <FunctionButton v-else @click="onRemove(id)">
           <TrashIcon class="action-icon" />
         </FunctionButton>
       </div>

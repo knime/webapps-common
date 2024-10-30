@@ -1,38 +1,14 @@
-<!-- <script lang="ts">
-const defaultSupportedFormats: AllowedFileFormat[] = [
-  "csv",
-  "docx",
-  "html",
-  "md",
-  "odp",
-  "ods",
-  "odt",
-  "pdf",
-  "pptx",
-  "ps",
-  "xls",
-  "xlsx",
-  "xml",
-  "zip",
-  "exe",
-  "txt",
-];
-export { defaultSupportedFormats };
-</script> -->
-
 <script lang="ts" setup>
 import { computed, ref } from "vue";
 
 import CloseIcon from "@knime/styles/img/icons/circle-close.svg";
 import FilePlus from "@knime/styles/img/icons/file-plus.svg";
-import { isIconExisting } from "@knime/utils";
 
 import Button from "../../../Buttons/Button.vue";
 import { type DropzoneProps } from "../types";
 
 const props = withDefaults(defineProps<DropzoneProps>(), {
   labelText: "Choose a file or drag it here",
-  supportedFormats: [],
   disallowed: false,
 });
 const errorState = ref(false);
@@ -43,11 +19,11 @@ const emit = defineEmits<{
 
 const getFileExtension = (path: string) => {
   const basename = path.split(/[\\/]/).pop();
-  const pos = basename?.lastIndexOf(".") as number;
-  if (basename === "" || pos < 1) {
+  const position = basename?.lastIndexOf(".") as number;
+  if (basename === "" || position < 1) {
     return "";
   }
-  return basename?.slice(pos + 1);
+  return basename?.slice(position + 1);
 };
 
 const dragOver = ref(false);
@@ -65,6 +41,12 @@ const onDragLeave = () => {
   dragOver.value = false;
 };
 
+const handleMouseLeave = () => {
+  if (errorState.value) {
+    errorState.value = false;
+  }
+};
+
 const onDrop = (e: DragEvent) => {
   if (props.disabled || errorState.value) {
     return;
@@ -76,9 +58,11 @@ const onDrop = (e: DragEvent) => {
   if (target?.files) {
     Array.from(target.files).forEach((file) => {
       const extension = getFileExtension(file.name);
-      isIconExisting(`${extension}Icon`)
-        ? emit("file-added", file)
-        : (errorState.value = true);
+      if (props.supportedFormats?.includes(extension as string)) {
+        emit("file-added", file);
+      } else {
+        errorState.value = true;
+      }
     });
   }
 };
@@ -101,16 +85,13 @@ const onChange = (e: Event) => {
     });
   }
 };
-// const supportedFormatsText = computed(() =>
-//   props.supportedFormats?.length
-//     ? `Supported formats: ${props.supportedFormats.join(", ")}`
-//     : "",
-// );
+const supportedFormatsText = computed(() =>
+  props.supportedFormats?.length ? props.supportedFormats.join(", ") : "",
+);
 const icon = computed(() => (errorState.value ? CloseIcon : FilePlus));
 </script>
 
 <template>
-  {{ errorState }}
   <div
     class="dropzone"
     :class="{
@@ -120,6 +101,7 @@ const icon = computed(() => (errorState.value ? CloseIcon : FilePlus));
     }"
     @dragover.prevent="onDragOver"
     @dragleave="onDragLeave"
+    @mouseleave="handleMouseLeave"
     @drop.prevent="onDrop"
   >
     <div class="dropzone-content">
@@ -130,9 +112,7 @@ const icon = computed(() => (errorState.value ? CloseIcon : FilePlus));
         <p class="dropzone-text">
           {{ props.labelText }}
         </p>
-        <p class="dropzone-format">
-          {{ props.supportedFormats }}
-        </p>
+        <p class="dropzone-format">{{ supportedFormatsText }}</p>
       </div>
       <slot name="button">
         <Button

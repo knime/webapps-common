@@ -6,25 +6,31 @@ import { type ProgressItemProps } from "../types";
 import ProgressItem, { FIXED_HEIGHT_ITEM } from "./ProgressItem.vue";
 
 type Prop = {
+  /**
+   * An array of items to display in the progress list.
+   */
   list: ProgressItemProps[];
-  numberOfVisibleItems?: number;
+  /**
+   * The maximum number of items to display at once.
+   * If more items exist, the list will be scrollable.
+   */
+  maxDisplayedItems?: number;
 };
-
 const props = defineProps<Prop>();
-const emit = defineEmits(["remove", "cancel"]);
-
-const onRemove = (fileName: string) => {
-  emit("remove", fileName);
+const emit = defineEmits<{
+  remove: [value: string];
+  cancel: [value: string];
+}>();
+const onRemove = (id: string) => {
+  emit("remove", id);
 };
-
-const onCancel = (fileName: string) => {
-  emit("cancel", fileName);
+const onCancel = (id: string) => {
+  emit("cancel", id);
 };
-
 const calcHeight = computed(() => {
   return (
-    props.numberOfVisibleItems &&
-    `${props.numberOfVisibleItems * FIXED_HEIGHT_ITEM}px`
+    props.maxDisplayedItems &&
+    `${props.maxDisplayedItems * FIXED_HEIGHT_ITEM}px`
   );
 });
 </script>
@@ -38,14 +44,14 @@ const calcHeight = computed(() => {
         :file-size="item.fileSize"
         :percentage="item.percentage"
         :status="item.status"
-        @remove="onRemove(item.fileName)"
-        @cancel="onCancel(item.fileName)"
+        @remove="onRemove"
+        @cancel="onCancel"
       />
     </div>
   </div>
 </template>
 
-<style scooped lang="postcss">
+<style scoped lang="postcss">
 .progress-wrapper {
   width: 100%;
   font-size: 13px;

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import Label from "../../Label/Label.vue";
-import { type FileUploadProps, type List } from "../types";
+import { type FileUploadProps, type ProgressItemProps } from "../types";
 
 import Dropzone from "./Dropzone.vue";
 import ProgressList from "./ProgressList.vue";
@@ -8,25 +8,19 @@ import ProgressList from "./ProgressList.vue";
 const props = defineProps<FileUploadProps>();
 
 const emit = defineEmits<{
-  (e: "update:modelValue", value: List[]): void;
+  (e: "update:modelValue", value: ProgressItemProps[]): void;
   (e: "file-added", file: File): void;
+  (e: "cancel-upload", id: string): void;
 }>();
 
-const onRemove = (index: string) => {
+const onRemove = (id: string) => {
   const updatedValues = [...props.modelValue];
-  const modified = updatedValues.filter((item) => item.fileName !== index);
+  const modified = updatedValues.filter((item) => item.id !== id);
   emit("update:modelValue", modified);
 };
-const onCancel = (index: string) => {
-  const updatedValues = [...props.modelValue];
-  const modified: List[] = updatedValues.map((item) => {
-    if (item.fileName === index) {
-      item.abortController?.abort();
-      return { ...item, status: "cancelled" };
-    }
-    return item;
-  });
-  emit("update:modelValue", modified);
+
+const onCancel = (id: string) => {
+  emit("cancel-upload", id);
 };
 </script>
 
@@ -35,7 +29,7 @@ const onCancel = (index: string) => {
     <Label :text="label" large>
       <Dropzone
         :label-text="props.labelText"
-        :supported-formats="props.supportedFormats"
+        :supported-formats="props.supportedFormats as string[]"
         :disabled="props.disabled"
         @file-added="(file) => emit('file-added', file)"
       />
@@ -44,7 +38,7 @@ const onCancel = (index: string) => {
   <div class="list">
     <ProgressList
       :list="props.modelValue"
-      :number-of-visible-items="props.numberOfVisibleItems"
+      :max-displayed-items="props.maxDisplayedItems"
       @remove="onRemove"
       @cancel="onCancel"
     />

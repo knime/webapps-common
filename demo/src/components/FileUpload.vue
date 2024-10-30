@@ -26,6 +26,26 @@ const demoValues = ref<FileItem[]>([
   },
 ]);
 
+const defaultSupportedFormats: string[] = [
+  "csv",
+  "docx",
+  "html",
+  "md",
+  "odp",
+  "ods",
+  "odt",
+  "pdf",
+  "pptx",
+  "ps",
+  "xls",
+  "xlsx",
+  "xml",
+  "zip",
+  "exe",
+  "txt",
+  "mp4",
+];
+
 const demoValuesNotRestricted = ref<FileItem[]>([
   {
     id: Date().toString(),
@@ -69,13 +89,9 @@ const updateFileProgress = (fileName: string, percentage: number) => {
   );
 };
 
-const updateFileStatus = (
-  fileName: string,
-  percentage: number,
-  status: State,
-) => {
+const updateFileStatus = (id: string, percentage: number, status: State) => {
   demoValues.value = demoValues.value.map((file) =>
-    file.fileName === fileName ? { ...file, percentage, status } : file,
+    file.id === id ? { ...file, percentage, status } : file,
   );
 };
 
@@ -134,6 +150,14 @@ const handleFileAdded = (file: File) => {
 
   uploadFile(file, newFile);
 };
+
+const handleCancelUpload = (id: string) => {
+  const fileItem = demoValues.value.find((file) => file.id === id);
+  if (fileItem && fileItem.abortController) {
+    fileItem.abortController.abort();
+    updateFileStatus(id, fileItem.percentage, "cancelled");
+  }
+};
 </script>
 
 <template>
@@ -145,7 +169,12 @@ const handleFileAdded = (file: File) => {
     </div>
     <div class="grid-container">
       <div class="grid-item-6">
-        <FileUpload v-model="demoValues" @file-added="handleFileAdded" />
+        <FileUpload
+          v-model="demoValues"
+          :supported-formats="defaultSupportedFormats"
+          @file-added="handleFileAdded"
+          @cancel-upload="handleCancelUpload"
+        />
       </div>
     </div>
     <div class="grid-container">
@@ -157,7 +186,9 @@ const handleFileAdded = (file: File) => {
       <div class="grid-item-6">
         <FileUpload
           v-model="demoValuesNotRestricted"
-          :number-of-visible-items="4"
+          :supported-formats="defaultSupportedFormats"
+          :max-displayed-items="4"
+          @cancel-upload="handleCancelUpload"
           @file-added="handleFileAdded"
         />
       </div>
@@ -172,23 +203,9 @@ const handleFileAdded = (file: File) => {
         <FileUpload
           v-model="demoValuesDisabled"
           label-text="Choose a custom label"
+          :supported-formats="defaultSupportedFormats"
           :disabled="true"
-          @file-added="handleFileAdded"
-        />
-      </div>
-    </div>
-    <div class="grid-container">
-      <div class="grid-item-12">
-        <p>Disallowed</p>
-      </div>
-    </div>
-    <div class="grid-container">
-      <div class="grid-item-6">
-        <FileUpload
-          v-model="demoValuesDisabled"
-          label-text="Choose a custom label"
-          :disabled="true"
-          :disallowed="true"
+          @cancel-upload="handleCancelUpload"
           @file-added="handleFileAdded"
         />
       </div>

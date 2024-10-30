@@ -1,23 +1,5 @@
 export type State = "info" | "error" | "success" | "cancelled";
 
-export type AllowedFileFormat =
-  | "csv"
-  | "docx"
-  | "html"
-  | "md"
-  | "odp"
-  | "ods"
-  | "odt"
-  | "pdf"
-  | "pptx"
-  | "ps"
-  | "xls"
-  | "xlsx"
-  | "xml"
-  | "zip"
-  | "exe"
-  | "txt";
-
 export type ProgressItemProps = {
   id: string;
   fileName: string;
@@ -28,20 +10,16 @@ export type ProgressItemProps = {
 
 export type DropzoneProps = {
   labelText?: string;
-  allowedFiles: AllowedFileFormat[];
+  supportedFormats?: string[];
   disabled?: boolean;
-};
-
-export type List = ProgressItemProps & {
-  abortController?: AbortController;
 };
 
 export type FileUploadProps = {
-  modelValue: List[];
+  modelValue: ProgressItemProps[];
   label?: string;
   labelText?: string;
-  supportedFormats?: AllowedFileFormat[];
+  supportedFormats?: string[];
   disabled?: boolean;
   disallowed?: boolean;
-  numberOfVisibleItems?: number;
+  maxDisplayedItems?: number;
 };
