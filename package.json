@@ -18,6 +18,8 @@
     "ci:lint:css": "pnpm run lint:css -- -f json -o test-results/stylelint.json",
     "type-check": "vue-tsc --noEmit -p tsconfig.vitest.json",
     "build:packages": "pnpm --filter @knime/styles --filter @knime/ui-extension-service build",
+    "build:styles": "pnpm --filter @knime/styles build",
+    "build:ui-extension-service": "pnpm --filter @knime/ui-extension-service build",
     "build:demo": "pnpm --filter demo build",
     "demo": "pnpm run build:packages && pnpm run --filter demo dev",
     "test:unit": "TZ='Europe/Berlin' vitest",
