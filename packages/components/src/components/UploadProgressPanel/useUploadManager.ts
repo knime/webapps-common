@@ -1,6 +1,6 @@
 import { computed, ref } from "vue";
 
-import { type UploadManagerNS, uploadManager } from "@knime/utils";
+import { type UploadManagerNS, promise, uploadManager } from "@knime/utils";
 
 import type { UploadItem } from "./types";
 
@@ -8,16 +8,31 @@ type UseUploadManagerOptions = Omit<
   UploadManagerNS.UploaderConfig,
   "onProgress"
 > & {
+  /**
+   * Function necessary to prepare the upload of multiple files.
+   * This will be called before starting the upload process and the resolved
+   * value from the promise will be forwarded to the `uploadManager` util
+   */
   prepareUpload: (
     parentId: string,
     files: Array<File>,
   ) => Promise<Array<{ uploadId: string; file: File }>>;
 };
 
+/**
+ * This composable wraps the `uploadManager` utility from
+ * `@knime/utils` in order to provide reactive state that works seamlessly
+ * in a Vue component
+ *
+ * The reactive state returned (`uploadItems`) will update whenever the progress
+ * or status of each item being uploaded changes
+ */
 export const useUploadManager = (options: UseUploadManagerOptions) => {
-  const uploadState = ref<Record<string, UploadItem>>({});
+  const uploadState = ref<Record<string, UploadItem & { parentId: string }>>(
+    {},
+  );
 
-  const { uploadFiles, cancel } = uploadManager.createUploadManager({
+  const { uploadFiles, cancel, setFailed } = uploadManager.createUploadManager({
     ...options,
 
     onFileUploadComplete: (params) => {
@@ -25,8 +40,9 @@ export const useUploadManager = (options: UseUploadManagerOptions) => {
       options.onFileUploadComplete?.(params);
     },
 
-    onFileUploadFailed: (uploadId) => {
+    onFileUploadFailed: (uploadId, error) => {
       uploadState.value[uploadId].status = "failed";
+      options.onFileUploadFailed?.(uploadId, error);
     },
 
     onProgress: (uploadId, progress) => {
@@ -34,20 +50,39 @@ export const useUploadManager = (options: UseUploadManagerOptions) => {
     },
   });
 
-  const start = async (parentId: string, files: FileList) => {
-    const uploadPayload = await options.prepareUpload(parentId, [...files]);
+  const start = async (parentId: string, files: File[]) => {
+    // TODO: HUB-9102: improve error handling here. see ticket for details
+    try {
+      const uploadPayload = await promise.retryPromise(() =>
+        options.prepareUpload(parentId, files),
+      );
+      uploadPayload.forEach(({ uploadId, file }) => {
+        uploadState.value[uploadId] = {
+          id: uploadId,
+          name: file.name,
+          size: file.size,
+          progress: 0,
+          status: "inprogress",
+          parentId,
+        };
+      });
 
-    uploadPayload.forEach(({ uploadId, file }) => {
-      uploadState.value[uploadId] = {
-        id: uploadId,
-        name: file.name,
-        size: file.size,
-        progress: 0,
-        status: "inprogress",
-      };
-    });
+      await uploadFiles(uploadPayload);
+    } catch (error) {
+      consola.error("Could not prepare upload", error);
 
-    await uploadFiles(uploadPayload);
+      files.forEach((file) => {
+        const randomId = window.crypto.randomUUID();
+        uploadState.value[randomId] = {
+          id: randomId,
+          name: file.name,
+          size: file.size,
+          progress: 0,
+          status: "failed",
+          parentId,
+        };
+      });
+    }
   };
 
   const canCancel = (uploadId: string) =>
@@ -76,5 +111,9 @@ export const useUploadManager = (options: UseUploadManagerOptions) => {
     canCancel,
     removeItem,
     resetState,
+    setFailed: (uploadId: string, error: Error) => {
+      uploadState.value[uploadId].status = "failed";
+      setFailed(uploadId, error);
+    },
   };
 };

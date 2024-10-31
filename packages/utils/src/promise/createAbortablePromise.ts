@@ -16,7 +16,7 @@ export class AbortError extends Error {}
  *   );
  * } catch (e) {
  *   if (e instanceof abortUtils.AbortError) {
- *     console.info('ignore dure to abort');
+ *     console.info('ignore due to abort');
  *     return;
  *   }
  * }
@@ -33,18 +33,19 @@ export const createAbortablePromise = () => {
       // abort logic
       const abortListener = ({ target }: Event) => {
         abortController.signal.removeEventListener("abort", abortListener);
-        reject((target as AbortSignal).reason);
+        const reason = (target as AbortSignal).reason;
+        reject(reason instanceof AbortError ? reason : new AbortError(reason));
       };
 
       // the actual call
       request()
         .then(resolve)
-        .catch((e) => {
-          if (e instanceof AbortError) {
+        .catch((error) => {
+          if (error instanceof AbortError) {
             return;
           }
 
-          reject(e);
+          reject(error instanceof Error ? error : new Error(error));
         });
 
       abortController.signal.addEventListener("abort", abortListener);

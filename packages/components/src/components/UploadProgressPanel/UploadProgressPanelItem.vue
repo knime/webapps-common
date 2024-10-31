@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import { partial } from "filesize";
+import { type Component, computed } from "vue";
+import { toRef } from "vue";
 
 import CircleCheck from "@knime/styles/img/icons/circle-check.svg";
 import CircleClose from "@knime/styles/img/icons/circle-close.svg";
@@ -29,38 +29,28 @@ const emit = defineEmits<{
   cancel: [];
 }>();
 
-const name = computed(() => props.item.name);
-const size = computed(() => props.item.size);
-
-const { icon } = useFileIcon({ filename: name });
-const { formattedSize } = useFileSizeFormatting({ size });
-
-const formatSize = partial({
-  output: "string",
+const { icon } = useFileIcon({ filename: toRef(props.item, "name") });
+const { formattedSize } = useFileSizeFormatting({
+  size: toRef(props.item, "size"),
 });
 
-const progressedFileSizeFormat = computed(() => {
-  const parsedSize = formatSize(
-    (size.value / 100) * (props.item.progress ?? 0),
-  );
-  return parsedSize;
+const { formattedSize: progressedFileSizeFormat } = useFileSizeFormatting({
+  size: computed(() => (props.item.size / 100) * (props.item.progress ?? 0)),
 });
 
 const subtitle = computed(
   () => `${progressedFileSizeFormat.value} of ${formattedSize.value}`,
 );
 
-const statusMapper = computed(() => {
-  return {
-    inprogress: ["Uploading", "info", LoadingIcon],
-    failed: ["Failed", "error", CircleClose],
-    complete: ["Uploaded", "success", CircleCheck],
-    cancelled: ["Cancelled", "error", CircleClose],
-  } satisfies Record<UploadItemStatus, [string, PillVariant, any]>;
-});
+const statusMapper = {
+  inprogress: ["Uploading", "info", LoadingIcon],
+  failed: ["Failed", "error", CircleClose],
+  complete: ["Uploaded", "success", CircleCheck],
+  cancelled: ["Cancelled", "error", CircleClose],
+} satisfies Record<UploadItemStatus, [string, PillVariant, Component]>;
 
 const statusPill = computed(() => {
-  const [text, variant, icon] = statusMapper.value[props.item.status];
+  const [text, variant, icon] = statusMapper[props.item.status];
 
   return { text, variant, icon };
 });
@@ -108,5 +98,3 @@ const shouldShowRemoveAction = computed(() => {
     </template>
   </ProgressItem>
 </template>
-
-<style lang="postcss" scoped></style>

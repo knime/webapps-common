@@ -1,4 +1,3 @@
-/* eslint-disable vitest/no-focused-tests */
 import { describe, expect, it } from "vitest";
 import { mount } from "@vue/test-utils";
 

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-// TODO: diff name for this component? Maybe just `Panel`
 import { toRef } from "vue";
 
 import ArrowDropdownIcon from "@knime/styles/img/icons/arrow-dropdown.svg";
@@ -29,6 +28,7 @@ const emit = defineEmits<{
 
 const { iconFlipStyles } = useIconFlipper({
   active: toRef(props, "modelValue"),
+  initialRotation: "180deg",
 });
 </script>
 

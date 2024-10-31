@@ -186,8 +186,14 @@ describe("uploadManager", () => {
       expect(completed.length).toBe(0);
       expect(failed).toEqual([uploadId1, uploadId2]);
       expect(cancelled.length).toBe(0);
-      expect(onFailed).toHaveBeenCalledWith(uploadId1);
-      expect(onFailed).toHaveBeenCalledWith(uploadId2);
+      expect(onFailed).toHaveBeenCalledWith(
+        uploadId1,
+        new Error("Failed to upload chunk 0"),
+      );
+      expect(onFailed).toHaveBeenCalledWith(
+        uploadId2,
+        new Error("Failed to upload chunk 0"),
+      );
       expect(onComplete).not.toHaveBeenCalled();
     });
 

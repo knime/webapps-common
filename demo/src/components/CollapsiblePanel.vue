@@ -26,7 +26,7 @@ const isExpanded = ref(true);
             :collapsible="false"
             closeable
           >
-            <div>Hello world</div>
+            <div class="panel-demo-content">Hello world</div>
           </CollapsiblePanel>
         </div>
       </div>
@@ -34,4 +34,8 @@ const isExpanded = ref(true);
   </section>
 </template>
 
-<style lang="postcss" scoped></style>
+<style lang="postcss" scoped>
+.panel-demo-content {
+  padding: var(--space-8);
+}
+</style>

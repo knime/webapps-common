@@ -24,6 +24,8 @@ const emit = defineEmits<{
   close: [];
 }>();
 
+const expanded = defineModel<boolean>("expanded", { default: true });
+
 const totalItems = computed(() => props.items.length);
 const uploadedItems = computed(
   () => props.items.filter(({ status }) => status === "complete").length,
@@ -47,6 +49,7 @@ watch(toRef(props, "items"), (newItems, prevItems) => {
 
 <template>
   <CollapsiblePanel
+    v-model="expanded"
     :title="title"
     class="upload-panel"
     :closeable="!hasSomeItemInProgress"
@@ -72,7 +75,6 @@ watch(toRef(props, "items"), (newItems, prevItems) => {
 
 <style lang="postcss" scoped>
 .upload-panel {
-  min-width: 400px;
-  max-width: 400px;
+  width: 400px;
 }
 </style>

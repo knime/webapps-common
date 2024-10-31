@@ -52,8 +52,9 @@ const uploadChunkWithProgress = (params: {
           return;
         }
 
-        // slice to remove double quotes (") around the etag value
-        resolve({ partId: etag.slice(1, -1) });
+        // remove possible doublequotes (") around the etag and/or weak identifier (if either is present)
+        // https://datatracker.ietf.org/doc/html/rfc7232#section-2.3
+        resolve({ partId: etag.replace(/^(?:W\/)?"|"$/g, "") });
       } else {
         reject(new Error(`Failed to upload chunk ${chunkIndex}`));
       }
@@ -85,7 +86,7 @@ export type UploaderManagerConfig = {
    */
   onFileUploadComplete?: (payload: {
     /**
-     * Identifier of the upload for this file
+     * Identifier of the upload for this file (must be unique)
      */
     uploadId: string;
     /**
@@ -97,9 +98,10 @@ export type UploaderManagerConfig = {
   /**
    * Callback that gets triggered when an upload has failed.
    * @param uploadId
+   * @param error the error that cause the failure if it exists
    * @returns
    */
-  onFileUploadFailed?: (uploadId: string) => void;
+  onFileUploadFailed?: (uploadId: string, error: Error) => void;
 
   /**
    * Callback that gets triggered when the progress of a file part upload
@@ -120,6 +122,30 @@ type UploadState = {
   abortController: AbortController;
 };
 
+/**
+ * Creates and returns an `uploadManager`, a comprehensive multi-file, multi-part upload handler.
+ *
+ * The `uploadManager` offers functionality for handling file uploads in parts and provides
+ * several built-in mechanisms to ensure the process is reliable and adaptable.
+ *
+ * Key features include:
+ *
+ * - **Chunked File Uploads**: Splits provided files into manageable chunks and initiates the upload
+ *   for each part using the `resolveFilePartUploadURL` function provided in the configuration.
+ *
+ * - **Retry Mechanism**: Automatically retries failed upload attempts up to a maximum of 5 times
+ *   per failed request.
+ *
+ * - **Upload Cancellation**: Allows cancellation of ongoing uploads, giving users control over the process.
+ *
+ * - **Progress Tracking**: Monitors the progress of each file part upload and triggers the `onProgress`
+ *   callback to provide updates.
+ *
+ * - **Error Handling**: The returned `uploadFiles` function does not throw errors directly. Instead,
+ *   it manages retries and stops any failed uploads after the retry limit is reached, marking them as failed.
+ *   This ensures that the promise it returns completes gracefully without uncaught exceptions.
+ *
+ */
 export const createUploadManager = (config: UploaderManagerConfig) => {
   const {
     resolveFilePartUploadURL: getUploadFilePartUrl,
@@ -175,15 +201,19 @@ export const createUploadManager = (config: UploaderManagerConfig) => {
     cancelledUploads.add(uploadId);
   };
 
-  const setFailed = (uploadId: string) => {
+  const setFailed = (uploadId: string, error: Error) => {
     if (!uploadStateMap.has(uploadId)) {
       consola.error("failed:: Invalid upload id");
       return;
     }
 
     setUploadState(uploadId, { state: "failed" });
-    onFileUploadFailed?.(uploadId);
+    onFileUploadFailed?.(uploadId, error);
     failedUploads.add(uploadId);
+
+    if (completedUploads.has(uploadId)) {
+      completedUploads.delete(uploadId);
+    }
   };
 
   const uploadFileFromChunkIndex = async (
@@ -270,7 +300,10 @@ export const createUploadManager = (config: UploaderManagerConfig) => {
           return;
         }
 
-        setFailed(uploadId);
+        setFailed(
+          uploadId,
+          error instanceof Error ? error : new Error(error as any),
+        );
         return;
       }
 
@@ -285,7 +318,6 @@ export const createUploadManager = (config: UploaderManagerConfig) => {
       completedChunkCount: totalChunks,
       state: "complete",
     });
-
     completedUploads.add(uploadId);
     onFileUploadComplete?.({ uploadId, filePartIds: completedPartIds });
   };
@@ -297,15 +329,15 @@ export const createUploadManager = (config: UploaderManagerConfig) => {
       result.push(uploadFileFromChunkIndex(uploadId, file));
     }
 
-    return Promise.all(result).then(() => {
+    return Promise.allSettled(result).then(() => {
       // state cleanup
       const completed = [...completedUploads.values()];
       const cancelled = [...cancelledUploads.values()];
       const failed = [...failedUploads.values()];
 
-      ([] as string[])
-        .concat([...completed, ...cancelled, ...failed])
-        .forEach((uploadId) => uploadStateMap.delete(uploadId));
+      [...completed, ...cancelled, ...failed].forEach((uploadId) =>
+        uploadStateMap.delete(uploadId),
+      );
 
       completedUploads.clear();
       cancelledUploads.clear();
@@ -320,30 +352,12 @@ export const createUploadManager = (config: UploaderManagerConfig) => {
   };
 
   return {
-    uploadFile: (uploadId: string, file: File) =>
-      uploadFileFromChunkIndex(uploadId, file).then(() => {
-        uploadStateMap.delete(uploadId);
-
-        const isCompleted = completedUploads.has(uploadId);
-        const isCancelled = cancelledUploads.has(uploadId);
-        const isFailed = failedUploads.has(uploadId);
-
-        completedUploads.delete(uploadId);
-        cancelledUploads.delete(uploadId);
-        failedUploads.delete(uploadId);
-
-        return {
-          completed: isCompleted,
-          cancelled: isCancelled,
-          failed: isFailed,
-        };
-      }),
-
     uploadFiles,
 
     getUploadState,
     isFailed,
     isCancelled,
     cancel,
+    setFailed,
   };
 };
