@@ -1,6 +1,6 @@
 import { type MaybeRef, type Ref, computed, unref } from "vue";
 
-import { filters } from "../../../utils/src/filters";
+import { filters } from "@knime/utils";
 
 export default <T extends { text: string }>(
   searchTerm: Ref<string | null | undefined>,
