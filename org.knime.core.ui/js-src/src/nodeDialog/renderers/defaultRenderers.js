@@ -14,6 +14,7 @@ import { elementCheckboxRenderer } from "./elementCheckboxRenderer";
 import { fileChooserRenderer } from "./fileChooserRenderer";
 import { horizontalLayoutRenderer } from "./horizontalLayoutRenderer";
 import { integerRenderer } from "./integerRenderer";
+import { intervalRenderer } from "./intervalRenderer";
 import { legacyCredentialsRenderer } from "./legacyCredentialsRenderer";
 import { localDateRenderer } from "./localDateRenderer";
 import { localFileChooserRenderer } from "./localFileChooserRenderer";
@@ -54,6 +55,7 @@ export const defaultRenderers = [
   dateTimeRenderer,
   dropdownRenderer,
   integerRenderer,
+  intervalRenderer,
   numberRenderer,
   radioRenderer,
   richTextRenderer,

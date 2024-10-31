@@ -64,6 +64,9 @@ import java.util.function.Function;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.interval.DateInterval;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.interval.Interval;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.interval.TimeInterval;
 
 /**
  * @author Tobias Kampmann
@@ -156,6 +159,77 @@ final class DateTimePersistorUtils {
             } else {
                 settings.addString(getConfigKey(), null);
             }
+        }
+    }
+
+    static final class IntervalPersistor extends NodeSettingsPersistorWithConfigKey<Interval> {
+
+        @Override
+        public Interval load(final NodeSettingsRO settings) throws InvalidSettingsException {
+            final var value = settings.getString(getConfigKey());
+
+            try {
+                return Interval.parseHumanReadableOrIso(value);
+            } catch (IllegalArgumentException ex) {
+                throw new InvalidSettingsException("Failed to parse '%s' as Interval".formatted(value), ex);
+            }
+        }
+
+        @Override
+        public void save(final Interval interval, final NodeSettingsWO settings) {
+            settings.addString(getConfigKey(), interval.toISOString());
+        }
+    }
+
+    static final class DateIntervalPersistor extends NodeSettingsPersistorWithConfigKey<DateInterval> {
+
+        @Override
+        public DateInterval load(final NodeSettingsRO settings) throws InvalidSettingsException {
+            final var value = settings.getString(getConfigKey());
+
+            Interval parsed;
+            try {
+                parsed = Interval.parseHumanReadableOrIso(value);
+            } catch (IllegalArgumentException ex) {
+                throw new InvalidSettingsException("Failed to parse '%s' as DateInterval".formatted(value), ex);
+            }
+
+            if (!(parsed instanceof DateInterval)) {
+                throw new InvalidSettingsException("Loaded Interval '%s' is not a DateInterval.".formatted(value));
+            }
+
+            return (DateInterval)parsed;
+        }
+
+        @Override
+        public void save(final DateInterval interval, final NodeSettingsWO settings) {
+            settings.addString(getConfigKey(), interval.toISOString());
+        }
+    }
+
+    static final class TimeIntervalPersistor extends NodeSettingsPersistorWithConfigKey<TimeInterval> {
+
+        @Override
+        public TimeInterval load(final NodeSettingsRO settings) throws InvalidSettingsException {
+            final var value = settings.getString(getConfigKey());
+
+            Interval parsed;
+            try {
+                parsed = Interval.parseHumanReadableOrIso(value);
+            } catch (IllegalArgumentException ex) {
+                throw new InvalidSettingsException("Failed to parse '%s' as TimeInterval".formatted(value), ex);
+            }
+
+            if (!(parsed instanceof TimeInterval)) {
+                throw new InvalidSettingsException("Loaded Interval '%s' is not a TimeInterval.".formatted(value));
+            }
+
+            return (TimeInterval)parsed;
+        }
+
+        @Override
+        public void save(final TimeInterval interval, final NodeSettingsWO settings) {
+            settings.addString(getConfigKey(), interval.toISOString());
         }
     }
 

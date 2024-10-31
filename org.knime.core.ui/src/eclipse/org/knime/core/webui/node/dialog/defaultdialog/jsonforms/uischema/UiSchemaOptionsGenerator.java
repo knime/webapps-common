@@ -114,6 +114,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.DateTimeWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.FileReaderWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.FileWriterWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.IntervalWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Label;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileReaderWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileWriterWidget;
@@ -228,6 +229,18 @@ final class UiSchemaOptionsGenerator {
                     options.put(TAG_FORMAT, Format.DROP_DOWN);
                     setPossibleValuesForZoneIds(options);
                     break;
+                case DATE_INTERVAL:
+                    options.put(TAG_FORMAT, Format.INTERVAL);
+                    options.put("intervalType", IntervalWidget.IntervalType.DATE.name());
+                    break;
+                case TIME_INTERVAL:
+                    options.put(TAG_FORMAT, Format.INTERVAL);
+                    options.put("intervalType", IntervalWidget.IntervalType.TIME.name());
+                    break;
+                case INTERVAL:
+                    options.put(TAG_FORMAT, Format.INTERVAL);
+                    options.put("intervalType", IntervalWidget.IntervalType.DATE_OR_TIME.name());
+                    break;
                 case STRING_ARRAY:
                     options.put(TAG_FORMAT, Format.COMBO_BOX);
                     break;
@@ -276,6 +289,11 @@ final class UiSchemaOptionsGenerator {
         if (annotatedWidgets.contains(DateWidget.class)) {
             final var dateWidget = m_node.getAnnotation(DateWidget.class).orElseThrow();
             setMinAndMaxDate(options, dateWidget.minDate(), dateWidget.maxDate());
+        }
+
+        if (annotatedWidgets.contains(IntervalWidget.class)) {
+            var durationWidget = m_node.getAnnotation(IntervalWidget.class).orElseThrow();
+            options.put("intervalTypeProvider", durationWidget.typeProvider().getName());
         }
 
         if (annotatedWidgets.contains(RichTextInputWidget.class)) {

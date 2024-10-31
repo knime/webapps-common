@@ -68,6 +68,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.DateTimeWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.FileReaderWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.FileWriterWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.IntervalWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LatentWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileReaderWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileWriterWidget;
@@ -109,7 +110,7 @@ public class WidgetTreeFactory extends TreeFactory<WidgetGroup> {
     private static final Collection<Class<? extends Annotation>> POSSIBLE_LEAF_ANNOTATIONS =
         List.of(LatentWidget.class, Layout.class, Widget.class, NumberInputWidget.class, RadioButtonsWidget.class,
             ValueSwitchWidget.class, ChoicesWidget.class, ComboBoxWidget.class, SortListWidget.class,
-            ButtonWidget.class, SimpleButtonWidget.class, DateTimeWidget.class, DateWidget.class,
+            ButtonWidget.class, SimpleButtonWidget.class, DateTimeWidget.class, DateWidget.class, IntervalWidget.class,
             RichTextInputWidget.class, CredentialsWidget.class, PasswordWidget.class, UsernameWidget.class,
             FileReaderWidget.class, FileWriterWidget.class, LocalFileReaderWidget.class, LocalFileWriterWidget.class,
             TextInputWidget.class, Effect.class, ValueReference.class, ValueProvider.class,

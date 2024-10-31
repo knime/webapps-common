@@ -70,6 +70,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesStateProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.FileWriterWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.IntervalWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileWriterWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.TextInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.TextMessage;
@@ -158,6 +159,11 @@ final class WidgetTreesToValueRefsAndStateProviders {
                 CredentialsWidget.class, //
                 CredentialsWidget::hasUsernameProvider, //
                 NoopBooleanProvider.class //
+            ), //
+            new UiStateProviderSpec<>( //
+                IntervalWidget.class, //
+                IntervalWidget::typeProvider, //
+                null //
             ), //
             new UiStateProviderSpec<>( //
                 ChoicesWidget.class, //

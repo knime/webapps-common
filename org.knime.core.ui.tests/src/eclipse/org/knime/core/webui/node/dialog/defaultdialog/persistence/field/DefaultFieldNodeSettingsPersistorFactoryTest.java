@@ -64,6 +64,9 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.interval.DateInterval;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.interval.Interval;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.interval.TimeInterval;
 import org.knime.filehandling.core.connections.FSCategory;
 import org.knime.filehandling.core.connections.FSLocation;
 
@@ -219,6 +222,80 @@ class DefaultFieldNodeSettingsPersistorFactoryTest {
 
         assertThat(assertThrows(InvalidSettingsException.class, () -> persistor.load(nodeSettings)))
             .hasMessageContaining(notAValidTimeZone, "parsed", "time zone");
+    }
+
+    @Test
+    void testDateInterval() throws InvalidSettingsException {
+        final var interval = DateInterval.of(1, 2, 3, 4);
+        testSaveLoad(DateInterval.class, interval);
+    }
+
+    @Test
+    void testTimeInterval() throws InvalidSettingsException {
+        final var interval = TimeInterval.of(1, 2, 3, 4);
+        testSaveLoad(TimeInterval.class, interval);
+    }
+
+    @Test
+    void testInterval() throws InvalidSettingsException {
+        final var timeIntervalWithIntervalType = Interval.parseISO("PT1S");
+        testSaveLoad(Interval.class, timeIntervalWithIntervalType);
+
+        final var dateIntervalWithIntervalType = Interval.parseISO("P1D");
+        testSaveLoad(Interval.class, dateIntervalWithIntervalType);
+    }
+
+    @Test
+    void testInvalidTimeInterval() {
+        var nodeSettings = new NodeSettings(KEY);
+        String notAValidTimeInterval = "not-a-valid-time-interval";
+        nodeSettings.addString(KEY, notAValidTimeInterval);
+        var persistor = createPersistor(TimeInterval.class);
+
+        assertThat(assertThrows(InvalidSettingsException.class, () -> persistor.load(nodeSettings)))
+            .hasMessageContaining(notAValidTimeInterval, "parse", notAValidTimeInterval);
+    }
+
+    @Test
+    void testInvalidDateInterval() {
+        var nodeSettings = new NodeSettings(KEY);
+        String notAValidDateInterval = "not-a-valid-date-interval";
+        nodeSettings.addString(KEY, notAValidDateInterval);
+        var persistor = createPersistor(DateInterval.class);
+
+        assertThat(assertThrows(InvalidSettingsException.class, () -> persistor.load(nodeSettings)))
+            .hasMessageContaining(notAValidDateInterval, "parse", notAValidDateInterval);
+    }
+
+    @Test
+    void testInvalidInterval() {
+        var nodeSettings = new NodeSettings(KEY);
+        String notAValidInterval = "not-a-valid-interval";
+        nodeSettings.addString(KEY, notAValidInterval);
+        var persistor = createPersistor(Interval.class);
+
+        assertThat(assertThrows(InvalidSettingsException.class, () -> persistor.load(nodeSettings)))
+            .hasMessageContaining(notAValidInterval, "parse", notAValidInterval);
+    }
+
+    @Test
+    void testLoadingDateIntervalAsTimeInterval() {
+        var nodeSettings = new NodeSettings(KEY);
+        nodeSettings.addString(KEY, "P1D");
+        var persistor = createPersistor(TimeInterval.class);
+
+        assertThat(assertThrows(InvalidSettingsException.class, () -> persistor.load(nodeSettings)))
+            .hasMessageContaining("P1D", "TimeInterval");
+    }
+
+    @Test
+    void testLoadingTimeIntervalAsDateInterval() {
+        var nodeSettings = new NodeSettings(KEY);
+        nodeSettings.addString(KEY, "PT1S");
+        var persistor = createPersistor(DateInterval.class);
+
+        assertThat(assertThrows(InvalidSettingsException.class, () -> persistor.load(nodeSettings)))
+            .hasMessageContaining("PT1S", "DateInterval");
     }
 
     @Test

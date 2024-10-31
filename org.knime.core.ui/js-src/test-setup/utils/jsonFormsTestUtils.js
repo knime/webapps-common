@@ -9,6 +9,7 @@ import { mount } from "@vue/test-utils";
 import { useJsonFormsArrayControl, useJsonFormsLayout } from "@jsonforms/vue";
 import * as jsonformsVueModule from "@jsonforms/vue";
 
+import { injectionKey as showAdvancedSettingsInjectionKey } from "@/nodeDialog/composables/components/useAdvancedSettings";
 import { injectionKey as hasNodeViewInjectionKey } from "@/nodeDialog/composables/components/useHasNodeView";
 import * as useJsonFormsControlWithUpdateModule from "@/nodeDialog/composables/components/useJsonFormsControlWithUpdate";
 import { injectionKey as flowVarMapKey } from "@/nodeDialog/composables/components/useProvidedFlowVariablesMap";
@@ -149,6 +150,7 @@ export const mountJsonFormsComponent = (
         flowVariablesApi,
         [flowVarMapKey]: flowVariablesMap,
         [hasNodeViewInjectionKey]: ref(true),
+        [showAdvancedSettingsInjectionKey]: ref(showAdvanced),
         getPersistSchema: vi.fn(
           () => persistSchemaMock ?? defaultPersistSchema,
         ),

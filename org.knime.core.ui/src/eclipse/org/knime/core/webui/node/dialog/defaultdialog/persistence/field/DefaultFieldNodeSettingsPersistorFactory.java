@@ -69,10 +69,16 @@ import org.knime.core.webui.node.dialog.configmapping.ConfigMappings;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorFactory;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.DateTimePersistorUtils.DateIntervalPersistor;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.DateTimePersistorUtils.IntervalPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.DateTimePersistorUtils.LocalDatePersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.DateTimePersistorUtils.LocalTimePersistor;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.DateTimePersistorUtils.TimeIntervalPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.DateTimePersistorUtils.TimeZonePersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.interval.DateInterval;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.interval.Interval;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.interval.TimeInterval;
 import org.knime.core.webui.node.dialog.defaultdialog.tree.ArrayParentNode;
 import org.knime.core.webui.node.dialog.defaultdialog.tree.Tree;
 import org.knime.core.webui.node.dialog.defaultdialog.tree.TreeNode;
@@ -242,6 +248,12 @@ public final class DefaultFieldNodeSettingsPersistorFactory {
             return (FieldNodeSettingsPersistorWithInferredConfigs<T>)createLocalTimePersistor(configKey);
         } else if (fieldType.equals(ZoneId.class)) {
             return (FieldNodeSettingsPersistorWithInferredConfigs<T>)createTimeZonePersistor(configKey);
+        } else if (fieldType.equals(Interval.class)) {
+            return (FieldNodeSettingsPersistorWithInferredConfigs<T>)createIntervalPersistor(configKey);
+        } else if (fieldType.equals(DateInterval.class)) {
+            return (FieldNodeSettingsPersistorWithInferredConfigs<T>)createDateIntervalPersistor(configKey);
+        } else if (fieldType.equals(TimeInterval.class)) {
+            return (FieldNodeSettingsPersistorWithInferredConfigs<T>)createTimeIntervalPersistor(configKey);
         } else if (fieldType.equals(Credentials.class)) {
             return (FieldNodeSettingsPersistorWithInferredConfigs<T>)createCredentialsPersistor(configKey);
         } else if (fieldType.equals(FSLocation.class)) {
@@ -294,7 +306,6 @@ public final class DefaultFieldNodeSettingsPersistorFactory {
         FieldPersistor<?> getFieldPersistor() {
             return m_fieldPersistor;
         }
-
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -313,6 +324,18 @@ public final class DefaultFieldNodeSettingsPersistorFactory {
 
     private static FieldNodeSettingsPersistor<ZoneId> createTimeZonePersistor(final String configKey) {
         return FieldNodeSettingsPersistor.createInstance(TimeZonePersistor.class, ZoneId.class, configKey);
+    }
+
+    private static FieldNodeSettingsPersistor<Interval> createIntervalPersistor(final String configKey) {
+        return FieldNodeSettingsPersistor.createInstance(IntervalPersistor.class, Interval.class, configKey);
+    }
+
+    private static FieldNodeSettingsPersistor<DateInterval> createDateIntervalPersistor(final String configKey) {
+        return FieldNodeSettingsPersistor.createInstance(DateIntervalPersistor.class, DateInterval.class, configKey);
+    }
+
+    private static FieldNodeSettingsPersistor<TimeInterval> createTimeIntervalPersistor(final String configKey) {
+        return FieldNodeSettingsPersistor.createInstance(TimeIntervalPersistor.class, TimeInterval.class, configKey);
     }
 
     private static FieldNodeSettingsPersistorWithInferredConfigs<Credentials>

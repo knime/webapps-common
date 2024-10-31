@@ -50,6 +50,8 @@ package org.knime.core.webui.node.dialog.defaultdialog;
 
 import static org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorFactory.getPersistor;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
@@ -84,6 +86,9 @@ import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.NameF
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.fileselection.FileSelection;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.interval.DateInterval;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.interval.Interval;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.interval.TimeInterval;
 import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
@@ -92,6 +97,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.DateTimeWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.FileReaderWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.FileWriterWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.IntervalWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Label;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileReaderWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileWriterWidget;
@@ -176,14 +182,29 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Effect;
  * {@link RichTextInputWidget}</td>
  * </tr>
  * <tr>
- * <td>LocalDate</td>
+ * <td>{@link LocalDate}</td>
  * <td>Date Picker</td>
  * <td>{@link DateWidget}</td>
  * </tr>
  * <tr>
- * <td>LocalTime</td>
+ * <td>{@link LocalTime}</td>
  * <td>Time Picker</td>
  * <td></td>
+ * <tr>
+ * <td>{@link Interval}</td>
+ * <td>Date or time interval</td>
+ * <td>{@link IntervalWidget} (for switching between date and time)</td>
+ * </tr>
+ * <tr>
+ * <td>{@link TimeInterval}</td>
+ * <td>Time interval</td>
+ * <td></td>
+ * </tr>
+ * <tr>
+ * <td>{@link DateInterval}</td>
+ * <td>Date interval</td>
+ * <td></td>
+ * </tr>
  * </tr>
  * <td>String[]</td>
  * <td></td>
@@ -234,8 +255,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Effect;
  * {@link FileWriterWidget}</td>
  * </tr>
  * <tr>
- * <tr>
- * <td>Void (i.e. this is not a setting but only something that is displayed)</td>
+ * <td>{@link Void} (i.e. this is not a setting but only something that is displayed)</td>
  * <td></td>
  * <td>{@link SimpleButtonWidget} (button with backend-side action handler)<br>
  * {@link TextMessage}</td>

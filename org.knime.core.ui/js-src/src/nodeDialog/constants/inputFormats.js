@@ -25,4 +25,5 @@ export const inputFormats = {
   localTime: "localTime",
   localDate: "localDate",
   dateTime: "dateTime",
+  interval: "interval",
 };

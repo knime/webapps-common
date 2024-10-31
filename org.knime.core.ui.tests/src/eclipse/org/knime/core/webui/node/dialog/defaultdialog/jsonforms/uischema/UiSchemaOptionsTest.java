@@ -76,6 +76,9 @@ import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.Co
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.LegacyCredentials;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.fileselection.FileSelection;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.interval.DateInterval;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.interval.Interval;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.interval.TimeInterval;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
@@ -84,6 +87,8 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.DateTimeWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.FileReaderWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.FileWriterWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.IntervalWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.IntervalWidget.IntervalType;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Label;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileReaderWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileWriterWidget;
@@ -171,8 +176,19 @@ class UiSchemaOptionsTest {
 
             @Widget(title = "", description = "")
             NameFilter m_nameFilter;
+
+            @Widget(title = "", description = "")
+            Interval m_interval;
+
+            @Widget(title = "", description = "")
+            DateInterval m_variableLengthInterval;
+
+            @Widget(title = "", description = "")
+            TimeInterval m_fixedLengthInterval;
+
         }
         var response = buildTestUiSchema(DefaultStylesSettings.class);
+
         assertThatJson(response).inPath("$.elements[0].scope").isString().contains("string");
         assertThatJson(response).inPath("$.elements[0]").isObject().doesNotContainKey("options");
         assertThatJson(response).inPath("$.elements[1].scope").isString().contains("boolean");
@@ -195,6 +211,22 @@ class UiSchemaOptionsTest {
         assertThatJson(response).inPath("$.elements[9].options.format").isString().isEqualTo("fileChooser");
         assertThatJson(response).inPath("$.elements[10].scope").isString().contains("nameFilter");
         assertThatJson(response).inPath("$.elements[10].options.format").isString().isEqualTo("nameFilter");
+
+        // tests for interval default formats
+        assertThatJson(response).inPath("$.elements[11].scope").isString().contains("interval");
+        assertThatJson(response).inPath("$.elements[11].options.format").isString().isEqualTo("interval");
+        assertThatJson(response).inPath("$.elements[11].options.intervalType").isString()
+            .isEqualTo(IntervalWidget.IntervalType.DATE_OR_TIME.name());
+
+        assertThatJson(response).inPath("$.elements[12].scope").isString().contains("variableLengthInterval");
+        assertThatJson(response).inPath("$.elements[12].options.format").isString().isEqualTo("interval");
+        assertThatJson(response).inPath("$.elements[12].options.intervalType").isString()
+            .isEqualTo(IntervalWidget.IntervalType.DATE.name());
+
+        assertThatJson(response).inPath("$.elements[13].scope").isString().contains("fixedLengthInterval");
+        assertThatJson(response).inPath("$.elements[13].options.format").isString().isEqualTo("interval");
+        assertThatJson(response).inPath("$.elements[13].options.intervalType").isString()
+            .isEqualTo(IntervalWidget.IntervalType.TIME.name());
     }
 
     @Test
@@ -326,6 +358,57 @@ class UiSchemaOptionsTest {
         assertThatJson(response).inPath("$.elements[2].scope").isString().contains("baz");
         assertThatJson(response).inPath("$.elements[2].options.format").isString().isEqualTo("radio");
         assertThatJson(response).inPath("$.elements[2].options.radioLayout").isString().isEqualTo("vertical");
+    }
+
+    @Test
+    void testIntervalWidget() {
+
+        class SimpleDateStateProvider implements StateProvider<IntervalType> {
+
+            @Override
+            public void init(final StateProviderInitializer initializer) {
+                initializer.computeBeforeOpenDialog();
+            }
+
+            @Override
+            public IntervalType computeState(final DefaultNodeSettingsContext context) {
+                return IntervalType.DATE;
+            }
+        }
+
+        class SimpleTimeStateProvider implements StateProvider<IntervalType> {
+
+            @Override
+            public void init(final StateProviderInitializer initializer) {
+                initializer.computeBeforeOpenDialog();
+            }
+
+            @Override
+            public IntervalType computeState(final DefaultNodeSettingsContext context) {
+                return IntervalType.TIME;
+            }
+        }
+
+        class IntervalSettings implements DefaultNodeSettings {
+
+            @Widget(title = "", description = "")
+            @IntervalWidget(typeProvider = SimpleDateStateProvider.class)
+            Interval m_intervalDate;
+
+            @Widget(title = "", description = "")
+            @IntervalWidget(typeProvider = SimpleTimeStateProvider.class)
+            Interval m_intervalTime;
+        }
+
+        var response = buildTestUiSchema(IntervalSettings.class);
+        assertThatJson(response).inPath("$.elements[0].scope").isString().contains("interval");
+        assertThatJson(response).inPath("$.elements[0].options.format").isString().isEqualTo("interval");
+        assertThatJson(response).inPath("$.elements[0].options.intervalTypeProvider").isString()
+            .isEqualTo(SimpleDateStateProvider.class.getName());
+        assertThatJson(response).inPath("$.elements[1].scope").isString().contains("interval");
+        assertThatJson(response).inPath("$.elements[1].options.format").isString().isEqualTo("interval");
+        assertThatJson(response).inPath("$.elements[1].options.intervalTypeProvider").isString()
+            .isEqualTo(SimpleTimeStateProvider.class.getName());
     }
 
     @Test

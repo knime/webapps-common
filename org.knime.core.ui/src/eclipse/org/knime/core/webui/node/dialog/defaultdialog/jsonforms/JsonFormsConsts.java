@@ -246,6 +246,8 @@ public final class JsonFormsConsts {
 
             public static final String DATE_TIME = "dateTime";
 
+            public static final String INTERVAL = "interval";
+
             public static final String RICH_TEXT_INPUT = "richTextInput";
 
             public static final String LOCAL_FILE_CHOOSER = "localFileChooser";

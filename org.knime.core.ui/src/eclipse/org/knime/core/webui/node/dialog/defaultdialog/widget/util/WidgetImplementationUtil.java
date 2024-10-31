@@ -65,12 +65,16 @@ import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.Co
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.LegacyCredentials;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.fileselection.FileSelection;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.interval.DateInterval;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.interval.Interval;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.interval.TimeInterval;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ComboBoxWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateTimeWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.FileReaderWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.FileWriterWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.IntervalWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileReaderWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileWriterWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
@@ -123,8 +127,8 @@ public final class WidgetImplementationUtil {
      */
     @SuppressWarnings("javadoc")
     public enum DefaultWidgetType {
-            CHECKBOX, COLUMN_FILTER, NAME_FILTER, COLUMN_SELECTION, LOCAL_DATE, LOCAL_TIME, ZONE_ID, STRING_ARRAY,
-            CREDENTIALS, LEGACY_CREDENTIALS, FILE_CHOOSER, DYNAMIC_VALUE
+            CHECKBOX, COLUMN_FILTER, NAME_FILTER, COLUMN_SELECTION, LOCAL_DATE, LOCAL_TIME, ZONE_ID, INTERVAL,
+            DATE_INTERVAL, TIME_INTERVAL, STRING_ARRAY, CREDENTIALS, LEGACY_CREDENTIALS, FILE_CHOOSER, DYNAMIC_VALUE;
     }
 
     /**
@@ -149,6 +153,7 @@ public final class WidgetImplementationUtil {
         new WidgetAnnotation(ButtonWidget.class), //
         new WidgetAnnotation(List.of(String.class), DateTimeWidget.class), //
         new WidgetAnnotation(List.of(LocalDate.class), DateWidget.class), //
+        new WidgetAnnotation(List.of(Interval.class), IntervalWidget.class), //
         new WidgetAnnotation(List.of(String.class), RichTextInputWidget.class), //
         new WidgetAnnotation(List.of(Credentials.class, LegacyCredentials.class), CredentialsWidget.class), //
         new WidgetAnnotation(List.of(Credentials.class, LegacyCredentials.class), PasswordWidget.class), //
@@ -159,7 +164,8 @@ public final class WidgetImplementationUtil {
         new WidgetAnnotation(List.of(String.class), LocalFileWriterWidget.class), //
         new WidgetAnnotation(List.of(String.class), TextInputWidget.class), //
         new WidgetAnnotation(List.of(Void.class), SimpleButtonWidget.class), //
-        new WidgetAnnotation(List.of(Void.class), TextMessage.class)};
+        new WidgetAnnotation(List.of(Void.class), TextMessage.class) //
+    };
 
     /**
      *
@@ -178,6 +184,9 @@ public final class WidgetImplementationUtil {
         new DefaultWidget(List.of(Credentials.class), DefaultWidgetType.CREDENTIALS), //
         new DefaultWidget(List.of(LegacyCredentials.class), DefaultWidgetType.LEGACY_CREDENTIALS), //
         new DefaultWidget(List.of(FileSelection.class), DefaultWidgetType.FILE_CHOOSER), //
+        new DefaultWidget(List.of(Interval.class), DefaultWidgetType.INTERVAL), //
+        new DefaultWidget(List.of(DateInterval.class), DefaultWidgetType.DATE_INTERVAL), //
+        new DefaultWidget(List.of(TimeInterval.class), DefaultWidgetType.TIME_INTERVAL), //
         new DefaultWidget(List.of(DynamicValuesInput.class), DefaultWidgetType.DYNAMIC_VALUE) //
     };
 
