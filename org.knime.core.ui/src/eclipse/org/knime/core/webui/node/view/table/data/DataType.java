@@ -73,7 +73,7 @@ public interface DataType {
      *
      * @return whether the data type is compatible with a {@link DataValue} with a registered {@link DataValueView}.
      */
-    boolean hasDataValueView();
+    boolean getHasDataValueView();
 
     /**
      * Helper to create a data type instance.
@@ -96,7 +96,7 @@ public interface DataType {
             }
 
             @Override
-            public boolean hasDataValueView() {
+            public boolean getHasDataValueView() {
                 return DataValueViewManager.getInstance().hasDataValueView(dataType);
             }
 
