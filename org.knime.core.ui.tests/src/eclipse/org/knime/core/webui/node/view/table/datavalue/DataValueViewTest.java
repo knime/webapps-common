@@ -249,7 +249,8 @@ final class DataValueViewTest {
 
     @BeforeAll
     static void registerStringValueViewFactory() {
-        DataValueViewManager.registerDataValueViewFactory(StringValue.class, TestStringValueView::new);
+        DataValueViewManager.registerDataValueViewFactory(StringValue.class,
+            (stringValue, colSpec) -> new TestStringValueView(stringValue));
     }
 
     private WorkflowManager m_wfm;

@@ -54,6 +54,7 @@ import java.util.Optional;
 import java.util.WeakHashMap;
 
 import org.knime.core.data.DataCell;
+import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataType;
 import org.knime.core.data.DataValue;
 import org.knime.core.data.container.filter.TableFilter;
@@ -146,12 +147,14 @@ public final class DataValueViewManager {
             return m_dataValueViewMap.get(wrapper);
         }
 
-        var dataCell = extractDataCell(wrapper);
+        var table = extractTable(wrapper);
+        var colSpec = extractDataColumnSpec(wrapper, table);
+        var dataCell = extractDataCell(wrapper, table);
         var chosenValue = findCompatibleValue(dataCell.getType());
         if (chosenValue.isPresent()) {
             @SuppressWarnings("rawtypes")
             DataValueViewFactory factory = m_dataValueViewFactories.get(chosenValue.get());
-            final var dataValueView = factory.createDataValueView(dataCell);
+            final var dataValueView = factory.createDataValueView(dataCell, colSpec);
             final var createdDataValueView = new CreatedDataValueView(dataValueView, chosenValue.get());
             m_dataValueViewMap.put(wrapper, createdDataValueView);
             NodeCleanUpCallback.builder(wrapper.get(), () -> m_dataValueViewMap.remove(wrapper))
@@ -163,7 +166,7 @@ public final class DataValueViewManager {
         }
     }
 
-    private static DataCell extractDataCell(final DataValueWrapper wrapper) {
+    private static BufferedDataTable extractTable(final DataValueWrapper wrapper) {
         var nc = wrapper.get();
         var portIdx = wrapper.getPortIdx();
         if (portIdx < 0 || portIdx >= nc.getNrOutPorts()) {
@@ -177,6 +180,14 @@ public final class DataValueViewManager {
         if (table == null) {
             throw new NoSuchElementException("No data table available at index " + portIdx);
         }
+        return table;
+    }
+
+    private static DataColumnSpec extractDataColumnSpec(final DataValueWrapper wrapper, final BufferedDataTable table) {
+        return table.getDataTableSpec().getColumnSpec(wrapper.getColIdx());
+    }
+
+    private static DataCell extractDataCell(final DataValueWrapper wrapper, final BufferedDataTable table) {
         return getDataCellAt(wrapper.getRowIdx(), wrapper.getColIdx(), table);
     }
 

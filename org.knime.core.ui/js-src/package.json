@@ -23,6 +23,7 @@
     "build:html": "run-p build:html:*",
     "build:html:ImageValueView": "vite build --mode html:ImageValueView",
     "build:html:CodeValueView": "vite build --mode html:CodeValueView",
+    "build:html:StringValueView": "vite build --mode html:StringValueView",
     "type-check": "vue-tsc -p tsconfig.vitest.json",
     "format": "prettier --cache --write .",
     "format:check": "prettier --cache --check .",

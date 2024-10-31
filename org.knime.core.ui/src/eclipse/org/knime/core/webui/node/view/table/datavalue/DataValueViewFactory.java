@@ -48,6 +48,7 @@
  */
 package org.knime.core.webui.node.view.table.datavalue;
 
+import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataValue;
 
 /**
@@ -62,6 +63,6 @@ public interface DataValueViewFactory<V extends DataValue> {
      * @param value
      * @return the data value view for this value
      */
-    DataValueView createDataValueView(V value);
+    DataValueView createDataValueView(V value, DataColumnSpec colSpec);
 
 }
