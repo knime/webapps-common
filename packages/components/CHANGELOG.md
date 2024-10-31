@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.5.1
+
+### Patch Changes
+
+- b85b06dd Do not use relative import that leaves the package
+
 ## 1.5.0
 
 ### Minor Changes
