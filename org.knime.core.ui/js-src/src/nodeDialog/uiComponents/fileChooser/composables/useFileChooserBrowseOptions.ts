@@ -55,12 +55,12 @@ export const useFileChooserBrowseOptions = (
     }
     if (fileExtension) {
       setFileExtension(fileExtension);
-    }
-    if (fileExtensionProvider) {
+    } else if (fileExtensionProvider) {
       addStateProviderListener({ id: fileExtensionProvider }, setFileExtension);
-    }
-    if (fileExtensions) {
+    } else if (fileExtensions) {
       filteredExtensions.value = fileExtensions;
+      isLoaded.value = true;
+    } else {
       isLoaded.value = true;
     }
   });

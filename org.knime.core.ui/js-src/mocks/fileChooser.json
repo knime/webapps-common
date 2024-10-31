@@ -157,15 +157,6 @@
             },
             {
               "type": "Control",
-              "scope": "#/properties/view/properties/local",
-              "options": {
-                "format": "fileChooser",
-                "isLocal": true,
-                "currentSpaceName": "My Space XYZ"
-              }
-            },
-            {
-              "type": "Control",
               "scope": "#/properties/view/properties/writer",
               "options": {
                 "format": "fileChooser",
@@ -204,6 +195,52 @@
           ]
         }
       ]
+    },
+    "persist": {
+      "type": "object",
+      "properties": {
+        "view": {
+          "type": "object",
+          "properties": {
+            "empty": {
+              "type": "object",
+              "properties": {
+                "path": {}
+              }
+            },
+            "writer": {
+              "type": "object",
+              "properties": {
+                "path": {}
+              }
+            },
+            "local": {
+              "type": "object",
+              "properties": {
+                "path": {}
+              }
+            },
+            "disabledPath": {
+              "type": "object",
+              "properties": {
+                "path": {}
+              }
+            },
+            "pathCustom": {
+              "type": "object",
+              "properties": {
+                "path": {}
+              }
+            },
+            "overwrittenByNonSupported": {
+              "type": "object",
+              "properties": {
+                "path": {}
+              }
+            }
+          }
+        }
+      }
     },
     "flowVariableSettings": {
       "view.disabled": {

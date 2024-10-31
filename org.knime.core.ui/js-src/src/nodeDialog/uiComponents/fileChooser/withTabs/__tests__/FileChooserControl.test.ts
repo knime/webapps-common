@@ -12,7 +12,6 @@ import DialogLabel from "@/nodeDialog/uiComponents/label/DialogLabel.vue";
 import { SideDrawer, FunctionButton } from "@knime/components";
 import FolderLenseIcon from "@knime/styles/img/icons/folder-lense.svg";
 import SideDrawerContent from "../SideDrawerContent.vue";
-import SideDrawerContentBase from "../SideDrawerContentBase.vue";
 import flushPromises from "flush-promises";
 import FSLocationTextControl from "../FSLocationTextControl.vue";
 import { createPersistSchema } from "@@/test-setup/utils/createPersistSchema";
@@ -58,7 +57,7 @@ describe("FileChooserControl.vue", () => {
         getPanelsContainerMock,
       },
       stubs: {
-        SideDrawerContentBase: true,
+        SideDrawerContent: true,
       },
     });
     wrapper = component.wrapper;
@@ -102,7 +101,7 @@ describe("FileChooserControl.vue", () => {
     const changedValue = { ...props.control.data.path, path: "new path" };
     const sideDrawer = await expandSideDrawer(wrapper);
     sideDrawer
-      .findComponent(SideDrawerContentBase)
+      .findComponent(SideDrawerContent)
       .vm.$emit("update:modelValue", changedValue);
     await wrapper.findComponent(SettingsSubPanel).vm.$emit("apply");
     expect(component.handleChange).toHaveBeenCalledWith(props.control.path, {

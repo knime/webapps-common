@@ -21,7 +21,7 @@ export const prefixes: [keyof typeof FSCategory, string][] = [
 import { computed, ref, watch, onMounted } from "vue";
 import getDeepActiveElement from "@/utils/getDeepActiveElement";
 import { InputField } from "@knime/components";
-import { startsWithSchemeRegex } from "./urlUtil";
+import { startsWithSchemeRegex } from "./url/urlUtil";
 import useFileChooserBackend, {
   getBackendType,
 } from "../composables/useFileChooserBackend";

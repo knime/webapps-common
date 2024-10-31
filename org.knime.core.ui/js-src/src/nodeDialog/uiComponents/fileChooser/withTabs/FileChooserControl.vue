@@ -1,17 +1,16 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from "vue";
-import SideDrawerContent from "./SideDrawerContent.vue";
+import { computed, onMounted, watch } from "vue";
 import useDialogControl from "../../../composables/components/useDialogControl";
 import LabeledControl from "../../label/LabeledControl.vue";
-import SettingsSubPanel from "@/nodeDialog/layoutComponents/settingsSubPanel/SettingsSubPanel.vue";
 import { rendererProps } from "@jsonforms/vue";
 import { FileChooserOptions } from "@/nodeDialog/types/FileChooserUiSchema";
-import { FunctionButton } from "@knime/components";
-import FolderLenseIcon from "@knime/styles/img/icons/folder-lense.svg";
-import FileChooserProps, { FileChooserValue } from "../types/FileChooserProps";
+import { FileChooserValue } from "../types/FileChooserProps";
 import FSLocationTextControl from "./FSLocationTextControl.vue";
 import { useFileChooserFileSystemsOptions } from "../composables/useFileChooserBrowseOptions";
 import useFileChooserStateChange from "../composables/useFileChooserStateChange";
+import FileBrowserButton from "../FileBrowserButton.vue";
+import useSideDrawerContent from "../composables/useSideDrawerContent";
+import SideDrawerContent from "./SideDrawerContent.vue";
 const props = defineProps(rendererProps());
 const {
   control,
@@ -88,15 +87,10 @@ onMounted(() => {
   }
 });
 
-const content = ref<null | { modelValue: FileChooserProps["modelValue"] }>(
-  null,
-);
-const onApply = () => {
-  if (!content.value) {
-    return;
-  }
-  onChange(content.value.modelValue);
-};
+const { onApply, sideDrawerValue } = useSideDrawerContent<FileChooserValue>({
+  onChange,
+  initialValue: data,
+});
 </script>
 
 <template>
@@ -116,27 +110,14 @@ const onApply = () => {
         :file-system-specifier="browseOptions.fileSystemSpecifier"
         @update:model-value="onChange"
       />
-      <SettingsSubPanel @apply="onApply">
-        <template #expand-button="{ expand }">
-          <FunctionButton
-            class="fit-content"
-            :disabled="disabled"
-            primary
-            compact
-            @click="expand"
-            ><FolderLenseIcon
-          /></FunctionButton>
-        </template>
-        <template #default>
-          <SideDrawerContent
-            :id="labelForId"
-            ref="content"
-            :disabled="disabled"
-            :initial-value="data"
-            :options="browseOptions"
-          />
-        </template>
-      </SettingsSubPanel>
+      <FileBrowserButton :disabled="disabled" @apply="onApply">
+        <SideDrawerContent
+          :id="labelForId"
+          v-model="sideDrawerValue"
+          :disabled="disabled"
+          :options="browseOptions"
+        />
+      </FileBrowserButton>
     </div>
   </LabeledControl>
 </template>

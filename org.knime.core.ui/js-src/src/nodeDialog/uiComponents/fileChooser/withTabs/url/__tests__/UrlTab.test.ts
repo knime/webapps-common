@@ -1,7 +1,7 @@
 import { shallowMount } from "@vue/test-utils";
 import { beforeEach, describe, expect, it } from "vitest";
 import UrlTab, { type Props as UrlTabProps } from "../UrlTab.vue";
-import CustomUrlFileChooser from "../../CustomUrlFileChooser.vue";
+import CustomUrlFileChooser from "../CustomUrlFileChooser.vue";
 import { applyButtonInjectionKey } from "@/nodeDialog/layoutComponents/settingsSubPanel";
 import { type Ref, ref } from "vue";
 import ErrorMessage from "@/nodeDialog/uiComponents/ErrorMessage.vue";

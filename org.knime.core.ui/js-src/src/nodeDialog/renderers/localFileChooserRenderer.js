@@ -3,10 +3,8 @@ import { priorityRanks, inputFormats } from "../constants";
 
 import { defineAsyncComponent } from "vue";
 
-const LabeledLocalFileChooserControl = defineAsyncComponent(() =>
-  import(
-    "../uiComponents/fileChooser/withValueSwitch/LabeledLocalFileChooserControl.vue"
-  ),
+const LocalFileChooserControl = defineAsyncComponent(() =>
+  import("../uiComponents/fileChooser/local/LocalFileChooserControl.vue"),
 );
 
 export const localFileChooserTester = and(
@@ -17,6 +15,6 @@ export const localFileChooserTester = and(
 
 export const localFileChooserRenderer = {
   name: "LocalFileChooserControl",
-  renderer: LabeledLocalFileChooserControl,
+  renderer: LocalFileChooserControl,
   tester: rankWith(priorityRanks.default, localFileChooserTester),
 };

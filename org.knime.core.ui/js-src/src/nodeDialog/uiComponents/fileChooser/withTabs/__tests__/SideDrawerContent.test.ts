@@ -1,16 +1,18 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import SideDrawerContent, { type Props } from "../SideDrawerContent.vue";
-import SideDrawerContentBase from "../SideDrawerContentBase.vue";
+import SideDrawerContent from "../SideDrawerContent.vue";
 import { shallowMount } from "@vue/test-utils";
 import { TabBar } from "@knime/components";
 import FileExplorerTab from "../FileExplorerTab.vue";
-import UrlTab from "../UrlTab.vue";
+import UrlTab from "../url/UrlTab.vue";
 import flushPromises from "flush-promises";
 import ConnectionPreventsTab from "../ConnectionPreventsTab.vue";
-import { FSCategory } from "../../types/FileChooserProps";
+import FileChooserProps, {
+  FileChooserValue,
+  FSCategory,
+} from "../../types/FileChooserProps";
 
 describe("SideDrawerContent.vue", () => {
-  let props: Props;
+  let props: FileChooserProps;
 
   const testSpaceName = "testSpaceName";
 
@@ -18,7 +20,7 @@ describe("SideDrawerContent.vue", () => {
     props = {
       disabled: false,
       id: "myId",
-      initialValue: {
+      modelValue: {
         fsCategory: "relative-to-current-hubspace",
         path: "myPath",
         timeout: 1000,
@@ -33,9 +35,6 @@ describe("SideDrawerContent.vue", () => {
     return shallowMount(SideDrawerContent, {
       props,
       global: {
-        stubs: {
-          SideDrawerContentBase,
-        },
         provide: {
           addStateProviderListener: vi.fn(),
         },
@@ -67,7 +66,7 @@ describe("SideDrawerContent.vue", () => {
   });
 
   it("renders local tab", async () => {
-    props.initialValue.fsCategory = "LOCAL";
+    props.modelValue.fsCategory = "LOCAL";
     props.options!.isLocal = true;
     const wrapper = mountSideDrawerContent();
     expect(wrapper.findComponent(TabBar).props().modelValue).toBe("LOCAL");
@@ -77,8 +76,8 @@ describe("SideDrawerContent.vue", () => {
     expect(fileExplorerTab.props().backendType).toBe("local");
     const updatedPath = "updatedPath";
     await fileExplorerTab.vm.$emit("chooseFile", updatedPath);
-    expect(wrapper.vm.modelValue).toStrictEqual({
-      ...props.initialValue,
+    expect(wrapper.emitted("update:modelValue")![0][0]).toStrictEqual({
+      ...props.modelValue,
       path: updatedPath,
     });
     expect(fileExplorerTab.props().breadcrumbRoot).toBeNull();
@@ -105,6 +104,11 @@ describe("SideDrawerContent.vue", () => {
     await wrapper
       .findComponent(TabBar)
       .vm.$emit("update:model-value", "relative-to-embedded-data");
+    await wrapper.setProps({
+      modelValue: wrapper.emitted(
+        "update:modelValue",
+      )![0][0] as FileChooserValue,
+    });
     const fileExplorerTab = wrapper.findComponent(FileExplorerTab);
     expect(fileExplorerTab.exists()).toBeTruthy();
     expect(fileExplorerTab.props().backendType).toBe("embedded");
@@ -116,16 +120,22 @@ describe("SideDrawerContent.vue", () => {
     await wrapper
       .findComponent(TabBar)
       .vm.$emit("update:model-value", "CUSTOM_URL");
+    await wrapper.setProps({
+      modelValue: wrapper.emitted(
+        "update:modelValue",
+      )![0][0] as FileChooserValue,
+    });
     const urlTab = wrapper.findComponent(UrlTab);
     expect(urlTab.exists()).toBeTruthy();
     const updatedPath = "updatedPath";
     await urlTab.vm.$emit("update:path", updatedPath);
+    expect(wrapper.emitted("update:modelValue")![1][0]).toMatchObject({
+      path: updatedPath,
+    });
     const updatedTimeout = 2000;
     await urlTab.vm.$emit("update:timeout", updatedTimeout);
-    expect(wrapper.vm.modelValue).toStrictEqual({
-      path: updatedPath,
+    expect(wrapper.emitted("update:modelValue")![2][0]).toMatchObject({
       timeout: updatedTimeout,
-      fsCategory: "CUSTOM_URL",
     });
   });
 
@@ -148,14 +158,19 @@ describe("SideDrawerContent.vue", () => {
       await wrapper
         .findComponent(TabBar)
         .vm.$emit("update:model-value", "CONNECTED");
+      await wrapper.setProps({
+        modelValue: wrapper.emitted(
+          "update:modelValue",
+        )![0][0] as FileChooserValue,
+      });
       const fileExplorerTab = wrapper.findComponent(FileExplorerTab);
       expect(fileExplorerTab.exists()).toBeTruthy();
       expect(fileExplorerTab.props().backendType).toBe("connected1");
       const updatedPath = "updatedPath";
       await fileExplorerTab.vm.$emit("chooseFile", updatedPath);
-      expect(wrapper.vm.modelValue).toStrictEqual({
+      expect(wrapper.emitted("update:modelValue")![1][0]).toStrictEqual({
         path: updatedPath,
-        timeout: props.initialValue.timeout,
+        timeout: props.modelValue.timeout,
         fsCategory: "CONNECTED",
         context: {
           fsSpecifier,

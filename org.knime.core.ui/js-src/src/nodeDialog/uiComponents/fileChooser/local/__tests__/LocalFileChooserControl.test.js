@@ -4,10 +4,12 @@ import {
   initializesJsonFormsControl,
   getControlBase,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
-import LabeledLocalFileChooserControl from "../LabeledLocalFileChooserControl.vue";
+import LabeledLocalFileChooserControl from "../LocalFileChooserControl.vue";
 import LabeledControl from "@/nodeDialog/uiComponents/label/LabeledControl.vue";
 import DialogLabel from "@/nodeDialog/uiComponents/label/DialogLabel.vue";
-import StringFileChooserControlWithExplorer from "../StringFileChooserControlWithExplorer.vue";
+import FileBrowserButton from "../../FileBrowserButton.vue";
+import { FunctionButton, InputField } from "@knime/components";
+import FileExplorerTab from "../../withTabs/FileExplorerTab.vue";
 
 describe("LabeledLocalFileChooserControl.vue", () => {
   let props, wrapper, component;
@@ -39,6 +41,7 @@ describe("LabeledLocalFileChooserControl.vue", () => {
 
     component = await mountJsonFormsComponent(LabeledLocalFileChooserControl, {
       props,
+      stubs: { FileExplorerTab: true },
     });
     wrapper = component.wrapper;
   });
@@ -52,16 +55,16 @@ describe("LabeledLocalFileChooserControl.vue", () => {
       true,
     );
     expect(wrapper.findComponent(LabeledControl).exists()).toBe(true);
-    expect(
-      wrapper.findComponent(StringFileChooserControlWithExplorer).exists(),
-    ).toBe(true);
+    expect(wrapper.findComponent(InputField).exists()).toBe(true);
+    expect(wrapper.findComponent(FileBrowserButton).exists()).toBe(true);
+    expect(wrapper.findComponent(FileExplorerTab).exists()).toBe(false);
   });
 
   it("sets labelForId", () => {
     const dialogLabel = wrapper.findComponent(DialogLabel);
-    expect(
-      wrapper.getComponent(StringFileChooserControlWithExplorer).props().id,
-    ).toBe(dialogLabel.vm.labelForId);
+    expect(wrapper.getComponent(InputField).props().id).toBe(
+      dialogLabel.vm.labelForId,
+    );
     expect(dialogLabel.vm.labeledElement).toBeDefined();
     expect(dialogLabel.vm.labeledElement).not.toBeNull();
   });
@@ -77,11 +80,12 @@ describe("LabeledLocalFileChooserControl.vue", () => {
       {
         props,
         provide: { setDirtyModeSettingsMock },
+        stubs: { FileExplorerTab: true },
       },
     );
     const changedTextInput = "Shaken not stirred";
     wrapper
-      .findComponent(StringFileChooserControlWithExplorer)
+      .findComponent(InputField)
       .vm.$emit("update:modelValue", changedTextInput);
     expect(handleChange).toHaveBeenCalledWith(
       props.control.path,
@@ -90,10 +94,17 @@ describe("LabeledLocalFileChooserControl.vue", () => {
     expect(setDirtyModeSettingsMock).not.toHaveBeenCalled();
   });
 
-  it("sets correct initial value", () => {
-    expect(
-      wrapper.findComponent(StringFileChooserControlWithExplorer).vm.modelValue,
-    ).toBe(props.control.data);
+  const clickFileBrowserButton = (wrapper) =>
+    wrapper
+      .findComponent(FileBrowserButton)
+      .findComponent(FunctionButton)
+      .vm.$emit("click");
+
+  it("sets correct initial value", async () => {
+    await clickFileBrowserButton(wrapper);
+    expect(wrapper.findComponent(FileExplorerTab).vm.initialFilePath).toBe(
+      props.control.data,
+    );
   });
 
   it("sets correct browsing options", async () => {
@@ -104,18 +115,18 @@ describe("LabeledLocalFileChooserControl.vue", () => {
       LabeledLocalFileChooserControl,
       {
         props,
+        stubs: { FileExplorerTab: true },
       },
     );
-    expect(
-      wrapper.findComponent(StringFileChooserControlWithExplorer).props()
-        .options,
-    ).toMatchObject({
-      fileExtension: "pdf",
+    await clickFileBrowserButton(wrapper);
+    expect(wrapper.findComponent(FileExplorerTab).props()).toMatchObject({
+      filteredExtensions: ["pdf"],
+      appendedExtension: "pdf",
       isWriter: true,
     });
   });
 
-  it("disables input when controlled by a flow variable", () => {
+  it("disables input and button when controlled by a flow variable", () => {
     const { wrapper } = mountJsonFormsComponent(
       LabeledLocalFileChooserControl,
       {
@@ -123,6 +134,9 @@ describe("LabeledLocalFileChooserControl.vue", () => {
         withControllingFlowVariable: true,
       },
     );
-    expect(wrapper.vm.disabled).toBeTruthy();
+    expect(wrapper.findComponent(InputField).props().disabled).toBe(true);
+    expect(wrapper.findComponent(FileBrowserButton).props().disabled).toBe(
+      true,
+    );
   });
 });
