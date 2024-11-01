@@ -15,7 +15,7 @@ defineProps<{
 
 <style lang="postcss" scoped>
 .text {
-  font-weight: 500;
+  font-weight: 400;
   flex-shrink: 1;
   flex-basis: 100%;
 
