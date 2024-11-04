@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.5.2
+
+### Patch Changes
+
+- 64039e4: Submenu items font-weight changed to 400
+
 ## 1.5.1
 
 ### Patch Changes
