@@ -52,6 +52,7 @@ import org.knime.core.node.NodeFactory;
 import org.knime.core.node.context.ModifiableNodeCreationConfiguration;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.ui.UI;
+import org.knime.core.webui.node.dialog.NodeDialog;
 
 /**
  * UI-interface that mirrors the {@link NativeNodeContainer}.
@@ -89,5 +90,12 @@ public interface NativeNodeContainerUI extends SingleNodeContainerUI, UI {
      * @return see {@link NodeFactory#getFactoryId()}
      */
     String getNodeFactoryId();
+
+    /**
+     * @return an instance of the dialog
+     */
+    default Optional<NodeDialog> getNodeDialog() {
+        throw new UnsupportedOperationException();
+    }
 
 }

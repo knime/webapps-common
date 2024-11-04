@@ -59,6 +59,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.core.ui.wrapper.NativeNodeContainerWrapper;
 import org.knime.core.webui.node.PageResourceManager.CreatedPage;
 import org.knime.core.webui.page.Page;
 import org.knime.core.webui.page.PageTest;
@@ -101,6 +102,7 @@ class PageCacheTest {
 
         var nodeWrapperMock = mock(NodeWrapper.class);
         when(nodeWrapperMock.get()).thenReturn(m_nnc);
+        when(nodeWrapperMock.getNCUI()).thenReturn(NativeNodeContainerWrapper.wrap(m_nnc));
 
         /* non-static page checks */
 

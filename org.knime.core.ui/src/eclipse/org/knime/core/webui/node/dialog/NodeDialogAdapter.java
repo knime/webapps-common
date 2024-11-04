@@ -101,6 +101,21 @@ final class NodeDialogAdapter implements UIExtension, DataServiceProvider {
         m_nodeSettingsService = dialog.getNodeSettingsService();
     }
 
+    /**
+     * Constructor only used when creating the dialog in the context of the remote workflow editor. In that case, e.g.,
+     * no data services, e.g., {@link #createInitialDataService()} etc. are being used on the client side.
+     *
+     * @param dialog
+     */
+    NodeDialogAdapter(final NodeDialog dialog) {
+        m_dialog = dialog;
+        m_settingsTypes = dialog.getSettingsTypes();
+        CheckUtils.checkState(!m_settingsTypes.isEmpty(), "At least one settings type must be provided");
+        m_snc = null;
+        m_onApplyModifier = null;
+        m_nodeSettingsService = null;
+    }
+
     @Override
     public Page getPage() {
         return m_dialog.getPage();

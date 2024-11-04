@@ -54,6 +54,9 @@ import org.knime.core.node.NodeFactory;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeContext;
+import org.knime.core.ui.node.workflow.NodeContainerUI;
+import org.knime.core.ui.wrapper.NodeContainerWrapper;
+import org.knime.core.ui.wrapper.Wrapper;
 import org.knime.core.webui.node.port.PortContext;
 
 /**
@@ -73,6 +76,13 @@ public interface NodeWrapper {
     NodeContainer get();
 
     /**
+     * @return a {@link NodeContainerUI} instance; need in order to make the dialogs work in the remote workflow editor
+     */
+    default NodeContainerUI getNCUI() {
+        return NodeContainerWrapper.wrap(get());
+    }
+
+    /**
      * Runs an operation within the context 'compatible' with this node wrapper (e.g. {@link NodeContext} or
      * {@link PortContext})
      *
@@ -90,10 +100,29 @@ public interface NodeWrapper {
      * @return a new instance
      */
     static NodeWrapper of(final NodeContainer nc) {
+        return of(NodeContainerWrapper.wrap(nc));
+    }
+
+    /**
+     * Convenience method to create a {@link NodeWrapper}-instance.
+     *
+     * @param nc
+     * @return a new instance
+     */
+    static NodeWrapper of(final NodeContainerUI nc) {
         return new NodeWrapper() { // NOSONAR
 
             @Override
             public NodeContainer get() {
+                if (Wrapper.wraps(nc, NodeContainer.class)) {
+                    return Wrapper.unwrapNC(nc);
+                } else {
+                    throw new UnsupportedOperationException();
+                }
+            }
+
+            @Override
+            public NodeContainerUI getNCUI() {
                 return nc;
             }
 
@@ -120,7 +149,7 @@ public interface NodeWrapper {
                 }
 
                 var w = (NodeWrapper)o;
-                return nc.equals(w.get());
+                return nc.equals(w.getNCUI());
             }
 
             @Override

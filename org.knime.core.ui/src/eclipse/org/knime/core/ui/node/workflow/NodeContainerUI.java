@@ -50,6 +50,7 @@ package org.knime.core.ui.node.workflow;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.util.UUID;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeDialog;
@@ -475,5 +476,35 @@ public interface NodeContainerUI extends NodeProgressListener, NodeContainerStat
      * @return serialized result
      */
     String doRpc(String remoteProcedureCall);
+
+    /**
+     * Allows on to call the node data services.
+     *
+     * @param projectId
+     * @param workflowId
+     * @param nodeId
+     * @param extensionType
+     * @param serviceType
+     * @param request
+     * @return
+     */
+    default String callNodeDataService(final UUID projectId, final String workflowId, final String nodeId,
+        final String extensionType, final String serviceType, final String request) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * @return the project id of the workflow containing this node
+     */
+    default UUID getProjectId() {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * @return the workflow id of the workflow containing this node
+     */
+    default String getParentNodeID() {
+        throw new UnsupportedOperationException();
+    }
 
 }

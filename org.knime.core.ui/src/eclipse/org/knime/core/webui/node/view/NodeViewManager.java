@@ -86,7 +86,7 @@ public final class NodeViewManager {
     private final Map<NodeContainer, NodeView> m_nodeViewMap = new WeakHashMap<>();
 
     private final PageResourceManager<NodeWrapper> m_pageResourceManager = new PageResourceManager<>(PageType.VIEW,
-        nw -> new CreatedPage(getNodeView(nw.get()).getPage(), PagePathSegments.getStaticPageId(nw.get())),
+        nw -> new CreatedPage(getNodeView(nw.get()).getPage(), PagePathSegments.getStaticPageId(nw.getNCUI())),
         this::getPagePathSegments, this::decomposePagePath, false);
 
     private final DataServiceManager<NodeWrapper> m_dataServiceManager =

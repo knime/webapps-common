@@ -51,6 +51,9 @@ package org.knime.core.webui.node;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.SubNodeContainer;
+import org.knime.core.ui.node.workflow.NativeNodeContainerUI;
+import org.knime.core.ui.node.workflow.NodeContainerUI;
+import org.knime.core.ui.wrapper.Wrapper;
 import org.knime.core.webui.node.NodeWrapper.CustomNodeWrapperTypeIdProvider;
 import org.knime.core.webui.node.PageCache.PageIdType;
 import org.knime.core.webui.page.Page;
@@ -73,19 +76,26 @@ import org.knime.core.webui.page.Page;
 public record PagePathSegments(String pathPrefix, String pageId, String pageContentId, String relativePagePath) {
 
     /**
-     * @param nodeContainer the node container for which to create the id.
+     * @param ncUI the node container for which to create the id.
      * @return an id uniquely identifying the node container to be used as pageId in case of a static page.
      */
-    public static String getStaticPageId(final NodeContainer nodeContainer) {
-        if (nodeContainer instanceof NativeNodeContainer nnc) {
-            var factory = nnc.getNode().getFactory();
-            if (factory instanceof CustomNodeWrapperTypeIdProvider p) {
-                return p.getNodeWrapperTypeId(nnc);
+    public static String getStaticPageId(final NodeContainerUI ncUI) {
+        var nc = Wrapper.unwrapOptional(ncUI, NodeContainer.class).orElse(null);
+        if (nc != null) {
+            if (nc instanceof NativeNodeContainer nnc) {
+                var factory = nnc.getNode().getFactory();
+                if (factory instanceof CustomNodeWrapperTypeIdProvider p) {
+                    return p.getNodeWrapperTypeId(nnc);
+                } else {
+                    return factory.getClass().getName();
+                }
+            } else if (nc instanceof SubNodeContainer) {
+                return SubNodeContainer.class.getName();
             } else {
-                return factory.getClass().getName();
+                throw new UnsupportedOperationException();
             }
-        } else if (nodeContainer instanceof SubNodeContainer snc) {
-            return snc.getClass().getName();
+        } else if (ncUI instanceof NativeNodeContainerUI nncUI) {
+            return nncUI.getNodeFactoryClassName();
         } else {
             throw new UnsupportedOperationException();
         }

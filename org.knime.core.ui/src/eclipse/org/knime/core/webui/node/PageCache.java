@@ -104,7 +104,7 @@ final class PageCache<N extends NodeWrapper> {
         }
 
         private static String determineNonStaticPageId(final NodeWrapper nw) {
-            var nc = nw.get();
+            var nc = nw.getNCUI();
             var pageId = nc.getID().toString().replace(":", "_");
             if (nw instanceof NodePortWrapper npw) {
                 pageId += "_" + npw.getPortIdx() + "_" + npw.getViewIdx();

@@ -57,6 +57,9 @@ import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.node.workflow.SingleNodeContainer;
 import org.knime.core.node.workflow.SubNodeContainer;
+import org.knime.core.ui.node.workflow.NativeNodeContainerUI;
+import org.knime.core.ui.node.workflow.NodeContainerUI;
+import org.knime.core.ui.wrapper.Wrapper;
 import org.knime.core.webui.node.DataServiceManager;
 import org.knime.core.webui.node.NodeWrapper;
 import org.knime.core.webui.node.PagePathSegments;
@@ -79,7 +82,7 @@ public final class NodeDialogManager {
     private final Map<NodeContainer, NodeDialogAdapter> m_nodeDialogAdapterMap = new WeakHashMap<>();
 
     private final PageResourceManager<NodeWrapper> m_pageResourceManager = new PageResourceManager<>(PageType.DIALOG,
-        nw -> new CreatedPage(getNodeDialog(nw.get()).getPage(), PagePathSegments.getStaticPageId(nw.get())));
+        nw -> new CreatedPage(getNodeDialog(nw.getNCUI()).getPage(), PagePathSegments.getStaticPageId(nw.getNCUI())));
 
     private final DataServiceManager<NodeWrapper> m_dataServiceManager =
         new DataServiceManager<>(nw -> getNodeDialog(nw.get()));
@@ -116,7 +119,7 @@ public final class NodeDialogManager {
     }
 
     /**
-     * Gets the {@link NodeDialogAdapter} for a given node container.
+     * Gets the {@link NodeDialogAdapter} for a given node.
      *
      * @param nc the node to create the node dialog from
      * @return a node dialog instance
@@ -142,12 +145,32 @@ public final class NodeDialogManager {
         }
     }
 
+    /**
+     * Gets the {@link NodeDialogAdapter} for a given {@link NodeContainerUI} - need in order to make the dialogs work
+     * in the remote workflow editor.
+     *
+     * @param nc the node to create the node dialog from
+     * @return a node dialog instance
+     * @throws IllegalArgumentException if the passed node does not provide a node dialog
+     */
+    NodeDialogAdapter getNodeDialog(final NodeContainerUI ncUI) {
+        var nc = Wrapper.unwrapOptional(ncUI, NodeContainer.class).orElse(null);
+        if (nc != null) {
+            return getNodeDialog(nc);
+        } else if (ncUI instanceof NativeNodeContainerUI nncUI) {
+            return nncUI.getNodeDialog().map(NodeDialogAdapter::new).orElseThrow(() -> new IllegalArgumentException(
+                "The node " + nncUI.getNameWithID() + " doesn't provide a node dialog"));
+        } else {
+            throw new IllegalArgumentException("The node " + ncUI.getNameWithID() + " is no supported node container");
+        }
+    }
+
     private void removeNodeDialogAdapter(final NodeContainer nnc) {
         m_nodeDialogAdapterMap.remove(nnc);
     }
 
     private static NodeDialogAdapter createNativeNodeDialog(final NativeNodeContainer nnc) {
-        NodeDialogFactory fac = (NodeDialogFactory)nnc.getNode().getFactory();
+        var fac = (NodeDialogFactory)nnc.getNode().getFactory();
         NodeContext.pushContext(nnc);
         try {
             return new NodeDialogAdapter(nnc, fac.createNodeDialog());
@@ -198,10 +221,19 @@ public final class NodeDialogManager {
     }
 
     /**
-     * @param snc
+     * @param nc
      * @return see {@link NodeDialog#canBeEnlarged()}
      */
-    public boolean canBeEnlarged(final NodeContainer snc) {
-        return getNodeDialog(snc).getNodeDialog().canBeEnlarged();
+    public boolean canBeEnlarged(final NodeContainerUI nc) {
+        return getNodeDialog(nc).getNodeDialog().canBeEnlarged();
     }
+
+    /**
+     * @param nc
+     * @return see {@link NodeDialog#canBeEnlarged()}
+     */
+    public boolean canBeEnlarged(final NodeContainer nc) {
+        return getNodeDialog(nc).getNodeDialog().canBeEnlarged();
+    }
+
 }
