@@ -75,6 +75,7 @@ import static org.knime.core.webui.node.dialog.defaultdialog.widget.util.WidgetI
 import static org.knime.core.webui.node.dialog.defaultdialog.widget.util.WidgetImplementationUtil.partitionWidgetAnnotationsByApplicability;
 
 import java.lang.reflect.Field;
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -129,6 +130,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.Icon;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.NoopButtonUpdateHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.SimpleButtonWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.IdAndText;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesAdder;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.NoopChoicesUpdateHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.PersistentAsyncChoicesAdder;
@@ -222,6 +224,10 @@ final class UiSchemaOptionsGenerator {
                     break;
                 case LOCAL_TIME:
                     options.put(TAG_FORMAT, Format.LOCAL_TIME);
+                    break;
+                case ZONE_ID:
+                    options.put(TAG_FORMAT, Format.DROP_DOWN);
+                    setPossibleValuesForZoneIds(options);
                     break;
                 case STRING_ARRAY:
                     options.put(TAG_FORMAT, Format.COMBO_BOX);
@@ -422,10 +428,14 @@ final class UiSchemaOptionsGenerator {
             final var choicesUpdateHandlerClassSet = !choicesUpdateHandlerClass.equals(NoopChoicesUpdateHandler.class);
             final var choicesStateProviderClassSet = !choicesStateProviderClass.equals(ChoicesStateProvider.class);
 
-            CheckUtils.check(choicesProviderClassSet || choicesUpdateHandlerClassSet || choicesStateProviderClassSet,
-                UiSchemaGenerationException::new,
-                () -> "Either the property \"choices\", \"choicesUpdateHandler\" or \"choicesProvider\" "
-                    + "has to be defined in a \"ChoicesWidget\" annotation");
+            if (!ZoneId.class.isAssignableFrom(m_node.getType())) {
+                CheckUtils.check(
+                    choicesProviderClassSet || choicesUpdateHandlerClassSet || choicesStateProviderClassSet,
+                    UiSchemaGenerationException::new,
+                    () -> "Either the property \"choices\", \"choicesUpdateHandler\" or \"choicesProvider\" "
+                        + "has to be defined in a \"ChoicesWidget\" annotation");
+            }
+
             if (choicesStateProviderClassSet) {
                 CheckUtils.check(!choicesProviderClassSet && !choicesUpdateHandlerClassSet,
                     UiSchemaGenerationException::new,
@@ -672,6 +682,15 @@ final class UiSchemaOptionsGenerator {
         if (!maxDate.isEmpty()) {
             options.put("maximum", maxDate);
         }
+    }
+
+    private static void setPossibleValuesForZoneIds(final ObjectNode options) {
+        options.set("possibleValues", JsonFormsUiSchemaUtil.getMapper().valueToTree( //
+            ZoneId.getAvailableZoneIds().stream() //
+                .sorted() //
+                .map(IdAndText::fromId) //
+                .toArray(IdAndText[]::new)) //
+        );
     }
 
     private void addDependencies(final ArrayNode dependencies,
