@@ -188,6 +188,7 @@ describe("TableViewInteractive.vue", () => {
     DataValueViewService.mockImplementation(() => ({
       showDataValueView: vi.fn(),
       closeDataValueView: vi.fn(),
+      setDataValueViewStateListener: vi.fn(),
     }));
     SharedDataService.mockImplementation(() => ({
       addSharedDataListener: vi.fn(),
@@ -328,6 +329,7 @@ describe("TableViewInteractive.vue", () => {
         },
         enableCellSelection: true,
         enableDataValueViews: true,
+        dataValueViewIsShown: false,
         enableVirtualScrolling: true,
         showSelection: true,
         disableSelection: false,

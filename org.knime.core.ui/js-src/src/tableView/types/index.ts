@@ -65,6 +65,7 @@ export interface TableViewDisplayProps {
   enableVirtualScrolling: boolean;
   enableCellSelection: boolean;
   enableDataValueViews: boolean;
+  dataValueViewIsShown?: boolean;
   enableColumnResizing: boolean;
   enableRowResizing: boolean;
   currentRowHeight: number;

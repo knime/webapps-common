@@ -40,6 +40,7 @@ export default ({
   enableCellSelection,
   enableColumnResizing,
   enableDataValueViews,
+  dataValueViewIsShown,
   forceHideTableSizes,
   settingsItems,
 }: {
@@ -54,6 +55,7 @@ export default ({
   enableCellSelection: boolean;
   enableColumnResizing: boolean;
   enableDataValueViews: boolean;
+  dataValueViewIsShown?: boolean;
   forceHideTableSizes: boolean;
   settingsItems?: MenuItem[];
 }) => {
@@ -72,6 +74,7 @@ export default ({
     disableSelection: selectionMode !== SelectionMode.EDIT,
     enableCellSelection,
     enableDataValueViews,
+    dataValueViewIsShown,
     enableColumnResizing,
     showColumnFilters: enableColumnSearch || false,
     ...getPageConfig(

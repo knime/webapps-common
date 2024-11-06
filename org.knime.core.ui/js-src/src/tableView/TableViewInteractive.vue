@@ -107,6 +107,7 @@ export default {
       displayedColumns: [] as string[],
       columnCount: 0,
       dataValueViewService: null as null | DataValueViewService,
+      dataValueViewIsShown: false,
       jsonDataService: null as null | JsonDataService,
       sharedDataService: null as null | SharedDataService,
       selectionService: null as null | SelectionService,
@@ -240,6 +241,9 @@ export default {
   async mounted() {
     this.jsonDataService = new JsonDataService(this.knimeService);
     this.dataValueViewService = new DataValueViewService(this.knimeService);
+    this.dataValueViewService.setDataValueViewStateListener((isShown) => {
+      this.dataValueViewIsShown = isShown;
+    });
     this.sharedDataService = new SharedDataService(this.knimeService);
     this.sharedDataService.addSharedDataListener(
       this.onViewSettingsChange.bind(this),
@@ -1270,6 +1274,7 @@ export default {
       enableCellSelection && Boolean(settings.enableCellCopying)
     "
     :enable-data-value-views="settings.enableDataValueViews"
+    :data-value-view-is-shown="dataValueViewIsShown"
     :knime-service="knimeService"
     :force-hide-table-sizes="forceHideTableSizes"
     :first-row-image-dimensions="table.firstRowImageDimensions || {}"

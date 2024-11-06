@@ -173,6 +173,7 @@ const tableConfig = computed(() =>
     enableCellSelection: props.enableCellSelection,
     enableColumnResizing: props.enableColumnResizing,
     enableDataValueViews: props.enableDataValueViews,
+    dataValueViewIsShown: props.dataValueViewIsShown,
     forceHideTableSizes: props.forceHideTableSizes || false,
     settingsItems: props.settingsItems,
   }),
