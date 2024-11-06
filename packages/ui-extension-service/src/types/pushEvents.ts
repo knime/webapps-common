@@ -12,6 +12,7 @@ export namespace UIExtensionPushEvents {
     SelectionEvent = "SelectionEvent",
     ApplyDataEvent = "ApplyDataEvent",
     DisplayModeEvent = "DisplayModeEvent",
+    DataValueViewShownEvent = "DataValueViewShownEvent",
   }
 
   type KnownPushEvents = {
@@ -19,6 +20,7 @@ export namespace UIExtensionPushEvents {
     [EventTypes.DisplayModeEvent]: DisplayModeEventPayload;
     [EventTypes.DataEvent]: any;
     [EventTypes.ApplyDataEvent]: never;
+    [EventTypes.DataValueViewShownEvent]: boolean;
   };
 
   type KnownPushEventType = keyof KnownPushEvents;
