@@ -107,7 +107,7 @@ public final class InitialDataService<D> extends AbstractDataService {
             // Since the DataServiceContext is public API, warning messages could have been wrongfully added to it.
             // We clear the context here to make sure there are no "stale" warning messages.
             DataServiceContext.init(m_nc);
-            var dataString = m_serializer.serialize(m_dataSupplier.get());
+            final var dataString = m_serializer.serialize(m_dataSupplier.get());
             try { // NOSONAR
                 root.set("result", m_mapper.readTree(dataString));
             } catch (StreamConstraintsException ex) {
@@ -135,7 +135,7 @@ public final class InitialDataService<D> extends AbstractDataService {
             return m_mapper.createObjectNode().set("userError", m_mapper.valueToTree(new InitialDataUserError(e)))
                 .toString();
         } catch (Throwable t) { // NOSONAR
-            var errorMessage = m_mapper.createObjectNode()
+            final var errorMessage = m_mapper.createObjectNode()
                 .set("internalError", m_mapper.valueToTree(new InitialDataInternalError(t))).toString();
             NodeLogger.getLogger(getClass()).error(errorMessage);
             return errorMessage;
