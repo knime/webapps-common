@@ -120,6 +120,7 @@ export default ({
   updateData,
   sendAlert,
   publishSettings,
+  pathIsControlledByFlowVariable,
 }: {
   callStateProviderListener: (
     location: { id: string; indexIds?: string[] },
@@ -144,6 +145,7 @@ export default ({
   ) => void;
   sendAlert: (params: CreateAlertParams) => void;
   publishSettings: () => void;
+  pathIsControlledByFlowVariable: (path: string) => boolean;
 }) => {
   const baseService = inject<() => UIExtensionService>("getKnimeService")!();
   const jsonDataService = new JsonDataService(baseService);
@@ -174,8 +176,11 @@ export default ({
           );
         toBeAdjustedByLastPathSegment.forEach(
           ({ settings, path, values: [[, value]] }) => {
-            set(settings, lastPathSegment, value);
-            onValueUpdate(composePaths(path, lastPathSegment));
+            const fullToBeUpdatedPath = composePaths(path, lastPathSegment);
+            if (!pathIsControlledByFlowVariable(fullToBeUpdatedPath)) {
+              set(settings, lastPathSegment, value);
+              onValueUpdate(fullToBeUpdatedPath);
+            }
           },
         );
         publishSettings();

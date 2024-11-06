@@ -20,6 +20,8 @@ import type {
   FlowSettings,
   PossibleFlowVariable,
 } from "@/nodeDialog/api/types";
+import { UpdateResult } from "@/nodeDialog/types/Update";
+import { PersistSchema } from "@/nodeDialog/types/Persist";
 
 describe("flow variables", () => {
   const flowVar1 = {
@@ -284,25 +286,6 @@ describe("flow variables", () => {
               },
             },
           ],
-          persist: {
-            type: "object",
-            properties: {
-              model: {
-                type: "object",
-                properties: {
-                  value: {
-                    type: "object",
-                    properties: {
-                      username: {},
-                      password: {},
-                      isHiddenPassword: {},
-                      flowVariableName: {},
-                    },
-                  },
-                },
-              },
-            },
-          },
         },
         flowVariableSettings: {},
       });
@@ -349,5 +332,76 @@ describe("flow variables", () => {
         password: "",
       });
     });
+  });
+
+  it("does not update settings value if controlled by a flow variable", async () => {
+    vi.clearAllMocks();
+    const initialValue = "some value";
+    const uiSchemaKey = "ui_schema";
+    vi.spyOn(JsonDataService.prototype, "initialData").mockResolvedValue({
+      data: {
+        model: {
+          value: initialValue,
+        },
+      },
+      schema: {
+        type: "object",
+        properties: {
+          model: {
+            type: "object",
+            properties: {
+              value: {
+                type: "string",
+              },
+            },
+          },
+        },
+      },
+      [uiSchemaKey]: {
+        elements: [
+          {
+            scope: "#/properties/model/properties/value",
+            type: "Control",
+            options: {
+              format: "credentials",
+            },
+          },
+        ],
+      },
+      flowVariableSettings: {
+        "model.customConfigKey": {
+          controllingFlowVariableName: "flowVar1",
+        },
+      },
+      persist: {
+        type: "object",
+        properties: {
+          model: {
+            type: "object",
+            properties: {
+              value: {
+                configKey: "customConfigKey",
+              },
+            },
+          },
+        },
+      } satisfies PersistSchema,
+      initialUpdates: [
+        {
+          scopes: ["#/properties/model/properties/value"],
+          values: [
+            {
+              indices: [],
+              value: "some updated value",
+            },
+          ],
+          id: null,
+        },
+      ] satisfies UpdateResult[],
+    });
+
+    await mountNodeDialog();
+
+    expect(wrapper.vm.getData().data.model.value).toBe(initialValue);
   });
 });

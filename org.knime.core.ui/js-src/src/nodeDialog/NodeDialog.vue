@@ -42,6 +42,7 @@ import { PersistSchema } from "./types/Persist";
 import { InitialData } from "./types/InitialData";
 import { useHasNodeView } from "./composables/components/useHasNodeView";
 import { useShowAdvancedSettings } from "./composables/components/useAdvancedSettings";
+import { getConfigPaths } from "./utils/paths";
 
 const renderers = [...fallbackRenderers, ...defaultRenderers];
 
@@ -114,6 +115,8 @@ export default {
       registeredWatchers,
     } = useGlobalWatchers();
 
+    const persistSchema = ref<PersistSchema | null>(null);
+
     // WATCHERS
     const registerWatcher = async ({
       transformSettings,
@@ -158,6 +161,20 @@ export default {
     const isTriggerActive = (params: { id: string; indexIds?: string[] }) =>
       getTriggerIsActiveCallback(params)(getCurrentData());
     // UPDATES
+
+    const pathIsControlledByFlowVariable = (path: string) =>
+      getConfigPaths({ path, persistSchema: persistSchema.value ?? {} })
+        .flatMap(({ configPath, deprecatedConfigPaths }) => [
+          configPath,
+          ...deprecatedConfigPaths,
+        ])
+        .map((configPath) =>
+          Boolean(
+            providedFlowVariablesMap[configPath]?.controllingFlowVariableName,
+          ),
+        )
+        .includes(true);
+
     const { registerUpdates, resolveUpdateResults } = useUpdates({
       callStateProviderListener,
       callStateProviderListenerByIndices,
@@ -166,6 +183,7 @@ export default {
       updateData: updateDataMultiplePaths,
       sendAlert,
       publishSettings,
+      pathIsControlledByFlowVariable,
     });
     const resolveInitialUpdates = (initialUpdates: UpdateResult[]) =>
       resolveUpdateResults(initialUpdates, getCurrentData());
@@ -214,6 +232,7 @@ export default {
       dialogPopoverTeleportDest,
       hasNodeView,
       showAdvancedSettings,
+      persistSchema,
     };
   },
   data() {
@@ -223,7 +242,6 @@ export default {
       renderers: Object.freeze(renderers),
       schema: {} as JsonSchema,
       uischema: {} as UISchemaElement,
-      persist: null as null | PersistSchema,
       flowVariablesMap: {} as Record<string, FlowSettings>,
       ready: false,
       isMetaKeyPressed: false,
@@ -241,9 +259,9 @@ export default {
     this.setRegisterSettingsMethod(
       this.dialogService.registerSettings.bind(this.dialogService),
     );
+    this.persistSchema = initialSettings.persist;
     this.resolveInitialUpdates(initialSettings.initialUpdates ?? []);
     this.registerGlobalUpdates(initialSettings.globalUpdates ?? []);
-    this.persist = initialSettings.persist;
     this.dialogService.setApplyListener(this.applySettings.bind(this));
     this.ready = true;
   },
@@ -254,7 +272,7 @@ export default {
       });
     },
     getPersistSchema() {
-      return this.persist ?? {};
+      return this.persistSchema ?? {};
     },
     callDataService({
       method,
