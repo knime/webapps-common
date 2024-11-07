@@ -61,5 +61,12 @@
     "vite-plugin-dts": "^4.2.2",
     "vite-svg-loader": "4.0.0",
     "vue-tsc": "^2.0.19"
+  },
+  "engines": {
+    "node": "20.x"
+  },
+  "volta": {
+    "node": "20.15.1",
+    "pnpm": "9.1.4"
   }
 }

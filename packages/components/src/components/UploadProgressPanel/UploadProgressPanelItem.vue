@@ -20,6 +20,7 @@ type Props = {
   item: UploadItem;
   allowCancel: boolean;
   allowRemove: boolean;
+  allowDelete?: boolean;
 };
 
 const props = defineProps<Props>();
@@ -38,8 +39,10 @@ const { formattedSize: progressedFileSizeFormat } = useFileSizeFormatting({
   size: computed(() => (props.item.size / 100) * (props.item.progress ?? 0)),
 });
 
-const subtitle = computed(
-  () => `${progressedFileSizeFormat.value} of ${formattedSize.value}`,
+const subtitle = computed(() =>
+  props.item.status
+    ? `${progressedFileSizeFormat.value} of ${formattedSize.value}`
+    : `${formattedSize.value}`,
 );
 
 const statusMapper = {
@@ -50,8 +53,11 @@ const statusMapper = {
 } satisfies Record<UploadItemStatus, [string, PillVariant, Component]>;
 
 const statusPill = computed(() => {
-  const [text, variant, icon] = statusMapper[props.item.status];
+  if (!props.item.status) {
+    return null;
+  }
 
+  const [text, variant, icon] = statusMapper[props.item.status];
   return { text, variant, icon };
 });
 
@@ -60,8 +66,16 @@ const shouldShowCancelAction = computed(
 );
 
 const shouldShowRemoveAction = computed(() => {
-  const allowedStatuses: UploadItemStatus[] = ["failed", "cancelled"];
-  return props.allowRemove && allowedStatuses.includes(props.item.status);
+  const allowedRemoveStatuses: UploadItemStatus[] = ["failed", "cancelled"];
+  const allowedDeleteStatuses: UploadItemStatus[] = ["complete"];
+  const showRemove =
+    props.allowRemove &&
+    props.item.status &&
+    allowedRemoveStatuses.includes(props.item.status);
+  const showDelete =
+    props.allowDelete &&
+    (!props.item.status || allowedDeleteStatuses.includes(props.item.status));
+  return showRemove || showDelete;
 });
 </script>
 
@@ -71,7 +85,7 @@ const shouldShowRemoveAction = computed(() => {
     :title="item.name"
     :subtitle="subtitle"
     :progress="item.progress"
-    :status-pill="statusPill"
+    v-bind="props.item.status ? { 'status-pill': statusPill } : {}"
   >
     <template #prepend>
       <Component :is="icon" />

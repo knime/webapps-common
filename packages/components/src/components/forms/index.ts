@@ -3,6 +3,7 @@ import Checkboxes from "./Checkboxes/Checkboxes.vue";
 import ComboBox from "./ComboBox/ComboBox.vue";
 // import DateTimeInput from "./DateTimeInput/DateTimeInput.vue";
 import Dropdown from "./Dropdown/Dropdown.vue";
+import Dropzone from "./Dropzone/Dropzone.vue";
 import Fieldset from "./Fieldset/Fieldset.vue";
 import InputField from "./InputField/InputField.vue";
 import Label from "./Label/Label.vue";
@@ -29,6 +30,7 @@ export {
   ComboBox,
   // DateTimeInput,
   Dropdown,
+  Dropzone,
   Fieldset,
   InputField,
   Label,
