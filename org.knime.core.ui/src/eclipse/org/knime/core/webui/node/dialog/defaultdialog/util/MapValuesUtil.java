@@ -52,6 +52,7 @@ import static java.util.stream.Collectors.toMap;
 
 import java.util.Comparator;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -138,8 +139,12 @@ public final class MapValuesUtil {
     public static <K, V1, V2> Map<K, V2> mapValuesWithKeys(final Map<K, V1> map, final BiFunction<K, V1, V2> mapping,
         final Comparator<K> keyComparator) {
         return map.entrySet().stream()//
-            .sorted(Map.Entry.comparingByKey(keyComparator))
-            .collect(toMap(Map.Entry::getKey, e -> mapping.apply(e.getKey(), e.getValue())));
+            .sorted(Map.Entry.comparingByKey(keyComparator)).collect(toMap(//
+                Map.Entry::getKey, //
+                e -> mapping.apply(e.getKey(), e.getValue()), //
+                (existing, replacement) -> existing, //
+                TreeMap::new // use TreeMap for sorted keys
+            ));
     }
 
 }
