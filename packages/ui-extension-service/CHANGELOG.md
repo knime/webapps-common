@@ -1,5 +1,11 @@
 # @knime/ui-extension-service
 
+## 1.0.1
+
+### Patch Changes
+
+- 29856fd: Add push event for whether the data value view is open or closed
+
 ## 1.0.0
 
 ### Major Changes
