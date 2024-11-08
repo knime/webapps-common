@@ -18,7 +18,6 @@
     "build:TableView": "vite build --mode TableView",
     "build:DeferredTableView": "vite build --mode DeferredTableView",
     "build:TextView": "vite build --mode TextView",
-    "build:FlowVariableView": "vite build --mode FlowVariableView",
     "build:ImageView": "vite build --mode ImageView",
     "build:html": "run-p build:html:*",
     "build:html:ImageValueView": "vite build --mode html:ImageValueView",
