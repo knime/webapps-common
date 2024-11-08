@@ -14,8 +14,12 @@ defineProps<{
 </template>
 
 <style lang="postcss" scoped>
-.text {
+.text,
+.hotkey {
   font-weight: 400;
+}
+
+.text {
   flex-shrink: 1;
   flex-basis: 100%;
 
