@@ -161,7 +161,7 @@ public final class FlowVariableViewUtil {
         settings.m_showColumnDataType = false;
         settings.m_showTableSize = false;
         settings.m_autoSizeColumnsToContent = AUTO_SIZE_COLUMNS.FIT_CONTENT_AND_HEADER;
-        settings.m_enablePagination = true;
+        settings.m_showOnlyRowCount = true; // To make the table header only show 'Count: ...'
 
         return settings;
     }

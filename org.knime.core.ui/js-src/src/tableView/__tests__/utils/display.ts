@@ -101,6 +101,7 @@ export const getDefaultProps = (): TableViewDisplayProps => {
       displayedColumns: { selected: [] },
       enableCellCopying: false,
       enableDataValueViews: false,
+      showOnlyRowCount: false,
     },
     page: {
       currentRowCount: 4,

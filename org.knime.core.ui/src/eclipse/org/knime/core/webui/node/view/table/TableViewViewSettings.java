@@ -397,6 +397,13 @@ public class TableViewViewSettings implements DefaultNodeSettings {
     public boolean m_enableDataValueViews;
 
     /**
+     * Whether the row count should be shown only. It makes the table header show 'Count: ...' 
+     * instead of 'Rows: ... | Columns: ...'
+     */
+    @Persist(hidden = true, optional = true)
+    public boolean m_showOnlyRowCount;
+
+    /**
      * Create a new {@link TableViewViewSettings} with default values
      */
     protected TableViewViewSettings() {

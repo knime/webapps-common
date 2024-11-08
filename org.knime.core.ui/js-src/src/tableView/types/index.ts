@@ -13,6 +13,7 @@ export interface PageParams {
   currentPage: number;
   columnCount: number;
   showPageControls?: boolean;
+  showOnlyRowCount?: boolean;
 }
 
 export interface ImageDimension {
