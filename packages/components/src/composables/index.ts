@@ -4,6 +4,7 @@ import useKeyPressedUntilMouseClick from "./useKeyPressedUntilMouseClick";
 import { useNameValidator } from "./useNameValidator";
 
 export * from "./multiSelection";
+export * from "./hints";
 export {
   useClickOutside,
   useDropdownNavigation,

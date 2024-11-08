@@ -4,11 +4,13 @@ import "./assets/index.css";
 import { h as createElement, defineAsyncComponent } from "vue";
 
 import {
+  HintProvider,
   SearchInput as SearchInputComponent,
   TabBar as TabBarComponent,
   ToastServiceProvider,
   ToastStack,
 } from "@knime/components";
+import BulbIcon from "@knime/styles/img/icons/bulb.svg";
 import CheckboxIcon from "@knime/styles/img/icons/checkboxes.svg";
 import PaletteIcon from "@knime/styles/img/icons/color-palette.svg";
 import UnknownIcon from "@knime/styles/img/icons/file-question.svg";
@@ -35,6 +37,9 @@ const demoComponents = {
     Icons: defineAsyncComponent(() => import("./components/Icons.vue")),
   },
   interactive: {
+    AutoPlayVideo: defineAsyncComponent(
+      () => import("./components/AutoPlayVideo.vue"),
+    ),
     Breadcrumb: defineAsyncComponent(
       () => import("./components/Breadcrumb.vue"),
     ),
@@ -104,6 +109,9 @@ const demoComponents = {
     "Toast Service": defineAsyncComponent(
       () => import("./components/ToastService.vue"),
     ),
+  },
+  hints: {
+    Hints: defineAsyncComponent(() => import("./components/Hints.vue")),
   },
   forms: {
     Label: defineAsyncComponent(() => import("./components/Label.vue")),
@@ -210,6 +218,7 @@ const components = {
   HeadlineWithAnchorLink,
   SearchInputComponent,
   ToastStack,
+  HintProvider,
   ...flattenComponents(demoComponents),
 };
 
@@ -274,6 +283,11 @@ export default {
           value: "toasts",
           label: "Toasts",
           icon: ViewListIcon,
+        },
+        {
+          value: "hints",
+          label: "Hints",
+          icon: BulbIcon,
         },
         {
           value: "misc",
@@ -385,6 +399,7 @@ export default {
       </template>
     </main>
     <ToastStack />
+    <HintProvider />
   </div>
 </template>
 
