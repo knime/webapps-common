@@ -7,10 +7,7 @@ import {
   MockInstance,
   vi,
 } from "vitest";
-import {
-  StringValueView,
-  StringValueViewInitialData,
-} from "../StringValueView";
+import { StringValueViewInitialData, createEditor } from "../StringValueView";
 import { JsonDataService } from "@knime/ui-extension-service";
 
 import { editor } from "monaco-editor";
@@ -26,7 +23,7 @@ vi.mock("monaco-editor", () => ({
 }));
 
 describe("StringValueView", () => {
-  let valueViewElement: HTMLElement, stringValueView: StringValueView;
+  let editorElement: HTMLElement;
 
   beforeAll(() => {
     Object.defineProperty(document, "fonts", {
@@ -35,22 +32,20 @@ describe("StringValueView", () => {
   });
 
   beforeEach(() => {
-    valueViewElement = document.createElement("div");
-    valueViewElement.id = "string-value-view";
-    stringValueView = new StringValueView(valueViewElement);
+    editorElement = document.createElement("div");
   });
 
   const init = (initialData: StringValueViewInitialData) => {
     JsonDataService.getInstance = vi.fn().mockResolvedValue({
       initialData: vi.fn().mockResolvedValue(initialData),
     });
-    return stringValueView.init();
+    return createEditor(editorElement);
   };
 
-  it("creates the Monaco editor with given properties for regular strings", async () => {
+  it("creates the Monaco editor with given properties", async () => {
     const value = "some string";
-    await init({ value, format: "string" });
-    expect(editorCreateMock).toHaveBeenCalledWith(valueViewElement, {
+    await init({ value });
+    expect(editorCreateMock).toHaveBeenCalledWith(editorElement, {
       value,
       readOnly: true,
       scrollBeyondLastLine: false,
@@ -64,11 +59,5 @@ describe("StringValueView", () => {
       fontFamily: "Roboto",
       fontWeight: "400",
     });
-  });
-
-  it("sets the inner html to the given value for html-formatted strings", async () => {
-    const value = "some string";
-    await init({ value, format: "html" });
-    expect(valueViewElement.innerHTML).toBe(value);
   });
 });

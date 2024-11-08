@@ -65,6 +65,7 @@ import org.junit.jupiter.api.Test;
 import org.knime.core.data.StringValue;
 import org.knime.core.data.def.DoubleCell.DoubleCellFactory;
 import org.knime.core.data.def.StringCell;
+import org.knime.core.data.property.ValueFormatHandler;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
@@ -249,8 +250,7 @@ final class DataValueViewTest {
 
     @BeforeAll
     static void registerStringValueViewFactory() {
-        DataValueViewManager.registerDataValueViewFactory(StringValue.class,
-            (stringValue, colSpec) -> new TestStringValueView(stringValue));
+        DataValueViewManager.registerDataValueViewFactory(StringValue.class, TestStringValueView::new);
     }
 
     private WorkflowManager m_wfm;
@@ -393,6 +393,17 @@ final class DataValueViewTest {
         final var pagePath = pageResourceManager.getPagePath(dataValueWrapper);
 
         assertThat(pagePath).isEqualTo("uiext-data_value/org.knime.core.data.StringValue/page.js");
+    }
+
+    @Test
+    void testCreatesHTMLValueViewWhenValueFormatHandlerIsAttached() {
+        final var executeResult = createSingleTableFromColumns(new ObjectColumn("String", StringCell.TYPE, null,
+            new String[]{"foo"}, new ValueFormatHandler(value -> "bar")));
+        final var dataValueWrapper = setUpDataValueWrapper(executeResult).build();
+        final var dataValueView = INSTANCE.getDataValueView(dataValueWrapper);
+        assertThat(dataValueView.dataValueClass()).isEqualTo(StringCell.class);
+        assertThat(dataValueView.view()).isInstanceOf(HTMLValueView.class);
+        assertThat(((HTMLValueView)(dataValueView.view())).getInitialData().value()).isEqualTo("bar");
     }
 
     private static ObjectColumn createSupportedColumn(final String[] cells) {

@@ -7,41 +7,30 @@ import { JsonDataService } from "@knime/ui-extension-service";
  */
 export interface StringValueViewInitialData {
   value: string;
-  format: "string" | "html";
 }
 
-export class StringValueView {
-  valueViewElement: HTMLElement;
-  editor!: editor.IStandaloneCodeEditor;
+const getStringValue = async () => {
+  const jsonDataService = await JsonDataService.getInstance();
+  const { value } =
+    (await jsonDataService.initialData()) as StringValueViewInitialData;
+  return value;
+};
 
-  constructor(valueViewElement: HTMLElement) {
-    this.valueViewElement = valueViewElement;
-  }
-
-  async init() {
-    const jsonDataService = await JsonDataService.getInstance();
-
-    const { value, format } =
-      (await jsonDataService.initialData()) as StringValueViewInitialData;
-
-    if (format === "string") {
-      await document.fonts.load("400 1em Roboto");
-      this.editor = editor.create(this.valueViewElement, {
-        value,
-        readOnly: true,
-        scrollBeyondLastLine: false,
-        lineNumbers: "off",
-        showFoldingControls: "never",
-        links: false,
-        wordWrap: "on",
-        wrappingStrategy: "advanced",
-        automaticLayout: true,
-        minimap: { enabled: false },
-        fontFamily: "Roboto",
-        fontWeight: "400",
-      });
-    } else {
-      this.valueViewElement.innerHTML = value;
-    }
-  }
-}
+export const createEditor = async (editorElement: HTMLElement) => {
+  await document.fonts.load("400 1em Roboto");
+  const value = await getStringValue();
+  editor.create(editorElement, {
+    value,
+    readOnly: true,
+    scrollBeyondLastLine: false,
+    lineNumbers: "off",
+    showFoldingControls: "never",
+    links: false,
+    wordWrap: "on",
+    wrappingStrategy: "advanced",
+    automaticLayout: true,
+    minimap: { enabled: false },
+    fontFamily: "Roboto",
+    fontWeight: "400",
+  });
+};

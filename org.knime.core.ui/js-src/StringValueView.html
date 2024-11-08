@@ -6,26 +6,23 @@
     <style>
       @import "@fontsource/roboto/400";
 
-      #string-value-view-container {
+      #string-value-view {
         width: 100%;
         height: 100vh;
       }
 
-      #string-value-view {
+      #editor {
         height: 100%;
       }
     </style>
   </head>
   <body>
-    <div id="string-value-view-container">
-      <div id="string-value-view" />
+    <div id="string-value-view">
+      <div id="editor" />
     </div>
     <script type="module">
-      import { StringValueView } from "./src/html-renderers/string/StringValueView";
-      const stringValueView = new StringValueView(
-        document.getElementById("string-value-view"),
-      );
-      stringValueView.init();
+      import { createEditor } from "./src/html-renderers/string/StringValueView";
+      createEditor(document.getElementById("editor"));
     </script>
   </body>
 </html>

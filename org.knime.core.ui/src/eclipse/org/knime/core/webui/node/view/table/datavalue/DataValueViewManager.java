@@ -67,6 +67,9 @@ import org.knime.core.webui.node.PageResourceManager;
 import org.knime.core.webui.node.PageResourceManager.CreatedPage;
 import org.knime.core.webui.node.PageResourceManager.PageType;
 import org.knime.core.webui.node.util.NodeCleanUpCallback;
+import org.knime.core.webui.node.view.table.data.render.DataCellContentType;
+import org.knime.core.webui.node.view.table.data.render.DataValueTextRenderer;
+import org.knime.core.webui.node.view.table.data.render.SwingBasedRendererFactory;
 import org.knime.core.webui.node.view.table.datavalue.views.XMLCodeValueView;
 
 /**
@@ -150,11 +153,18 @@ public final class DataValueViewManager {
         var table = extractTable(wrapper);
         var colSpec = extractDataColumnSpec(wrapper, table);
         var dataCell = extractDataCell(wrapper, table);
+
+        var htmlRenderer = getAttachedHTMLRenderer(colSpec);
+        if (htmlRenderer != null) {
+            return new CreatedDataValueView(new HTMLValueView(() -> htmlRenderer.renderText(dataCell)),
+                dataCell.getClass());
+        }
+
         var chosenValue = findCompatibleValue(dataCell.getType());
         if (chosenValue.isPresent()) {
             @SuppressWarnings("rawtypes")
             DataValueViewFactory factory = m_dataValueViewFactories.get(chosenValue.get());
-            final var dataValueView = factory.createDataValueView(dataCell, colSpec);
+            final var dataValueView = factory.createDataValueView(dataCell);
             final var createdDataValueView = new CreatedDataValueView(dataValueView, chosenValue.get());
             m_dataValueViewMap.put(wrapper, createdDataValueView);
             NodeCleanUpCallback.builder(wrapper.get(), () -> m_dataValueViewMap.remove(wrapper))
@@ -230,6 +240,16 @@ public final class DataValueViewManager {
     private Optional<Class<? extends DataValue>> findCompatibleValue(final DataType type) {
         return type.getValueClasses().stream().filter(m_dataValueViewFactories::containsKey).findFirst();
 
+    }
+
+    private static DataValueTextRenderer getAttachedHTMLRenderer(final DataColumnSpec colSpec) {
+        // TODO NOSONAR with UIEXT-2212, instead of using default renderer, use renderer selected in table
+        var defaultRenderer = new SwingBasedRendererFactory().createDataValueRenderer(colSpec, null);
+        if (defaultRenderer.getContentType() == DataCellContentType.HTML
+            && defaultRenderer instanceof DataValueTextRenderer htmlRenderer) {
+            return htmlRenderer;
+        }
+        return null;
     }
 
 }

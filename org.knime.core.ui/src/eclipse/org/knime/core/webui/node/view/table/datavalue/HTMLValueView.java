@@ -44,24 +44,47 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Sep 10, 2024 (hornm): created
+ *   Nov 8, 2024 (Marc Bux, KNIME GmbH, Berlin, Germany): created
  */
 package org.knime.core.webui.node.view.table.datavalue;
 
-import org.knime.core.data.DataValue;
+import java.util.Optional;
+import java.util.function.Supplier;
 
-/**
- * Pending API - needs to be integrated with {@link DataValue}.
- *
- * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @param <V> the type of data value this data value view works with
- */
-public interface DataValueViewFactory<V extends DataValue> {
+import org.knime.core.webui.data.InitialDataService;
+import org.knime.core.webui.data.RpcDataService;
+import org.knime.core.webui.node.view.table.TableView;
+import org.knime.core.webui.page.Page;
 
-    /**
-     * @param value
-     * @return the data value view for this value
-     */
-    DataValueView createDataValueView(V value);
+final class HTMLValueView implements DataValueView {
 
+    record HTMLValueViewInitialData(String value) {
+    }
+
+    final Supplier<String> m_htmlSupplier;
+
+    HTMLValueView(final Supplier<String> htmlSupplier) {
+        m_htmlSupplier = htmlSupplier;
+    }
+
+    @Override
+    public Page getPage() {
+        return Page.builder(TableView.class, "js-src/dist", "HTMLValueView.html").addResourceDirectory("assets")
+            .build();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Optional<InitialDataService<HTMLValueViewInitialData>> createInitialDataService() {
+        return Optional.of(InitialDataService.builder(this::getInitialData).build());
+    }
+
+    HTMLValueViewInitialData getInitialData() {
+        return new HTMLValueViewInitialData(m_htmlSupplier.get());
+    }
+
+    @Override
+    public Optional<RpcDataService> createRpcDataService() {
+        return Optional.empty();
+    }
 }

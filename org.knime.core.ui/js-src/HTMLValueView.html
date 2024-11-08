@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>KNIME HTML Value View</title>
+  </head>
+  <body>
+    <div id="html-value-view" />
+    <script type="module">
+      import { addInnerHtml } from "./src/html-renderers/html/HTMLValueView";
+      addInnerHtml(document.getElementById("html-value-view"));
+      htmlValueView.init();
+    </script>
+  </body>
+</html>
