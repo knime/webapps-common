@@ -60,6 +60,7 @@ import java.util.stream.Stream;
 
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortType;
+import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.webui.node.DataServiceManager;
 import org.knime.core.webui.node.NodePortWrapper;
 import org.knime.core.webui.node.PageResourceManager;
@@ -220,6 +221,7 @@ public final class PortViewManager {
 
         var viewDescriptor = getPortViewDescriptor(portType, viewIdx).orElseThrow();
         try {
+            NodeContext.pushContext(nc);
             PortContext.pushContext(outPort);
 
             PortView view;
@@ -239,6 +241,7 @@ public final class PortViewManager {
             return createdPortView;
         } finally {
             PortContext.removeLastContext();
+            NodeContext.removeLastContext();
         }
     }
 
