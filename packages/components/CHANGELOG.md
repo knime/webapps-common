@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.6.1
+
+### Patch Changes
+
+- fix wrong usage of shadow elevation token for the Toast component
+
 ## 1.6.0
 
 ### Minor Changes

@@ -198,7 +198,7 @@ watch(toRef(props, "active"), (active) => {
   --gap-size: 25px;
   --icon-size: 24px;
 
-  box-shadow: var(--elevation-2);
+  box-shadow: var(--shadow-elevation-2);
   border-radius: 4px;
   overflow: hidden;
   background-color: var(--knime-white);
