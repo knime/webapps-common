@@ -48,7 +48,6 @@
  */
 package org.knime.core.webui.node.view.table.datavalue;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -59,6 +58,7 @@ import org.knime.core.data.DataType;
 import org.knime.core.data.DataValue;
 import org.knime.core.data.container.filter.TableFilter;
 import org.knime.core.data.v2.RowCursor;
+import org.knime.core.data.xml.XMLValue;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.webui.node.DataServiceManager;
 import org.knime.core.webui.node.DataValueWrapper;
@@ -66,6 +66,7 @@ import org.knime.core.webui.node.PageResourceManager;
 import org.knime.core.webui.node.PageResourceManager.CreatedPage;
 import org.knime.core.webui.node.PageResourceManager.PageType;
 import org.knime.core.webui.node.util.NodeCleanUpCallback;
+import org.knime.core.webui.node.view.table.datavalue.views.XMLCodeValueView;
 
 /**
  * Singleton for registering factories for creating (@link DataValueView}s.
@@ -74,14 +75,14 @@ import org.knime.core.webui.node.util.NodeCleanUpCallback;
  */
 public final class DataValueViewManager {
 
+    private final Map<Class<? extends DataValue>, DataValueViewFactory<? extends DataValue>> m_dataValueViewFactories;
+
     private DataValueViewManager() {
-        // singleton
+        m_dataValueViewFactories = DataValueViewExtensionsUtil.getDataValueViewExtensions();
+        m_dataValueViewFactories.put(XMLValue.class, cell -> new XMLCodeValueView((XMLValue<?>)cell));
     }
 
     private static DataValueViewManager instance;
-
-    private final Map<Class<? extends DataValue>, DataValueViewFactory<? extends DataValue>> m_dataValueViewFactories =
-        new HashMap<>();
 
     /**
      * package scoped for testing {@link #getDataValueView(DataValueWrapper)}
