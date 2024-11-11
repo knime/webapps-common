@@ -1,1 +1,0 @@
-import{Q as o}from"./index-B5xtAthB.js";const a=(r,u,n)=>{const v=o(()=>!r.value||r.value.length===0?0:r.value.length),g=o(()=>!(n!=null&&n.value)||(n==null?void 0:n.value.length)===0?0:n.value.length);return((m,b,f)=>{let t=`${m} of ${b} entries`;return n&&(t+=` [ ${f} selected ]`),t})(v.value,u,g.value)};export{a as u};
