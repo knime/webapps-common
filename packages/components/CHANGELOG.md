@@ -1,5 +1,12 @@
 # @knime/components
 
+## 1.7.0
+
+### Minor Changes
+
+- 4ade605: - add useHints based on the one from the hub
+  - add AutoPlayVideo component from hub
+
 ## 1.6.1
 
 ### Patch Changes
