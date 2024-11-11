@@ -19,7 +19,7 @@
   "module": "src/index.ts",
   "files": [
     "src",
-    "!src/__tests__",
+    "!src/**/__tests__/*",
     "test-utils",
     "CHANGELOG.md"
   ],

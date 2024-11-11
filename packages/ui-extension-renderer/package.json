@@ -8,7 +8,7 @@
   "type": "module",
   "files": [
     "src",
-    "!src/__tests__",
+    "!src/**/__tests__/*",
     "CHANGELOG.md"
   ],
   "module": "src/index.ts",
