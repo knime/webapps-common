@@ -61,6 +61,7 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
+import org.knime.core.node.workflow.NodeTimer;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.webui.node.dialog.NodeDialog.OnApplyNodeModifier;
 import org.knime.core.webui.node.dialog.SettingsTreeTraversalUtil.VariableSettingsTree;
@@ -188,6 +189,11 @@ final class ApplyData {
     private void applyChange(final WorkflowManager wfm, final NodeID nodeID, final NodeSettings nodeSettings,
         final Optional<ApplyDataSettings> changedModelSettings, final Optional<ApplyDataSettings> changedViewSettings)
         throws InvalidSettingsException {
+
+        if (changedViewSettings.isPresent() || changedModelSettings.isPresent()) {
+            // count either change as settings change, but not twice if both changed
+            NodeTimer.GLOBAL_TIMER.incNodeSettingsChanged();
+        }
 
         if (changedViewSettings.isPresent()) {
             validateViewSettings(changedViewSettings.get());
