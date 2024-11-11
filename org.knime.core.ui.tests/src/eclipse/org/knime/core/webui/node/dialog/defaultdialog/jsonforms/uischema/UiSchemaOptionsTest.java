@@ -55,6 +55,7 @@ import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -76,6 +77,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Creden
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.LegacyCredentials;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.fileselection.FileSelection;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ComboBoxWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateTimeWidget;
@@ -98,6 +100,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonUpdate
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.Icon;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.SimpleButtonWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.IdAndText;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.CredentialsWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.PasswordWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.UsernameWidget;
@@ -834,6 +837,65 @@ class UiSchemaOptionsTest {
         assertThatJson(response).inPath("$.elements[0].options.timezone").isString().isEqualTo("America/Dawson_Creek");
         assertThatJson(response).inPath("$.elements[0].options.minimum").isString().isEqualTo("2023-06-12");
         assertThatJson(response).inPath("$.elements[0].options.maximum").isString().isEqualTo("2023-06-14");
+    }
+
+    @Test
+    void testTimeZoneWidgetDefaultOptions() {
+        class TimeZoneDefaultTestSettings implements DefaultNodeSettings {
+
+            @Widget(title = "", description = "")
+            ZoneId m_zoneId;
+        }
+
+        var response = buildTestUiSchema(TimeZoneDefaultTestSettings.class);
+        assertThatJson(response).inPath("$.elements[0]").isObject().containsKey("scope");
+        assertThatJson(response).inPath("$.elements[0].scope").isString().contains("zoneId");
+        assertThatJson(response).inPath("$.elements[0]").isObject().containsKey("options");
+        assertThatJson(response).inPath("$.elements[0].options.format").isString().isEqualTo("dropDown");
+        assertThatJson(response).inPath("$.elements[0].options.possibleValues").isArray().isNotEmpty();
+        var elementForUtcTimeZone = new IdAndText("UTC", "UTC");
+        assertThatJson(response).inPath("$.elements[0].options.possibleValues").isArray()
+            .contains(elementForUtcTimeZone);
+    }
+
+    @Test
+    void testTimeZoneWidgetOptionalChoicesOptions() {
+        class TimeZoneDefaultTestSettings implements DefaultNodeSettings {
+
+            @Widget(title = "", description = "")
+            @ChoicesWidget(optional = true)
+            ZoneId m_zoneId;
+        }
+
+        var response = buildTestUiSchema(TimeZoneDefaultTestSettings.class);
+        assertThatJson(response).inPath("$.elements[0]").isObject().containsKey("scope");
+        assertThatJson(response).inPath("$.elements[0].scope").isString().contains("zoneId");
+        assertThatJson(response).inPath("$.elements[0]").isObject().containsKey("options");
+        assertThatJson(response).inPath("$.elements[0].options.hideOnNull").isBoolean().isTrue();
+    }
+
+    static final class TimeZoneIdProvider implements ChoicesProvider {
+        @Override
+        public String[] choices(final DefaultNodeSettingsContext context) {
+            return new String[]{"UTC", "Europe/Berlin", "America/New_York"};
+        }
+    }
+
+    @Test
+    void testTimeZoneWidgetCustomChoicesProviderOptions() {
+
+        class TimeZoneDefaultTestSettings implements DefaultNodeSettings {
+
+            @Widget(title = "", description = "")
+            @ChoicesWidget(choices = TimeZoneIdProvider.class)
+            ZoneId m_zoneId;
+        }
+
+        var response = buildTestUiSchema(TimeZoneDefaultTestSettings.class);
+        assertThatJson(response).inPath("$.elements[0]").isObject().containsKey("scope");
+        assertThatJson(response).inPath("$.elements[0].scope").isString().contains("zoneId");
+        assertThatJson(response).inPath("$.elements[0]").isObject().containsKey("options");
+        assertThatJson(response).inPath("$.elements[0].options.format").isString().isEqualTo("dropDown");
     }
 
     @Test
