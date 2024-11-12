@@ -44,43 +44,27 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Nov 6, 2023 (Paul Bärnreuther): created
+ *   Nov 12, 2024 (Paul Bärnreuther): created
  */
 package org.knime.core.webui.node.view.table.data.render.internal;
-
-import java.util.LinkedList;
-import java.util.function.Function;
 
 import org.knime.core.data.DataRow;
 
 /**
- * This decorator adds the row Index of the currently rendered table at first position. I.e. it should not be used for
- * filtered or sorted tables.
+ * Used to extract the index of a row in the original table when the table is sorted of filtered.
  *
  * @author Paul Bärnreuther
- * @param <T>
  */
-public final class RowRendererWithIndicesCounter<T> extends RowRendererDecorator<T> {
-    private final Function<Long, T> m_renderRowIndex;
+public interface IndexExtractor {
+    /**
+     * @param row
+     * @param rowIndex the index of the row in the current (possibly filtered or sorted) table
+     * @return the index of the row in the original table.
+     */
+    long extractIndex(final DataRow row, long rowIndex);
 
     /**
-     * @param delegate
+     * @return the indices which have to be materialized in order to extract the index.
      */
-    public RowRendererWithIndicesCounter(final RowRenderer<T> delegate, final Function<Long, T> renderRowIndex) {
-        super(delegate);
-        m_renderRowIndex = renderRowIndex;
-    }
-
-    @Override
-    public LinkedList<T> renderRow(final DataRow row, final long rowIndex) {
-        final var linkedList = m_delegate.renderRow(row, rowIndex);
-        linkedList.add(0, m_renderRowIndex.apply(rowIndex));
-        return linkedList;
-    }
-
-    @Override
-    public int[] getMaterializedColumnIndices() {
-        return m_delegate.getMaterializedColumnIndices();
-    }
-
+    int[] getMaterializedColumnIndices();
 }

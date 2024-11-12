@@ -91,6 +91,12 @@ public interface Table {
     List<List<Object>> getRows();
 
     /**
+     * @return the indices of the rows in {@link #getRows} within the original table (prior to windowing, filtering and
+     *         sorting).
+     */
+    long[] getRowIndices();
+
+    /**
      * @return the row count of the table in use
      */
     long getRowCount();

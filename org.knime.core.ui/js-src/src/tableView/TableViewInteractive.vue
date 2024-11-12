@@ -118,6 +118,7 @@ export default {
       numRowsAbove: 0,
       numRowsBelow: 0,
       bottomRows: [] as any[],
+      bottomRowIndices: [] as number[],
       columnDataTypeIds: [] as string[],
       columnFormatterDescriptions: [] as string[],
       columnContentTypes: [] as ColumnContentType[],
@@ -402,7 +403,26 @@ export default {
         this.minScopeSize,
       );
     },
-    onDataValueView(config: DataValueViewConfig) {
+    toRowIndex({
+      indexInInput,
+      isTop,
+    }: {
+      indexInInput: number;
+      isTop: boolean;
+    }) {
+      const indices = isTop ? this.table.rowIndices : this.bottomRowIndices;
+      return indices[indexInInput];
+    },
+    onDataValueView(
+      row: { indexInInput: number; isTop: boolean },
+      colIndex: number,
+      rect: DataValueViewConfig["anchor"],
+    ) {
+      const config = {
+        rowIndex: this.toRowIndex(row),
+        colIndex,
+        anchor: rect,
+      };
       this.dataValueViewService?.showDataValueView(config);
     },
     onCloseDataValueView() {
@@ -543,7 +563,7 @@ export default {
           numRows,
         } = lazyLoad;
         const topPreviousDataLength = this.table?.rows?.length || 0;
-        const rows = this.getCombinedTopRows({
+        const { rows, rowIndices } = this.getCombinedTopRows({
           topTable,
           bufferStart,
           bufferEnd,
@@ -551,20 +571,22 @@ export default {
           topPreviousDataLength,
         });
         if (typeof this.table.rows === "undefined") {
-          this.table = { ...topTable!, rows };
+          this.table = { ...topTable!, rows, rowIndices };
         } else {
           this.table.rows = rows;
+          this.table.rowIndices = rowIndices;
           this.table.rowCount = getFromTopOrBottom("rowCount");
           this.table.firstRowImageDimensions = getFromTopOrBottom(
             "firstRowImageDimensions",
           );
         }
-        this.bottomRows = this.getCombinedBottomRows({
-          bottomTable,
-          bufferStart,
-          bufferEnd,
-          direction,
-        });
+        ({ rows: this.bottomRows, rowIndices: this.bottomRowIndices } =
+          this.getCombinedBottomRows({
+            bottomTable,
+            bufferStart,
+            bufferEnd,
+            direction,
+          }));
         this.currentScopeStartIndex = newScopeStart;
         this.currentScopeEndIndex = Math.min(
           newScopeStart + (bufferEnd - bufferStart) + numRows,
@@ -739,7 +761,11 @@ export default {
         topPreviousDataLength,
       );
       return this.combineWithPrevious({
-        newRows: topTable?.rows,
+        new: { rows: topTable?.rows, rowIndices: topTable?.rowIndices },
+        previous: {
+          rows: this.table?.rows,
+          rowIndices: this.table?.rowIndices,
+        },
         bufferStart: topBufferStart,
         bufferEnd: topBufferEnd,
         direction,
@@ -767,36 +793,65 @@ export default {
       );
       const bottomBufferEnd = Math.max(bufferEnd - previousBottomStartIndex, 0);
       return this.combineWithPrevious({
-        newRows: bottomTable?.rows,
+        new: { rows: bottomTable?.rows, rowIndices: bottomTable?.rowIndices },
+        previous: { rows: this.bottomRows, rowIndices: this.bottomRowIndices },
         bufferStart: bottomBufferStart,
         bufferEnd: bottomBufferEnd,
         direction,
-        bottom: true,
       });
     },
     combineWithPrevious({
-      newRows,
+      new: { rows: newRows, rowIndices: newRowIndices },
+      previous: { rows: previousRows, rowIndices: previousRowIndices },
       bufferStart,
       bufferEnd,
       direction,
-      bottom = false,
     }: {
-      newRows?: any[];
+      new: { rows?: any[]; rowIndices?: number[] };
+      previous: { rows?: any[]; rowIndices?: number[] };
       bufferStart?: number;
       bufferEnd?: number;
       direction: 1 | -1;
-      bottom?: boolean;
     }) {
-      const rows = newRows ?? [];
+      const rows = this.combineWithPreviousItems({
+        newItems: newRows,
+        previousItems: previousRows,
+        bufferStart,
+        bufferEnd,
+        direction,
+      });
+      const rowIndices = this.combineWithPreviousItems({
+        newItems: newRowIndices,
+        previousItems: previousRowIndices,
+        bufferStart,
+        bufferEnd,
+        direction,
+      });
+
+      return { rows, rowIndices };
+    },
+    combineWithPreviousItems({
+      newItems,
+      previousItems,
+      bufferStart,
+      bufferEnd,
+      direction,
+    }: {
+      newItems?: any[];
+      previousItems?: any[];
+      bufferStart?: number;
+      bufferEnd?: number;
+      direction: 1 | -1;
+    }) {
+      const items = newItems ?? [];
       if (bufferStart === bufferEnd) {
-        return rows;
+        return items;
       }
-      const previousRows = bottom ? this.bottomRows : this.table.rows;
-      const buffer = previousRows?.slice(bufferStart, bufferEnd) || [];
+      const buffer = previousItems?.slice(bufferStart, bufferEnd) ?? [];
       if (direction > 0) {
-        return [...buffer, ...rows];
+        return [...buffer, ...items];
       } else {
-        return [...rows, ...buffer];
+        return [...items, ...buffer];
       }
     },
     async refreshTable(

@@ -44,54 +44,65 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Mar 13, 2023 (hornm): created
+ *   Aug 4, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.view.table.data;
+package org.knime.core.webui.node.view.table.data.render.internal;
 
-import static org.knime.testing.util.TableTestUtil.assertTableResults;
-import static org.knime.testing.util.TableTestUtil.getExec;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.IntStream;
 
-import org.junit.jupiter.api.Test;
-import org.knime.core.data.def.IntCell;
-import org.knime.core.data.def.StringCell;
-import org.knime.testing.util.TableTestUtil;
-import org.knime.testing.util.TableTestUtil.ObjectColumn;
+import org.knime.core.node.BufferedDataTable;
+import org.knime.core.util.Pair;
 
 /**
- * Tests {@link TableWithIndicesSupplier}.
+ * This class is used to apply a {@link RowRenderer} and a {@link IndexExtractor} to a section from/to an index in a
+ * table.
  *
- * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Paul Bärnreuther
+ * @param <R> output type
  */
-class TableWithIndicesSupplierTest {
+public final class TableSectionRowsAndIndicesRenderer<R> extends TableSectionRenderer<Pair<List<List<R>>, long[]>> {
 
-    @Test
-    void testIndicesAreAppended() throws Exception {
-        final var stringColumnContent = new String[]{"A", "B"};
-        final var intColumnContent = new Integer[]{1, 3};
-        final var inputTable = TableTestUtil.createTableFromColumns( //
-            new ObjectColumn("col1", StringCell.TYPE, stringColumnContent), //
-            new ObjectColumn("col2", IntCell.TYPE, intColumnContent) //
-        );
+    private final RowRenderer<R> m_rowRenderer;
 
-        var tableWithIndicesSupplier = new TableWithIndicesSupplier(() -> inputTable);
+    private final IndexExtractor m_indexExtractor;
 
-        assertTableResults(tableWithIndicesSupplier.apply(getExec()), new String[]{"Long", "String", "Integer"},
-            new Object[][]{{0l, 1l}, stringColumnContent, intColumnContent});
+    /**
+     * @param rowRenderer which is applied to each row
+     * @param indexExtractor which extracts the index from the row
+     * @param fromIndex from which to start
+     * @param toIndex until which (inclusive) rows should be rendered
+     */
+    public TableSectionRowsAndIndicesRenderer(final RowRenderer<R> rowRenderer, final IndexExtractor indexExtractor,
+        final long fromIndex, final long toIndex) {
+        super(fromIndex, toIndex);
+        m_rowRenderer = rowRenderer;
+        m_indexExtractor = indexExtractor;
     }
 
-    @Test
-    void testIndexColumnAdjustsName() throws Exception {
-        final var stringColumnContent = new String[]{"A", "B"};
-        final var intColumnContent = new Integer[]{1, 3};
-        final var inputTable = TableTestUtil.createTableFromColumns( //
-            new ObjectColumn("<index>", StringCell.TYPE, stringColumnContent), //
-            new ObjectColumn("<index>(1)", IntCell.TYPE, intColumnContent) //
-        );
+    @Override
+    public Pair<List<List<R>>, long[]> renderRows(final BufferedDataTable table) {
+        final var size = getSize();
+        final List<List<R>> out = new ArrayList<>(size);
+        final List<Long> indices = new ArrayList<>(size);
+        fillOutput(table, (row, rowIndex) -> {
+            out.add(m_rowRenderer.renderRow(row, rowIndex));
+            indices.add(m_indexExtractor.extractIndex(row, rowIndex));
+        });
+        return new Pair<>(out, toArray(indices));
+    }
 
-        var tableWithIndicesSupplier = new TableWithIndicesSupplier(() -> inputTable);
+    private static long[] toArray(final List<Long> indices) {
+        return indices.stream().mapToLong(i -> i).toArray();
+    }
 
-        assertTableResults(tableWithIndicesSupplier.apply(getExec()), new String[]{"Long", "String", "Integer"},
-            new Object[][]{{0l, 1l}, stringColumnContent, intColumnContent});
+    @Override
+    protected int[] getMaterializedColumnIndices() {
+        return IntStream.concat(//
+            IntStream.of(m_indexExtractor.getMaterializedColumnIndices()), //
+            IntStream.of(m_rowRenderer.getMaterializedColumnIndices()) //
+        ).distinct().toArray();
     }
 
 }

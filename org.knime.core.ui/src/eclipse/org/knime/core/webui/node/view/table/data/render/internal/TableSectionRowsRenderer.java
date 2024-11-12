@@ -48,44 +48,42 @@
  */
 package org.knime.core.webui.node.view.table.data.render.internal;
 
-import java.util.LinkedList;
-import java.util.function.Function;
-import java.util.stream.IntStream;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.knime.core.data.DataCell;
-import org.knime.core.data.DataRow;
+import org.knime.core.node.BufferedDataTable;
 
 /**
- * Decorator row renderer which renders the index of the row as a first element. For this to work, the first column of
- * the table has to contain the row indices.
+ * This class is used to apply a {@link RowRenderer} to a section from/to an index in a table.
  *
  * @author Paul Bärnreuther
  * @param <R> output type
  */
-public final class RowRendererWithIndicesFromColumn<R> extends RowRendererDecorator<R> {
+public final class TableSectionRowsRenderer<R> extends TableSectionRenderer<List<List<R>>> {
 
-    private final Function<DataCell, R> m_renderIndexCell;
+    private final RowRenderer<R> m_rowRenderer;
 
     /**
-     * @param delegate
-     * @param renderIndexCell
+     * @param rowRenderer which is applied to each row
+     * @param fromIndex from which to start
+     * @param toIndex until which (inclusive) rows should be rendered
      */
-    public RowRendererWithIndicesFromColumn(final RowRenderer<R> delegate,
-        final Function<DataCell, R> renderIndexCell) {
-        super(delegate);
-        m_renderIndexCell = renderIndexCell;
+    public TableSectionRowsRenderer(final RowRenderer<R> rowRenderer, final long fromIndex, final long toIndex) {
+        super(fromIndex, toIndex);
+        m_rowRenderer = rowRenderer;
     }
 
     @Override
-    public LinkedList<R> renderRow(final DataRow row, final long rowIndex) {
-        final var linkedList = m_delegate.renderRow(row, rowIndex);
-        linkedList.add(0, m_renderIndexCell.apply(row.getCell(0)));
-        return linkedList;
+    public List<List<R>> renderRows(final BufferedDataTable table) {
+        final var size = getSize();
+        final List<List<R>> out = new ArrayList<>(size);
+        fillOutput(table, (row, rowIndex) -> out.add(m_rowRenderer.renderRow(row, rowIndex)));
+        return out;
     }
 
     @Override
-    public int[] getMaterializedColumnIndices() {
-        return IntStream.concat(IntStream.of(0), IntStream.of(m_delegate.getMaterializedColumnIndices())).toArray();
+    protected int[] getMaterializedColumnIndices() {
+        return m_rowRenderer.getMaterializedColumnIndices();
     }
 
 }

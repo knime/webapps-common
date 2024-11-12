@@ -108,7 +108,7 @@ class TableWithIndicesSupplier implements Function<ExecutionContext, BufferedDat
         final var indicesColumnSpec = new DataColumnSpecCreator(name, LongCell.TYPE).createSpec();
         final var indicesSpec = new DataTableSpec(indicesColumnSpec);
         final var container = exec.createDataContainer(indicesSpec, false);
-        for (var i = 1l; i <= size; i++) {
+        for (var i = 0l; i < size; i++) {
             container.addRowToTable(new DefaultRow(new RowKey(Long.toString(i)), new LongCell(i)));
         }
         container.close();

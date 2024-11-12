@@ -24,7 +24,11 @@ import { DataValueViewConfig } from "@knime/ui-extension-service";
 const emit = defineEmits<{
   pageChange: [pageNumberDiff: -1 | 1];
   columnSort: [colInd: number, columnId: string | symbol];
-  dataValueView: [config: DataValueViewConfig];
+  dataValueView: [
+    row: { indexInInput: number; isTop: boolean },
+    colInd: number,
+    rect: DataValueViewConfig["anchor"],
+  ];
   closeDataValueView: [];
   rowSelect: [
     selected: boolean,
@@ -255,11 +259,12 @@ const onCopySelection = ({
   });
 };
 
-const onDataValueView = (config: DataValueViewConfig) =>
-  emit("dataValueView", {
-    ...config,
-    colIndex: config.colIndex - numberOfDisplayedIdColumns.value,
-  });
+const onDataValueView = (
+  row: { indexInInput: number; isTop: boolean },
+  colIndex: number,
+  rect: DataValueViewConfig["anchor"],
+) =>
+  emit("dataValueView", row, colIndex - numberOfDisplayedIdColumns.value, rect);
 
 const onCloseDataValueView = () => emit("closeDataValueView");
 

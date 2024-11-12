@@ -44,54 +44,22 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Mar 13, 2023 (hornm): created
+ *   Nov 12, 2024 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.view.table.data;
+package org.knime.core.webui.node.view.table.data.render.internal;
 
-import static org.knime.testing.util.TableTestUtil.assertTableResults;
-import static org.knime.testing.util.TableTestUtil.getExec;
+import org.knime.core.data.DataRow;
 
-import org.junit.jupiter.api.Test;
-import org.knime.core.data.def.IntCell;
-import org.knime.core.data.def.StringCell;
-import org.knime.testing.util.TableTestUtil;
-import org.knime.testing.util.TableTestUtil.ObjectColumn;
+final class IndexExtractorCounter implements IndexExtractor {
 
-/**
- * Tests {@link TableWithIndicesSupplier}.
- *
- * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- */
-class TableWithIndicesSupplierTest {
-
-    @Test
-    void testIndicesAreAppended() throws Exception {
-        final var stringColumnContent = new String[]{"A", "B"};
-        final var intColumnContent = new Integer[]{1, 3};
-        final var inputTable = TableTestUtil.createTableFromColumns( //
-            new ObjectColumn("col1", StringCell.TYPE, stringColumnContent), //
-            new ObjectColumn("col2", IntCell.TYPE, intColumnContent) //
-        );
-
-        var tableWithIndicesSupplier = new TableWithIndicesSupplier(() -> inputTable);
-
-        assertTableResults(tableWithIndicesSupplier.apply(getExec()), new String[]{"Long", "String", "Integer"},
-            new Object[][]{{0l, 1l}, stringColumnContent, intColumnContent});
+    @Override
+    public long extractIndex(final DataRow row, final long rowIndex) {
+        return rowIndex;
     }
 
-    @Test
-    void testIndexColumnAdjustsName() throws Exception {
-        final var stringColumnContent = new String[]{"A", "B"};
-        final var intColumnContent = new Integer[]{1, 3};
-        final var inputTable = TableTestUtil.createTableFromColumns( //
-            new ObjectColumn("<index>", StringCell.TYPE, stringColumnContent), //
-            new ObjectColumn("<index>(1)", IntCell.TYPE, intColumnContent) //
-        );
-
-        var tableWithIndicesSupplier = new TableWithIndicesSupplier(() -> inputTable);
-
-        assertTableResults(tableWithIndicesSupplier.apply(getExec()), new String[]{"Long", "String", "Integer"},
-            new Object[][]{{0l, 1l}, stringColumnContent, intColumnContent});
+    @Override
+    public int[] getMaterializedColumnIndices() {
+        return new int[0];
     }
 
 }

@@ -44,54 +44,47 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Mar 13, 2023 (hornm): created
+ *   Aug 4, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.view.table.data;
+package org.knime.core.webui.node.view.table.data.render.internal;
 
-import static org.knime.testing.util.TableTestUtil.assertTableResults;
-import static org.knime.testing.util.TableTestUtil.getExec;
+import java.util.LinkedList;
+import java.util.stream.IntStream;
 
-import org.junit.jupiter.api.Test;
-import org.knime.core.data.def.IntCell;
-import org.knime.core.data.def.StringCell;
-import org.knime.testing.util.TableTestUtil;
-import org.knime.testing.util.TableTestUtil.ObjectColumn;
+import org.knime.core.data.DataRow;
 
 /**
- * Tests {@link TableWithIndicesSupplier}.
+ * Decorator row renderer which renders the index of the row as a first element.
  *
- * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Paul Bärnreuther
+ * @param <R> output type
  */
-class TableWithIndicesSupplierTest {
+public final class RowRendererWithIndices<R> extends RowRendererDecorator<R> {
 
-    @Test
-    void testIndicesAreAppended() throws Exception {
-        final var stringColumnContent = new String[]{"A", "B"};
-        final var intColumnContent = new Integer[]{1, 3};
-        final var inputTable = TableTestUtil.createTableFromColumns( //
-            new ObjectColumn("col1", StringCell.TYPE, stringColumnContent), //
-            new ObjectColumn("col2", IntCell.TYPE, intColumnContent) //
-        );
+    private final IndexExtractor m_indexExtractor;
 
-        var tableWithIndicesSupplier = new TableWithIndicesSupplier(() -> inputTable);
-
-        assertTableResults(tableWithIndicesSupplier.apply(getExec()), new String[]{"Long", "String", "Integer"},
-            new Object[][]{{0l, 1l}, stringColumnContent, intColumnContent});
+    /**
+     * @param delegate to extend
+     * @param indexExtractor that extracts the index from a row
+     */
+    public RowRendererWithIndices(final RowRenderer<R> delegate, final IndexExtractor indexExtractor) {
+        super(delegate);
+        m_indexExtractor = indexExtractor;
     }
 
-    @Test
-    void testIndexColumnAdjustsName() throws Exception {
-        final var stringColumnContent = new String[]{"A", "B"};
-        final var intColumnContent = new Integer[]{1, 3};
-        final var inputTable = TableTestUtil.createTableFromColumns( //
-            new ObjectColumn("<index>", StringCell.TYPE, stringColumnContent), //
-            new ObjectColumn("<index>(1)", IntCell.TYPE, intColumnContent) //
-        );
+    @Override
+    @SuppressWarnings("unchecked")
+    public LinkedList<R> renderRow(final DataRow row, final long rowIndex) {
+        final var linkedList = m_delegate.renderRow(row, rowIndex);
+        // + 1 because indices should start at 1 in the data
+        linkedList.add(0, (R)Long.toString(m_indexExtractor.extractIndex(row, rowIndex) + 1));
+        return linkedList;
+    }
 
-        var tableWithIndicesSupplier = new TableWithIndicesSupplier(() -> inputTable);
-
-        assertTableResults(tableWithIndicesSupplier.apply(getExec()), new String[]{"Long", "String", "Integer"},
-            new Object[][]{{0l, 1l}, stringColumnContent, intColumnContent});
+    @Override
+    public int[] getMaterializedColumnIndices() {
+        return IntStream.concat(IntStream.of(m_indexExtractor.getMaterializedColumnIndices()),
+            IntStream.of(m_delegate.getMaterializedColumnIndices())).toArray();
     }
 
 }

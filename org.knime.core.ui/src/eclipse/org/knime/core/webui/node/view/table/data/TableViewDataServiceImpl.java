@@ -86,13 +86,12 @@ import org.knime.core.webui.node.view.table.data.render.DataValueImageRenderer.I
 import org.knime.core.webui.node.view.table.data.render.DataValueImageRendererRegistry;
 import org.knime.core.webui.node.view.table.data.render.DataValueRendererFactory;
 import org.knime.core.webui.node.view.table.data.render.internal.RowRenderer;
-import org.knime.core.webui.node.view.table.data.render.internal.RowRendererWithIndicesCounter;
-import org.knime.core.webui.node.view.table.data.render.internal.RowRendererWithIndicesFromColumn;
+import org.knime.core.webui.node.view.table.data.render.internal.RowRendererWithIndices;
 import org.knime.core.webui.node.view.table.data.render.internal.RowRendererWithRowKeys;
 import org.knime.core.webui.node.view.table.data.render.internal.SimpleRowRenderer;
 import org.knime.core.webui.node.view.table.data.render.internal.TableDataToStringConverter;
 import org.knime.core.webui.node.view.table.data.render.internal.TableRenderer;
-import org.knime.core.webui.node.view.table.data.render.internal.TableSectionRenderer;
+import org.knime.core.webui.node.view.table.data.render.internal.TableSectionRowsRenderer;
 
 /**
  * @author Konrad Amtenbrink, KNIME GmbH, Berlin, Germany
@@ -219,8 +218,10 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         final var toBeRenderedTable = cachedProcessedTable.orElseGet(m_tableSupplier);
         final var tableDataRendererUtil = new TableRenderer(m_rendererFactory, toBeRenderedTable.getSpec(),
             displayedColumns, rendererIds, m_rendererRegistry, m_tableId);
-        final var rows = tableDataRendererUtil.renderTableContent(toBeRenderedTable, fromIndex, numRows,
+        final var rowsAndIndices = tableDataRendererUtil.renderRowsWithIndices(toBeRenderedTable, fromIndex, numRows,
             cachedProcessedTable.isEmpty());
+        final var rows = rowsAndIndices.getFirst();
+        final var indices = rowsAndIndices.getSecond();
         final var contentTypes = tableDataRendererUtil.getColumnContentTypes();
         final var firstRowImageDimensions = getFirstRowImageDimensions(rows, contentTypes, displayedColumns);
         final var spec = toBeRenderedTable.getSpec();
@@ -287,6 +288,11 @@ public class TableViewDataServiceImpl implements TableViewDataService {
                 return firstRowImageDimensions;
             }
 
+            @Override
+            public long[] getRowIndices() {
+                return indices;
+            }
+
         };
     }
 
@@ -332,9 +338,8 @@ public class TableViewDataServiceImpl implements TableViewDataService {
             rc.thenComparingRowKey(rk -> rk.withAlphanumericComparison().withDescendingSortOrder(!sortAscending));
         } else {
             final var colType = dts.getColumnSpec(sortColIndex).getType();
-            rc.thenComparingColumn(sortColIndex,
-                col -> col.withAlphanumericComparison(StringCell.TYPE.equals(colType))
-                    .withDescendingSortOrder(!sortAscending));
+            rc.thenComparingColumn(sortColIndex, col -> col.withAlphanumericComparison(StringCell.TYPE.equals(colType))
+                .withDescendingSortOrder(!sortAscending));
         }
         final Comparator<DataRow> comp = rc.build();
         try {
@@ -601,7 +606,8 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         final var colIndices = toBeRenderedTable.getSpec().columnsToIndices(dataColumns);
         final var rowRenderer =
             getCopyContentRowRenderer(rowIndexConfig, rowKeyConfig, colIndices, cachedProcessedTable.isEmpty());
-        final var tableRenderer = new TableSectionRenderer<String>(rowRenderer, fromIndex, toIndex);
+        final TableSectionRowsRenderer<String> tableRenderer =
+            new TableSectionRowsRenderer<>(rowRenderer, fromIndex, toIndex);
         final var rows = tableRenderer.renderRows(toBeRenderedTable);
         final var columnHeaders = getCopyContentColumnHeaders(rowIndexConfig, rowKeyConfig, dataColumns);
         final var tableDataToStringUtil = new TableDataToStringConverter(columnHeaders, rows, withHeaders);
@@ -627,11 +633,8 @@ public class TableViewDataServiceImpl implements TableViewDataService {
             rowRenderer = new RowRendererWithRowKeys<>(rowRenderer, RowKey::toString);
         }
         if (rowIndexConfig.isIncluded()) {
-            if (isRawInputTable) {
-                rowRenderer = new RowRendererWithIndicesCounter<>(rowRenderer, l -> Long.toString(l));
-            } else {
-                rowRenderer = new RowRendererWithIndicesFromColumn<>(rowRenderer, DataCell::toString);
-            }
+            final var indexExtractor = TableRenderer.getIndexExtractor(isRawInputTable);
+            rowRenderer = new RowRendererWithIndices<>(rowRenderer, indexExtractor);
         }
         return rowRenderer;
     }
@@ -687,6 +690,11 @@ public class TableViewDataServiceImpl implements TableViewDataService {
             @Override
             public Map<String, ImageDimension> getFirstRowImageDimensions() {
                 return new HashMap<>(0);
+            }
+
+            @Override
+            public long[] getRowIndices() {
+                return new long[0];
             }
 
         };

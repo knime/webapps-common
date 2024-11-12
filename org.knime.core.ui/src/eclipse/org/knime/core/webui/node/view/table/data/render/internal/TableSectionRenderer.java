@@ -44,67 +44,55 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Aug 4, 2023 (Paul Bärnreuther): created
+ *   Nov 12, 2024 (Paul Bärnreuther): created
  */
 package org.knime.core.webui.node.view.table.data.render.internal;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.function.ObjLongConsumer;
 
+import org.knime.core.data.DataRow;
 import org.knime.core.data.container.filter.TableFilter;
 import org.knime.core.node.BufferedDataTable;
 
 /**
- * This class is used to apply a {@link RowRenderer} to a section from/to an index in a table.
- *
+ * @param <R> the type of the row renderer
  * @author Paul Bärnreuther
- * @param <R> output type
  */
-public final class TableSectionRenderer<R> {
-
-    private final RowRenderer<R> m_rowRenderer;
+abstract class TableSectionRenderer<R> {
 
     private final long m_fromIndex;
 
     private final long m_toIndex;
 
-    /**
-     * @param rowRenderer which is applied to each row
-     * @param fromIndex from which to start
-     * @param toIndex until which (inclusive) rows should be rendered
-     */
-    public TableSectionRenderer(final RowRenderer<R> rowRenderer, final long fromIndex, final long toIndex) {
-        m_rowRenderer = rowRenderer;
+    protected TableSectionRenderer(final long fromIndex, final long toIndex) {
         m_fromIndex = fromIndex;
         m_toIndex = toIndex;
+
+    }
+
+    protected int getSize() {
+        // If we run into an integer overflow here, the table is misconfigured.
+        return (int) (m_toIndex - m_fromIndex) + 1;
     }
 
     /**
      * @param table
      * @return the result of the row renderer for all rows in the section
      */
-    public List<List<R>> renderRows(final BufferedDataTable table) {
-        final var size = (int)getSize();
-        List<List<R>> out = new ArrayList<>(size);
-        if (size > 0) {
+    abstract R renderRows(BufferedDataTable table);
+
+    protected void fillOutput(final BufferedDataTable table, final ObjLongConsumer<DataRow> fillOutputRow) {
+
+        if (getSize() > 0) {
             var rowIndex = m_fromIndex;
             try (final var iterator = table.filter(getFilter()).iterator()) {
                 while (iterator.hasNext()) {
-                    rowIndex++;
                     final var row = iterator.next();
-                    out.add(m_rowRenderer.renderRow(row, rowIndex));
+                    fillOutputRow.accept(row, rowIndex);
+                    rowIndex++;
                 }
             }
         }
-        return out;
-    }
-
-    private long getSize() {
-        return m_toIndex - m_fromIndex + 1;
-    }
-
-    private int[] getMaterializedColumnIndices() {
-        return m_rowRenderer.getMaterializedColumnIndices();
     }
 
     private TableFilter getFilter() {
@@ -114,4 +102,7 @@ public final class TableSectionRenderer<R> {
         filter.withMaterializeColumnIndices(getMaterializedColumnIndices());
         return filter.build();
     }
+
+    protected abstract int[] getMaterializedColumnIndices();
+
 }

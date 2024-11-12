@@ -85,6 +85,7 @@ describe("TableViewInteractive.vue", () => {
             "view_x_y/datacell/hash4.png",
           ],
         ],
+        rowIndices: [3, 5, 8, 13],
         columnContentTypes: ["txt", "multi_line_txt", "html", "img_path"],
         columnDataTypeIds: ["datatype1", "datatype1", "datatype2", "datatype3"],
         columnFormatterDescriptions: [
@@ -2620,11 +2621,20 @@ describe("TableViewInteractive.vue", () => {
 
     it("shows data value views", async () => {
       const tableComponent = findTableComponent(wrapper);
-      const config = { rowIndex: 1, colIndex: 3, anchor: {} };
-      await tableComponent.vm.$emit("dataValueView", config);
+      const anchor = {};
+      await tableComponent.vm.$emit(
+        "dataValueView",
+        { indexInInput: 2, isTop: true },
+        3,
+        anchor,
+      );
       expect(
         (await wrapper).vm.dataValueViewService.showDataValueView,
-      ).toHaveBeenCalledWith(config);
+      ).toHaveBeenCalledWith({
+        rowIndex: 8,
+        colIndex: 3,
+        anchor,
+      });
     });
 
     it("closes data value view", async () => {

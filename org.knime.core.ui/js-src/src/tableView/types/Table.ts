@@ -50,6 +50,12 @@ interface Table {
   rows: (Cell | string | null)[][];
 
   /**
+   * the indices of the rows in {@link rows} within the original table (prior to windowing, filtering and
+   *         sorting).
+   */
+  rowIndices: number[];
+
+  /**
    * the row count of the table in use
    */
   rowCount: number;

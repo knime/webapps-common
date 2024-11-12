@@ -120,6 +120,7 @@ import org.knime.core.webui.node.view.PageFormat;
 import org.knime.core.webui.node.view.table.data.Cell;
 import org.knime.core.webui.node.view.table.data.MissingCellWithMessage;
 import org.knime.core.webui.node.view.table.data.Renderer;
+import org.knime.core.webui.node.view.table.data.Table;
 import org.knime.core.webui.node.view.table.data.TableViewDataService;
 import org.knime.core.webui.node.view.table.data.TableViewDataService.SpecialColumnConfig;
 import org.knime.core.webui.node.view.table.data.TableViewDataServiceImpl;
@@ -240,9 +241,8 @@ class TableViewTest {
     void testTableViewNodeFactoryImageResources() throws IOException {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         var tableId = "test_table_id";
-        var nnc =
-            WorkflowManagerUtil.createAndAddNode(wfm, new NodeViewNodeFactory(
-                nodeModel -> new TableNodeView(tableId, () -> nodeModel.getInternalTables()[0], 0)));
+        var nnc = WorkflowManagerUtil.createAndAddNode(wfm, new NodeViewNodeFactory(
+            nodeModel -> new TableNodeView(tableId, () -> nodeModel.getInternalTables()[0], 0)));
         ((NodeViewNodeModel)nnc.getNodeModel())
             .setInternalTables(new BufferedDataTable[]{createDefaultTestTable(2).get()});
 
@@ -309,12 +309,10 @@ class TableViewTest {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         var tableId = "test_table_id";
         var tableId2 = "test_table_id2";
-        var nnc = WorkflowManagerUtil.createAndAddNode(wfm,
-            new NodeViewNodeFactory(1, 0,
-                nodeModel -> new TableNodeView(tableId, () -> nodeModel.getInternalTables()[0], 0)));
-        var nnc2 = WorkflowManagerUtil.createAndAddNode(wfm,
-            new NodeViewNodeFactory(1, 0,
-                nodeModel -> new TableNodeView(tableId2, () -> nodeModel.getInternalTables()[0], 0)));
+        var nnc = WorkflowManagerUtil.createAndAddNode(wfm, new NodeViewNodeFactory(1, 0,
+            nodeModel -> new TableNodeView(tableId, () -> nodeModel.getInternalTables()[0], 0)));
+        var nnc2 = WorkflowManagerUtil.createAndAddNode(wfm, new NodeViewNodeFactory(1, 0,
+            nodeModel -> new TableNodeView(tableId2, () -> nodeModel.getInternalTables()[0], 0)));
         final var sourceNodeFactory = new DefaultVirtualPortObjectInNodeFactory(new PortType[]{BufferedDataTable.TYPE});
         final var sourceNode = WorkflowManagerUtil.createAndAddNode(wfm, sourceNodeFactory);
 
@@ -399,17 +397,22 @@ class TableViewTest {
         final var sortColumnName = getDefaultTestSpec().getColumnNames()[sortColumnIndex];
         var columns = getDefaultTestSpec().getColumnNames();
         final var tableSortedAscending = testTable.getFilteredAndSortedTable(columns, 0, 5, sortColumnName, true, null,
-            null, true, null, false, false, true, false, false).getRows();
-        IntStream.range(1, tableSortedAscending.size()).forEach(rowIndex -> {
-            assertThat((String)tableSortedAscending.get(rowIndex).get(sortColumnIndex))
-                .isGreaterThanOrEqualTo((String)tableSortedAscending.get(rowIndex - 1).get(sortColumnIndex));
+            null, true, null, false, false, true, false, false);
+        final var tableSortedAscendingRows = tableSortedAscending.getRows();
+        IntStream.range(1, tableSortedAscendingRows.size()).forEach(rowIndex -> {
+            assertThat((String)tableSortedAscendingRows.get(rowIndex).get(sortColumnIndex))
+                .isGreaterThanOrEqualTo((String)tableSortedAscendingRows.get(rowIndex - 1).get(sortColumnIndex));
         });
-        final var tableSortedDescending = testTable.getFilteredAndSortedTable(getDefaultTestSpec().getColumnNames(), 0,
-            5, sortColumnName, false, null, null, true, null, false, false, true, false, false).getRows();
-        IntStream.range(1, tableSortedDescending.size()).forEach(rowIndex -> {
-            assertThat((String)tableSortedDescending.get(rowIndex).get(sortColumnIndex))
-                .isLessThanOrEqualTo((String)tableSortedDescending.get(rowIndex - 1).get(sortColumnIndex));
+        assertThat(tableSortedAscending.getRowIndices()).isEqualTo(new long[]{0, 1, 2, 3, 4});
+        Table tableSortedDescending = testTable.getFilteredAndSortedTable(getDefaultTestSpec().getColumnNames(), 0, 5,
+            sortColumnName, false, null, null, true, null, false, false, true, false, false);
+        final var tableSortedDescendingRows = tableSortedDescending.getRows();
+        IntStream.range(1, tableSortedDescendingRows.size()).forEach(rowIndex -> {
+            assertThat((String)tableSortedDescendingRows.get(rowIndex).get(sortColumnIndex))
+                .isLessThanOrEqualTo((String)tableSortedDescendingRows.get(rowIndex - 1).get(sortColumnIndex));
         });
+        assertThat(tableSortedDescending.getRowIndices()).isEqualTo(new long[]{4, 3, 2, 1, 0});
+
     }
 
     @Test
@@ -491,7 +494,7 @@ class TableViewTest {
         final var globalSearchTerm = "STRING1";
         final var columnFilterValue = new String[][]{new String[0], new String[0], new String[]{"1"}};
         final var filterRowKeys = false;
-        final var selection = Set.of(new RowKey("rowkey 0"));
+        final var selection = Set.of(new RowKey("rowkey 1"));
         final var dataService = TableViewUtil.createTableViewDataService(() -> table, () -> selection, null);
         dataService.getFilteredAndSortedTable(table.getDataTableSpec().getColumnNames(), 0, 2, "string", true,
             globalSearchTerm, columnFilterValue, filterRowKeys, null, false, false, true, false, false);
@@ -517,17 +520,19 @@ class TableViewTest {
         var globalSearchTerm = "StRinG1";
         final var columnFilterValue = new String[][]{new String[0], new String[0], new String[0]};
         final var filterRowKeys = false;
-        final var selection = Set.of(new RowKey("rowkey 0"));
+        final var selection = Set.of(new RowKey("rowkey 1"));
         final var dataService = TableViewUtil.createTableViewDataService(() -> table, () -> selection, null);
         var resultTable = dataService.getFilteredAndSortedTable(table.getDataTableSpec().getColumnNames(), 0, 2,
             "string", true, globalSearchTerm, columnFilterValue, filterRowKeys, null, false, false, true, false, true);
         assertThat(resultTable.getRowCount()).isEqualTo(1);
+        assertThat(resultTable.getRowIndices()).isEqualTo(new long[]{1});
 
         // search for something that is not selected
         globalSearchTerm = "NotInTable";
         resultTable = dataService.getFilteredAndSortedTable(table.getDataTableSpec().getColumnNames(), 0, 2, "string",
             true, globalSearchTerm, columnFilterValue, filterRowKeys, null, false, false, true, false, true);
         assertThat(resultTable.getRowCount()).isZero();
+        assertThat(resultTable.getRowIndices()).isEmpty();
     }
 
     @Test
@@ -546,8 +551,8 @@ class TableViewTest {
     }
 
     private static BufferedDataTable createTestTableFiltering() {
-        var stringColumn = new ObjectColumn("string", StringCell.TYPE, new String[]{"StRinG1", "string"});
-        var doubleColumn = new ObjectColumn("double", DoubleCell.TYPE, new Double[]{1d, -1d});
+        var stringColumn = new ObjectColumn("string", StringCell.TYPE, new String[]{"string", "StRinG1"});
+        var doubleColumn = new ObjectColumn("double", DoubleCell.TYPE, new Double[]{-1d, 1d});
 
         return createTableFromColumns(stringColumn, doubleColumn);
 
@@ -559,17 +564,17 @@ class TableViewTest {
         final var testTable = createTableViewDataServiceInstance(() -> filterTestTable);
         final var sortColumnName = "string";
         final var columnFilterValue = new String[][]{new String[0], new String[0], new String[]{"1"}};
-        final var emptyTable =
-            testTable
-                .getFilteredAndSortedTable(filterTestTable.getDataTableSpec().getColumnNames(), 0, 2, sortColumnName,
-                    true, "wrongSearchTerm", columnFilterValue, false, null, false, false, true, false, false)
-                .getRows();
-        assertThat(emptyTable.size()).as("filters and excludes all rows").isZero();
+        final var emptyTable = testTable.getFilteredAndSortedTable(filterTestTable.getDataTableSpec().getColumnNames(),
+            0, 2, sortColumnName, true, "wrongSearchTerm", columnFilterValue, false, null, false, false, true, false,
+            false);
+        assertThat(emptyTable.getRows().size()).as("filters and excludes all rows").isZero();
+        assertThat(emptyTable.getRowIndices()).isEmpty();
 
         final var table = testTable.getFilteredAndSortedTable(filterTestTable.getDataTableSpec().getColumnNames(), 0, 2,
-            sortColumnName, true, "STRING1", columnFilterValue, false, null, false, false, true, false, false)
-            .getRows();
-        assertThat(table.size()).as("filters all rows correctly").isEqualTo(1);
+            sortColumnName, true, "STRING1", columnFilterValue, false, null, false, false, true, false, false);
+
+        assertThat(table.getRows().size()).as("filters all rows correctly").isEqualTo(1);
+        assertThat(table.getRowIndices()).isEqualTo(new long[]{1});
     }
 
     @Test
@@ -678,9 +683,8 @@ class TableViewTest {
     void testPageFormat() throws IOException {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         var tableId = "test_table_id";
-        var nnc =
-            WorkflowManagerUtil.createAndAddNode(wfm, new NodeViewNodeFactory(
-                nodeModel -> new TableNodeView(tableId, () -> nodeModel.getInternalTables()[0], 0)));
+        var nnc = WorkflowManagerUtil.createAndAddNode(wfm, new NodeViewNodeFactory(
+            nodeModel -> new TableNodeView(tableId, () -> nodeModel.getInternalTables()[0], 0)));
         ((NodeViewNodeModel)nnc.getNodeModel())
             .setInternalTables(new BufferedDataTable[]{createDefaultTestTable(2).get()});
 

@@ -133,27 +133,27 @@ public class TableRenderer {
      * @return a list containing rendered rows, where these rendered rows start with index and row key followed by the
      *         rendered cells for the displayed columns.
      */
-    public List<List<Object>> renderTableContent(final BufferedDataTable table, final long fromIndex, final int numRows,
-        final boolean isRawInputTable) {
+    public Pair<List<List<Object>>, long[]> renderRowsWithIndices(final BufferedDataTable table, final long fromIndex,
+        final int numRows, final boolean isRawInputTable) {
 
         final var rowRenderer = getRowRenderer(table.getSpec());
         final var rowRendererWithRowKeys = new RowRendererWithRowKeys<Object>(rowRenderer, RowKey::toString);
+        final var indexExtractor = getIndexExtractor(isRawInputTable);
         final RowRenderer<Object> rowRendererWithRowKeysAndIndices =
-            addIndices(rowRendererWithRowKeys, !isRawInputTable);
+            new RowRendererWithIndices<>(rowRendererWithRowKeys, indexExtractor);
 
         final var tableSize = table.size();
         final var toIndex = Math.min(fromIndex + numRows, tableSize) - 1;
-        final var tableSelectionRenderer =
-            new TableSectionRenderer<Object>(rowRendererWithRowKeysAndIndices, fromIndex, toIndex);
-
-        return tableSelectionRenderer.renderRows(table);
+        final TableSectionRowsAndIndicesRenderer<Object> tableSectionRenderer =
+            new TableSectionRowsAndIndicesRenderer<>(rowRendererWithRowKeysAndIndices, indexExtractor, fromIndex,
+                toIndex);
+        return tableSectionRenderer.renderRows(table);
     }
 
     private RowRenderer<Object> getRowRenderer(final DataTableSpec spec) {
         final var colIndices = spec.columnsToIndices(m_displayedColumns);
-        return new SimpleRowRenderer<>(colIndices,
-            indexInDisplayedColumns -> getCellRenderer(indexInDisplayedColumns, colIndices[indexInDisplayedColumns],
-                spec));
+        return new SimpleRowRenderer<>(colIndices, indexInDisplayedColumns -> getCellRenderer(indexInDisplayedColumns,
+            colIndices[indexInDisplayedColumns], spec));
     }
 
     private CellRenderer<Object> getCellRenderer(final int indexInDisplayedColumns, final int colIndex,
@@ -187,12 +187,15 @@ public class TableRenderer {
         }
     }
 
-    private static RowRenderer<Object> addIndices(final RowRenderer<Object> rowRenderer,
-        final boolean tableHasIndices) {
-        if (tableHasIndices) {
-            return new RowRendererWithIndicesFromColumn<>(rowRenderer, DataCell::toString);
+    /**
+     * @param isRawInputTable whether the given table is the input table or a processed one.
+     * @return the extractor which extracts the indices from the table
+     */
+    public static IndexExtractor getIndexExtractor(final boolean isRawInputTable) { // NOSONAR
+        if (isRawInputTable) {
+            return new IndexExtractorCounter();
         } else {
-            return new RowRendererWithIndicesCounter<>(rowRenderer, index -> Long.toString(index));
+            return new IndexExtractorFromColumn();
         }
     }
 
