@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.7.2
+
+### Patch Changes
+
+- 3c33e6c: Changed BaseMenuItem hotkey font-weight to 400
+
 ## 1.7.1
 
 ### Patch Changes
