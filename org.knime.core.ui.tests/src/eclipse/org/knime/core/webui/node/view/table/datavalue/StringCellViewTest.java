@@ -2,7 +2,7 @@
  * ------------------------------------------------------------------------
  *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.com; Email: contact@knime.com
+ *  Website: http://www.knime.org; Email: contact@knime.org
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -44,47 +44,30 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Nov 8, 2024 (Marc Bux, KNIME GmbH, Berlin, Germany): created
+ *   Nov 4, 2024 (Marc Bux, KNIME GmbH, Berlin, Germany): created
  */
 package org.knime.core.webui.node.view.table.datavalue;
 
-import java.util.Optional;
-import java.util.function.Supplier;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import org.knime.core.webui.data.InitialDataService;
-import org.knime.core.webui.data.RpcDataService;
-import org.knime.core.webui.node.view.table.TableView;
-import org.knime.core.webui.page.Page;
+import java.io.IOException;
 
-final class HTMLValueView implements DataValueView {
+import org.junit.jupiter.api.Test;
+import org.knime.core.data.def.StringCell;
+import org.knime.core.webui.node.view.table.datavalue.views.StringCellView;
 
-    record HTMLValueViewInitialData(String value) {
-    }
+/**
+ * @author Marc Bux, KNIME GmbH, Berlin, Germany
+ */
+@SuppressWarnings("javadoc")
+public class StringCellViewTest {
 
-    final Supplier<String> m_htmlSupplier;
+    @Test
+    public void testStringCellView() throws IOException {
 
-    HTMLValueView(final Supplier<String> htmlSupplier) {
-        m_htmlSupplier = htmlSupplier;
-    }
+        final var stringCell = new StringCell("foo");
 
-    @Override
-    public Page getPage() {
-        return Page.builder(TableView.class, "js-src/dist", "HTMLValueView.html").addResourceDirectory("assets")
-            .build();
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public Optional<InitialDataService<HTMLValueViewInitialData>> createInitialDataService() {
-        return Optional.of(InitialDataService.builder(this::getInitialData).build());
-    }
-
-    HTMLValueViewInitialData getInitialData() {
-        return new HTMLValueViewInitialData(m_htmlSupplier.get());
-    }
-
-    @Override
-    public Optional<RpcDataService> createRpcDataService() {
-        return Optional.empty();
+        final var initialData = new StringCellView(stringCell).getInitialData();
+        assertThat(initialData.value()).isEqualTo("foo");
     }
 }

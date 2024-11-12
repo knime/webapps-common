@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>KNIME HTML Value View</title>
+    <style>
+      @import "@fontsource/roboto/400";
+
+      #string-cell-view {
+        height: 100vh;
+        width: 100%;
+        padding: 8px;
+        background-color: white;
+
+        font-family: Roboto, sans-serif;
+        font-weight: 400;
+        font-size: 13px;
+        line-height: 18px;
+
+        word-wrap: break-word;
+        white-space: pre-wrap;
+        overflow-x: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="string-cell-view" />
+    <script type="module">
+      import { addInnerHtml } from "./src/html-renderers/string/StringCellView";
+      addInnerHtml(document.getElementById("string-cell-view"));
+    </script>
+  </body>
+</html>

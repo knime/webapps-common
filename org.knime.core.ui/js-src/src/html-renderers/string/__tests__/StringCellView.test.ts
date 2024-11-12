@@ -1,5 +1,5 @@
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
-import { HTMLValueViewInitialData, addInnerHtml } from "../HTMLValueView";
+import { StringCellViewInitialData, addInnerHtml } from "../StringCellView";
 import { JsonDataService } from "@knime/ui-extension-service";
 
 describe("StringValueView", () => {
@@ -15,16 +15,23 @@ describe("StringValueView", () => {
     htmlValueViewElement = document.createElement("div");
   });
 
-  const init = (initialData: HTMLValueViewInitialData) => {
+  const init = (initialData: StringCellViewInitialData) => {
     JsonDataService.getInstance = vi.fn().mockResolvedValue({
       initialData: vi.fn().mockResolvedValue(initialData),
     });
     return addInnerHtml(htmlValueViewElement);
   };
 
-  it("sets the inner html to the given value", async () => {
-    const value = "some string";
-    await init({ value });
+  it("sets the inner html to the given value when it should be rendered as html", async () => {
+    const value = "<button>Click Me!</button>";
+    await init({ value, renderAsHTML: true });
     expect(htmlValueViewElement.innerHTML).toBe(value);
+  });
+
+  it("sets the inner html to the given value with escaping when it should not be rendered as html", async () => {
+    await init({ value: "<button>Click Me!</button>", renderAsHTML: false });
+    expect(htmlValueViewElement.innerHTML).toBe(
+      "&lt;button&gt;Click Me!&lt;/button&gt;",
+    );
   });
 });

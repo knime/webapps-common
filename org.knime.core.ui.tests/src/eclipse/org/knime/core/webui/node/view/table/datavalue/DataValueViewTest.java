@@ -62,7 +62,6 @@ import org.apache.xmlbeans.XmlException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.knime.core.data.StringValue;
 import org.knime.core.data.def.DoubleCell.DoubleCellFactory;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.data.property.ValueFormatHandler;
@@ -88,6 +87,7 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.node.DataValueWrapper;
+import org.knime.core.webui.node.view.table.datavalue.views.StringCellViewWithFormatter;
 import org.knime.core.webui.page.Page;
 import org.knime.testing.util.TableTestUtil;
 import org.knime.testing.util.TableTestUtil.ObjectColumn;
@@ -219,11 +219,11 @@ final class DataValueViewTest {
 
     }
 
-    private static final class TestStringValueView implements DataValueView {
+    private static final class TestStringCellView implements DataValueView {
 
-        final StringValue m_value;
+        final StringCell m_value;
 
-        TestStringValueView(final StringValue value) {
+        TestStringCellView(final StringCell value) {
             m_value = value;
         }
 
@@ -250,7 +250,7 @@ final class DataValueViewTest {
 
     @BeforeAll
     static void registerStringValueViewFactory() {
-        DataValueViewManager.registerDataValueViewFactory(StringValue.class, TestStringValueView::new);
+        DataValueViewManager.registerDataValueViewFactory(StringCell.class, TestStringCellView::new);
     }
 
     private WorkflowManager m_wfm;
@@ -392,18 +392,18 @@ final class DataValueViewTest {
         final var pageResourceManager = INSTANCE.getPageResourceManager();
         final var pagePath = pageResourceManager.getPagePath(dataValueWrapper);
 
-        assertThat(pagePath).isEqualTo("uiext-data_value/org.knime.core.data.StringValue/page.js");
+        assertThat(pagePath).isEqualTo("uiext-data_value/org.knime.core.data.def.StringCell/page.js");
     }
 
     @Test
-    void testCreatesHTMLValueViewWhenValueFormatHandlerIsAttached() {
+    void testCreatesStringCellViewWithFormatterWhenValueFormatHandlerIsAttached() {
         final var executeResult = createSingleTableFromColumns(new ObjectColumn("String", StringCell.TYPE, null,
             new String[]{"foo"}, new ValueFormatHandler(value -> "bar")));
         final var dataValueWrapper = setUpDataValueWrapper(executeResult).build();
         final var dataValueView = INSTANCE.getDataValueView(dataValueWrapper);
         assertThat(dataValueView.dataValueClass()).isEqualTo(StringCell.class);
-        assertThat(dataValueView.view()).isInstanceOf(HTMLValueView.class);
-        assertThat(((HTMLValueView)(dataValueView.view())).getInitialData().value()).isEqualTo("bar");
+        assertThat(dataValueView.view()).isInstanceOf(StringCellViewWithFormatter.class);
+        assertThat(((StringCellViewWithFormatter)(dataValueView.view())).getInitialData().value()).isEqualTo("bar");
     }
 
     private static ObjectColumn createSupportedColumn(final String[] cells) {
@@ -422,8 +422,8 @@ final class DataValueViewTest {
     private static void assertDataValueView(final DataValueWrapper dataValueWrapper,
         final String expectedExtractedValue) {
         final var dataValueView = INSTANCE.getDataValueView(dataValueWrapper);
-        assertThat(dataValueView.dataValueClass()).isEqualTo(StringValue.class);
-        assertThat(dataValueView.view()).isInstanceOf(TestStringValueView.class);
-        assertThat(((TestStringValueView)(dataValueView.view())).hasValue(expectedExtractedValue)).isTrue();
+        assertThat(dataValueView.dataValueClass()).isEqualTo(StringCell.class);
+        assertThat(dataValueView.view()).isInstanceOf(TestStringCellView.class);
+        assertThat(((TestStringCellView)(dataValueView.view())).hasValue(expectedExtractedValue)).isTrue();
     }
 }

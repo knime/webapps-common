@@ -58,6 +58,8 @@ import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataType;
 import org.knime.core.data.DataValue;
 import org.knime.core.data.container.filter.TableFilter;
+import org.knime.core.data.def.StringCell;
+import org.knime.core.data.property.ValueFormatHandler;
 import org.knime.core.data.v2.RowCursor;
 import org.knime.core.data.xml.XMLValue;
 import org.knime.core.node.BufferedDataTable;
@@ -67,9 +69,8 @@ import org.knime.core.webui.node.PageResourceManager;
 import org.knime.core.webui.node.PageResourceManager.CreatedPage;
 import org.knime.core.webui.node.PageResourceManager.PageType;
 import org.knime.core.webui.node.util.NodeCleanUpCallback;
-import org.knime.core.webui.node.view.table.data.render.DataCellContentType;
-import org.knime.core.webui.node.view.table.data.render.DataValueTextRenderer;
-import org.knime.core.webui.node.view.table.data.render.SwingBasedRendererFactory;
+import org.knime.core.webui.node.view.table.datavalue.views.StringCellView;
+import org.knime.core.webui.node.view.table.datavalue.views.StringCellViewWithFormatter;
 import org.knime.core.webui.node.view.table.datavalue.views.XMLCodeValueView;
 
 /**
@@ -84,6 +85,7 @@ public final class DataValueViewManager {
     private DataValueViewManager() {
         m_dataValueViewFactories = DataValueViewExtensionsUtil.getDataValueViewExtensions();
         m_dataValueViewFactories.put(XMLValue.class, cell -> new XMLCodeValueView((XMLValue<?>)cell));
+        m_dataValueViewFactories.put(StringCell.class, cell -> new StringCellView((StringCell)cell));
     }
 
     private static DataValueViewManager instance;
@@ -154,10 +156,10 @@ public final class DataValueViewManager {
         var colSpec = extractDataColumnSpec(wrapper, table);
         var dataCell = extractDataCell(wrapper, table);
 
-        var htmlRenderer = getAttachedHTMLRenderer(colSpec);
-        if (htmlRenderer != null) {
-            return new CreatedDataValueView(new HTMLValueView(() -> htmlRenderer.renderText(dataCell)),
-                dataCell.getClass());
+        var valueFormatHandler = getAttachedValueFormatHandler(colSpec);
+        if (valueFormatHandler.isPresent() && dataCell instanceof StringCell stringCell) {
+            return new CreatedDataValueView(new StringCellViewWithFormatter(stringCell, valueFormatHandler.get()),
+                stringCell.getClass());
         }
 
         var chosenValue = findCompatibleValue(dataCell.getType());
@@ -238,18 +240,14 @@ public final class DataValueViewManager {
     }
 
     private Optional<Class<? extends DataValue>> findCompatibleValue(final DataType type) {
-        return type.getValueClasses().stream().filter(m_dataValueViewFactories::containsKey).findFirst();
+        final var cellClass = type.getCellClass();
+        return m_dataValueViewFactories.containsKey(cellClass) ? Optional.of(cellClass)
+            : type.getValueClasses().stream().filter(m_dataValueViewFactories::containsKey).findFirst();
 
     }
 
-    private static DataValueTextRenderer getAttachedHTMLRenderer(final DataColumnSpec colSpec) {
-        // TODO NOSONAR with UIEXT-2212, instead of using default renderer, use renderer selected in table
-        var defaultRenderer = new SwingBasedRendererFactory().createDataValueRenderer(colSpec, null);
-        if (defaultRenderer.getContentType() == DataCellContentType.HTML
-            && defaultRenderer instanceof DataValueTextRenderer htmlRenderer) {
-            return htmlRenderer;
-        }
-        return null;
+    private static Optional<ValueFormatHandler> getAttachedValueFormatHandler(final DataColumnSpec colSpec) {
+        return Optional.ofNullable(colSpec.getValueFormatHandler());
     }
 
 }
