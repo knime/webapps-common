@@ -1,5 +1,5 @@
 /* eslint-disable no-undefined */
-import { type Ref, computed } from "vue";
+import { type CSSProperties, type Ref, computed } from "vue";
 
 type UseIconFlipperOptions = {
   active: Ref<boolean>;
@@ -7,8 +7,8 @@ type UseIconFlipperOptions = {
 };
 
 export const useIconFlipper = (options: UseIconFlipperOptions) => {
-  const iconFlipStyles = computed(() => {
-    const declaration: Partial<CSSStyleDeclaration> = {
+  const iconFlipStyles = computed<CSSProperties>(() => {
+    const declaration: Partial<CSSProperties> = {
       transition: "transform 0.2s linear",
       transform: "scaleY(1)",
     };
