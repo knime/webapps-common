@@ -1,5 +1,11 @@
 # @knime/styles
 
+## 1.1.1
+
+### Patch Changes
+
+- update public and private space icons
+
 ## 1.1.0
 
 ### Minor Changes
