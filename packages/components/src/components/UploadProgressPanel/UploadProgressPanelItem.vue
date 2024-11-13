@@ -40,7 +40,7 @@ const { formattedSize: progressedFileSizeFormat } = useFileSizeFormatting({
 });
 
 const subtitle = computed(() =>
-  props.item.status
+  props.item.status === "inprogress"
     ? `${progressedFileSizeFormat.value} of ${formattedSize.value}`
     : `${formattedSize.value}`,
 );

@@ -245,7 +245,7 @@ describe("MultiselectListBox.vue", () => {
       wrapper.findAll("[role=option]")[3].trigger("click", { metaKey: true });
       wrapper.findAll("[role=option]")[1].trigger("click", { metaKey: true });
 
-      vi.runAllTimers();
+      vi.runOnlyPendingTimers();
 
       expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual([
         "test1",

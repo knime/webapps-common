@@ -37,7 +37,7 @@ const props = defineProps<ProgressItemProps>();
         <slot name="actions" />
       </div>
     </div>
-    <div v-if="progress" class="progress">
+    <div v-if="typeof progress === 'number'" class="progress">
       <ProgressBar :percentage="progress" :compact="true" />
     </div>
   </div>
