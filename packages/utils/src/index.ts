@@ -19,6 +19,7 @@ import type {
   KnownHotkey as _KnownHotkey,
 } from "./formatHotkeys";
 import getWrappedAroundIndex from "./getWrappedAroundIndex";
+import * as intervalUtils from "./intervalUtils";
 import getLocalTimeZone from "./localTimezone";
 import * as navigatorUtils from "./navigator";
 import numIntegerDigits from "./numIntegerDigits";
@@ -65,6 +66,7 @@ export {
   isAfterMaxDate,
   isBeforeMinDate,
   isIconExisting,
+  intervalUtils,
   navigatorUtils,
   numIntegerDigits,
   sleep,

@@ -152,6 +152,9 @@ const demoComponents = {
     TimePartInput: defineAsyncComponent(
       () => import("./components/TimePartInput.vue"),
     ),
+    IntervalInput: defineAsyncComponent(
+      () => import("./components/IntervalInput.vue"),
+    ),
     ListBox: defineAsyncComponent(() => import("./components/ListBox.vue")),
     Dropdown: defineAsyncComponent(() => import("./components/Dropdown.vue")),
     Multiselect: defineAsyncComponent(

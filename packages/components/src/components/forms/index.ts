@@ -6,6 +6,7 @@ import Dropdown from "./Dropdown/Dropdown.vue";
 import Dropzone from "./Dropzone/Dropzone.vue";
 import Fieldset from "./Fieldset/Fieldset.vue";
 import InputField from "./InputField/InputField.vue";
+import IntervalInput from "./IntervalInput/IntervalInput.vue";
 import Label from "./Label/Label.vue";
 import ListBox from "./ListBox/ListBox.vue";
 import MultiModeTwinList from "./MultiModeTwinlist/MultiModeTwinlist.vue";
@@ -33,6 +34,7 @@ export {
   Dropzone,
   Fieldset,
   InputField,
+  IntervalInput,
   Label,
   ListBox,
   MultiModeTwinList,
