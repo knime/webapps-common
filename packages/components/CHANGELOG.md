@@ -1,5 +1,17 @@
 # @knime/components
 
+## 1.8.0
+
+### Minor Changes
+
+- ea959e0: Added dropzone component, which can be utilized for file selection, esp. file uploads
+
+### Patch Changes
+
+- eb4729f: Minor UploadProgressPanelItem fixes - display progress bar also at 0%, display progress message only while status is in progress
+- ea959e0: Add allowDelete prop to UploadProgressPanelItems to delete existing or uploaded items
+- ea959e0: Make status and progress optional for UploadProgressPanelItems
+
 ## 1.7.4
 
 ### Patch Changes
