@@ -243,6 +243,7 @@ describe("useHint", () => {
     });
 
     expect(createHintDataMock).toHaveBeenCalledWith(
+      hintKey,
       expect.objectContaining({
         title: "my hint",
         description: "this is a hint",
@@ -267,7 +268,7 @@ describe("useHint", () => {
     });
 
     const completeHintCallback =
-      createHintDataMock.mock.calls[0][0].onCompleteHint;
+      createHintDataMock.mock.calls[0][1].onCompleteHint;
     completeHintCallback();
     expect(completeHintMock).toHaveBeenCalledWith(hintKey);
   });
@@ -286,7 +287,7 @@ describe("useHint", () => {
     });
 
     const skippAllHintsCallback =
-      createHintDataMock.mock.calls[0][0].onSkipAllHints;
+      createHintDataMock.mock.calls[0][1].onSkipAllHints;
     skippAllHintsCallback();
     expect(setSkipAllMock).toHaveBeenCalled();
   });

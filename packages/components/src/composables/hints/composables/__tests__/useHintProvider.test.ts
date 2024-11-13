@@ -25,7 +25,9 @@ describe("useHintProvider", () => {
   it("should render hint", async () => {
     const { createHintData, hintData } = useHintProvider();
 
-    const { showHint, closeHint } = createHintData({
+    const hintId = "mock-id";
+
+    const { showHint, closeHint } = createHintData(hintId, {
       element: ".something",
       title: "Test",
       description: "test",
@@ -37,7 +39,7 @@ describe("useHintProvider", () => {
       },
     });
 
-    showHint();
+    showHint(hintId);
 
     const { wrapper } = doMount();
 
@@ -49,7 +51,7 @@ describe("useHintProvider", () => {
 
     expect(popovers.length).toBe(1);
 
-    closeHint();
+    closeHint(hintId);
     await nextTick();
 
     expect(wrapper.findAll(".hint-popover").length).toBe(0);

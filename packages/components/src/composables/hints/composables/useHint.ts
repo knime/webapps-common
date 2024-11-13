@@ -189,7 +189,7 @@ export const useHint = ({ hintSetupId = "default" } = {}) => {
       configuredSelector ??
       `#${hintId}`;
 
-    const { showHint, closeHint } = createHintData({
+    const { showHint, closeHint } = createHintData(hintId, {
       element,
       title,
       description,
@@ -200,11 +200,11 @@ export const useHint = ({ hintSetupId = "default" } = {}) => {
       onCompleteHint: () => {
         unWatchVisibility();
         setHintCompleted();
-        closeHint();
+        closeHint(hintId);
       },
       onSkipAllHints: () => {
         setSkipAll();
-        closeHint();
+        closeHint(hintId);
       },
       align,
       side,
@@ -213,7 +213,7 @@ export const useHint = ({ hintSetupId = "default" } = {}) => {
     completeHintComponentCallbacks[hintId] = () => {
       unWatchVisibility();
       setHintCompleted();
-      closeHint();
+      closeHint(hintId);
     };
 
     const isVisible = computed(
@@ -224,8 +224,8 @@ export const useHint = ({ hintSetupId = "default" } = {}) => {
       (value) => {
         if (value) {
           setCurrentlyVisibleHint(hintId);
-          showHint();
-          destroyHintCallbacks.unshift(closeHint);
+          showHint(hintId);
+          destroyHintCallbacks.unshift(() => closeHint(hintId));
         }
       },
       { immediate: true },

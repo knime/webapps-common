@@ -30,23 +30,21 @@ export type HintComponentOptions = {
   isVisible?: boolean;
 };
 
-const hintComponentOptions = ref<HintComponentOptions[]>([]);
+const hintComponentOptions = ref<Record<string, HintComponentOptions>>({});
 
-const createHintData = (options: Omit<HintComponentOptions, "isVisible">) => {
-  // add isVisible marker
-  const createOptions = options as HintComponentOptions;
-  createOptions.isVisible = false;
-
+const createHintData = (
+  hintId: string,
+  options: Omit<HintComponentOptions, "isVisible">,
+) => {
   // add to ref
-  hintComponentOptions.value.unshift(createOptions);
-  const refOptions = hintComponentOptions.value[0];
+  hintComponentOptions.value[hintId] = { ...options, isVisible: false };
 
   const result = {
-    showHint: () => {
-      refOptions.isVisible = true;
+    showHint: (hintId: string) => {
+      hintComponentOptions.value[hintId].isVisible = true;
     },
-    closeHint: () => {
-      refOptions.isVisible = false;
+    closeHint: (hintId: string) => {
+      hintComponentOptions.value[hintId].isVisible = false;
     },
   };
   return result;
@@ -55,6 +53,8 @@ const createHintData = (options: Omit<HintComponentOptions, "isVisible">) => {
 export const useHintProvider = () => {
   return {
     createHintData,
-    hintData: computed(() => hintComponentOptions.value),
+    hintData: computed<HintComponentOptions[]>(() =>
+      Object.values(hintComponentOptions.value),
+    ),
   };
 };
