@@ -308,7 +308,7 @@ describe("DropdownControl.vue", () => {
       getDataMock.mockImplementation(() => ({
         result: null,
         state: "FAIL",
-        message,
+        message: [message],
       }));
       (await settingsChangeCallback(newSettings))(newSettings);
       expect(wrapper.vm.options).toStrictEqual([]);
