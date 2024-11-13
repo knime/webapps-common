@@ -53,7 +53,7 @@ export const useHintState = ({
 
       // merge hints from remote
       hintState.value = {
-        skipAll: hintState.value.skipAll || remoteState.skipAll,
+        skipAll: remoteState.skipAll ?? hintState.value.skipAll,
         completedHints: [
           ...hintState.value.completedHints,
           ...(remoteState.completedHints ?? []),

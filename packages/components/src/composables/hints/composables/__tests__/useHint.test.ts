@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ref } from "vue";
 
 import type { HintConfiguration } from "../../types";
-import { useHint } from "../useHint";
+import { setupHints, useHint } from "../useHint";
 import * as useHintProvider from "../useHintProvider";
 import * as useHintState from "../useHintState";
 
@@ -43,16 +43,16 @@ vi.mock("../useHintState", () => {
 vi.mock("../../composables/useHintProvider", () => {
   const showHintMock = vi.fn();
   const closeHintMock = vi.fn();
-  const createHintMock = vi.fn();
+  const createHintDataMock = vi.fn();
 
   return {
     useHintProvider: vi.fn().mockReturnValue({
-      createHint: createHintMock.mockReturnValue({
+      createHintData: createHintDataMock.mockReturnValue({
         showHint: showHintMock,
         closeHint: closeHintMock,
       }),
     }),
-    createHintMock,
+    createHintDataMock,
     showHintMock,
     closeHintMock,
   };
@@ -130,24 +130,26 @@ describe("useHint", () => {
     const getRemoteHintState = () => vi.fn().mockResolvedValue({});
     const setRemoteHintState = () => vi.fn();
 
+    setupHints({
+      hints: hintConfigurationsMock,
+      skipHints,
+      uniqueUserId,
+      // @ts-ignore
+      getRemoteHintState,
+      // @ts-ignore
+      setRemoteHintState,
+    });
+
     const { getComposableResult, lifeCycle } = mountComposable({
       composable: useHint,
-      composableProps: {
-        hints: hintConfigurationsMock,
-        skipHints,
-        uniqueUserId,
-        // @ts-ignore
-        getRemoteHintState,
-        // @ts-ignore
-        setRemoteHintState,
-      },
+      composableProps: { hintSetupId: "default" },
     });
 
     return {
       getComposableResult,
       lifeCycle,
       // @ts-ignore
-      createHintMock: useHintProvider.createHintMock,
+      createHintDataMock: useHintProvider.createHintDataMock,
       // @ts-ignore
       showHintMock: useHintProvider.showHintMock,
       // @ts-ignore
@@ -219,7 +221,7 @@ describe("useHint", () => {
     expect(initializeMock).toHaveBeenCalled();
   });
 
-  it("createHintComponent creates hint", () => {
+  it("createHint creates hint", () => {
     const hintKey = "myHint";
     const hintConfig: HintConfiguration = {
       title: "my hint",
@@ -230,17 +232,17 @@ describe("useHint", () => {
       side: "bottom",
       dependsOn: [],
     };
-    const { getComposableResult, createHintMock } = doMount({
+    const { getComposableResult, createHintDataMock } = doMount({
       hintKey,
       hintConfig,
     });
-    const { createHintComponent } = getComposableResult();
-    createHintComponent({
+    const { createHint } = getComposableResult();
+    createHint({
       hintId: hintKey,
       isVisibleCondition: ref(true),
     });
 
-    expect(createHintMock).toHaveBeenCalledWith(
+    expect(createHintDataMock).toHaveBeenCalledWith(
       expect.objectContaining({
         title: "my hint",
         description: "this is a hint",
@@ -254,61 +256,65 @@ describe("useHint", () => {
 
   it("created hint can be completed", () => {
     const hintKey = "myHint";
-    const { getComposableResult, createHintMock, completeHintMock } = doMount({
-      hintKey,
-    });
-    const { createHintComponent } = getComposableResult();
-    createHintComponent({
+    const { getComposableResult, createHintDataMock, completeHintMock } =
+      doMount({
+        hintKey,
+      });
+    const { createHint } = getComposableResult();
+    createHint({
       hintId: hintKey,
       isVisibleCondition: ref(true),
     });
 
-    const completeHintCallback = createHintMock.mock.calls[0][0].onCompleteHint;
+    const completeHintCallback =
+      createHintDataMock.mock.calls[0][0].onCompleteHint;
     completeHintCallback();
     expect(completeHintMock).toHaveBeenCalledWith(hintKey);
   });
 
   it("created hint can trigger skip all", () => {
     const hintKey = "myHint";
-    const { getComposableResult, createHintMock, setSkipAllMock } = doMount({
-      hintKey,
-    });
-    const { createHintComponent } = getComposableResult();
-    createHintComponent({
+    const { getComposableResult, createHintDataMock, setSkipAllMock } = doMount(
+      {
+        hintKey,
+      },
+    );
+    const { createHint } = getComposableResult();
+    createHint({
       hintId: hintKey,
       isVisibleCondition: ref(true),
     });
 
     const skippAllHintsCallback =
-      createHintMock.mock.calls[0][0].onSkipAllHints;
+      createHintDataMock.mock.calls[0][0].onSkipAllHints;
     skippAllHintsCallback();
     expect(setSkipAllMock).toHaveBeenCalled();
   });
 
-  it("createHintComponent does not create hint if no config available", () => {
+  it("createHint does not create hint if no config available", () => {
     const hintKey = "unknwonHint";
-    const { getComposableResult, createHintMock } = doMount({
+    const { getComposableResult, createHintDataMock } = doMount({
       isLoggedIn: true,
     });
-    const { createHintComponent } = getComposableResult();
+    const { createHint } = getComposableResult();
 
-    createHintComponent({
+    createHint({
       hintId: hintKey,
       isVisibleCondition: ref(true),
     });
 
-    expect(createHintMock).not.toHaveBeenCalled();
+    expect(createHintDataMock).not.toHaveBeenCalled();
   });
 
-  it("createHintComponent provides callback to complete hint", () => {
+  it("createHint provides callback to complete hint", () => {
     const hintKey = "myHint";
     const { getComposableResult, closeHintMock } = doMount({
       hintKey,
     });
-    const { createHintComponent, getCompleteHintComponentCallback } =
+    const { createHint, getCompleteHintComponentCallback } =
       getComposableResult();
 
-    createHintComponent({
+    createHint({
       hintId: hintKey,
       isVisibleCondition: ref(true),
     });
@@ -337,8 +343,8 @@ describe("useHint", () => {
       hintAlreadyCompleted: false,
       currentlyVisibleHint: null,
     });
-    const { createHintComponent } = getComposableResult();
-    createHintComponent({
+    const { createHint } = getComposableResult();
+    createHint({
       hintId: hintKey,
       isVisibleCondition: ref(true),
     });
@@ -355,8 +361,8 @@ describe("useHint", () => {
         hintKey,
         skipAllHints: true,
       });
-    const { createHintComponent } = getComposableResult();
-    createHintComponent({
+    const { createHint } = getComposableResult();
+    createHint({
       hintId: hintKey,
       isVisibleCondition: ref(true),
     });
@@ -372,8 +378,8 @@ describe("useHint", () => {
         hintKey,
         hintAlreadyCompleted: true,
       });
-    const { createHintComponent } = getComposableResult();
-    createHintComponent({
+    const { createHint } = getComposableResult();
+    createHint({
       hintId: hintKey,
       isVisibleCondition: ref(true),
     });
@@ -389,8 +395,8 @@ describe("useHint", () => {
         hintKey,
         currentlyVisibleHint: "differentHint",
       });
-    const { createHintComponent } = getComposableResult();
-    createHintComponent({
+    const { createHint } = getComposableResult();
+    createHint({
       hintId: hintKey,
       isVisibleCondition: ref(true),
     });
@@ -406,8 +412,8 @@ describe("useHint", () => {
         hintKey,
         currentlyVisibleHint: hintKey,
       });
-    const { createHintComponent } = getComposableResult();
-    createHintComponent({
+    const { createHint } = getComposableResult();
+    createHint({
       hintId: hintKey,
       isVisibleCondition: ref(true),
     });
@@ -431,8 +437,8 @@ describe("useHint", () => {
         hintConfig,
         alreadyCompletedHints: [secondDependencyHint],
       });
-    const { createHintComponent } = getComposableResult();
-    createHintComponent({
+    const { createHint } = getComposableResult();
+    createHint({
       hintId: hintKey,
       isVisibleCondition: ref(true),
     });
@@ -459,8 +465,8 @@ describe("useHint", () => {
       hintConfig,
       alreadyCompletedHints: [dependencyHint],
     });
-    const { createHintComponent } = getComposableResult();
-    createHintComponent({
+    const { createHint } = getComposableResult();
+    createHint({
       hintId: hintKey,
       isVisibleCondition: ref(true),
     });
@@ -476,8 +482,8 @@ describe("useHint", () => {
       doMount({
         hintKey,
       });
-    const { createHintComponent } = getComposableResult();
-    createHintComponent({
+    const { createHint } = getComposableResult();
+    createHint({
       hintId: hintKey,
       isVisibleCondition: ref(false),
     });
@@ -492,8 +498,8 @@ describe("useHint", () => {
       doMount({
         hintKey,
       });
-    const { createHintComponent } = getComposableResult();
-    createHintComponent({
+    const { createHint } = getComposableResult();
+    createHint({
       hintId: hintKey,
       isVisibleCondition: ref(true),
     });
@@ -509,8 +515,8 @@ describe("useHint", () => {
       doMount({
         hintKey,
       });
-    const { createHintComponent } = getComposableResult();
-    createHintComponent({
+    const { createHint } = getComposableResult();
+    createHint({
       hintId: hintKey,
       isVisibleCondition: ref(true),
     });
@@ -525,8 +531,8 @@ describe("useHint", () => {
       doMount({
         hintKey,
       });
-    const { createHintComponent } = getComposableResult();
-    createHintComponent({
+    const { createHint } = getComposableResult();
+    createHint({
       hintId: hintKey,
       isVisibleCondition: ref(false),
     });

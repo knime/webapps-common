@@ -16,19 +16,19 @@ import type { HintConfiguration, HintState, MaybeElement } from "../types";
 import { useHintProvider } from "./useHintProvider";
 import { useHintState } from "./useHintState";
 
-type UseHintOptions = {
+type UseHintSetupOptions = {
   /** the hints */
   hints: Record<string, HintConfiguration>;
   /** key for this hint instance */
-  storageKey?: string;
+  storageKey: string;
   /** user ID used as identifier for the local storage */
-  uniqueUserId?: MaybeRef<string>;
+  uniqueUserId: MaybeRef<string>;
   /** skip all hints (if there is no session for example) */
-  skipHints?: MaybeRef<boolean>;
+  skipHints: MaybeRef<boolean>;
   /** callback function to retrieve remote hint states */
-  getRemoteHintState?: (storageKey: string) => Promise<HintState>;
+  getRemoteHintState: (storageKey: string) => Promise<HintState>;
   /** callback function to set remote hint states */
-  setRemoteHintState?: (
+  setRemoteHintState: (
     storageKey: string,
     state: HintState,
   ) => Promise<boolean>;
@@ -37,22 +37,44 @@ type UseHintOptions = {
 // eslint-disable-next-line no-undefined
 const noop = () => undefined;
 
-const { createHint } = useHintProvider();
+const hintSetup: Record<string, UseHintSetupOptions> = {};
 
-export const useHint = ({
-  hints,
-  uniqueUserId = "user",
-  storageKey = "onboarding.hints",
-  skipHints = false,
-  getRemoteHintState = () => Promise.resolve({} as HintState),
-  setRemoteHintState = () => Promise.resolve(false),
-}: UseHintOptions) => {
+export const setupHints = (
+  {
+    hints = {},
+    uniqueUserId = "user",
+    storageKey = "onboarding.hints",
+    skipHints = false,
+    getRemoteHintState = () => Promise.resolve({} as HintState),
+    setRemoteHintState = () => Promise.resolve(false),
+  }: Partial<UseHintSetupOptions>,
+  hintSetupId: string = "default",
+) => {
+  hintSetup[hintSetupId] = {
+    hints,
+    uniqueUserId,
+    storageKey,
+    skipHints,
+    getRemoteHintState,
+    setRemoteHintState,
+  };
+};
+
+export const useHint = ({ hintSetupId = "default" } = {}) => {
+  const {
+    hints,
+    uniqueUserId,
+    storageKey,
+    skipHints,
+    getRemoteHintState,
+    setRemoteHintState,
+  } = hintSetup[hintSetupId];
+
   if (unref(skipHints)) {
-    const isAllSkipped = ref(true);
     return {
       isCompleted: () => true,
-      isAllSkipped: readonly(isAllSkipped),
-      createHintComponent: noop,
+      isAllSkipped: readonly(ref(true)),
+      createHint: noop,
       getCompleteHintComponentCallback: () => noop,
       completeHintWithoutComponent: () => noop,
     };
@@ -73,6 +95,8 @@ export const useHint = ({
     setRemoteHintState,
     storageKey,
   });
+
+  const { createHintData } = useHintProvider();
 
   onBeforeMount(() => {
     initialize();
@@ -165,7 +189,7 @@ export const useHint = ({
       configuredSelector ??
       `#${hintId}`;
 
-    const { showHint, closeHint } = createHint({
+    const { showHint, closeHint } = createHintData({
       element,
       title,
       description,
@@ -212,7 +236,8 @@ export const useHint = ({
   return {
     isCompleted,
     isAllSkipped: readonly(isAllSkipped),
-    createHintComponent,
+    createHint: createHintComponent,
+    // TODO: do we need this otherwise improve API (createHint could return functions...)
     getCompleteHintComponentCallback,
     completeHintWithoutComponent: completeHintWithoutVisibility,
   };

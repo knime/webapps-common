@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 
-import { type HintConfiguration, useHint } from "@knime/components";
+import { type HintConfiguration, setupHints, useHint } from "@knime/components";
 
 import CodeExample from "./demo/CodeExample.vue";
 
@@ -19,19 +19,18 @@ const hints: Record<string, HintConfiguration> = {
   },
 };
 
-const { createHintComponent } = useHint({
-  hints,
-});
+setupHints({ hints });
+const { createHint } = useHint();
 
 const referenceElement = ref<HTMLElement>();
 
 onMounted(() => {
-  createHintComponent({
+  createHint({
     hintId: "showHintHere",
     referenceElement,
   });
 
-  createHintComponent({
+  createHint({
     hintId: "also-nice",
   });
 });
@@ -53,15 +52,14 @@ const hints: Record<string, HintConfiguration> = {
   },
 };
 
-const { createHintComponent } = useHint({
-  hints,
-});
+setupHints({ hints });
+const { createHint } = useHint();
 
 // this is just one way of providing the reference, the default is the id of the hint in this case showHintHere
 const referenceElement = ref<HTMLElement>();
 
 onMounted(() => {
-  createHintComponent({
+  createHint({
     hintId: "showHintHere",
     referenceElement,
   });
@@ -96,8 +94,12 @@ onMounted(() => {
             The class instance will display the toasts.
           </li>
           <li>
-            Create hints with the <code>createHintComponent</code> function that
-            is returned by <code>useHint</code>.
+            Call <code>setupHints</code> and provide the hints as well as other
+            configuration.
+          </li>
+          <li>
+            Create hints with the <code>createHint</code> function that is
+            returned by <code>useHint</code>.
           </li>
         </ol>
 

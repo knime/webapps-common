@@ -14,7 +14,7 @@ import { sideAndAlignToPlacement } from "../util/sideAndAlignToPlacement";
 
 import HintPopover from "./HintPopover.vue";
 
-const { createdHints } = useHintProvider();
+const { hintData } = useHintProvider();
 
 const getContent = (hint: HintComponentOptions) => {
   return {
@@ -28,7 +28,7 @@ const getContent = (hint: HintComponentOptions) => {
 };
 
 const visibleHints = computed(() =>
-  createdHints.value.filter(({ isVisible }) => isVisible),
+  hintData.value.filter(({ isVisible }) => isVisible),
 );
 </script>
 

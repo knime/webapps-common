@@ -32,7 +32,7 @@ export type HintComponentOptions = {
 
 const hintComponentOptions = ref<HintComponentOptions[]>([]);
 
-const createHint = (options: Omit<HintComponentOptions, "isVisible">) => {
+const createHintData = (options: Omit<HintComponentOptions, "isVisible">) => {
   // add isVisible marker
   const createOptions = options as HintComponentOptions;
   createOptions.isVisible = false;
@@ -54,7 +54,7 @@ const createHint = (options: Omit<HintComponentOptions, "isVisible">) => {
 
 export const useHintProvider = () => {
   return {
-    createHint,
-    createdHints: computed(() => hintComponentOptions.value),
+    createHintData,
+    hintData: computed(() => hintComponentOptions.value),
   };
 };

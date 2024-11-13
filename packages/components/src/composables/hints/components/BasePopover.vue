@@ -110,6 +110,7 @@ const arrowDynamicPositionStyle = computed(() => {
   display: flex;
   max-width: 350px;
   background: var(--hint-popover-background);
+  z-index: var(--z-index-base-popover, 100);
 
   /* the wrapper is needed to have this proper shadow with two elements */
   filter: drop-shadow(0 2px 10px var(--shadow-base-color));
@@ -137,7 +138,7 @@ const arrowDynamicPositionStyle = computed(() => {
     &.bottom {
       bottom: var(--hint-popover-negative-offset);
       transform: scale(-1);
-      margin-bottom: -1px;
+      margin-bottom: 1px;
     }
 
     & .arrow-inner {

@@ -23,9 +23,9 @@ describe("useHintProvider", () => {
   };
 
   it("should render hint", async () => {
-    const { createHint, createdHints } = useHintProvider();
+    const { createHintData, hintData } = useHintProvider();
 
-    const { showHint, closeHint } = createHint({
+    const { showHint, closeHint } = createHintData({
       element: ".something",
       title: "Test",
       description: "test",
@@ -43,7 +43,7 @@ describe("useHintProvider", () => {
 
     await nextTick();
 
-    expect(createdHints.value[0].isVisible).toBe(true);
+    expect(hintData.value[0].isVisible).toBe(true);
 
     const popovers = wrapper.findAll(".hint-popover");
 
