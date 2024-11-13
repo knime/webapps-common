@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.7.4
+
+### Patch Changes
+
+- efdbcc0: fix issue where hints could get duplicated
+
 ## 1.7.3
 
 ### Patch Changes
