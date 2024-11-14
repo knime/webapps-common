@@ -131,10 +131,14 @@ describe("NodeDialog.vue", () => {
   });
 
   describe("applySettings", () => {
-    let wrapper;
+    let wrapper, sendAlert;
 
     beforeEach(async () => {
       setApplyListenerSpy.mockReset();
+      sendAlert = vi.fn();
+      AlertingService.mockImplementation(() => ({
+        sendAlert,
+      }));
       wrapper = shallowMount(NodeDialog, getOptions());
       await flushPromises();
     });
@@ -162,6 +166,10 @@ describe("NodeDialog.vue", () => {
 
       expect(await applyListener()).toStrictEqual({ isApplied: false });
       expect(applyDataSpy).toHaveBeenCalled();
+      expect(sendAlert).toHaveBeenCalledWith(
+        { message: "Settings are bad!" },
+        true,
+      );
     });
 
     it("logs error that apply data been thrown", () => {

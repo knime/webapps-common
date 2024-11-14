@@ -354,7 +354,7 @@ export default {
     async applySettings() {
       const { result } = await this.jsonDataService!.applyData(this.getData());
       if (result) {
-        alert(result);
+        this.sendAlert({ message: result });
         return { isApplied: false };
       }
       return { isApplied: true };
