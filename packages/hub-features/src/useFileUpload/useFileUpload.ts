@@ -1,7 +1,7 @@
 import { computed } from "vue";
 
 import { useUploadManager } from "@knime/components";
-import { promise } from "@knime/utils";
+import { getFileMimeType, promise } from "@knime/utils";
 
 const DEFAULT_API_BASE_URL = "/_/api";
 
@@ -100,7 +100,7 @@ export const useFileUpload = (options: UseFileUploadOptions = {}) => {
       Object.fromEntries(
         Object.entries(fileDictionary).map(([name, file]) => [
           name,
-          { itemContentType: file.type },
+          { itemContentType: getFileMimeType(file) },
         ]),
       );
 

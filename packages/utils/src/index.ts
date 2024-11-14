@@ -45,6 +45,8 @@ export namespace UploadManagerNS {
   export type UploadStateName = _UploadStateName;
 }
 
+export * from "./fileExtensions";
+
 export {
   uploadManager,
   promise,
