@@ -44,33 +44,24 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Mar 18, 2024 (Paul Bärnreuther): created
+ *   Nov 14, 2024 (Tobias Kampmann): created
  */
 package org.knime.core.webui.node.dialog.defaultdialog.widget;
 
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
+import java.util.Collection;
+
+import org.knime.core.data.DataValue;
 
 /**
- * TODO: This is only a sealed abstract class because UIEXT-1491 Split into different providers for columns, strings and
- * enums.
+ * Interface for column choices state providers that supplies choices.
  *
- * @author Paul Bärnreuther
+ * Most likely this will be implemented by an enum that can provide lists per enum instance
  */
-public sealed interface ChoicesStateProvider<T> extends StateProvider<T>
-    permits StringChoicesStateProvider, ColumnChoicesStateProvider {
+public interface CompatibleDataValueClassesSupplier {
 
     /**
-     * {@inheritDoc}
-     *
-     * Here, the state provider is already configured to compute the state initially before the dialog is opened. If
-     * this is desired but other initial configurations (like dependencies) are desired, override this method and call
-     * super.init within it. If choices should instead be asynchronously loaded once the dialog is opened, override this
-     * method without calling super.init to configure the initializer to do so.
+     * @return the compatible data values classes for this enum.
      */
-    @Override
-    default void init(final StateProviderInitializer initializer) {
-        initializer.computeBeforeOpenDialog();
-
-    }
+    Collection<Class<? extends DataValue>> getCompatibleDataValueClasses();
 
 }

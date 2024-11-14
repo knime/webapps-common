@@ -44,33 +44,50 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Mar 18, 2024 (Paul Bärnreuther): created
+ *   Nov 14, 2024 (Tobias Kampmann): created
  */
 package org.knime.core.webui.node.dialog.defaultdialog.widget;
 
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
+import java.util.Collection;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
+
+import org.knime.core.data.DataColumnSpec;
+import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.DataValue;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
 
 /**
- * TODO: This is only a sealed abstract class because UIEXT-1491 Split into different providers for columns, strings and
- * enums.
+ * A class that provides an array of possible column choices based on a {@link CompatibleDataValueClassesSupplier}.
  *
- * @author Paul Bärnreuther
+ * @param <T> the type that provides the compatible data values, most probably an enum
  */
-public sealed interface ChoicesStateProvider<T> extends StateProvider<T>
-    permits StringChoicesStateProvider, ColumnChoicesStateProvider {
+public abstract class CompatibleColumnChoicesStateProvider<T extends CompatibleDataValueClassesSupplier>
+    implements ColumnChoicesStateProvider {
 
-    /**
-     * {@inheritDoc}
-     *
-     * Here, the state provider is already configured to compute the state initially before the dialog is opened. If
-     * this is desired but other initial configurations (like dependencies) are desired, override this method and call
-     * super.init within it. If choices should instead be asynchronously loaded once the dialog is opened, override this
-     * method without calling super.init to configure the initializer to do so.
-     */
+    private Supplier<T> m_compatibleDataValueClassesSupplier;
+
     @Override
-    default void init(final StateProviderInitializer initializer) {
-        initializer.computeBeforeOpenDialog();
+    public void init(final StateProviderInitializer initializer) {
+        ColumnChoicesStateProvider.super.init(initializer);
 
+        this.m_compatibleDataValueClassesSupplier = initializer.computeFromValueSupplier(getReferenceClass());
     }
 
+    /**
+     * @return the compatible data values classes for this enum.
+     */
+    protected abstract Class<? extends Reference<T>> getReferenceClass();
+
+    @Override
+    public DataColumnSpec[] columnChoices(final DefaultNodeSettingsContext context) {
+        final Collection<Class<? extends DataValue>> allowedTypes =
+            m_compatibleDataValueClassesSupplier.get().getCompatibleDataValueClasses();
+
+        return context.getDataTableSpec(0).map(DataTableSpec::stream) //
+            .orElseGet(Stream::empty) //
+            .filter(columnSpec -> allowedTypes.stream().anyMatch(columnSpec.getType()::isCompatible)) //
+            .toArray(DataColumnSpec[]::new);
+    }
 }
