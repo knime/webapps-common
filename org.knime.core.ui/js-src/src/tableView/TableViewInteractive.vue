@@ -36,8 +36,9 @@ const { ROW_ID, INDEX } = specialColumns;
 // -1 is the backend representation (columnName) for sorting the table by rowKeys
 const ROW_KEYS_SORT_COL_NAME = "-1";
 
-/** We want to support firefox at least, see https://stackoverflow.com/questions/51890286/need-to-increase-the-allowable-maximum-height-for-a-div-element */
-const MAX_NUM_PXL_BROWSER_LIMITATION = 17000000; // < 17.895.697 (px)
+// Limitation due to chrome which supports a height up to 2^31 / 64 https://issues.chromium.org/issues/41124860#comment7
+// We use a few pixels less than the maximum to prevent the last row from being cut off (exported for test purposes)
+export const MAX_NUM_PXL_BROWSER_LIMITATION = 16_777_000; // < 2 ^ 31 / 64 = 16.777.216 (px)
 const DEFAULT_SCOPE_SIZE = 200;
 const SMALL_SCOPE_SIZE = 2;
 const DEFAULT_BUFFER_SIZE = 50;
