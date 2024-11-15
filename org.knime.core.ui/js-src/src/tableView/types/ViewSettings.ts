@@ -26,6 +26,7 @@ type GenericTableViewViewSettings<T extends string[] | undefined> = {
   showColumnDataType: boolean;
   enableRendererSelection: boolean;
   showTableSize: boolean;
+  showColumnCount: boolean;
   rowHeightMode: RowHeightMode;
   verticalPaddingMode: VerticalPaddingMode;
   customRowHeight: number;
@@ -43,7 +44,7 @@ type GenericTableViewViewSettings<T extends string[] | undefined> = {
   displayedColumns: { selected: T };
   enableCellCopying: boolean;
   enableDataValueViews: boolean;
-  showOnlyRowCount: boolean;
+  rowLabel: string;
 };
 
 export type TableViewViewSettings = GenericTableViewViewSettings<string[]>;

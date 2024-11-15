@@ -82,6 +82,7 @@ export const getDefaultProps = (): TableViewDisplayProps => {
       showRowKeys: false,
       showRowIndices: false,
       showTableSize: false,
+      showColumnCount: false,
       rowHeightMode: RowHeightMode.AUTO,
       verticalPaddingMode: VerticalPaddingMode.DEFAULT,
       customRowHeight: 80,
@@ -101,7 +102,7 @@ export const getDefaultProps = (): TableViewDisplayProps => {
       displayedColumns: { selected: [] },
       enableCellCopying: false,
       enableDataValueViews: false,
-      showOnlyRowCount: false,
+      rowLabel: "",
     },
     page: {
       currentRowCount: 4,

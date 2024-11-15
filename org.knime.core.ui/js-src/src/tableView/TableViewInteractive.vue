@@ -131,7 +131,8 @@ export default {
       lastUpdateHash: 0,
       link: "",
       showOnlySelectedRows: false,
-      showOnlyRowCount: false,
+      showColumnCount: true,
+      rowLabel: "",
     };
   },
   computed: {
@@ -294,7 +295,8 @@ export default {
     setSettings(settings: TableViewViewSettings) {
       this.settings = settings;
       this.showOnlySelectedRows = settings.showOnlySelectedRows;
-      this.showOnlyRowCount = settings.showOnlyRowCount;
+      this.rowLabel = settings.rowLabel;
+      this.showColumnCount = settings.showColumnCount;
     },
     async initializeLazyLoading(
       params: {
@@ -1315,8 +1317,8 @@ export default {
         ? totalSelected
         : totalRowCount,
       currentPage,
-      columnCount,
-      showOnlyRowCount,
+      columnCount: showColumnCount ? columnCount : 0,
+      rowLabel,
     }"
     :sorting="
       columnSortIndex === null

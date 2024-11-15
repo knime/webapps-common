@@ -155,13 +155,14 @@ public final class FlowVariableViewUtil {
 
         // Needs to be enabled to not lazily fetch data, 'ExpressionFlowVariableNodeDialog'
         // wouldn't show anything otherwise
-        settings.m_enablePagination = true;
+        settings.m_enablePagination = false;
 
         // Custom settings for flow variable view
         settings.m_showColumnDataType = false;
-        settings.m_showTableSize = false;
+        settings.m_showTableSize = true;
+        settings.m_showColumnCount = false;
         settings.m_autoSizeColumnsToContent = AUTO_SIZE_COLUMNS.FIT_CONTENT_AND_HEADER;
-        settings.m_showOnlyRowCount = true; // To make the table header only show 'Count: ...'
+        settings.m_rowLabel = "Count"; // To make the table header only show 'Count: ...'
 
         return settings;
     }

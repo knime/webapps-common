@@ -147,6 +147,7 @@ describe("TableViewInteractive.vue", () => {
         showColumnDataType: false,
         showRowIndices: false,
         showTableSize: true,
+        showColumnCount: true,
         enableColumnSearch: true,
         enableGlobalSearch: true,
         enablePagination: true,
@@ -159,7 +160,7 @@ describe("TableViewInteractive.vue", () => {
         showOnlySelectedRowsConfigurable: true,
         enableCellCopying: true,
         enableDataValueViews: true,
-        showOnlyRowCount: false,
+        rowLabel: "",
       },
     };
 
@@ -324,7 +325,7 @@ describe("TableViewInteractive.vue", () => {
           columnCount: 4,
           showTableSize: true,
           showPageControls: true,
-          showOnlyRowCount: false,
+          rowLabel: "",
         },
         searchConfig: {
           searchQuery: "",

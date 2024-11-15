@@ -17,7 +17,7 @@ const getPageConfig = (
     currentPage,
     columnCount,
     showPageControls = true,
-    showOnlyRowCount,
+    rowLabel,
   } = pageParams;
 
   return {
@@ -29,7 +29,7 @@ const getPageConfig = (
       columnCount,
       showTableSize,
       showPageControls,
-      showOnlyRowCount,
+      rowLabel,
     } satisfies PageConfig,
   };
 };
