@@ -56,12 +56,22 @@ const uploadChunkWithProgress = (params: {
         // https://datatracker.ietf.org/doc/html/rfc7232#section-2.3
         resolve({ partId: etag.replace(/^(?:W\/)?"|"$/g, "") });
       } else {
-        reject(new Error(`Failed to upload chunk ${chunkIndex}`));
+        consola.error("Failed or unexpected XHR response", {
+          xhrStatus: xhr.status,
+          xhrResponse: xhr.response,
+          chunkIndex,
+        });
+        reject(new Error("Failed to upload file"));
       }
     };
 
-    xhr.onerror = () =>
-      reject(new Error(`Failed to upload chunk ${chunkIndex}`));
+    xhr.onerror = (event) => {
+      consola.error("Failed to upload chunk", {
+        xhrErrorEvent: event,
+        chunkIndex,
+      });
+      reject(new Error("Failed to upload file"));
+    };
 
     xhr.send(chunk);
   });

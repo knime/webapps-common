@@ -183,12 +183,7 @@ export const useFileUpload = (options: UseFileUploadOptions = {}) => {
         })
         .catch((error) => {
           consola.error("Error attempting to complete upload", { error });
-          useUploadManagerResult.setFailed(
-            uploadId,
-            error instanceof Error
-              ? error
-              : new Error("Error attempting to complete upload"),
-          );
+          useUploadManagerResult.setFailed(uploadId, error as Error);
         });
     },
 

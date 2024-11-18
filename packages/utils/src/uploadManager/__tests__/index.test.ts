@@ -188,11 +188,11 @@ describe("uploadManager", () => {
       expect(cancelled.length).toBe(0);
       expect(onFailed).toHaveBeenCalledWith(
         uploadId1,
-        new Error("Failed to upload chunk 0"),
+        new Error("Failed to upload file"),
       );
       expect(onFailed).toHaveBeenCalledWith(
         uploadId2,
-        new Error("Failed to upload chunk 0"),
+        new Error("Failed to upload file"),
       );
       expect(onComplete).not.toHaveBeenCalled();
     });
