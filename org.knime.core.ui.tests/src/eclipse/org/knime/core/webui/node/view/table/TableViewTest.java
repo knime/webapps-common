@@ -905,6 +905,23 @@ class TableViewTest {
             assertThat(copyContent).isEqualTo(expectedResult);
         }
 
+        @Test
+        void testGetCopyContentForOneSingleCellWithTabs() throws IOException {
+            final var rowIndexConfig = new SpecialColumnConfig(false, "#");
+            final var rowKeyConfig = new SpecialColumnConfig(false, "RowID");
+
+            final var columnName = "myColumn";
+            final var valueWithTabs = "value\twith\ttabs";
+            final var table = TableTestUtil
+                .createTableFromColumns(new ObjectColumn(columnName, StringCell.TYPE, new String[]{valueWithTabs}));
+
+            dataService = new TableViewDataServiceImpl(() -> table, null, new SwingBasedRendererFactory(), null);
+            final var copyContent =
+                dataService.getCopyContent(rowIndexConfig, rowKeyConfig, false, new String[]{columnName}, 0, 0);
+            assertThat(copyContent.csv()).isEqualTo(valueWithTabs);
+
+        }
+
     }
 
     private static TableViewDataService

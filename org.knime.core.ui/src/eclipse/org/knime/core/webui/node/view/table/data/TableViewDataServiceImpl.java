@@ -611,7 +611,9 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         final var rows = tableRenderer.renderRows(toBeRenderedTable);
         final var columnHeaders = getCopyContentColumnHeaders(rowIndexConfig, rowKeyConfig, dataColumns);
         final var tableDataToStringUtil = new TableDataToStringConverter(columnHeaders, rows, withHeaders);
-        return new HTMLAndCSV(tableDataToStringUtil.toHTML(), tableDataToStringUtil.toCSV());
+        final var isSingleValue = rows.size() == 1 && rows.get(0).size() == 1 && !withHeaders;
+        return new HTMLAndCSV(tableDataToStringUtil.toHTML(),
+            isSingleValue ? rows.get(0).get(0) : tableDataToStringUtil.toCSV());
     }
 
     private static List<String> getCopyContentColumnHeaders(final SpecialColumnConfig rowIndexConfig,
