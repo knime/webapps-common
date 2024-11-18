@@ -50,14 +50,18 @@ package org.knime.core.webui.node.view.flowvariable;
 
 import static org.knime.core.webui.node.view.table.RowHeightPersistorUtil.LEGACY_CUSTOM_ROW_HEIGHT_COMPACT;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpecCreator;
+import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DataTableSpecCreator;
+import org.knime.core.data.DataType;
 import org.knime.core.data.RowKey;
 import org.knime.core.data.def.DefaultRow;
 import org.knime.core.data.def.StringCell;
@@ -112,7 +116,7 @@ public final class FlowVariableViewUtil {
         final Collection<org.knime.core.node.workflow.FlowVariable> flowVariables) {
         flowVariables.stream()//
             .map(FlowVariable::create)//
-            .map(withCounter((counter, variable) -> new DefaultRow(RowKey.createRowKey(counter),
+            .map(withCounter((counter, variable) -> asDataRow(RowKey.createRowKey(counter),
                 variable.getOwnerNodeId(), variable.getType(), variable.getName(), variable.getValue())))//
             .forEach(container::addRowToTable);
     }
@@ -120,6 +124,12 @@ public final class FlowVariableViewUtil {
     private static <T, R> Function<T, R> withCounter(final BiFunction<Long, T, R> function) {
         final var counter = new AtomicLong(0);
         return item -> function.apply(counter.getAndIncrement(), item);
+    }
+
+    private static DataRow asDataRow(final RowKey key, final String... values) {
+        return new DefaultRow(key, Arrays.stream(values) //
+            .map(value -> value != null ? new StringCell(value) : DataType.getMissingCell()) //
+            .toArray(DataCell[]::new));
     }
 
     /**
