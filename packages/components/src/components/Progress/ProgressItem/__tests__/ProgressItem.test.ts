@@ -57,13 +57,20 @@ describe("ProgressItem.vue", () => {
     const wrapper = mount(ProgressItem, {
       props: {
         ...defaultProps,
-        statusPill: { text: "pill text", variant: "success" },
+        statusPill: {
+          text: "pill text",
+          variant: "success",
+          tooltip: "hello world",
+        },
       },
     });
 
     expect(wrapper.findComponent(Pill).exists()).toBe(true);
     expect(wrapper.findComponent(Pill).props("variant")).toBe("success");
     expect(wrapper.findComponent(Pill).text()).toMatch("pill text");
+    expect(wrapper.findComponent(Pill).attributes("title")).toMatch(
+      "hello world",
+    );
   });
 
   it.each([["prepend"] as const, ["actions"] as const])(

@@ -52,13 +52,24 @@ const statusMapper = {
   cancelled: ["Cancelled", "error", CircleClose],
 } satisfies Record<UploadItemStatus, [string, PillVariant, Component]>;
 
-const statusPill = computed(() => {
+type StatusPill =
+  | InstanceType<typeof ProgressItem>["$props"]["statusPill"]
+  | null;
+const statusPill = computed<StatusPill>(() => {
   if (!props.item.status) {
     return null;
   }
 
   const [text, variant, icon] = statusMapper[props.item.status];
-  return { text, variant, icon };
+
+  const isFailed = props.item.status === "failed";
+  const tooltip =
+    isFailed && props.item.failureDetails
+      ? props.item.failureDetails
+      : // eslint-disable-next-line no-undefined
+        undefined;
+
+  return { text, variant, icon, tooltip } satisfies StatusPill;
 });
 
 const shouldShowCancelAction = computed(

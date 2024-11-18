@@ -8,4 +8,5 @@ export type UploadItem = {
   size: number;
   progress?: number;
   status?: UploadItemStatus;
+  failureDetails?: string;
 };

@@ -205,6 +205,7 @@ describe("useFileUpload", () => {
           progress: 0,
           status: "failed",
           parentId,
+          failureDetails: "api error",
         },
       ]);
       expect(promise.retryPromise).toHaveBeenCalled();

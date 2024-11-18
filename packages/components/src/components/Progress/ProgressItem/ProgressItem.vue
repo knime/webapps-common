@@ -29,7 +29,11 @@ const props = defineProps<ProgressItemProps>();
       </div>
 
       <div class="item-action">
-        <Pill v-if="props.statusPill" :variant="props.statusPill.variant">
+        <Pill
+          v-if="props.statusPill"
+          :variant="props.statusPill.variant"
+          :title="props.statusPill.tooltip"
+        >
           <component :is="props.statusPill.icon" />
           {{ props.statusPill.text }}
         </Pill>

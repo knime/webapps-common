@@ -38,13 +38,6 @@ describe("useUploadManager", () => {
   const file1 = new File(fileSize, "mock-file1.txt", { type: "text/plain" });
   const file2 = new File(fileSize, "mock-file2.txt", { type: "text/plain" });
 
-  const prepareUpload = vi.fn(() =>
-    Promise.resolve([
-      { uploadId: "1", file: file1 },
-      { uploadId: "2", file: file2 },
-    ]),
-  );
-
   const resolveFilePartUploadURL = () =>
     Promise.resolve({ method: "", url: "" });
 
@@ -56,12 +49,16 @@ describe("useUploadManager", () => {
 
   const setup = async (options: Options = {}) => {
     const composableResult = useUploadManager({
-      prepareUpload,
       resolveFilePartUploadURL,
       ...options,
     });
 
-    composableResult.start(parentId, [file1, file2]);
+    const payload = [
+      { uploadId: "1", file: file1 },
+      { uploadId: "2", file: file2 },
+    ];
+
+    composableResult.start(parentId, payload);
     await flushPromises();
 
     return composableResult;
@@ -88,7 +85,6 @@ describe("useUploadManager", () => {
         parentId,
       },
     ]);
-    expect(prepareUpload).toHaveBeenCalledWith(parentId, [file1, file2]);
     expect(uploadManagerMock.uploadFiles).toHaveBeenCalledWith([
       { uploadId: "1", file: file1 },
       { uploadId: "2", file: file2 },
@@ -146,12 +142,16 @@ describe("useUploadManager", () => {
       expect.objectContaining({ id: "2", status: "inprogress" }),
     ]);
 
-    const error = new Error();
+    const error = new Error("this is an error");
     setFailed("1", error);
     expect(uploadManagerMock.setFailed).toHaveBeenCalledWith("1", error);
 
     expect(uploadItems.value).toEqual([
-      expect.objectContaining({ id: "1", status: "failed" }),
+      expect.objectContaining({
+        id: "1",
+        status: "failed",
+        failureDetails: "this is an error",
+      }),
       expect.objectContaining({ id: "2", status: "inprogress" }),
     ]);
   });
@@ -194,13 +194,17 @@ describe("useUploadManager", () => {
       expect.objectContaining({ id: "2", status: "inprogress" }),
     ]);
 
-    const error = new Error("");
+    const error = new Error("this is an error");
     uploadManagerConfig.onFileUploadFailed?.("1", error);
 
     expect(onFailed).toHaveBeenCalledWith("1", error);
 
     expect(uploadItems.value).toEqual([
-      expect.objectContaining({ id: "1", status: "failed" }),
+      expect.objectContaining({
+        id: "1",
+        status: "failed",
+        failureDetails: "this is an error",
+      }),
       expect.objectContaining({ id: "2", status: "inprogress" }),
     ]);
   });
@@ -238,16 +242,5 @@ describe("useUploadManager", () => {
     expect(uploadManagerMock.cancel).toHaveBeenLastCalledWith("2");
 
     expect(uploadItems.value).toEqual([]);
-  });
-
-  it("should handle failure when preparing upload", async () => {
-    const { uploadItems } = await setup({
-      prepareUpload: () => Promise.reject(new Error("preparing failed")),
-    });
-
-    expect(uploadItems.value).toEqual([
-      expect.objectContaining({ name: "mock-file1.txt", status: "failed" }),
-      expect.objectContaining({ name: "mock-file2.txt", status: "failed" }),
-    ]);
   });
 });

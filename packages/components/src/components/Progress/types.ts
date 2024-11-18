@@ -9,5 +9,6 @@ export type ProgressItemProps = {
     text: string;
     variant: PillVariant;
     icon?: any;
+    tooltip?: string;
   };
 };

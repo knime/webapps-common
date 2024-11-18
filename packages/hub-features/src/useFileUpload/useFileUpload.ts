@@ -1,17 +1,27 @@
-import { computed } from "vue";
+import { computed, ref } from "vue";
 
 import { useUploadManager } from "@knime/components";
 import { getFileMimeType, promise } from "@knime/utils";
 
+const DEFAULT_MAX_UPLOAD_QUEUE_SIZE = 10;
+
 const DEFAULT_API_BASE_URL = "/_/api";
 
 type UseFileUploadOptions = {
+  /**
+   * Max number of concurrent uploads allowed in the upload queue.
+   * When an upload is started with a number of files that exceed the pending
+   * uploads then only files up-to the max queue size will be processed and the rest
+   * will be ignored. This will also call the `onUploadQueueSizeExceeded` callback
+   */
+  maxUploadQueueSize?: number;
   apiBaseUrl?: string;
   onFileUploadComplete?: (
     uploadId: string,
     filePartIds: Record<number, string>,
   ) => void;
   onFileUploadFailed?: (uploadId: string, error: Error) => void;
+  onUploadQueueSizeExceeded?: (maxQueueSize: number) => void;
 };
 
 /**
@@ -163,7 +173,6 @@ export const useFileUpload = (options: UseFileUploadOptions = {}) => {
   };
 
   const useUploadManagerResult = useUploadManager({
-    prepareUpload,
     resolveFilePartUploadURL,
 
     onFileUploadComplete: ({ uploadId, filePartIds }) => {
@@ -188,8 +197,43 @@ export const useFileUpload = (options: UseFileUploadOptions = {}) => {
     },
   });
 
+  const getEnqueueableFiles = (files: File[]): File[] => {
+    const { totalPendingUploads } = useUploadManagerResult;
+
+    const { maxUploadQueueSize = DEFAULT_MAX_UPLOAD_QUEUE_SIZE } = options;
+
+    if (files.length + totalPendingUploads.value > maxUploadQueueSize) {
+      options.onUploadQueueSizeExceeded?.(maxUploadQueueSize);
+    }
+
+    // only keep as many files as the queue allows
+    return files.slice(0, maxUploadQueueSize - totalPendingUploads.value);
+  };
+
+  const isPreparingUpload = ref(false);
+
   return {
     ...useUploadManagerResult,
+
+    isPreparingUpload: computed(() => isPreparingUpload.value),
+
+    start: async (parentId: string, files: File[]) => {
+      try {
+        isPreparingUpload.value = true;
+
+        // TODO: HUB-9102: improve error handling here. see ticket for details
+        const uploadPayload = await promise.retryPromise(() =>
+          prepareUpload(parentId, getEnqueueableFiles(files)),
+        );
+
+        isPreparingUpload.value = false;
+
+        useUploadManagerResult.start(parentId, uploadPayload);
+      } catch (error) {
+        // TODO: HUB-8152 process max file size error
+        consola.error(error);
+      }
+    },
 
     cancel: (uploadId: string) => {
       useUploadManagerResult.cancel(uploadId);

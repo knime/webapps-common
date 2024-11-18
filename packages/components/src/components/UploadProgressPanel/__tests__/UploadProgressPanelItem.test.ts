@@ -72,6 +72,29 @@ describe("UploadProgressPanelItem.vue", () => {
     },
   );
 
+  it("should render forward the failure details to the status pill", () => {
+    const { wrapper } = doMount({
+      props: {
+        item: {
+          ...item,
+          status: "failed",
+          failureDetails: "This is some failure",
+        },
+      },
+    });
+
+    expect(wrapper.findComponent(ProgressItem).props()).toEqual(
+      expect.objectContaining({
+        statusPill: {
+          icon: expect.any(Object),
+          text: "Failed",
+          variant: "error",
+          tooltip: "This is some failure",
+        },
+      }),
+    );
+  });
+
   describe("cancel action", () => {
     const hasCancelAction = (wrapper: VueWrapper<any>) =>
       wrapper.find('[data-test-id="cancel-action"]').exists();
