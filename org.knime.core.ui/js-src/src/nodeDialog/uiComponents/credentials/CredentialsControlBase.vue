@@ -4,9 +4,9 @@ import { mergeDeep } from "@/nodeDialog/utils";
 import { InputField } from "@knime/components";
 import LabeledControl from "@/nodeDialog/uiComponents/label/LabeledControl.vue";
 import useProvidedState from "@/nodeDialog/composables/components/useProvidedState";
-import type Control from "@/nodeDialog/types/Control";
-import { FlowSettings } from "@/nodeDialog/api/types";
-import type Credentials from "./types/Credentials";
+import type { Control } from "@/nodeDialog/types/Control";
+import { type FlowSettings } from "@/nodeDialog/api/types";
+import type { Credentials } from "./types/Credentials";
 
 const props = defineProps<{
   /**

@@ -33,7 +33,7 @@ import { mergeDeep } from "@/nodeDialog/utils";
 import { MultiModeTwinList } from "@knime/components";
 import inject from "@/nodeDialog/utils/inject";
 
-import type Control from "@/nodeDialog/types/Control";
+import type { Control } from "@/nodeDialog/types/Control";
 import type { PartialDeep } from "type-fest";
 import TwinlistLoadingInfo from "../loading/TwinlistLoadingInfo.vue";
 import useDialogControl from "@/nodeDialog/composables/components/useDialogControl";

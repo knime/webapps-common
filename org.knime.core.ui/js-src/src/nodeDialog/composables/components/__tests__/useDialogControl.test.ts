@@ -5,13 +5,13 @@ import {
   it,
   vi,
   type Mock,
-  MockInstance,
+  type MockInstance,
 } from "vitest";
 import * as UseJsonFormsControlWithUpdateModule from "../useJsonFormsControlWithUpdate";
 import * as UseFlowVariablesModule from "../useFlowVariables";
 import { type Ref, ref } from "vue";
-import { FlowSettings } from "@/nodeDialog/api/types/index";
-import Control from "@/nodeDialog/types/Control";
+import type { FlowSettings } from "@/nodeDialog/api/types/index";
+import type { Control } from "@/nodeDialog/types/Control";
 import UseDialogControlTestComponent from "./UseDialogControlTestComponent.vue";
 import { mount } from "@vue/test-utils";
 import { injectionKey as injectionKeyFromUseDirtySettings } from "@/nodeDialog/composables/nodeDialog/useDirtySettings";

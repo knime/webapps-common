@@ -2,7 +2,7 @@
 import Left from "./Left.vue";
 import Right from "./Right.vue";
 import Inner from "./Inner.vue";
-import { ControlElement } from "@jsonforms/core";
+import type { ControlElement } from "@jsonforms/core";
 import { rendererProps } from "@jsonforms/vue";
 
 const props = defineProps(

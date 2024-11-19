@@ -1,6 +1,6 @@
 import type { MenuItem } from "@knime/components";
 import type { PageParams } from "../types";
-import type TableViewViewSettings from "../types/ViewSettings";
+import type { TableViewViewSettings } from "../types/ViewSettings";
 import { SelectionMode } from "../types/ViewSettings";
 import type { TableConfig, PageConfig } from "@knime/knime-ui-table";
 

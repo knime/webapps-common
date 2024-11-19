@@ -1,5 +1,5 @@
 import type { PossibleValue } from "../types/ChoicesUiSchema";
-import type Result from "./types/Result";
+import type { Result } from "./types/Result";
 
 type GetChoices = (params: {
   method: "settings.getChoices";

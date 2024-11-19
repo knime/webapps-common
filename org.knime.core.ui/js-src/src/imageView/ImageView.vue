@@ -8,7 +8,7 @@ import {
 import { fetchImage } from "@/utils/images";
 import OptionalLabel from "./OptionalLabel.vue";
 import OptionalFigure from "./OptionalFigure.vue";
-import type Settings from "./types/ImageViewSettings";
+import type { ImageViewSettings } from "./types/ImageViewSettings";
 import "../common/main.css";
 
 import {
@@ -23,21 +23,21 @@ import {
 import type { UIExtensionService } from "@knime/ui-extension-service";
 import NoPageBreak from "./NoPageBreak.vue";
 
-const viewSettings: Settings = reactive({
+const viewSettings: ImageViewSettings = reactive({
   title: "",
   altText: "",
   caption: "",
   shrinkToFit: true,
 });
 
-const setData = (settings: Settings) => {
+const setData = (settings: ImageViewSettings) => {
   Object.assign(viewSettings, settings);
 };
 
 const onViewSettingsChange = ({
   data: { view: viewSettings },
 }: {
-  data: { view: Settings };
+  data: { view: ImageViewSettings };
 }) => {
   setData(viewSettings);
 };

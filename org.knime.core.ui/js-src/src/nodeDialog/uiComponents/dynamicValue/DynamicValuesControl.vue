@@ -8,7 +8,7 @@ import {
 import DynamicValueControl, {
   type DynamicValueType,
 } from "./DynamicValueControl.vue";
-import { ControlProps } from "@jsonforms/core";
+import { type ControlProps } from "@jsonforms/core";
 
 enum InputKind {
   SINGLE = "SINGLE",

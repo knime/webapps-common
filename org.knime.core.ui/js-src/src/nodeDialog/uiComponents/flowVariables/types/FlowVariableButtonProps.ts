@@ -1,5 +1,3 @@
-type FlowVariableButtonProps = {
+export type FlowVariableButtonProps = {
   hover: boolean;
 };
-
-export default FlowVariableButtonProps;

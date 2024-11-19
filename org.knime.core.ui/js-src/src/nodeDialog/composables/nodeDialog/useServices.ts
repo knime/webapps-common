@@ -3,7 +3,7 @@ import {
   DialogService,
   JsonDataService,
   SharedDataService,
-  UIExtensionService,
+  type UIExtensionService,
 } from "@knime/ui-extension-service";
 
 /**

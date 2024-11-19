@@ -6,10 +6,10 @@ import inject from "../utils/inject";
 import { computed, onMounted, ref } from "vue";
 import useDialogControl from "../composables/components/useDialogControl";
 import getFlattenedSettings from "../utils/getFlattenedSettings";
-import type SettingsData from "../types/SettingsData";
+import type { SettingsData } from "../types/SettingsData";
 import { rendererProps } from "@jsonforms/vue";
-import { Stringifyable } from "../composables/components/JsonSettingsComparator";
-import type ResultOfType from "@/nodeDialog/api/types/Result";
+import { type Stringifyable } from "../composables/components/JsonSettingsComparator";
+import type { Result as ResultOfType } from "@/nodeDialog/api/types/Result";
 type Id = string; // NOSONAR intended type alias
 interface State {
   id: Id;

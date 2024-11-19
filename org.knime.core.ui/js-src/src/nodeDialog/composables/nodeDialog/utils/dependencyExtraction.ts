@@ -1,5 +1,5 @@
 import { get } from "lodash-es";
-import { IndexIdsValuePairs } from "@/nodeDialog/types/Update";
+import type { IndexIdsValuePairs } from "@/nodeDialog/types/Update";
 import { combineDataPathsWithIndices } from "./dataPaths";
 import {
   type ArrayRecord,

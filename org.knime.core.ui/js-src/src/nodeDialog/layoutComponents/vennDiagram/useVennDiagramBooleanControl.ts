@@ -1,6 +1,6 @@
 import useDialogControl from "@/nodeDialog/composables/components/useDialogControl";
-import { ControlElement } from "@jsonforms/core";
-import { RendererProps } from "@jsonforms/vue";
+import type { ControlElement } from "@jsonforms/core";
+import type { RendererProps } from "@jsonforms/vue";
 import { computed } from "vue";
 
 export default (props: RendererProps<ControlElement>) => {

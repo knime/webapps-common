@@ -1,7 +1,7 @@
-import { ConfigPath } from "../composables/components/useFlowVariables";
-import { PersistSchema } from "../types/Persist";
+import type { ConfigPath } from "../composables/components/useFlowVariables";
+import type { PersistSchema } from "../types/Persist";
 import {
-  DeprecatedConfigPathsCandidate,
+  type DeprecatedConfigPathsCandidate,
   createNewCandidate,
   toConfigPathsWithDeprecatedConfigPaths,
   updateCandidates,

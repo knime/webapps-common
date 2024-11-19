@@ -1,5 +1,5 @@
-import { FlowSettings } from "@/nodeDialog/api/types";
-import { InjectionKey, inject, provide, reactive } from "vue";
+import type { FlowSettings } from "@/nodeDialog/api/types";
+import { type InjectionKey, inject, provide, reactive } from "vue";
 
 // exported for tests
 export const injectionKey: InjectionKey<Record<string, FlowSettings>> =

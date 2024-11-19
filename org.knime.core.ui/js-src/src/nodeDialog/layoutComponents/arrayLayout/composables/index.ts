@@ -1,4 +1,4 @@
-import Provided from "@/nodeDialog/types/provided";
+import type { Provided } from "@/nodeDialog/types/provided";
 import inject from "@/nodeDialog/utils/inject";
 import { provide } from "vue";
 

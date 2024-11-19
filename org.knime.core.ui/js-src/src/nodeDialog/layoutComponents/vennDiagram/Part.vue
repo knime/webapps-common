@@ -9,7 +9,7 @@
 </template>
 
 <script setup lang="ts">
-import { ControlElement } from "@jsonforms/core";
+import type { ControlElement } from "@jsonforms/core";
 import { rendererProps } from "@jsonforms/vue";
 import useVennDiagramBooleanControl from "./useVennDiagramBooleanControl";
 import { useAttrs, type PropType } from "vue";

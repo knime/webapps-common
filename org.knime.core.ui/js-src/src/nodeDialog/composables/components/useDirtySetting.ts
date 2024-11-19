@@ -1,8 +1,8 @@
-import { Ref, onUnmounted, watch } from "vue";
-import { SettingComparator } from "@knime/ui-extension-service";
+import { type Ref, onUnmounted, watch } from "vue";
+import type { SettingComparator } from "@knime/ui-extension-service";
 import {
   JsonSettingsComparator,
-  Stringifyable,
+  type Stringifyable,
 } from "./JsonSettingsComparator";
 import useDirtySettings from "../nodeDialog/useDirtySettings";
 import { injectIsChildOfAddedArrayLayoutElement } from "./useAddedArrayLayoutItem";

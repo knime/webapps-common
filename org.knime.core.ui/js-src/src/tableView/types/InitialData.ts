@@ -1,5 +1,5 @@
-import Table from "./Table";
-import TableViewViewSettings from "./ViewSettings";
+import type { Table } from "./Table";
+import type { TableViewViewSettings } from "./ViewSettings";
 
 export interface Renderer {
   id: string;
@@ -12,7 +12,7 @@ export interface DataType {
   hasDataValueView: boolean;
 }
 
-interface InitialData {
+export interface InitialData {
   /**
    * @return the table to be shown initially
    */
@@ -34,5 +34,3 @@ interface InitialData {
    */
   settings: TableViewViewSettings;
 }
-
-export default InitialData;

@@ -10,12 +10,12 @@ import flushPromises from "flush-promises";
 
 import { getOptions } from "@/nodeDialog/__tests__/utils";
 import { mockRegisterSettings } from "@@/test-setup/utils/integration/dirtySettingState";
-import {
+import type {
   Update,
   UpdateResult,
   ValueReference,
 } from "@/nodeDialog/types/Update";
-import Result from "@/nodeDialog/api/types/Result";
+import type { Result } from "@/nodeDialog/api/types/Result";
 
 describe("updates in array layouts", () => {
   type Wrapper = VueWrapper<any> & {

@@ -1,7 +1,7 @@
-import { InjectionKey, Ref, computed, inject, provide } from "vue";
+import { type InjectionKey, type Ref, computed, inject, provide } from "vue";
 import { getConfigPaths } from "@/nodeDialog/utils/paths";
-import { FlowSettings } from "@/nodeDialog/api/types";
-import { SettingStateWrapper } from "../nodeDialog/useDirtySettings";
+import type { FlowSettings } from "@/nodeDialog/api/types";
+import type { SettingStateWrapper } from "../nodeDialog/useDirtySettings";
 import { getFlowVariablesMap } from "./useProvidedFlowVariablesMap";
 import { injectForFlowVariables } from "@/nodeDialog/utils/inject";
 

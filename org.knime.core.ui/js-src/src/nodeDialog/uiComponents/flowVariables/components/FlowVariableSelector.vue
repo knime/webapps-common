@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Dropdown } from "@knime/components";
-import type FlowVariableSelectorProps from "../types/FlowVariableSelectorProps";
+import type { FlowVariableSelectorProps } from "../types/FlowVariableSelectorProps";
 import { computed, onMounted, ref, type Ref } from "vue";
 import type { PossibleFlowVariable } from "@/nodeDialog/api/types";
 import useControllingFlowVariable from "../composables/useControllingFlowVariable";

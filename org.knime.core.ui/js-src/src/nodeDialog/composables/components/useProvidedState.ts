@@ -1,5 +1,5 @@
 import inject from "@/nodeDialog/utils/inject";
-import { onMounted, ref, type MaybeRef, unref } from "vue";
+import { onMounted, ref, type MaybeRef, type UnwrapRef, unref } from "vue";
 
 export default <T>(
   stateProviderId: MaybeRef<string | undefined>,
@@ -12,8 +12,8 @@ export default <T>(
   onMounted(() => {
     const id = unref(stateProviderId);
     if (id) {
-      addStateProviderListener({ id }, (providedValue) => {
-        state.value = providedValue;
+      addStateProviderListener({ id }, (providedValue: T) => {
+        state.value = providedValue as UnwrapRef<T>;
       });
     }
   });

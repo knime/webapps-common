@@ -1,6 +1,6 @@
 import getPossibleValuesFromUiSchema from "./getPossibleValuesFromUiSchema";
 export { getPossibleValuesFromUiSchema };
-import type Control from "../types/Control";
+import type { Control } from "../types/Control";
 import type { PartialDeep } from "type-fest";
 import type { JsonSchema4, JsonSchema7 } from "@jsonforms/core";
 

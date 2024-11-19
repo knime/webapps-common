@@ -6,10 +6,11 @@ import FileExplorerTab from "../FileExplorerTab.vue";
 import UrlTab from "../url/UrlTab.vue";
 import flushPromises from "flush-promises";
 import ConnectionPreventsTab from "../ConnectionPreventsTab.vue";
-import FileChooserProps, {
+import type {
+  FileChooserProps,
   FileChooserValue,
-  FSCategory,
 } from "../../types/FileChooserProps";
+import { FSCategory } from "../../types/FileChooserProps";
 
 describe("SideDrawerContent.vue", () => {
   let props: FileChooserProps;

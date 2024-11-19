@@ -8,7 +8,7 @@ import { set } from "lodash-es";
 import getFlattenedSettings from "../utils/getFlattenedSettings";
 import { v4 as uuidv4 } from "uuid";
 import inject from "../utils/inject";
-import type SettingsData from "../types/SettingsData";
+import type { SettingsData } from "../types/SettingsData";
 import type { IdAndText } from "../types/ChoicesUiSchema";
 import useDialogControl, {
   type DialogControl,

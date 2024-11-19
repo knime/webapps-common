@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 /* eslint-disable complexity */
-import Result from "../api/types/Result";
-import { IndicesValuePairs, UpdateResult } from "../types/Update";
+import type { Result } from "../api/types/Result";
+import type { IndicesValuePairs, UpdateResult } from "../types/Update";
 
 const errorFolder = "Open me to see an error message!";
 

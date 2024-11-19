@@ -2,7 +2,7 @@
 import { Description } from "@knime/components";
 import DescriptionIcon from "@knime/styles/img/icons/circle-help.svg";
 import DialogPopover from "@/nodeDialog/popover/DialogPopover.vue";
-import type DescriptionPopoverProps from "./types/DescriptionPopoverProps";
+import type { DescriptionPopoverProps } from "./types/DescriptionPopoverProps";
 
 withDefaults(defineProps<DescriptionPopoverProps>(), {
   hover: false,
@@ -36,7 +36,9 @@ withDefaults(defineProps<DescriptionPopoverProps>(), {
   overflow: auto;
   pointer-events: auto;
   font-size: 13px;
-  line-height: 18.78px; /* Description component line-height-to-font-size-ratio of 26/18 times font size of 13 */
+  line-height: 18.78px;
+
+  /* Description component line-height-to-font-size-ratio of 26/18 times font size of 13 */
   color: var(--knime-masala);
 }
 </style>

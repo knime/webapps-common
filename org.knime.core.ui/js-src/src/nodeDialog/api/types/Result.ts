@@ -13,6 +13,4 @@ type CanceledResult = {
   state: "CANCELED";
 };
 
-type Result<R> = SuccessResult<R> | FailResult | CanceledResult;
-
-export default Result;
+export type Result<R> = SuccessResult<R> | FailResult | CanceledResult;

@@ -17,7 +17,7 @@ export type ColumnContentType =
   | "json"
   | "xml";
 
-interface Table {
+export interface Table {
   /**
    * the displayed columns which remain after missing columns are filtered out.
    */
@@ -76,5 +76,3 @@ interface Table {
    */
   firstRowImageDimensions: Record<string, ImageDimension>;
 }
-
-export default Table;

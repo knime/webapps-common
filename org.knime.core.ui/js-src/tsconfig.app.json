@@ -17,9 +17,8 @@
       "@@/*": ["./*"]
     },
     "allowJs": true,
-    "jsx": "preserve",
     "noEmit": true,
-    "verbatimModuleSyntax": false,
+    "verbatimModuleSyntax": true,
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo"
   }
 }

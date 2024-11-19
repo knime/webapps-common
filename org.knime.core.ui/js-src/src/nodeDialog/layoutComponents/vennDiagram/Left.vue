@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Part from "./Part.vue";
-import { ControlElement } from "@jsonforms/core";
+import type { ControlElement } from "@jsonforms/core";
 import { rendererProps } from "@jsonforms/vue";
 
 const props = defineProps(rendererProps<ControlElement>());

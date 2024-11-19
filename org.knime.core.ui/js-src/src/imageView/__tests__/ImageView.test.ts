@@ -18,7 +18,7 @@ import { Label } from "@knime/components";
 import flushPromises from "flush-promises";
 import { VueWrapper, mount } from "@vue/test-utils";
 import * as fetchImage from "@/utils/images";
-import type ImageViewSettings from "../types/ImageViewSettings";
+import type { ImageViewSettings } from "../types/ImageViewSettings";
 
 describe("ImageView.vue", () => {
   let jsonDataServiceMock: {

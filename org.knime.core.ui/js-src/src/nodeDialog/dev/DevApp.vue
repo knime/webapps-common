@@ -6,7 +6,7 @@ import {
   type UIExtensionService,
   type Alert,
   RenderingType,
-  DataValueViewConfig,
+  type DataValueViewConfig,
 } from "@knime/ui-extension-service";
 import NodeDialog from "@/nodeDialog/NodeDialog.vue";
 import dataServiceMock from "./dataServiceMock";

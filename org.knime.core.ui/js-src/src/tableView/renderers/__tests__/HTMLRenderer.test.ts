@@ -1,6 +1,6 @@
 import { mount, VueWrapper } from "@vue/test-utils";
 import { beforeEach, describe, expect, it } from "vitest";
-import HtmlRenderer, { HTMLRendererProps } from "../HtmlRenderer.vue";
+import HtmlRenderer, { type HTMLRendererProps } from "../HtmlRenderer.vue";
 
 describe("HTMLRenderer.vue", () => {
   let props: HTMLRendererProps;

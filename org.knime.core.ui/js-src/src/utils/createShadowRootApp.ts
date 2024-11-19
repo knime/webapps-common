@@ -1,5 +1,5 @@
-import { Component, createApp } from "vue";
-import { UIExtensionService } from "@knime/ui-extension-service";
+import { type Component, createApp } from "vue";
+import type { UIExtensionService } from "@knime/ui-extension-service";
 
 export default (component: Component, withInitialData = false) => {
   return (

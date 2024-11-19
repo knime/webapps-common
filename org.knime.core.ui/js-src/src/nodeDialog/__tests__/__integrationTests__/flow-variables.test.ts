@@ -1,4 +1,11 @@
-import { MockInstance, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  type MockInstance,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
 import { DOMWrapper, mount, VueWrapper } from "@vue/test-utils";
 import { Dropdown, InputField } from "@knime/components";
 
@@ -20,8 +27,8 @@ import type {
   FlowSettings,
   PossibleFlowVariable,
 } from "@/nodeDialog/api/types";
-import { UpdateResult } from "@/nodeDialog/types/Update";
-import { PersistSchema } from "@/nodeDialog/types/Persist";
+import type { UpdateResult } from "@/nodeDialog/types/Update";
+import type { PersistSchema } from "@/nodeDialog/types/Persist";
 
 describe("flow variables", () => {
   const flowVar1 = {

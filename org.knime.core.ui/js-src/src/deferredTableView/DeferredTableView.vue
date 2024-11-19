@@ -2,13 +2,13 @@
 <script lang="ts">
 import {
   JsonDataService,
-  UIExtensionService,
+  type UIExtensionService,
 } from "@knime/ui-extension-service";
 import TableViewInteractive from "../tableView/TableViewInteractive.vue";
 import { Button, SubMenu, SplitButton } from "@knime/components";
 import CircleArrow from "@knime/styles/img/icons/circle-arrow-down.svg";
 import DropdownIcon from "@knime/styles/img/icons/arrow-dropdown.svg";
-import InitialData from "@/tableView/types/InitialData";
+import type { InitialData } from "@/tableView/types/InitialData";
 import "../common/main.css";
 
 const baseSubMenuItems = [

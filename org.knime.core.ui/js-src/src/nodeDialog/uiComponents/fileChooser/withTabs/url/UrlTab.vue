@@ -3,7 +3,7 @@ interface Props {
   modelValue: { path: string; timeout: number };
   id: string | null;
 }
-export { Props };
+export type { Props };
 </script>
 
 <script setup lang="ts">

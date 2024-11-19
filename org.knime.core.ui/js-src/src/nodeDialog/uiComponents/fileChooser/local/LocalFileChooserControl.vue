@@ -3,7 +3,7 @@ import { computed } from "vue";
 import useDialogControl from "@/nodeDialog/composables/components/useDialogControl";
 import LabeledControl from "@/nodeDialog/uiComponents/label/LabeledControl.vue";
 import { rendererProps } from "@jsonforms/vue";
-import { FileChooserOptions } from "@/nodeDialog/types/FileChooserUiSchema";
+import { type FileChooserOptions } from "@/nodeDialog/types/FileChooserUiSchema";
 import FileBrowserButton from "../FileBrowserButton.vue";
 import { useFileChooserBrowseOptions } from "../composables/useFileChooserBrowseOptions";
 import { InputField } from "@knime/components";

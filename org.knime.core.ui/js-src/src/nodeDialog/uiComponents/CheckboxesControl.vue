@@ -3,7 +3,7 @@ import { computed, onMounted, ref } from "vue";
 import { optionsMapper } from "../utils";
 import { Checkboxes } from "@knime/components";
 import useDialogControl from "../composables/components/useDialogControl";
-import { IdAndText } from "../types/ChoicesUiSchema";
+import { type IdAndText } from "../types/ChoicesUiSchema";
 import LabeledControl from "./label/LabeledControl.vue";
 import { rendererProps } from "@jsonforms/vue";
 const props = defineProps(rendererProps());

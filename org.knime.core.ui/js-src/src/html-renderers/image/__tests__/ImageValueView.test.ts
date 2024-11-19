@@ -1,5 +1,5 @@
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
-import { ImageInitialData, addImageSrc } from "../ImageValueView";
+import { type ImageInitialData, addImageSrc } from "../ImageValueView";
 import { JsonDataService } from "@knime/ui-extension-service";
 
 describe("ImageValueView", () => {

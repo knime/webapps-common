@@ -1,4 +1,4 @@
-import { PersistSchema } from "@/nodeDialog/types/Persist";
+import type { PersistSchema } from "@/nodeDialog/types/Persist";
 
 export const createPersistSchema = (params: {
   path: string;

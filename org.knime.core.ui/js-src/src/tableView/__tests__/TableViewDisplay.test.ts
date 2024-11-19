@@ -1,6 +1,6 @@
 /* eslint-disable vitest/max-nested-describe, max-lines */
 import { VueWrapper } from "@vue/test-utils";
-import { describe, it, beforeEach, expect, vi, Mock } from "vitest";
+import { describe, it, beforeEach, expect, vi, type Mock } from "vitest";
 // @ts-ignore
 import { TableUIWithAutoSizeCalculation } from "@knime/knime-ui-table";
 import type { TableViewDisplayProps } from "../types";

@@ -1,12 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { FlowSettings } from "@/nodeDialog/api/types";
+import type { FlowSettings } from "@/nodeDialog/api/types";
 import { mount } from "@vue/test-utils";
 import UseFlowVariablesTestComponent from "./UseFlowVariablesTestComponent.vue";
 import { getFlowVariableSettingsProvidedByControl } from "../useFlowVariables";
 import { defineComponent, ref } from "vue";
-import { SettingStateWrapper } from "../../nodeDialog/useDirtySettings";
+import type { SettingStateWrapper } from "../../nodeDialog/useDirtySettings";
 import { injectionKey as flowVarMapKey } from "@/nodeDialog/composables/components/useProvidedFlowVariablesMap";
-import { PersistSchema } from "@/nodeDialog/types/Persist";
+import type { PersistSchema } from "@/nodeDialog/types/Persist";
 import { createPersistSchema } from "@@/test-setup/utils/createPersistSchema";
 
 let flowVariablesMap: Record<string, FlowSettings>;

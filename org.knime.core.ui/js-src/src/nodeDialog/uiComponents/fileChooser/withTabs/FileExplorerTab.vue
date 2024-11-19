@@ -7,7 +7,7 @@ type Props = Omit<
   DialogFileExplorerProps,
   "clickOutsideException" | "openFileByExplorer"
 >;
-export { Props };
+export type { Props };
 </script>
 
 <script setup lang="ts">

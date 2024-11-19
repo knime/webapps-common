@@ -5,7 +5,7 @@ import type {
 } from "../types";
 import { computed, ref, type Ref } from "vue";
 import { AutoSizeColumnsToContent, RowHeightMode } from "../types/ViewSettings";
-import type TableViewViewSettings from "../types/ViewSettings";
+import type { TableViewViewSettings } from "../types/ViewSettings";
 import { BORDER_BOTTOM_WIDTH } from "../constants";
 
 type RelevantViewSettings = Pick<

@@ -1,5 +1,5 @@
 <script lang="ts">
-import {
+import type {
   UIExtensionService,
   CreateAlertParams,
 } from "@knime/ui-extension-service";
@@ -14,11 +14,10 @@ import {
 } from "../nodeDialog/utils";
 import { cloneDeep } from "lodash-es";
 import { inject, markRaw, nextTick, ref } from "vue";
-import type ProvidedMethods from "./types/provided";
-import type { ProvidedForFlowVariables } from "./types/provided";
-import type SettingsData from "./types/SettingsData";
+import type { Provided, ProvidedForFlowVariables } from "./types/provided";
+import type { SettingsData } from "./types/SettingsData";
 import type { Update, UpdateResult } from "./types/Update";
-import type Control from "./types/Control";
+import type { Control } from "./types/Control";
 import getChoices from "./api/getChoices";
 import * as flowVariablesApi from "./api/flowVariables";
 import type { FlowSettings } from "./api/types";
@@ -26,7 +25,7 @@ import type { FlowSettings } from "./api/types";
 import useStateProviders from "./composables/nodeDialog/useStateProviders";
 import useUpdates from "./composables/nodeDialog/useUpdates";
 import useTriggers, {
-  TriggerCallback,
+  type TriggerCallback,
 } from "./composables/nodeDialog/useTriggers";
 import useGlobalWatchers from "./composables/nodeDialog/useGlobalWatchers";
 import { provideAndGetSetupMethod } from "./composables/nodeDialog/useDirtySettings";
@@ -38,8 +37,8 @@ import useProvidedFlowVariablesMap from "./composables/components/useProvidedFlo
 import useCurrentData from "./composables/nodeDialog/useCurrentData";
 import useServices from "./composables/nodeDialog/useServices";
 import LoadingDialog from "./loading/LoadingDialog.vue";
-import { PersistSchema } from "./types/Persist";
-import { InitialData } from "./types/InitialData";
+import type { PersistSchema } from "./types/Persist";
+import type { InitialData } from "./types/InitialData";
 import { useHasNodeView } from "./composables/components/useHasNodeView";
 import { useShowAdvancedSettings } from "./composables/components/useAdvancedSettings";
 import { getConfigPaths } from "./utils/paths";
@@ -74,7 +73,7 @@ export default {
       setSubPanelExpanded: this.setSubPanelExpanded,
       getPanelsContainer: () => this.subPanels,
       getDialogPopoverTeleportDest: () => this.dialogPopoverTeleportDest,
-    } satisfies ProvidedMethods & ProvidedForFlowVariables;
+    } satisfies Provided & ProvidedForFlowVariables;
   },
   setup() {
     const { setCurrentData, getCurrentData } = useCurrentData();
@@ -122,7 +121,7 @@ export default {
       transformSettings,
       init,
       dependencies,
-    }: Parameters<ProvidedMethods["registerWatcher"]>[0]) => {
+    }: Parameters<Provided["registerWatcher"]>[0]) => {
       const removeWatcher = registerWatcherInternal({
         transformSettings: () => async (dependencyData) => {
           const settingsConsumer = await transformSettings(dependencyData);
@@ -274,10 +273,7 @@ export default {
     getPersistSchema() {
       return this.persistSchema ?? {};
     },
-    callDataService({
-      method,
-      options,
-    }: Parameters<ProvidedMethods["getData"]>[0]) {
+    callDataService({ method, options }: Parameters<Provided["getData"]>[0]) {
       return this.jsonDataService?.data({ method, options })!;
     },
     getPossibleValuesFromUiSchema(control: Control) {

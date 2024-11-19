@@ -2,29 +2,29 @@
 <script lang="ts">
 import {
   JsonDataService,
-  UIExtensionService,
+  type UIExtensionService,
   SelectionModes,
   SelectionService,
   SharedDataService,
 } from "@knime/ui-extension-service";
 import {
   DataValueViewService,
-  DataValueViewConfig,
+  type DataValueViewConfig,
 } from "@knime/ui-extension-service/internal";
 import TableViewDisplay from "./TableViewDisplay.vue";
 import { createDefaultFilterConfig, arrayEquals } from "@/tableView/utils";
-import TableViewViewSettings, {
+import {
+  type TableViewViewSettings,
   AutoSizeColumnsToContent,
-  TableViewDialogSettings,
-  StatisticsViewDialogSettings,
+  type TableViewDialogSettings,
+  type StatisticsViewDialogSettings,
   parseOnViewSettingsChangeSettings,
 } from "./types/ViewSettings";
-import InitialData from "./types/InitialData";
-import type Table from "./types/Table";
-import type { ColumnContentType } from "./types/Table";
+import type { InitialData } from "./types/InitialData";
+import type { Table, ColumnContentType } from "./types/Table";
 import type { HeaderMenuItem } from "./types";
 import specialColumns from "./utils/specialColumns";
-import { PropType, inject } from "vue";
+import { type PropType, inject } from "vue";
 import useSelectionCache from "./composables/useSelectionCache";
 import useRowHeight from "./composables/useRowHeight";
 import {

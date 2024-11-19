@@ -1,6 +1,9 @@
 <script setup lang="ts">
-import type FileChooserProps from "../types/FileChooserProps";
-import type { FileChooserValue, FSCategory } from "../types/FileChooserProps";
+import type {
+  FileChooserProps,
+  FileChooserValue,
+  FSCategory,
+} from "../types/FileChooserProps";
 import FileExplorerTab from "./FileExplorerTab.vue";
 import UrlTab from "./url/UrlTab.vue";
 import { TabBar } from "@knime/components";
@@ -11,9 +14,9 @@ import ComputerDesktopIcon from "@knime/styles/img/icons/computer-desktop.svg";
 import PluginInputIcon from "@knime/styles/img/icons/plugin-input.svg";
 import KnimeIcon from "./knime.svg";
 import { useFileChooserBrowseOptions } from "../composables/useFileChooserBrowseOptions";
-import { computed, FunctionalComponent, toRef } from "vue";
+import { computed, type FunctionalComponent, toRef } from "vue";
 import useFileChooserStateChange from "../composables/useFileChooserStateChange";
-import { BackendType } from "../types";
+import { type BackendType } from "../types";
 import { getBackendType } from "../composables/useFileChooserBackend";
 import ConnectionPreventsTab from "./ConnectionPreventsTab.vue";
 

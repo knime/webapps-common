@@ -1,5 +1,12 @@
 import { shallowMount } from "@vue/test-utils";
-import { describe, expect, it, vi, beforeEach, MockInstance } from "vitest";
+import {
+  describe,
+  expect,
+  it,
+  vi,
+  beforeEach,
+  type MockInstance,
+} from "vitest";
 import flushPromises from "flush-promises";
 import type { Folder, PathAndError } from "../types";
 import { toFileExplorerItem } from "../utils";

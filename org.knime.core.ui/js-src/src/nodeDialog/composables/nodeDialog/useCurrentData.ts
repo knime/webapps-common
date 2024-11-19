@@ -1,4 +1,4 @@
-import SettingsData from "@/nodeDialog/types/SettingsData";
+import type { SettingsData } from "@/nodeDialog/types/SettingsData";
 import { ref } from "vue";
 
 /**

@@ -1,4 +1,4 @@
-import { FileChooserOptions } from "@/nodeDialog/types/FileChooserUiSchema";
+import { type FileChooserOptions } from "@/nodeDialog/types/FileChooserUiSchema";
 
 export enum FSCategory {
   LOCAL,
@@ -18,10 +18,9 @@ export interface FileChooserValue {
   };
 }
 
-interface FileChooserProps {
+export interface FileChooserProps {
   modelValue: FileChooserValue;
   disabled: boolean;
   id: string | null;
   options?: FileChooserOptions;
 }
-export default FileChooserProps;

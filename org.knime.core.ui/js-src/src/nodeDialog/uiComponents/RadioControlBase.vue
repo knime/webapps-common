@@ -4,7 +4,7 @@ import { rendererProps } from "@jsonforms/vue";
 import { optionsMapper } from "../utils";
 import { RadioButtons, ValueSwitch } from "@knime/components";
 import useDialogControl from "../composables/components/useDialogControl";
-import { IdAndText } from "../types/ChoicesUiSchema";
+import { type IdAndText } from "../types/ChoicesUiSchema";
 import LabeledControl from "./label/LabeledControl.vue";
 
 const marginBottomValueSwitch = 0;

@@ -4,7 +4,7 @@ import {
   getLongestCommonPrefix,
   getSubConfigKeys,
 } from "../paths";
-import { PersistSchema } from "@/nodeDialog/types/Persist";
+import type { PersistSchema } from "@/nodeDialog/types/Persist";
 
 describe("paths", () => {
   const getDataPaths = (path: string, persistSchema: PersistSchema) =>

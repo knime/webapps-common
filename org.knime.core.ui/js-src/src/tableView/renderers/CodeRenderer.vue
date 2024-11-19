@@ -4,7 +4,7 @@ import hljs from "highlight.js/lib/core";
 import json from "highlight.js/lib/languages/json";
 import xml from "highlight.js/lib/languages/xml";
 import "./codeRenderer.css";
-import { ColumnContentType } from "../types/Table";
+import type { ColumnContentType } from "../types/Table";
 
 export interface CodeRendererProps {
   content: string;

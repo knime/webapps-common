@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { InputField } from "@knime/components";
 import { computed, ref, watchEffect } from "vue";
-import type FlowVariableExposerProps from "../types/FlowVariableExposerProps";
+import { type FlowVariableSelectorProps } from "../types/FlowVariableExposerProps";
 import ErrorMessage from "../../ErrorMessage.vue";
 import useExposedFlowVariable from "../composables/useExposedFlowVariable";
 
-const props = defineProps<FlowVariableExposerProps>();
+const props = defineProps<FlowVariableSelectorProps>();
 const { setExposedFlowVariable, exposedFlowVariableName } =
   useExposedFlowVariable(props.persistPath);
 
@@ -54,6 +54,7 @@ const ariaLabel = computed(
 
 <style scoped>
 .error {
-  display: block; /* TODO: Revert with UIEXT-140 */
+  /* TODO: Revert with UIEXT-140 */
+  display: block;
 }
 </style>

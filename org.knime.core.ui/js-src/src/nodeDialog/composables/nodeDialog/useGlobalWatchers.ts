@@ -1,8 +1,8 @@
-import SettingsData from "../../types/SettingsData";
+import type { SettingsData } from "../../types/SettingsData";
 import { v4 as uuidv4 } from "uuid";
 import { toDataPath } from "@jsonforms/core";
 import { ref } from "vue";
-import { DialogSettings } from "@knime/ui-extension-service";
+import type { DialogSettings } from "@knime/ui-extension-service";
 import { toIndexIds } from "./useArrayIds";
 import { getIndicesFromDataPaths } from "./utils/dataPaths";
 export type TransformSettings = (newSettings: DialogSettings & object) => void;

@@ -1,5 +1,8 @@
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
-import { StringCellViewInitialData, addInnerHtml } from "../StringCellView";
+import {
+  type StringCellViewInitialData,
+  addInnerHtml,
+} from "../StringCellView";
 import { JsonDataService } from "@knime/ui-extension-service";
 
 describe("StringValueView", () => {

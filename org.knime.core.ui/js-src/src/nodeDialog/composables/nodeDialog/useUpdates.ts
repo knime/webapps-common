@@ -1,4 +1,4 @@
-import {
+import type {
   IndexIdsValuePairs,
   Pairs,
   Update,
@@ -9,14 +9,14 @@ import { set, get } from "lodash-es";
 import { composePaths, toDataPath } from "@jsonforms/core";
 import { inject, nextTick } from "vue";
 import {
-  CreateAlertParams,
-  DialogSettings,
+  type CreateAlertParams,
+  type DialogSettings,
   JsonDataService,
-  UIExtensionService,
+  type UIExtensionService,
 } from "@knime/ui-extension-service";
-import Result from "@/nodeDialog/api/types/Result";
+import type { Result } from "@/nodeDialog/api/types/Result";
 import { getIndex } from "./useArrayIds";
-import {
+import type {
   IndexedIsActive,
   IsActiveCallback,
   TriggerCallback,

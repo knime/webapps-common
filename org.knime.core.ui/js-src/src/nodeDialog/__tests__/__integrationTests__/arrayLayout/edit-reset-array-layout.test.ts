@@ -8,7 +8,7 @@ import { cloneDeep } from "lodash-es";
 
 import { getOptions } from "@/nodeDialog/__tests__/utils";
 import { mockRegisterSettings } from "@@/test-setup/utils/integration/dirtySettingState";
-import {
+import type {
   IndexIdsValuePairs,
   Update,
   UpdateResult,

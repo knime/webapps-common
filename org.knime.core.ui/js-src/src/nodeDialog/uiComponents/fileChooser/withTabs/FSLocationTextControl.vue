@@ -1,5 +1,5 @@
 <script lang="ts">
-import { FileChooserValue, FSCategory } from "../types/FileChooserProps";
+import { type FileChooserValue, FSCategory } from "../types/FileChooserProps";
 interface Props {
   modelValue: FileChooserValue;
   disabled: boolean;
@@ -7,7 +7,7 @@ interface Props {
   portIndex?: number;
   fileSystemSpecifier?: string;
 }
-export { Props };
+export type { Props };
 
 const currentSpacePrefix = "knime://knime.space/";
 const embeddedDataPrefix = "knime://knime.workflow.data/";

@@ -4,7 +4,7 @@ import FlowVariablePopover from "./FlowVariablePopover.vue";
 
 import DialogPopover from "@/nodeDialog/popover/DialogPopover.vue";
 
-import type FlowVariableButtonProps from "../types/FlowVariableButtonProps";
+import type { FlowVariableButtonProps } from "../types/FlowVariableButtonProps";
 
 import { computed, ref } from "vue";
 import { getFlowVariableSettingsProvidedByControl } from "@/nodeDialog/composables/components/useFlowVariables";

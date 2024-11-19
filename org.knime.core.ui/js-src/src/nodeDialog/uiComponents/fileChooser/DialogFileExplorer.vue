@@ -15,7 +15,7 @@ interface Props {
   openFileByExplorer?: boolean;
   breadcrumbRoot?: string | null;
 }
-export { Props };
+export type { Props };
 </script>
 
 <script setup lang="ts">

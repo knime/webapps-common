@@ -4,10 +4,10 @@ import {
   describe,
   expect,
   it,
-  MockInstance,
+  type MockInstance,
   vi,
 } from "vitest";
-import { CodeValueView, CodeValueViewInitialData } from "../CodeValueView";
+import { CodeValueView, type CodeValueViewInitialData } from "../CodeValueView";
 import { JsonDataService } from "@knime/ui-extension-service";
 
 import { editor } from "monaco-editor";

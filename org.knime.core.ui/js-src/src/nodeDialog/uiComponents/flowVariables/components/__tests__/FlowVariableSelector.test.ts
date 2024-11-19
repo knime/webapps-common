@@ -9,13 +9,13 @@ import {
   it,
   vi,
   type Mock,
-  MockInstance,
+  type MockInstance,
 } from "vitest";
 import flushPromises from "flush-promises";
 import FlowVariableSelector from "../FlowVariableSelector.vue";
-import type FlowVariableSelectorProps from "../../types/FlowVariableSelectorProps";
-import { ProvidedForFlowVariables } from "@/nodeDialog/types/provided";
-import { FlowSettings } from "@/nodeDialog/api/types";
+import type { FlowVariableSelectorProps } from "../../types/FlowVariableSelectorProps";
+import { type ProvidedForFlowVariables } from "@/nodeDialog/types/provided";
+import { type FlowSettings } from "@/nodeDialog/api/types";
 import { injectionKey as providedByComponentKey } from "@/nodeDialog/composables/components/useFlowVariables";
 import { injectionKey as flowVarMapKey } from "@/nodeDialog/composables/components/useProvidedFlowVariablesMap";
 

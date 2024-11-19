@@ -9,7 +9,7 @@ import {
   injectionKey as providedByComponentKey,
 } from "@/nodeDialog/composables/components/useFlowVariables";
 import { type Ref, ref } from "vue";
-import { FlowSettings } from "@/nodeDialog/api/types";
+import { type FlowSettings } from "@/nodeDialog/api/types";
 import DeprecatedFlowVariables from "../DeprecatedFlowVariables.vue";
 import { injectionKey as flowVarMapKey } from "@/nodeDialog/composables/components/useProvidedFlowVariablesMap";
 

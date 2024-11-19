@@ -11,7 +11,7 @@ import {
   autoUpdate,
 } from "@floating-ui/vue";
 import type { Side, Placement } from "@floating-ui/vue";
-import type DialogPopoverProps from "./types/DialogPopoverProps";
+import type { DialogPopoverProps } from "./types/DialogPopoverProps";
 import { FocusTrap } from "focus-trap-vue";
 import { tabbable } from "tabbable";
 import getDeepActiveElement from "@/utils/getDeepActiveElement";

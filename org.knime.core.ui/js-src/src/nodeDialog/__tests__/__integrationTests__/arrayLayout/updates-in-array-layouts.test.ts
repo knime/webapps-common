@@ -12,7 +12,7 @@ import { getOptions } from "@/nodeDialog/__tests__/utils";
 import SimpleButtonControl from "@/nodeDialog/uiComponents/SimpleButtonControl.vue";
 import { Button, Dropdown, Checkbox } from "@knime/components";
 import { mockRegisterSettings } from "@@/test-setup/utils/integration/dirtySettingState";
-import {
+import type {
   Update,
   UpdateResult,
   ValueReference,

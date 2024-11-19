@@ -1,4 +1,4 @@
-import type Result from "@/nodeDialog/api/types/Result";
+import type { Result } from "@/nodeDialog/api/types/Result";
 import type {
   ChoicesUiSchema,
   PossibleValue,

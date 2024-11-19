@@ -8,7 +8,7 @@ import { beforeEach, afterEach, describe, expect, it, vi } from "vitest";
 import flushPromises from "flush-promises";
 
 import DescriptionPopover from "../DescriptionPopover.vue";
-import type DescriptionPopoverProps from "../types/DescriptionPopoverProps";
+import type { DescriptionPopoverProps } from "../types/DescriptionPopoverProps";
 
 describe("DescriptionPopover.vue", () => {
   let props: DescriptionPopoverProps;

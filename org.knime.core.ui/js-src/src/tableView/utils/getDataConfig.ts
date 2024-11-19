@@ -4,14 +4,14 @@ import type {
   FilterConfig,
 } from "@knime/knime-ui-table";
 import { getCustomRowHeight } from "../composables/useRowHeight";
-import type TableViewViewSettings from "../types/ViewSettings";
+import type { TableViewViewSettings } from "../types/ViewSettings";
 import { RowHeightMode, VerticalPaddingMode } from "../types/ViewSettings";
 import specialColumns from "./specialColumns";
 import type { DataType, HeaderMenuItem } from "../types";
 import type { Renderer } from "../types/InitialData";
 import type { MenuItem } from "@knime/components";
-import { ColumnContentType } from "../types/Table";
-import { Ref } from "vue";
+import type { ColumnContentType } from "../types/Table";
+import type { Ref } from "vue";
 const { INDEX, ROW_ID, SKIPPED_REMAINING_COLUMNS_COLUMN } = specialColumns;
 const isImage = (contentType?: ColumnContentType) => contentType === "img_path";
 const isHtml = (contentType?: ColumnContentType) => contentType === "html";

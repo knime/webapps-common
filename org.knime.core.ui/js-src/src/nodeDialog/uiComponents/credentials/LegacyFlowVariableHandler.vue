@@ -7,7 +7,7 @@ import { onMounted } from "vue";
 import useControllingFlowVariable from "../flowVariables/composables/useControllingFlowVariable";
 import { getFlowVariableSettingsProvidedByControl } from "@/nodeDialog/composables/components/useFlowVariables";
 import { injectForFlowVariables } from "@/nodeDialog/utils/inject";
-import type Credentials from "./types/Credentials";
+import type { Credentials } from "./types/Credentials";
 
 const { configPaths } = getFlowVariableSettingsProvidedByControl();
 const { setControllingFlowVariable, invalidateSetFlowVariable } =

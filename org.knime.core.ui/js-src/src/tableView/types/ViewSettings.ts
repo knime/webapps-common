@@ -45,13 +45,11 @@ type GenericTableViewViewSettings<T extends string[] | undefined> = {
   enableDataValueViews: boolean;
 };
 
-type TableViewViewSettings = GenericTableViewViewSettings<string[]>;
+export type TableViewViewSettings = GenericTableViewViewSettings<string[]>;
 
 export type TableViewDialogSettings = GenericTableViewViewSettings<
   string[] | undefined
 >;
-
-export default TableViewViewSettings;
 
 /**
  * It is not ideal that we have to handel statistics view settings here.

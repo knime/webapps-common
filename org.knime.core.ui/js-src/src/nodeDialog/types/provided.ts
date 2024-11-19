@@ -4,12 +4,12 @@ import type {
 } from "@knime/ui-extension-service";
 import type { PossibleFlowVariable } from "../api/types";
 import type { getPossibleValuesFromUiSchema } from "../utils";
-import type Control from "./Control";
-import type SettingsData from "./SettingsData";
-import { IdsRecord } from "../composables/nodeDialog/useArrayIds";
-import Result from "../api/types/Result";
-import { IndexedIsActive } from "../composables/nodeDialog/useTriggers";
-import { PersistSchema } from "./Persist";
+import type { Control } from "./Control";
+import type { SettingsData } from "./SettingsData";
+import type { IdsRecord } from "../composables/nodeDialog/useArrayIds";
+import type { Result } from "../api/types/Result";
+import type { IndexedIsActive } from "../composables/nodeDialog/useTriggers";
+import type { PersistSchema } from "./Persist";
 
 type getPossibleValuesFromUiSchema = (
   control: Control,
@@ -33,7 +33,7 @@ type getData = (
 ) => Promise<any>;
 type sendAlert = (params: CreateAlertParams) => void;
 
-interface Provided {
+export interface Provided {
   getPossibleValuesFromUiSchema: getPossibleValuesFromUiSchema;
   addStateProviderListener: addStateProviderListener<any>;
   registerWatcher: registerWatcher;
@@ -62,11 +62,7 @@ type ProvidedFlowVariablesApi = {
   clearControllingFlowVariable: (persistPath: string) => void;
 };
 
-export default Provided;
-
-interface ProvidedForFlowVariables {
+export interface ProvidedForFlowVariables {
   flowVariablesApi: ProvidedFlowVariablesApi;
   getPersistSchema: () => PersistSchema;
 }
-
-export { ProvidedForFlowVariables };

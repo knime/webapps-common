@@ -1,4 +1,4 @@
-import { FileChooserOptions } from "@/nodeDialog/types/FileChooserUiSchema";
+import { type FileChooserOptions } from "@/nodeDialog/types/FileChooserUiSchema";
 import inject from "@/nodeDialog/utils/inject";
 import { computed, onMounted, ref, type Ref } from "vue";
 import { FSCategory } from "../types/FileChooserProps";

@@ -14,7 +14,7 @@ import { fetchImage } from "@/utils/images";
 
 import {
   ResourceService,
-  UIExtensionService,
+  type UIExtensionService,
 } from "@knime/ui-extension-service";
 
 const props = defineProps<{

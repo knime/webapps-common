@@ -1,6 +1,6 @@
 import { mount } from "@vue/test-utils";
 import { beforeAll, describe, expect, it, vi } from "vitest";
-import CodeRenderer, { CodeRendererProps } from "../CodeRenderer.vue";
+import CodeRenderer, { type CodeRendererProps } from "../CodeRenderer.vue";
 
 describe("CodeRenderer.vue", () => {
   const props: CodeRendererProps = { content: "", language: "json" };

@@ -15,7 +15,7 @@ import {
 import flushPromises from "flush-promises";
 
 import DialogPopover from "../DialogPopover.vue";
-import type DialogPopoverProps from "../types/DialogPopoverProps";
+import type { DialogPopoverProps } from "../types/DialogPopoverProps";
 
 import { unref } from "vue";
 
