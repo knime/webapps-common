@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed } from "vue";
 import { rendererProps } from "@jsonforms/vue";
 
 import { DateTimeInput } from "@knime/components/date-time-input";
@@ -12,7 +12,7 @@ import LabeledControl from "./label/LabeledControl.vue";
 const props = defineProps(rendererProps());
 const { control, disabled, onChange } = useDialogControl<string>({ props });
 
-const model = ref(localTimeUtils.fromString(control.value.data));
+const model = computed(() => localTimeUtils.fromString(control.value.data));
 </script>
 
 <template>
@@ -23,8 +23,7 @@ const model = ref(localTimeUtils.fromString(control.value.data));
   >
     <DateTimeInput
       :id="labelForId"
-      v-model="model"
-      class="date-time"
+      :model-value="model"
       :required="true"
       compact
       :disabled="disabled"

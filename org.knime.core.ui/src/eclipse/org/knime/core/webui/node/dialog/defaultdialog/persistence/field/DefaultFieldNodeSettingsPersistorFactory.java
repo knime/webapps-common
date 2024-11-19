@@ -51,16 +51,9 @@ package org.knime.core.webui.node.dialog.defaultdialog.persistence.field;
 import static java.util.stream.Collectors.toMap;
 
 import java.lang.reflect.Array;
-import java.time.DateTimeException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.time.temporal.ChronoField;
-import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -76,6 +69,9 @@ import org.knime.core.webui.node.dialog.configmapping.ConfigMappings;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorFactory;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.DateTimePersistorUtils.LocalDatePersistor;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.DateTimePersistorUtils.LocalTimePersistor;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.DateTimePersistorUtils.TimeZonePersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
 import org.knime.core.webui.node.dialog.defaultdialog.tree.ArrayParentNode;
 import org.knime.core.webui.node.dialog.defaultdialog.tree.Tree;
@@ -301,26 +297,6 @@ public final class DefaultFieldNodeSettingsPersistorFactory {
 
     }
 
-    static Temporal parseTemporal(final String s) throws InvalidSettingsException {
-        try {
-            return ZonedDateTime.parse(s);
-        } catch (DateTimeParseException ignored) { // NOSONAR
-        }
-
-        try {
-            return LocalDateTime.parse(s);
-        } catch (DateTimeParseException ignored) { // NOSONAR
-        }
-
-        try {
-            return LocalTime.parse(s);
-        } catch (DateTimeParseException ignored) { // NOSONAR
-        }
-
-
-        throw new InvalidSettingsException("String '" + s + "' could not be parsed as a temporal.");
-    }
-
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static <T> FieldNodeSettingsPersistorWithInferredConfigs<T> createEnumPersistor(final String configKey,
         final Class<T> fieldType) {
@@ -331,99 +307,12 @@ public final class DefaultFieldNodeSettingsPersistorFactory {
         return FieldNodeSettingsPersistor.createInstance(LocalDatePersistor.class, LocalDate.class, configKey);
     }
 
-    static final class LocalDatePersistor extends NodeSettingsPersistorWithConfigKey<LocalDate> {
-
-        static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ISO_LOCAL_DATE;
-
-        @Override
-        public LocalDate load(final NodeSettingsRO settings) throws InvalidSettingsException {
-            final var value = settings.getString(getConfigKey());
-            if (value == null) {
-                return null;
-            }
-            try {
-                return LocalDate.parse(value, DATE_FMT);
-            } catch (DateTimeParseException ex) {
-                throw new InvalidSettingsException(ex);
-            }
-        }
-
-        @Override
-        public void save(final LocalDate date, final NodeSettingsWO settings) {
-            settings.addString(getConfigKey(), date == null ? null : date.format(DATE_FMT));
-        }
-    }
-
     private static FieldNodeSettingsPersistor<LocalTime> createLocalTimePersistor(final String configKey) {
         return FieldNodeSettingsPersistor.createInstance(LocalTimePersistor.class, LocalTime.class, configKey);
     }
 
-    static final class LocalTimePersistor extends NodeSettingsPersistorWithConfigKey<LocalTime> {
-
-        @Override
-        public LocalTime load(final NodeSettingsRO settings) throws InvalidSettingsException {
-            var savedSettings = settings.getString(getConfigKey());
-
-            var temporal = parseTemporal(savedSettings);
-
-            return LocalTime.of( //
-                temporal.get(ChronoField.HOUR_OF_DAY), //
-                temporal.get(ChronoField.MINUTE_OF_HOUR), //
-                temporal.isSupported(ChronoField.SECOND_OF_MINUTE) //
-                    ? temporal.get(ChronoField.SECOND_OF_MINUTE) //
-                    : 0, //
-                temporal.isSupported(ChronoField.NANO_OF_SECOND) //
-                    ? temporal.get(ChronoField.NANO_OF_SECOND) //
-                    : 0 //
-            );
-        }
-
-        @Override
-        public void save(final LocalTime obj, final NodeSettingsWO settings) {
-            var timeToSave = obj.format(DateTimeFormatter.ISO_LOCAL_TIME);
-            settings.addString(getConfigKey(), timeToSave);
-        }
-
-    }
-
     private static FieldNodeSettingsPersistor<ZoneId> createTimeZonePersistor(final String configKey) {
         return FieldNodeSettingsPersistor.createInstance(TimeZonePersistor.class, ZoneId.class, configKey);
-    }
-
-    static final class TimeZonePersistor extends NodeSettingsPersistorWithConfigKey<ZoneId> {
-
-        private static ZoneId extractFromString(final String str) throws InvalidSettingsException {
-            try {
-                return ZoneId.of(str);
-            } catch (DateTimeException ex) {
-                try {
-                    return ZoneId.from(parseTemporal(str));
-                } catch (DateTimeException ex2) {
-                    throw new InvalidSettingsException( //
-                        "Setting is not a valid ZoneID, nor could it be parsed as a date with an attached timezone: "
-                            + str //
-                    );
-                }
-            }
-        }
-
-        @Override
-        public ZoneId load(final NodeSettingsRO settings) throws InvalidSettingsException {
-            if (settings.getString(getConfigKey()) == null) {
-                return null;
-            } else {
-                return TimeZonePersistor.extractFromString(settings.getString(getConfigKey()));
-            }
-        }
-
-        @Override
-        public void save(final ZoneId obj, final NodeSettingsWO settings) {
-            if (obj != null) {
-                settings.addString(getConfigKey(), obj.getId());
-            } else {
-                settings.addString(getConfigKey(), null);
-            }
-        }
     }
 
     private static FieldNodeSettingsPersistorWithInferredConfigs<Credentials>

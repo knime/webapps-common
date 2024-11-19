@@ -48,11 +48,16 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.persistence.field;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 import org.junit.jupiter.api.Test;
 import org.knime.core.node.InvalidSettingsException;
@@ -144,19 +149,76 @@ class DefaultFieldNodeSettingsPersistorFactoryTest {
     }
 
     @Test
-    void testLocalDate() throws InvalidSettingsException {
-        final var date = LocalDate.of(2000, 1, 1);
-        testSaveLoadNullable(LocalDate.class, date);
+    void testLocalTime() throws InvalidSettingsException {
+        final var timePrecise = LocalTime.of(12, 30, 0).minusNanos(1);
+        testSaveLoad(LocalTime.class, timePrecise);
+        final var timeCoarse = LocalTime.of(12, 30);
+        testSaveLoad(LocalTime.class, timeCoarse);
     }
 
+    @Test
+    void testInvalidLocalTime() throws InvalidSettingsException {
+        var nodeSettings = new NodeSettings(KEY);
+        var notAValidTime = "not-a-valid-time";
+        nodeSettings.addString(KEY, notAValidTime);
+        var persistor = createPersistor(LocalTime.class);
+
+        assertThat(assertThrows(InvalidSettingsException.class, () -> persistor.load(nodeSettings)))
+            .hasMessageContainingAll(notAValidTime, "parsed", "time");
+    }
+
+    @Test
+    void testLocalDate() throws InvalidSettingsException {
+        final var date = LocalDate.of(2000, 1, 1);
+        testSaveLoad(LocalDate.class, date);
+    }
 
     @Test
     void testInvalidLocalDate() throws InvalidSettingsException {
         var nodeSettings = new NodeSettings(KEY);
-        nodeSettings.addString(KEY, "not-a-valid-date-time");
+        String notAValidDate = "not-a-valid-date-time";
+        nodeSettings.addString(KEY, notAValidDate);
         var persistor = createPersistor(LocalDate.class);
 
-        assertThrows(InvalidSettingsException.class, () -> persistor.load(nodeSettings));
+        assertThat(assertThrows(InvalidSettingsException.class, () -> persistor.load(nodeSettings)))
+            .hasMessageContaining(notAValidDate, "parsed", "date");
+    }
+
+    @Test
+    void testLocalDateWithFullZonedDate() throws InvalidSettingsException {
+        final var zonedDateTime = ZonedDateTime.now();
+        var nodeSettings = new NodeSettings(KEY);
+        nodeSettings.addString(KEY, zonedDateTime.format(DateTimeFormatter.ISO_ZONED_DATE_TIME));
+        var persistor = createPersistor(LocalDate.class);
+
+        assertEquals(zonedDateTime.toLocalDate(), persistor.load(nodeSettings));
+    }
+
+    @Test
+    void testTimeZone() throws InvalidSettingsException {
+        final var zone = ZoneId.of("America/New_York");
+        testSaveLoadNullable(ZoneId.class, zone);
+    }
+
+    @Test
+    void testTimeZoneWithFullDateTime() throws InvalidSettingsException {
+        final var zonedDateTime = ZonedDateTime.now();
+        var nodeSettings = new NodeSettings(KEY);
+        nodeSettings.addString(KEY, zonedDateTime.format(DateTimeFormatter.ISO_ZONED_DATE_TIME));
+        var persistor = createPersistor(ZoneId.class);
+
+        assertEquals(zonedDateTime.getZone(), persistor.load(nodeSettings));
+    }
+
+    @Test
+    void testInvalidTimeZone() throws InvalidSettingsException {
+        var nodeSettings = new NodeSettings(KEY);
+        String notAValidTimeZone = "not-a-valid-time-zone";
+        nodeSettings.addString(KEY, notAValidTimeZone);
+        var persistor = createPersistor(ZoneId.class);
+
+        assertThat(assertThrows(InvalidSettingsException.class, () -> persistor.load(nodeSettings)))
+            .hasMessageContaining(notAValidTimeZone, "parsed", "time zone");
     }
 
     @Test
