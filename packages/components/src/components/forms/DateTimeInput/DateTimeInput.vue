@@ -143,7 +143,7 @@ export default {
       // internal value guarded by watcher to prevent invalid values (min/max, null etc.)
       // time in the given timezone (default: browser local) for correct display
       localValue: new Date(""),
-      selectedTimezone: getLocalTimeZone(),
+      selectedTimezone: this.timezone,
       timezones: map(Intl.supportedValuesOf("timeZone"), (timezone) => ({
         id: timezone,
         text: timezone,
@@ -188,6 +188,7 @@ export default {
     timezone: {
       handler(newValue) {
         this.selectedTimezone = newValue;
+        this.localValue = utcToZonedTime(this.modelValue, newValue);
       },
     },
   },

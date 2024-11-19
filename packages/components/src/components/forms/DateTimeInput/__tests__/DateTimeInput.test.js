@@ -138,6 +138,21 @@ describe("DateTimeInput.vue", () => {
     it.todo("renders disabled state", () => {
       // TODO add test for disabled state
     });
+
+    it("uses initial and updated timezone prop", async () => {
+      const wrapper = mount(DateTimeInput, {
+        ...context,
+        props: {
+          ...props,
+          timezone: "Europe/London",
+        },
+      });
+      const hours = wrapper.findAllComponents(TimePartInput).at(0);
+      const getHours = () => hours.props().modelValue;
+      expect(getHours()).toBe(8);
+      await wrapper.setProps({ timezone: "Europe/Berlin" });
+      expect(getHours()).toBe(9);
+    });
   });
 
   describe("updates", () => {
