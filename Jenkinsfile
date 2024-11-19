@@ -8,7 +8,7 @@ properties([
     pipelineTriggers([upstream(
         'knime-core/' + env.BRANCH_NAME.replaceAll('/', '%2F')
     )]),
-    parameters([p2Tools.getP2pruningParameter()] + workflowTests.getConfigurationsAsParameters()),
+    parameters(workflowTests.getConfigurationsAsParameters()),
     buildDiscarder(logRotator(numToKeepStr: '5')),
     disableConcurrentBuilds()
 ])
