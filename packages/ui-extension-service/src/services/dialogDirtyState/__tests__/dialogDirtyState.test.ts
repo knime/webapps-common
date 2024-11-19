@@ -41,14 +41,6 @@ describe("dialogDirtyState", () => {
     });
   };
 
-  const expectIdleStateAfterApply = () => {
-    onApply();
-    expect(dirtyState).toStrictEqual({
-      apply: ApplyState.IDLE,
-      view: ViewState.IDLE,
-    });
-  };
-
   it("combines dirty states of multiple setting", () => {
     addSetting("model")({ initialValue: "foo" })
       .addControllingFlowVariable("flowVarName")
@@ -153,7 +145,7 @@ describe("dialogDirtyState", () => {
           view: ViewState.IDLE,
         });
 
-        expectIdleStateAfterApply();
+        expectCleanStateAfterApply();
       });
 
       it("sets and unsets controlling variable", () => {

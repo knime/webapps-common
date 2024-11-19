@@ -28,6 +28,7 @@ const createControllingFlowVariable =
 
     const onApply = () => {
       clean = current;
+      isFlawed = false;
       updateState();
     };
 
