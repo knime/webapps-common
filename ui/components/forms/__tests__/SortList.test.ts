@@ -1,5 +1,5 @@
 /* eslint-disable vitest/max-nested-describe */
-import { flushPromises, shallowMount } from "@vue/test-utils";
+import { flushPromises, shallowMount, mount } from "@vue/test-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import SortList, { type Props } from "../SortList.vue";
 import MultiselectListBox from "../MultiselectListBox.vue";
@@ -26,9 +26,18 @@ describe("SortList.vue", () => {
   });
 
   it("renders MultiselectListBox and FunctionButtons", () => {
-    const wrapper = shallowMount(SortList, { props });
+    const wrapper = mount(SortList, { props });
     expect(wrapper.findComponent(MultiselectListBox).exists()).toBeTruthy();
     expect(wrapper.findAllComponents(FunctionButton).length).toBe(4);
+    expect(
+      wrapper.findComponent(MultiselectListBox).vm.scrollDownIntoView,
+    ).toBeDefined();
+    expect(
+      wrapper.findComponent(MultiselectListBox).vm.scrollUpIntoView,
+    ).toBeDefined();
+    expect(
+      wrapper.findComponent(MultiselectListBox).vm.setCurrentKeyNavIndex,
+    ).toBeDefined();
   });
 
   it("passes possible values to the list box", () => {

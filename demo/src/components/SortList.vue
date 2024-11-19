@@ -63,10 +63,7 @@ export default {
           <!--  eslint-disable vue/attribute-hyphenation ariaLabel needs to be given like this for typescript to not complain -->
           <SortList
             v-model="modelValue"
-            :size="7"
             ariaLabel="myAriaLabel"
-            left-label="Select from the 7 visible items (size)"
-            right-label="The selected stuff"
             :possible-values="demoValues"
           />
         </div>
