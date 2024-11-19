@@ -372,11 +372,12 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         final Supplier<Set<RowKey>> selectionSupplier) {
         final var spec = table.getDataTableSpec();
         var resultContainer = exec.createDataContainer(spec);
+        final var currentSelection = getCurrentSelection(selectionSupplier);
         try (final var iterator = table.iterator()) {
             while (iterator.hasNext()) {
                 final var row = iterator.next();
                 if (filtersMatch(row, spec, globalSearchTerm, columnFilterValue, columns, filterRowKeys,
-                    showOnlySelectedRows, selectionSupplier)) {
+                    showOnlySelectedRows, currentSelection)) {
                     resultContainer.addRowToTable(row);
                 }
             }
@@ -388,9 +389,9 @@ public class TableViewDataServiceImpl implements TableViewDataService {
     @SuppressWarnings("java:S107") // accept the large number of parameters
     private static boolean filtersMatch(final DataRow row, final DataTableSpec spec, final String globalSearchTerm,
         final String[][] columnFilterValue, final String[] columns, final boolean filterRowKeys,
-        final boolean showOnlySelectedRows, final Supplier<Set<RowKey>> selectionSupplier) {
+        final boolean showOnlySelectedRows, final Set<RowKey> currentSelection) {
 
-        if (showOnlySelectedRows && !isSelected(row, selectionSupplier)) {
+        if (showOnlySelectedRows && !isSelected(row, currentSelection)) {
             return false;
         }
 
@@ -429,8 +430,8 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         return globalSearchTermMatch;
     }
 
-    private static boolean isSelected(final DataRow row, final Supplier<Set<RowKey>> selectionSupplier) {
-        return getCurrentSelection(selectionSupplier).contains(row.getKey());
+    private static boolean isSelected(final DataRow row, final Set<RowKey> currentSelection) {
+        return currentSelection.contains(row.getKey());
     }
 
     private static boolean matchesColumnFilter(final String cellStringValue, final String[][] columnFilters,
