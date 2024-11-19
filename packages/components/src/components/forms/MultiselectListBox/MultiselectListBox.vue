@@ -436,6 +436,15 @@ export default {
         }
       }
     },
+    scrollUpIntoView(index: number) {
+      this.scrollIntoView(index, "up");
+    },
+    scrollDownIntoView(index: number) {
+      this.scrollIntoView(index, "down");
+    },
+    setCurrentKeyNavIndex(index: number) {
+      this.currentKeyNavIndex = index;
+    },
     isOutOfRange(index: number) {
       if (index < 0) {
         return true;
