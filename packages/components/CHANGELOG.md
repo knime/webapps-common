@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.9.0
+
+### Minor Changes
+
+- 2c648a8: Respect the initial value of the timezone prop as well as changes to it.
+
 ## 1.8.2
 
 ### Patch Changes
