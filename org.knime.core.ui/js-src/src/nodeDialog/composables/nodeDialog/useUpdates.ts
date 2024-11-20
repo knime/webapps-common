@@ -1,3 +1,15 @@
+import { inject, nextTick } from "vue";
+import { composePaths, toDataPath } from "@jsonforms/core";
+import { get, set } from "lodash-es";
+
+import {
+  type CreateAlertParams,
+  type DialogSettings,
+  JsonDataService,
+  type UIExtensionService,
+} from "@knime/ui-extension-service";
+
+import type { Result } from "@/nodeDialog/api/types/Result";
 import type {
   IndexIdsValuePairs,
   Pairs,
@@ -5,28 +17,19 @@ import type {
   UpdateResult,
   ValueReference,
 } from "../../types/Update";
-import { set, get } from "lodash-es";
-import { composePaths, toDataPath } from "@jsonforms/core";
-import { inject, nextTick } from "vue";
-import {
-  type CreateAlertParams,
-  type DialogSettings,
-  JsonDataService,
-  type UIExtensionService,
-} from "@knime/ui-extension-service";
-import type { Result } from "@/nodeDialog/api/types/Result";
+
 import { getIndex } from "./useArrayIds";
 import type {
   IndexedIsActive,
   IsActiveCallback,
   TriggerCallback,
 } from "./useTriggers";
+import { combineScopesWithIndices } from "./utils/dataPaths";
+import { getDependencyValues } from "./utils/dependencyExtraction";
 import {
   isIndexIdsAndValuePairs,
   toIndicesValuePairs,
 } from "./utils/updateResults";
-import { getDependencyValues } from "./utils/dependencyExtraction";
-import { combineScopesWithIndices } from "./utils/dataPaths";
 
 const resolveToIndices = (ids: string[] | undefined) =>
   (ids ?? []).map((id) => getIndex(id));

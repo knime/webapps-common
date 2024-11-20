@@ -1,22 +1,25 @@
 <script setup lang="ts">
-import { type PropType, computed, onMounted, onBeforeUnmount, ref } from "vue";
+import { type PropType, computed, onBeforeUnmount, onMounted, ref } from "vue";
 import { rendererProps } from "@jsonforms/vue";
-import LoadingDropdown from "./loading/LoadingDropdown.vue";
+import { set } from "lodash-es";
+import { v4 as uuidv4 } from "uuid";
+
 import { Checkbox } from "@knime/components";
 import { AlertType } from "@knime/ui-extension-service";
-import { set } from "lodash-es";
-import getFlattenedSettings from "../utils/getFlattenedSettings";
-import { v4 as uuidv4 } from "uuid";
-import inject from "../utils/inject";
-import type { SettingsData } from "../types/SettingsData";
-import type { IdAndText } from "../types/ChoicesUiSchema";
+
 import useDialogControl, {
   type DialogControl,
 } from "../composables/components/useDialogControl";
-import LabeledControl from "./label/LabeledControl.vue";
 import useProvidedState from "../composables/components/useProvidedState";
+import type { IdAndText } from "../types/ChoicesUiSchema";
+import type { SettingsData } from "../types/SettingsData";
+import getFlattenedSettings from "../utils/getFlattenedSettings";
 import { withSpecialChoices } from "../utils/getPossibleValuesFromUiSchema";
+import inject from "../utils/inject";
+
 import useHideOnNull from "./composables/useHideOnNull";
+import LabeledControl from "./label/LabeledControl.vue";
+import LoadingDropdown from "./loading/LoadingDropdown.vue";
 
 const props = defineProps({
   ...rendererProps(),

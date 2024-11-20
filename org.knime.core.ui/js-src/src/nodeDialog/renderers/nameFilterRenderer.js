@@ -1,7 +1,7 @@
-import { isControl, rankWith } from "@jsonforms/core";
-import { priorityRanks, inputFormats } from "../constants";
-
 import { defineAsyncComponent } from "vue";
+import { isControl, rankWith } from "@jsonforms/core";
+
+import { inputFormats, priorityRanks } from "../constants";
 
 const NameFilter = defineAsyncComponent(() =>
   import("../uiComponents/twinlist/NameFilter.vue"),

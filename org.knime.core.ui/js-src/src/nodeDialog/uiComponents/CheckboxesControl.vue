@@ -1,11 +1,15 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
-import { optionsMapper } from "../utils";
+import { rendererProps } from "@jsonforms/vue";
+
 import { Checkboxes } from "@knime/components";
+
 import useDialogControl from "../composables/components/useDialogControl";
 import { type IdAndText } from "../types/ChoicesUiSchema";
+import { optionsMapper } from "../utils";
+
 import LabeledControl from "./label/LabeledControl.vue";
-import { rendererProps } from "@jsonforms/vue";
+
 const props = defineProps(rendererProps());
 const { control, disabled, onChange } = useDialogControl({ props });
 

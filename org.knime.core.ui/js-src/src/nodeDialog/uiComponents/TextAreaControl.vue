@@ -1,8 +1,12 @@
 <script setup lang="ts">
-import useDialogControl from "../composables/components/useDialogControl";
-import LabeledControl from "./label/LabeledControl.vue";
-import { TextArea } from "@knime/components";
 import { rendererProps } from "@jsonforms/vue";
+
+import { TextArea } from "@knime/components";
+
+import useDialogControl from "../composables/components/useDialogControl";
+
+import LabeledControl from "./label/LabeledControl.vue";
+
 const props = defineProps(rendererProps());
 const { control, onChange, disabled } = useDialogControl<string>({ props });
 </script>

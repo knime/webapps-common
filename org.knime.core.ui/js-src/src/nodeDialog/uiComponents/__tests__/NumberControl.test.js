@@ -1,15 +1,17 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+import { NumberInput } from "@knime/components";
+
 import {
-  mountJsonFormsComponent,
-  initializesJsonFormsControl,
   getControlBase,
+  initializesJsonFormsControl,
+  mountJsonFormsComponent,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
+import ErrorMessage from "../ErrorMessage.vue";
 import NumberControl from "../NumberControl.vue";
 import NumberControlBase from "../NumberControlBase.vue";
-import { NumberInput } from "@knime/components";
-import ErrorMessage from "../ErrorMessage.vue";
-import LabeledControl from "../label/LabeledControl.vue";
 import DialogLabel from "../label/DialogLabel.vue";
+import LabeledControl from "../label/LabeledControl.vue";
 
 describe("NumberInput.vue", () => {
   let props, wrapper, component;

@@ -2,20 +2,20 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { shallowMount } from "@vue/test-utils";
 import { JsonForms } from "@jsonforms/vue";
+import flushPromises from "flush-promises";
+
 import {
   AlertType,
-  JsonDataService,
-  DialogService,
   AlertingService,
+  DialogService,
+  JsonDataService,
   SharedDataService,
 } from "@knime/ui-extension-service";
 import {
   dialogApplyData,
   dialogInitialData,
 } from "/test-setup/mocks/dialogData";
-
 import NodeDialog from "../NodeDialog.vue";
-import flushPromises from "flush-promises";
 
 import { getOptions } from "./utils";
 

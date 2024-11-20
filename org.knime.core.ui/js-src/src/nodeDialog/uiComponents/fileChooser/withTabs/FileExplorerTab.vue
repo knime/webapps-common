@@ -1,18 +1,15 @@
-<script lang="ts">
+<script setup lang="ts">
+import { onMounted, ref } from "vue";
+
+import { useApplyButton } from "@/nodeDialog/layoutComponents/settingsSubPanel";
 import DialogFileExplorer, {
-  type Props as DialogFileExplorerProps,
+  type DialogFileExplorerProps,
 } from "../DialogFileExplorer.vue";
 
-type Props = Omit<
+export type FileExplorerTabProps = Omit<
   DialogFileExplorerProps,
   "clickOutsideException" | "openFileByExplorer"
 >;
-export type { Props };
-</script>
-
-<script setup lang="ts">
-import { onMounted, ref } from "vue";
-import { useApplyButton } from "@/nodeDialog/layoutComponents/settingsSubPanel";
 
 const props = withDefaults(defineProps<DialogFileExplorerProps>(), {
   initialFilePath: "",

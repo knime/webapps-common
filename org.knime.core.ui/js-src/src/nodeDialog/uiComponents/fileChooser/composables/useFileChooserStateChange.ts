@@ -1,7 +1,8 @@
+import { type Ref } from "vue";
+
+import { type FileChooserOptions } from "@/nodeDialog/types/FileChooserUiSchema";
 import { mergeDeep } from "@/nodeDialog/utils";
 import type { FSCategory, FileChooserValue } from "../types/FileChooserProps";
-import { type Ref } from "vue";
-import { type FileChooserOptions } from "@/nodeDialog/types/FileChooserUiSchema";
 
 export default (
   currentValue: Ref<FileChooserValue>,

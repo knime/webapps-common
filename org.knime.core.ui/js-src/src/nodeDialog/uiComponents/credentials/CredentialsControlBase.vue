@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { computed, watch } from "vue";
-import { mergeDeep } from "@/nodeDialog/utils";
+
 import { InputField } from "@knime/components";
-import LabeledControl from "@/nodeDialog/uiComponents/label/LabeledControl.vue";
+
+import { type FlowSettings } from "@/nodeDialog/api/types";
 import useProvidedState from "@/nodeDialog/composables/components/useProvidedState";
 import type { Control } from "@/nodeDialog/types/Control";
-import { type FlowSettings } from "@/nodeDialog/api/types";
+import LabeledControl from "@/nodeDialog/uiComponents/label/LabeledControl.vue";
+import { mergeDeep } from "@/nodeDialog/utils";
+
 import type { Credentials } from "./types/Credentials";
 
 const props = defineProps<{

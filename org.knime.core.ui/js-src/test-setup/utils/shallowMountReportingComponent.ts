@@ -1,6 +1,7 @@
-import { shallowMount } from "@vue/test-utils";
-import { ReportingService } from "@knime/ui-extension-service";
 import { vi } from "vitest";
+import { shallowMount } from "@vue/test-utils";
+
+import { ReportingService } from "@knime/ui-extension-service";
 
 export default (component: any, isReport: boolean = false) => {
   const setRenderCompleted = vi.fn();

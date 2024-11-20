@@ -1,12 +1,14 @@
-import { fileURLToPath, URL } from "node:url";
-import { defineConfig } from "vitest/config";
-import vue from "@vitejs/plugin-vue";
-import svgLoader from "vite-svg-loader";
+import path from "node:path";
+import { URL, fileURLToPath } from "node:url";
+
 import type { LibraryOptions } from "vite";
 import { loadEnv } from "vite";
+import vue from "@vitejs/plugin-vue";
+import { defineConfig } from "vitest/config";
+import svgLoader from "vite-svg-loader";
+
 // @ts-ignore
 import { svgoConfig } from "@knime/styles/config/svgo.config";
-import path from "node:path";
 
 const camelCase = (input: string) => {
   return input

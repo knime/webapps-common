@@ -1,26 +1,30 @@
-import { shallowMount } from "@vue/test-utils";
 import {
+  type MockInstance,
+  beforeEach,
   describe,
   expect,
   it,
   vi,
-  beforeEach,
-  type MockInstance,
 } from "vitest";
+import { shallowMount } from "@vue/test-utils";
 import flushPromises from "flush-promises";
-import type { Folder, PathAndError } from "../types";
-import { toFileExplorerItem } from "../utils";
-import HouseIcon from "@knime/styles/img/icons/house.svg";
-import DialogFileExplorer, { type Props } from "../DialogFileExplorer.vue";
+
 import {
   Breadcrumb,
   FileExplorer,
   InputField,
   LoadingIcon,
 } from "@knime/components";
+import HouseIcon from "@knime/styles/img/icons/house.svg";
+
+import DialogFileExplorer, {
+  type DialogFileExplorerProps,
+} from "../DialogFileExplorer.vue";
+import type { Folder, PathAndError } from "../types";
+import { toFileExplorerItem } from "../utils";
 
 describe("DialogFileExplorer.vue", () => {
-  let dataServiceSpy: MockInstance, props: Props;
+  let dataServiceSpy: MockInstance, props: DialogFileExplorerProps;
 
   const fileName = "aFile";
   const filePath = "/path/to/containing/folder/aFile";

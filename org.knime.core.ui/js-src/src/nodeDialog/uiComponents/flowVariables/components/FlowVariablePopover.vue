@@ -1,13 +1,16 @@
 <script setup lang="ts">
-import { Label } from "@knime/components";
-import FlowVariableSelector from "./FlowVariableSelector.vue";
 import { computed } from "vue";
-import FlowVariableExposer from "./FlowVariableExposer.vue";
-import { getLongestCommonPrefix } from "@/nodeDialog/utils/paths";
 
+import { Label } from "@knime/components";
+
+import { getLongestCommonPrefix } from "@/nodeDialog/utils/paths";
 import { getFlowVariableSettingsProvidedByControl } from "../../../composables/components/useFlowVariables";
-import DeprecatedFlowVariables from "./DeprecatedFlowVariables.vue";
 import useDeprecatedConfigPaths from "../composables/useDeprecatedConfigPaths";
+
+import DeprecatedFlowVariables from "./DeprecatedFlowVariables.vue";
+import FlowVariableExposer from "./FlowVariableExposer.vue";
+import FlowVariableSelector from "./FlowVariableSelector.vue";
+
 const { configPaths } = getFlowVariableSettingsProvidedByControl();
 
 const { deprecatedSetConfigPaths } = useDeprecatedConfigPaths();

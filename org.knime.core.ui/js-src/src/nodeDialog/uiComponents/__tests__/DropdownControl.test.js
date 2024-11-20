@@ -1,14 +1,16 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import flushPromises from "flush-promises";
+
+import { Dropdown } from "@knime/components";
+
 import {
-  mountJsonFormsComponent,
-  initializesJsonFormsControl,
   getControlBase,
+  initializesJsonFormsControl,
+  mountJsonFormsComponent,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
 import DropdownControl from "../DropdownControl.vue";
-import LabeledControl from "../label/LabeledControl.vue";
 import DialogLabel from "../label/DialogLabel.vue";
-import { Dropdown } from "@knime/components";
-import flushPromises from "flush-promises";
+import LabeledControl from "../label/LabeledControl.vue";
 
 describe("DropdownControl.vue", () => {
   let wrapper, props, component;

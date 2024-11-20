@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import TwinlistControl from "./TwinlistControl.vue";
 import { rendererProps } from "@jsonforms/vue";
+
+import TwinlistControl from "./TwinlistControl.vue";
 
 defineProps(rendererProps());
 </script>

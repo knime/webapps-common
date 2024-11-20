@@ -1,12 +1,14 @@
 import { get } from "lodash-es";
+
 import type { IndexIdsValuePairs } from "@/nodeDialog/types/Update";
-import { combineDataPathsWithIndices } from "./dataPaths";
 import {
   type ArrayRecord,
   getArrayIdsRecord,
-  getOrCreateNestedArrayRecord,
   getOrCreateIdForIndex,
+  getOrCreateNestedArrayRecord,
 } from "../useArrayIds";
+
+import { combineDataPathsWithIndices } from "./dataPaths";
 
 /**
  * If there is more than one path, we know that the settings at the first are an array

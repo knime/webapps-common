@@ -1,8 +1,8 @@
 <script>
 import { FunctionButton } from "@knime/components";
-import TrashIcon from "@knime/styles/img/icons/trash.svg";
-import ArrowUpIcon from "@knime/styles/img/icons/arrow-up.svg";
 import ArrowDownIcon from "@knime/styles/img/icons/arrow-down.svg";
+import ArrowUpIcon from "@knime/styles/img/icons/arrow-up.svg";
+import TrashIcon from "@knime/styles/img/icons/trash.svg";
 
 export default {
   name: "ArrayLayoutItemControls",

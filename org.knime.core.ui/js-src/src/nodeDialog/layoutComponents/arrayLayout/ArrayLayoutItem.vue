@@ -1,20 +1,23 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, provide } from "vue";
-import { provideForAddedArrayLayoutElements } from "@/nodeDialog/composables/components/useAddedArrayLayoutItem";
-import { addIndexToStateProviders, addIndexToTriggers } from "./composables";
 import { composePaths } from "@jsonforms/core";
+
+import { AlertType } from "@knime/ui-extension-service";
+
+import { provideForAddedArrayLayoutElements } from "@/nodeDialog/composables/components/useAddedArrayLayoutItem";
 import {
   type IdsRecord,
   createArrayAtPath,
   createForArrayItem,
   deleteArrayItem,
 } from "@/nodeDialog/composables/nodeDialog/useArrayIds";
-import inject from "@/nodeDialog/utils/inject";
-import { AlertType } from "@knime/ui-extension-service";
 import { elementCheckboxFormat } from "@/nodeDialog/renderers/elementCheckboxRenderer";
+import inject from "@/nodeDialog/utils/inject";
+
 import ArrayLayoutItemLabel, {
   type TitleConfig,
 } from "./ArrayLayoutItemLabel.vue";
+import { addIndexToStateProviders, addIndexToTriggers } from "./composables";
 
 const props = defineProps<{
   elements: [string, any][];

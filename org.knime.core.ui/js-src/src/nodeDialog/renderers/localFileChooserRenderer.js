@@ -1,7 +1,7 @@
-import { rankWith, isStringControl, and } from "@jsonforms/core";
-import { priorityRanks, inputFormats } from "../constants";
-
 import { defineAsyncComponent } from "vue";
+import { and, isStringControl, rankWith } from "@jsonforms/core";
+
+import { inputFormats, priorityRanks } from "../constants";
 
 const LocalFileChooserControl = defineAsyncComponent(() =>
   import("../uiComponents/fileChooser/local/LocalFileChooserControl.vue"),

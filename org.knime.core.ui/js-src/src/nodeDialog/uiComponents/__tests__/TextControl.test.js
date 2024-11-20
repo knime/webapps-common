@@ -1,14 +1,16 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import flushPromises from "flush-promises";
+
+import { InputField } from "@knime/components";
+
 import {
-  mountJsonFormsComponent,
-  initializesJsonFormsControl,
   getControlBase,
+  initializesJsonFormsControl,
+  mountJsonFormsComponent,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
 import TextControl from "../TextControl.vue";
-import LabeledControl from "../label/LabeledControl.vue";
 import DialogLabel from "../label/DialogLabel.vue";
-import { InputField } from "@knime/components";
-import flushPromises from "flush-promises";
+import LabeledControl from "../label/LabeledControl.vue";
 
 describe("TextControl.vue", () => {
   let defaultProps, wrapper, component;

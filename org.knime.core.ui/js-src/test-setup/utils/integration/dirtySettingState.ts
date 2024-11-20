@@ -1,5 +1,6 @@
-import { DialogService } from "@knime/ui-extension-service";
 import { vi } from "vitest";
+
+import { DialogService } from "@knime/ui-extension-service";
 
 export const controllingFlowVariableState = {
   set: vi.fn(),

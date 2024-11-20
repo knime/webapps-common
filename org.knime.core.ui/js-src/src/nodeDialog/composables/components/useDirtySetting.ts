@@ -1,10 +1,13 @@
 import { type Ref, onUnmounted, watch } from "vue";
+
 import type { SettingComparator } from "@knime/ui-extension-service";
+
+import useDirtySettings from "../nodeDialog/useDirtySettings";
+
 import {
   JsonSettingsComparator,
   type Stringifyable,
 } from "./JsonSettingsComparator";
-import useDirtySettings from "../nodeDialog/useDirtySettings";
 import { injectIsChildOfAddedArrayLayoutElement } from "./useAddedArrayLayoutItem";
 
 export const useDirtySetting = <ValueType extends Stringifyable>({

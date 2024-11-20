@@ -1,21 +1,21 @@
-import { describe, it, vi, beforeEach, expect } from "vitest";
-import { mount, VueWrapper } from "@vue/test-utils";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { VueWrapper, mount } from "@vue/test-utils";
+import flushPromises from "flush-promises";
+
 import {
   JsonDataService,
   SharedDataService,
 } from "@knime/ui-extension-service";
 
-import NodeDialog from "@/nodeDialog/NodeDialog.vue";
-import flushPromises from "flush-promises";
-
-import { getOptions } from "@/nodeDialog/__tests__/utils";
 import { mockRegisterSettings } from "@@/test-setup/utils/integration/dirtySettingState";
+import NodeDialog from "@/nodeDialog/NodeDialog.vue";
+import { getOptions } from "@/nodeDialog/__tests__/utils";
+import type { Result } from "@/nodeDialog/api/types/Result";
 import type {
   Update,
   UpdateResult,
   ValueReference,
 } from "@/nodeDialog/types/Update";
-import type { Result } from "@/nodeDialog/api/types/Result";
 
 describe("updates in array layouts", () => {
   type Wrapper = VueWrapper<any> & {

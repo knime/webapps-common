@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { comboBoxTester } from "../../comboBoxRenderer";
-import { inputFormats } from "@/nodeDialog/constants/inputFormats";
+
 import { dialogInitialData } from "@@/test-setup/mocks/dialogData";
+import { inputFormats } from "@/nodeDialog/constants/inputFormats";
+import { comboBoxTester } from "../../comboBoxRenderer";
 
 describe("comboBoxTester", () => {
   it("applies on control with comboBox format and array schema", () => {

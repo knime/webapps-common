@@ -1,6 +1,7 @@
-import { and, isDateTimeControl, rankWith } from "@jsonforms/core";
-import { priorityRanks, inputFormats } from "../constants";
 import { defineAsyncComponent } from "vue";
+import { and, isDateTimeControl, rankWith } from "@jsonforms/core";
+
+import { inputFormats, priorityRanks } from "../constants";
 
 const TimeControl = defineAsyncComponent({
   loader: () => import("../uiComponents/TimeControl.vue"),

@@ -1,14 +1,16 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import flushPromises from "flush-promises";
+
+import { FunctionButton, Label, LoadingIcon } from "@knime/components";
+
 import {
+  getControlBase,
   initializesJsonFormsControl,
   mountJsonFormsComponent,
-  getControlBase,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
 import ButtonControl from "../ButtonControl.vue";
 import DialogComponentWrapper from "../DialogComponentWrapper.vue";
-import { FunctionButton, LoadingIcon, Label } from "@knime/components";
 import DialogLabel from "../label/DialogLabel.vue";
-import flushPromises from "flush-promises";
 
 describe("ButtonControl", () => {
   const states = [

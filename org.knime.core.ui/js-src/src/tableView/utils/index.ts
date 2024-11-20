@@ -1,7 +1,7 @@
 import {
-  filterComponents,
-  type PossibleValue,
   type FilterConfig,
+  type PossibleValue,
+  filterComponents,
 } from "@knime/knime-ui-table";
 
 export const createDefaultFilterConfig = (

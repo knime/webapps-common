@@ -1,23 +1,22 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { FunctionButton, useClickOutside } from "@knime/components";
-import { FocusTrap } from "focus-trap-vue";
-
-import { DOMWrapper, mount, VueWrapper } from "@vue/test-utils";
 import {
-  beforeEach,
+  type MockInstance,
   afterEach,
+  beforeEach,
   describe,
   expect,
   it,
   vi,
-  type MockInstance,
 } from "vitest";
+import { unref } from "vue";
+import { DOMWrapper, VueWrapper, mount } from "@vue/test-utils";
 import flushPromises from "flush-promises";
+import { FocusTrap } from "focus-trap-vue";
+
+import { FunctionButton, useClickOutside } from "@knime/components";
 
 import DialogPopover from "../DialogPopover.vue";
 import type { DialogPopoverProps } from "../types/DialogPopoverProps";
-
-import { unref } from "vue";
 
 const useClickOutsideMock = useClickOutside as any as MockInstance<
   typeof useClickOutside

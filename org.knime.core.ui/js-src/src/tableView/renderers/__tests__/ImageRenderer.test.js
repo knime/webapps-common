@@ -1,13 +1,14 @@
 /* eslint-disable vitest/max-nested-describe */
 /* eslint-disable max-nested-callbacks */
 /* eslint-disable max-lines */
-import { mount } from "@vue/test-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import * as imagesModule from "../../../utils/images";
-
-import ImageRenderer from "../ImageRenderer.vue";
+import { mount } from "@vue/test-utils";
 import flushPromises from "flush-promises";
+
 import { ResourceService } from "@knime/ui-extension-service";
+
+import * as imagesModule from "../../../utils/images";
+import ImageRenderer from "../ImageRenderer.vue";
 
 describe("ImageRenderer.vue", () => {
   let props, context;

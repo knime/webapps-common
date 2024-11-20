@@ -1,17 +1,17 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import OnlyFlowVariable from "@knime/styles/img/icons/only-flow-variables.svg";
-import ExposeFlowVariable from "@knime/styles/img/icons/expose-flow-variables.svg";
-import BothFlowVariables from "@knime/styles/img/icons/both-flow-variables.svg";
 
-import { mount } from "@vue/test-utils";
-import { beforeEach, afterEach, describe, expect, it, vi } from "vitest";
-
-import FlowVariableIcon from "../FlowVariableIcon.vue";
-
-import type { FlowVariableIconProps } from "../../types/FlowVariableIconProps";
-import { injectionKey as providedByComponentKey } from "@/nodeDialog/composables/components/useFlowVariables";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { type Ref, ref } from "vue";
+import { mount } from "@vue/test-utils";
+
+import BothFlowVariables from "@knime/styles/img/icons/both-flow-variables.svg";
+import ExposeFlowVariable from "@knime/styles/img/icons/expose-flow-variables.svg";
+import OnlyFlowVariable from "@knime/styles/img/icons/only-flow-variables.svg";
+
 import { type FlowSettings } from "@/nodeDialog/api/types";
+import { injectionKey as providedByComponentKey } from "@/nodeDialog/composables/components/useFlowVariables";
+import type { FlowVariableIconProps } from "../../types/FlowVariableIconProps";
+import FlowVariableIcon from "../FlowVariableIcon.vue";
 
 describe("FlowVariableIcon.vue", () => {
   let props: FlowVariableIconProps, flowSettings: Ref<FlowSettings | undefined>;

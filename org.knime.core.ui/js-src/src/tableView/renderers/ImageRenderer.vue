@@ -1,21 +1,22 @@
 <script setup lang="ts">
-import { uniqueId } from "lodash-es";
 import {
   computed,
-  ref,
-  watch,
+  inject,
+  nextTick,
   onMounted,
   onUnmounted,
+  ref,
+  watch,
   watchEffect,
-  nextTick,
-  inject,
 } from "vue";
-import { fetchImage } from "@/utils/images";
+import { uniqueId } from "lodash-es";
 
 import {
   ResourceService,
   type UIExtensionService,
 } from "@knime/ui-extension-service";
+
+import { fetchImage } from "@/utils/images";
 
 const props = defineProps<{
   path: string;

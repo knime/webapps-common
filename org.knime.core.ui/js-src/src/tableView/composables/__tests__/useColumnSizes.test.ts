@@ -1,7 +1,9 @@
-import { it, describe, expect, beforeEach } from "vitest";
-import useColumnSizes, { type UseColumnSizesOptions } from "../useColumnSizes";
+import { beforeEach, describe, expect, it } from "vitest";
 import { nextTick, ref } from "vue";
+
 import specialColumns from "../../utils/specialColumns";
+import useColumnSizes, { type UseColumnSizesOptions } from "../useColumnSizes";
+
 const { INDEX, ROW_ID, SKIPPED_REMAINING_COLUMNS_COLUMN } = specialColumns;
 
 describe("useColumnSizes", () => {

@@ -1,7 +1,7 @@
-import { rankWith } from "@jsonforms/core";
-import { priorityRanks, inputFormats } from "../constants";
-
 import { defineAsyncComponent } from "vue";
+import { rankWith } from "@jsonforms/core";
+
+import { inputFormats, priorityRanks } from "../constants";
 
 const CredentialsControl = defineAsyncComponent(() =>
   import("../uiComponents/credentials/CredentialsControl.vue"),

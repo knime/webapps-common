@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { DateTimeInput } from "@knime/components/date-time-input";
-import useDialogControl from "../composables/components/useDialogControl";
-import LabeledControl from "./label/LabeledControl.vue";
 import { rendererProps } from "@jsonforms/vue";
+
+import { DateTimeInput } from "@knime/components/date-time-input";
+
+import useDialogControl from "../composables/components/useDialogControl";
+
+import LabeledControl from "./label/LabeledControl.vue";
+
 const props = defineProps(rendererProps());
 const { control, disabled, onChange } = useDialogControl<string>({ props });
 

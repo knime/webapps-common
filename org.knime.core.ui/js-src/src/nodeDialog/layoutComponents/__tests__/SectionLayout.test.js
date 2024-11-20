@@ -1,10 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 import {
-  mountJsonFormsComponent,
   initializesJsonFormsLayout,
+  mountJsonFormsComponent,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
-import SectionLayout from "../SectionLayout.vue";
 import DescriptionPopover from "@/nodeDialog/uiComponents/description/DescriptionPopover.vue";
+import SectionLayout from "../SectionLayout.vue";
 
 describe("SectionLayout.vue", () => {
   let defaultProps, wrapper;

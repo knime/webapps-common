@@ -1,5 +1,7 @@
-import { constants } from "@knime/knime-ui-table";
 import { ref } from "vue";
+
+import { constants } from "@knime/knime-ui-table";
+
 import type { TableViewViewSettings } from "../types/ViewSettings";
 import { RowHeightMode, VerticalPaddingMode } from "../types/ViewSettings";
 

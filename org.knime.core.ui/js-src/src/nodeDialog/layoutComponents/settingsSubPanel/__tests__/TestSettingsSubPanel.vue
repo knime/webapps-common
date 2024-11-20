@@ -1,7 +1,10 @@
 <script lang="ts">
-import type { Props as SettingsSubPanelProps } from "../SettingsSubPanel.vue";
-import TestSettingsSubPanelContent from "./TestSettingsSubPanelContent.vue";
 import { useApplyButton } from "@/nodeDialog/layoutComponents/settingsSubPanel";
+import type { Props as SettingsSubPanelProps } from "../SettingsSubPanel.vue";
+
+/* eslint-disable import/order */
+import TestSettingsSubPanelContent from "./TestSettingsSubPanelContent.vue";
+
 export interface Props {
   settingsSubPanelConfig: SettingsSubPanelProps;
   onApply: () => Promise<void>;
@@ -13,7 +16,9 @@ export const contentId = "content";
 
 <script setup lang="ts">
 import { ref } from "vue";
+
 import SettingsSubPanel from "../SettingsSubPanel.vue";
+/* eslint-enable import/order */
 
 defineProps<Props>();
 const content = ref<null | typeof TestSettingsSubPanelContent>(null);

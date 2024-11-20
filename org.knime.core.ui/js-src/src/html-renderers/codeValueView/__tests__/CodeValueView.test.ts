@@ -1,16 +1,17 @@
 import {
+  type MockInstance,
   beforeAll,
   beforeEach,
   describe,
   expect,
   it,
-  type MockInstance,
   vi,
 } from "vitest";
-import { CodeValueView, type CodeValueViewInitialData } from "../CodeValueView";
+import { editor } from "monaco-editor";
+
 import { JsonDataService } from "@knime/ui-extension-service";
 
-import { editor } from "monaco-editor";
+import { CodeValueView, type CodeValueViewInitialData } from "../CodeValueView";
 
 const editorCreateMock = editor.create as any as MockInstance<
   typeof editor.create

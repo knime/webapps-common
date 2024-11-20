@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { Button } from "@knime/components";
-import useDeprecatedConfigPaths from "../composables/useDeprecatedConfigPaths";
+
 import { getFlowVariablesMap } from "@/nodeDialog/composables/components/useProvidedFlowVariablesMap";
+import useDeprecatedConfigPaths from "../composables/useDeprecatedConfigPaths";
 
 const { deprecatedSetConfigPaths } = useDeprecatedConfigPaths();
 

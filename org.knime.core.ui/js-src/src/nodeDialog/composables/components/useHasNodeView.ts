@@ -1,4 +1,4 @@
-import { type Ref, inject, type InjectionKey, provide, ref } from "vue";
+import { type InjectionKey, type Ref, inject, provide, ref } from "vue";
 
 /**
  * Exported for tests

@@ -1,5 +1,7 @@
 <script lang="ts">
-import { type FileChooserValue, FSCategory } from "../types/FileChooserProps";
+// eslint-disable-next-line import/order
+import { FSCategory, type FileChooserValue } from "../types/FileChooserProps";
+
 interface Props {
   modelValue: FileChooserValue;
   disabled: boolean;
@@ -18,13 +20,16 @@ export const prefixes: [keyof typeof FSCategory, string][] = [
 </script>
 
 <script setup lang="ts">
-import { computed, ref, watch, onMounted } from "vue";
-import getDeepActiveElement from "@/utils/getDeepActiveElement";
+import { computed, onMounted, ref, watch } from "vue";
+
 import { InputField } from "@knime/components";
-import { startsWithSchemeRegex } from "./url/urlUtil";
+
+import getDeepActiveElement from "@/utils/getDeepActiveElement";
 import useFileChooserBackend, {
   getBackendType,
 } from "../composables/useFileChooserBackend";
+
+import { startsWithSchemeRegex } from "./url/urlUtil";
 
 const props = defineProps<Props>();
 

@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { Checkbox } from "@knime/components";
-import useDialogControl from "@/nodeDialog/composables/components/useDialogControl";
 import { rendererProps } from "@jsonforms/vue";
+
+import { Checkbox } from "@knime/components";
+
+import useDialogControl from "@/nodeDialog/composables/components/useDialogControl";
 
 const props = defineProps(rendererProps());
 

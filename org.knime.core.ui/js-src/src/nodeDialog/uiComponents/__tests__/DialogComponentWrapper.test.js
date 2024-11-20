@@ -1,8 +1,9 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { mount } from "@vue/test-utils";
-import DialogComponentWrapper from "../DialogComponentWrapper.vue";
 import { ref } from "vue";
+import { mount } from "@vue/test-utils";
+
 import { injectionKey as injectionKeyShowAdvancedSettings } from "@/nodeDialog/composables/components/useAdvancedSettings";
+import DialogComponentWrapper from "../DialogComponentWrapper.vue";
 
 let props, showAdvancedSettings;
 

@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { InputField, NumberInput, Label } from "@knime/components";
+import { InputField, Label, NumberInput } from "@knime/components";
+
 import ErrorMessage from "@/nodeDialog/uiComponents/ErrorMessage.vue";
 
 withDefaults(

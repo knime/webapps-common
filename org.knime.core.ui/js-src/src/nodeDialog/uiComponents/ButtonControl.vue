@@ -1,15 +1,19 @@
 <script setup lang="ts" generic="SettingValue extends Stringifyable">
-import LabeledControl from "./label/LabeledControl.vue";
-import { FunctionButton, LoadingIcon } from "@knime/components";
-import { v4 as uuidv4 } from "uuid";
-import inject from "../utils/inject";
 import { computed, onMounted, ref } from "vue";
-import useDialogControl from "../composables/components/useDialogControl";
-import getFlattenedSettings from "../utils/getFlattenedSettings";
-import type { SettingsData } from "../types/SettingsData";
 import { rendererProps } from "@jsonforms/vue";
-import { type Stringifyable } from "../composables/components/JsonSettingsComparator";
+import { v4 as uuidv4 } from "uuid";
+
+import { FunctionButton, LoadingIcon } from "@knime/components";
+
 import type { Result as ResultOfType } from "@/nodeDialog/api/types/Result";
+import { type Stringifyable } from "../composables/components/JsonSettingsComparator";
+import useDialogControl from "../composables/components/useDialogControl";
+import type { SettingsData } from "../types/SettingsData";
+import getFlattenedSettings from "../utils/getFlattenedSettings";
+import inject from "../utils/inject";
+
+import LabeledControl from "./label/LabeledControl.vue";
+
 type Id = string; // NOSONAR intended type alias
 interface State {
   id: Id;

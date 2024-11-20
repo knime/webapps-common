@@ -1,9 +1,10 @@
+import { type InjectionKey, inject, provide } from "vue";
+
 import {
   DialogService,
   type SettingComparator,
   type SettingState,
 } from "@knime/ui-extension-service";
-import { type InjectionKey, inject, provide } from "vue";
 
 type ControllingVariable = ReturnType<
   SettingState["addControllingFlowVariable"]

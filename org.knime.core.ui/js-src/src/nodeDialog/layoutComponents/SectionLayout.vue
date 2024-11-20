@@ -1,13 +1,15 @@
 <script setup>
-import {
-  useJsonFormsLayout,
-  rendererProps,
-  DispatchRenderer,
-} from "@jsonforms/vue";
-import VerticalLayoutBase from "./VerticalLayoutBase.vue";
-import LayoutComponentWrapper from "./LayoutComponentWrapper.vue";
-import DescriptionPopover from "../uiComponents/description/DescriptionPopover.vue";
 import { ref } from "vue";
+import {
+  DispatchRenderer,
+  rendererProps,
+  useJsonFormsLayout,
+} from "@jsonforms/vue";
+
+import DescriptionPopover from "../uiComponents/description/DescriptionPopover.vue";
+
+import LayoutComponentWrapper from "./LayoutComponentWrapper.vue";
+import VerticalLayoutBase from "./VerticalLayoutBase.vue";
 
 const props = defineProps(rendererProps());
 const { layout } = useJsonFormsLayout(props);

@@ -1,7 +1,7 @@
-import { rankWith, uiTypeIs, or } from "@jsonforms/core";
-import { priorityRanks } from "../constants";
-
 import { defineAsyncComponent } from "vue";
+import { or, rankWith, uiTypeIs } from "@jsonforms/core";
+
+import { priorityRanks } from "../constants";
 
 const VerticalLayout = defineAsyncComponent(
   () => import("../layoutComponents/VerticalLayout.vue"),

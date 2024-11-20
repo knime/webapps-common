@@ -1,8 +1,11 @@
-import getPossibleValuesFromUiSchema from "./getPossibleValuesFromUiSchema";
-export { getPossibleValuesFromUiSchema };
-import type { Control } from "../types/Control";
-import type { PartialDeep } from "type-fest";
 import type { JsonSchema4, JsonSchema7 } from "@jsonforms/core";
+import type { PartialDeep } from "type-fest";
+
+import type { Control } from "../types/Control";
+
+import getPossibleValuesFromUiSchema from "./getPossibleValuesFromUiSchema";
+
+export { getPossibleValuesFromUiSchema };
 
 export const optionsMapper = ({
   const: id,

@@ -4,13 +4,15 @@ export const ELEMENT_RESET_BUTTON_ID = "ElementResetButton";
 </script>
 
 <script setup lang="ts">
-import { LoadingIcon, FunctionButton } from "@knime/components";
+import { watch } from "vue";
+import { rendererProps } from "@jsonforms/vue";
+
+import { FunctionButton, LoadingIcon } from "@knime/components";
 import EditIcon from "@knime/styles/img/icons/pencil.svg";
 import ResetIcon from "@knime/styles/img/icons/reset-all.svg";
-import { rendererProps } from "@jsonforms/vue";
+
 import { useJsonFormsControlWithUpdate } from "@/nodeDialog/composables/components/useJsonFormsControlWithUpdate";
 import inject from "@/nodeDialog/utils/inject";
-import { watch } from "vue";
 
 const props = defineProps({
   ...rendererProps(),

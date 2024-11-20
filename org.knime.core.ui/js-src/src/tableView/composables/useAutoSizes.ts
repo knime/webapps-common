@@ -1,12 +1,13 @@
+import { type Ref, computed, ref } from "vue";
+
+import { BORDER_BOTTOM_WIDTH } from "../constants";
 import type {
-  TableViewDisplayProps,
-  ImageDimension,
   ColumnSizes,
+  ImageDimension,
+  TableViewDisplayProps,
 } from "../types";
-import { computed, ref, type Ref } from "vue";
 import { AutoSizeColumnsToContent, RowHeightMode } from "../types/ViewSettings";
 import type { TableViewViewSettings } from "../types/ViewSettings";
-import { BORDER_BOTTOM_WIDTH } from "../constants";
 
 type RelevantViewSettings = Pick<
   TableViewViewSettings,

@@ -1,13 +1,15 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+import { RadioButtons, ValueSwitch } from "@knime/components";
+
 import {
-  mountJsonFormsComponent,
-  initializesJsonFormsControl,
   getControlBase,
+  initializesJsonFormsControl,
+  mountJsonFormsComponent,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
 import RadioControlBase from "../RadioControlBase.vue";
-import LabeledControl from "../label/LabeledControl.vue";
 import DialogLabel from "../label/DialogLabel.vue";
-import { RadioButtons, ValueSwitch } from "@knime/components";
+import LabeledControl from "../label/LabeledControl.vue";
 
 describe("RadioControlBase.vue", () => {
   let props, wrapper, component;

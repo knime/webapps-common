@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { InputField, Checkbox } from "@knime/components";
-import LabeledControl from "./label/LabeledControl.vue";
-import useDialogControl from "../composables/components/useDialogControl";
 import { rendererProps } from "@jsonforms/vue";
-import useHideOnNull from "./composables/useHideOnNull";
+
+import { Checkbox, InputField } from "@knime/components";
+
+import useDialogControl from "../composables/components/useDialogControl";
 import useProvidedState from "../composables/components/useProvidedState";
+
+import useHideOnNull from "./composables/useHideOnNull";
+import LabeledControl from "./label/LabeledControl.vue";
 
 const props = defineProps(rendererProps());
 const { onChange, control, disabled } = useDialogControl<

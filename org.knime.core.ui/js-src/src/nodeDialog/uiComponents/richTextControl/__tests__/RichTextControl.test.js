@@ -1,13 +1,15 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import {
-  mountJsonFormsComponent,
-  initializesJsonFormsControl,
-  getControlBase,
-} from "@@/test-setup/utils/jsonFormsTestUtils";
+
 import { RichTextEditor } from "@knime/rich-text-editor";
-import RichTextControl from "../RichTextControl.vue";
+
+import {
+  getControlBase,
+  initializesJsonFormsControl,
+  mountJsonFormsComponent,
+} from "@@/test-setup/utils/jsonFormsTestUtils";
 import { inputFormats } from "@/nodeDialog/constants";
 import DialogLabel from "../../label/DialogLabel.vue";
+import RichTextControl from "../RichTextControl.vue";
 
 describe("RichTextControl.vue", () => {
   let props, wrapper, component, stubs;

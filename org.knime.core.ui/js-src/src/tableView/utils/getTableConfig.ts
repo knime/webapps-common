@@ -1,8 +1,9 @@
 import type { MenuItem } from "@knime/components";
+import type { PageConfig, TableConfig } from "@knime/knime-ui-table";
+
 import type { PageParams } from "../types";
 import type { TableViewViewSettings } from "../types/ViewSettings";
 import { SelectionMode } from "../types/ViewSettings";
-import type { TableConfig, PageConfig } from "@knime/knime-ui-table";
 
 const getPageConfig = (
   pageParams: PageParams,

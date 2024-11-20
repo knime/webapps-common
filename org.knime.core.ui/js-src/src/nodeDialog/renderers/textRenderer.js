@@ -1,7 +1,7 @@
-import { rankWith, isStringControl } from "@jsonforms/core";
-import { priorityRanks } from "../constants";
-
 import { defineAsyncComponent } from "vue";
+import { isStringControl, rankWith } from "@jsonforms/core";
+
+import { priorityRanks } from "../constants";
 
 const TextControl = defineAsyncComponent(() =>
   import("../uiComponents/TextControl.vue"),

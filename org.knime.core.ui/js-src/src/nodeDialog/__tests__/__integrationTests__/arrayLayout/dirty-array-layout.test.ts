@@ -1,18 +1,17 @@
-import { describe, expect, it, vi, beforeEach } from "vitest";
-import { mount, VueWrapper } from "@vue/test-utils";
-import { DialogService, JsonDataService } from "@knime/ui-extension-service";
-
-import NodeDialog from "@/nodeDialog/NodeDialog.vue";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { VueWrapper, mount } from "@vue/test-utils";
 import flushPromises from "flush-promises";
-
-import { getOptions } from "@/nodeDialog/__tests__/utils";
 
 import PlusIcon from "@knime/styles/img/icons/plus.svg";
 import TrashIcon from "@knime/styles/img/icons/trash.svg";
+import { DialogService, JsonDataService } from "@knime/ui-extension-service";
+
 import {
   controllingFlowVariableState,
   exposedFlowVariableState,
 } from "@@/test-setup/utils/integration/dirtySettingState";
+import NodeDialog from "@/nodeDialog/NodeDialog.vue";
+import { getOptions } from "@/nodeDialog/__tests__/utils";
 
 describe("dirty array layout", () => {
   type Wrapper = VueWrapper<any> & {

@@ -1,15 +1,17 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import flushPromises from "flush-promises";
+
+import { Checkbox } from "@knime/components";
+import ReexecutionIcon from "@knime/styles/img/icons/reexecution.svg";
+
 import {
-  mountJsonFormsComponent,
-  initializesJsonFormsControl,
   getControlBase,
+  initializesJsonFormsControl,
+  mountJsonFormsComponent,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
 import CheckboxControl from "../CheckboxControl.vue";
 import ErrorMessage from "../ErrorMessage.vue";
 import DescriptionPopover from "../description/DescriptionPopover.vue";
-import ReexecutionIcon from "@knime/styles/img/icons/reexecution.svg";
-import { Checkbox } from "@knime/components";
-import flushPromises from "flush-promises";
 
 describe("CheckboxControl.vue", () => {
   let wrapper, defaultProps, component;

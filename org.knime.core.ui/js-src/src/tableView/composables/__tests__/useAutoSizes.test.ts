@@ -1,10 +1,11 @@
-import { it, describe, expect, beforeEach } from "vitest";
-import useAutoSizes, { type UseAutoSizesOptions } from "../useAutoSizes";
-import { ref, type Ref } from "vue";
+import { beforeEach, describe, expect, it } from "vitest";
+import { type Ref, ref } from "vue";
+
 import {
   AutoSizeColumnsToContent,
   RowHeightMode,
 } from "@/tableView/types/ViewSettings";
+import useAutoSizes, { type UseAutoSizesOptions } from "../useAutoSizes";
 
 describe("useAutoSizes", () => {
   let initialDataMock: UseAutoSizesOptions, currentRowHeight: Ref<number>;

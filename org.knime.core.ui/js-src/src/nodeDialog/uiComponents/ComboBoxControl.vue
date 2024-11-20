@@ -1,12 +1,16 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
-import { ComboBox } from "@knime/components";
-import type { PossibleValue } from "../types/ChoicesUiSchema";
-import useDialogControl from "../composables/components/useDialogControl";
-import LabeledControl from "./label/LabeledControl.vue";
+import { computed, onMounted, ref } from "vue";
 import { rendererProps } from "@jsonforms/vue";
+
+import { ComboBox } from "@knime/components";
+
+import useDialogControl from "../composables/components/useDialogControl";
 import useProvidedState from "../composables/components/useProvidedState";
+import type { PossibleValue } from "../types/ChoicesUiSchema";
 import { withSpecialChoices } from "../utils/getPossibleValuesFromUiSchema";
+
+import LabeledControl from "./label/LabeledControl.vue";
+
 const props = defineProps(rendererProps());
 const {
   control,

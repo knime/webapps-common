@@ -1,14 +1,15 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import {
-  mountJsonFormsComponent,
-  getControlBase,
-} from "@@/test-setup/utils/jsonFormsTestUtils";
-import VennDiagramLayout from "../VennDiagramLayout.vue";
-import VennDiagram from "../VennDiagram.vue";
 import { DispatchRenderer } from "@jsonforms/vue";
+
+import {
+  getControlBase,
+  mountJsonFormsComponent,
+} from "@@/test-setup/utils/jsonFormsTestUtils";
+import Inner from "../Inner.vue";
 import Left from "../Left.vue";
 import Right from "../Right.vue";
-import Inner from "../Inner.vue";
+import VennDiagram from "../VennDiagram.vue";
+import VennDiagramLayout from "../VennDiagramLayout.vue";
 
 describe("VennDiagramLayout.vue", () => {
   let props, wrapper, component;

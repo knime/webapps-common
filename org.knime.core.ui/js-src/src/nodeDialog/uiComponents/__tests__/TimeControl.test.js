@@ -7,16 +7,18 @@ import {
   it,
   vi,
 } from "vitest";
+
+import { DateTimeInput } from "@knime/components/date-time-input";
+
 import {
   getControlBase,
   initializesJsonFormsControl,
   mountJsonFormsComponent,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
-import TimeControl from "../TimeControl.vue";
-import LabeledControl from "../label/LabeledControl.vue";
-import DialogLabel from "../label/DialogLabel.vue";
-import { DateTimeInput } from "@knime/components/date-time-input";
 import { localTimeUtils } from "@/nodeDialog/utils/localTimeUtils";
+import TimeControl from "../TimeControl.vue";
+import DialogLabel from "../label/DialogLabel.vue";
+import LabeledControl from "../label/LabeledControl.vue";
 
 describe("TimeControl", () => {
   let wrapper, component;

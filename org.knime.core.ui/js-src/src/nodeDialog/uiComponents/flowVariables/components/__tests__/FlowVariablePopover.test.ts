@@ -1,17 +1,19 @@
-import { shallowMount } from "@vue/test-utils";
 import { beforeEach, describe, expect, it } from "vitest";
-import { Label, Fieldset } from "@knime/components";
-import FlowVariablePopover from "../FlowVariablePopover.vue";
-import FlowVariableSelector from "../FlowVariableSelector.vue";
-import FlowVariableExposer from "../FlowVariableExposer.vue";
+import { type Ref, ref } from "vue";
+import { shallowMount } from "@vue/test-utils";
+
+import { Fieldset, Label } from "@knime/components";
+
+import { type FlowSettings } from "@/nodeDialog/api/types";
 import {
   type ConfigPath,
   injectionKey as providedByComponentKey,
 } from "@/nodeDialog/composables/components/useFlowVariables";
-import { type Ref, ref } from "vue";
-import { type FlowSettings } from "@/nodeDialog/api/types";
-import DeprecatedFlowVariables from "../DeprecatedFlowVariables.vue";
 import { injectionKey as flowVarMapKey } from "@/nodeDialog/composables/components/useProvidedFlowVariablesMap";
+import DeprecatedFlowVariables from "../DeprecatedFlowVariables.vue";
+import FlowVariableExposer from "../FlowVariableExposer.vue";
+import FlowVariablePopover from "../FlowVariablePopover.vue";
+import FlowVariableSelector from "../FlowVariableSelector.vue";
 
 describe("FlowVariablePopover", () => {
   let configPaths: Ref<ConfigPath[]>,

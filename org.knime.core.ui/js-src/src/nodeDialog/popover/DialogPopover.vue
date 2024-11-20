@@ -1,21 +1,24 @@
 <script setup lang="ts">
-import { FunctionButton, useClickOutside } from "@knime/components";
-import { computed, nextTick, ref, toRef, watch, type Ref } from "vue";
+import { type Ref, computed, nextTick, ref, toRef, watch } from "vue";
 import {
-  useFloating,
-  shift,
   arrow,
-  offset,
+  autoUpdate,
   flip,
   limitShift,
-  autoUpdate,
+  offset,
+  shift,
+  useFloating,
 } from "@floating-ui/vue";
-import type { Side, Placement } from "@floating-ui/vue";
-import type { DialogPopoverProps } from "./types/DialogPopoverProps";
+import type { Placement, Side } from "@floating-ui/vue";
 import { FocusTrap } from "focus-trap-vue";
 import { tabbable } from "tabbable";
+
+import { FunctionButton, useClickOutside } from "@knime/components";
+
 import getDeepActiveElement from "@/utils/getDeepActiveElement";
 import inject from "../utils/inject";
+
+import type { DialogPopoverProps } from "./types/DialogPopoverProps";
 
 const props = withDefaults(defineProps<DialogPopoverProps>(), {
   ignoredClickOutsideTarget: null,

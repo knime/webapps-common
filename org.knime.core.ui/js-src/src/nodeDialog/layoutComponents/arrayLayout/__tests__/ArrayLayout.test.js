@@ -1,22 +1,24 @@
 /* eslint-disable max-lines */
 /* eslint-disable no-undefined */
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import {
-  mountJsonFormsComponent,
-  initializesJsonFormsArrayControl,
-} from "@@/test-setup/utils/jsonFormsTestUtils";
-import ArrayLayout from "../ArrayLayout.vue";
-import ArrayLayoutItemControls from "../ArrayLayoutItemControls.vue";
-import { FunctionButton } from "@knime/components";
-import ArrowUpIcon from "@knime/styles/img/icons/arrow-up.svg";
-import ArrowDownIcon from "@knime/styles/img/icons/arrow-down.svg";
-import TrashIcon from "@knime/styles/img/icons/trash.svg";
 import { ref } from "vue";
 import { DispatchRenderer } from "@jsonforms/vue";
-import { editResetButtonFormat } from "@/nodeDialog/renderers/editResetButtonRenderer";
-import ArrayLayoutItem from "../ArrayLayoutItem.vue";
-import { elementCheckboxFormat } from "@/nodeDialog/renderers/elementCheckboxRenderer";
 import flushPromises from "flush-promises";
+
+import { FunctionButton } from "@knime/components";
+import ArrowDownIcon from "@knime/styles/img/icons/arrow-down.svg";
+import ArrowUpIcon from "@knime/styles/img/icons/arrow-up.svg";
+import TrashIcon from "@knime/styles/img/icons/trash.svg";
+
+import {
+  initializesJsonFormsArrayControl,
+  mountJsonFormsComponent,
+} from "@@/test-setup/utils/jsonFormsTestUtils";
+import { editResetButtonFormat } from "@/nodeDialog/renderers/editResetButtonRenderer";
+import { elementCheckboxFormat } from "@/nodeDialog/renderers/elementCheckboxRenderer";
+import ArrayLayout from "../ArrayLayout.vue";
+import ArrayLayoutItem from "../ArrayLayoutItem.vue";
+import ArrayLayoutItemControls from "../ArrayLayoutItemControls.vue";
 
 const control = {
   visible: true,

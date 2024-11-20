@@ -1,10 +1,11 @@
 <script>
 import { defineComponent } from "vue";
 import {
-  useJsonFormsLayout,
-  rendererProps,
   DispatchRenderer,
+  rendererProps,
+  useJsonFormsLayout,
 } from "@jsonforms/vue";
+
 import VerticalLayoutBase from "./VerticalLayoutBase.vue";
 
 const VerticalLayout = defineComponent({

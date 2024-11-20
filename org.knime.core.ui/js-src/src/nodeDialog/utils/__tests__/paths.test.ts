@@ -1,10 +1,11 @@
 import { describe, expect, it } from "vitest";
+
+import type { PersistSchema } from "@/nodeDialog/types/Persist";
 import {
   getConfigPaths as getConfigAndDataPaths,
   getLongestCommonPrefix,
   getSubConfigKeys,
 } from "../paths";
-import type { PersistSchema } from "@/nodeDialog/types/Persist";
 
 describe("paths", () => {
   const getDataPaths = (path: string, persistSchema: PersistSchema) =>

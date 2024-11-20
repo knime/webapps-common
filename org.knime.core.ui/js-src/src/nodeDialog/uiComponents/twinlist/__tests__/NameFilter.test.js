@@ -1,12 +1,14 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+import { Twinlist } from "@knime/components";
+
 import {
-  mountJsonFormsComponent,
-  initializesJsonFormsControl,
   getControlBase,
+  initializesJsonFormsControl,
+  mountJsonFormsComponent,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
 import NameFilter from "../NameFilter.vue";
 import TwinlistControl from "../TwinlistControl.vue";
-import { Twinlist } from "@knime/components";
 
 describe("NameFilter.vue", () => {
   const defaultProps = {

@@ -1,6 +1,7 @@
+import { editor } from "monaco-editor";
 import EditorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
 import JSONWorker from "monaco-editor/esm/vs/language/json/json.worker?worker";
-import { editor } from "monaco-editor";
+
 import "../styles.css";
 import { JsonDataService } from "@knime/ui-extension-service";
 

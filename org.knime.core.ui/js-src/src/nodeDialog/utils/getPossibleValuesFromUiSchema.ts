@@ -1,11 +1,13 @@
+import { type Ref, ref, watch } from "vue";
+
 import { AlertType, type AlertingService } from "@knime/ui-extension-service";
+
 import type { Result } from "../api/types/Result";
 import type {
-  ChoicesUiSchemaOptions,
   ChoicesUiSchema,
+  ChoicesUiSchemaOptions,
   PossibleValue,
 } from "../types/ChoicesUiSchema";
-import { type Ref, ref, watch } from "vue";
 
 const extractFromUiSchemaOptions = <Key extends keyof ChoicesUiSchemaOptions>(
   control: { uischema: ChoicesUiSchema },

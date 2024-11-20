@@ -1,36 +1,35 @@
 import { arrayLayoutRenderer } from "./arrayLayoutRenderer";
-import { horizontalLayoutRenderer } from "./horizontalLayoutRenderer";
-import { verticalLayoutRenderer } from "./verticalLayoutRenderer";
-import { sectionLayoutRenderer } from "./sectionLayoutRenderer";
-
 import { buttonRenderer } from "./buttonRenderer";
-import { simpleButtonRenderer } from "./simpleButtonRenderer";
 import { checkboxRenderer } from "./checkboxRenderer";
 import { checkboxesRenderer } from "./checkboxesRenderer";
 import { columnFilterRenderer } from "./columnFilterRenderer";
-import { nameFilterRenderer } from "./nameFilterRenderer";
 import { columnSelectRenderer } from "./columnSelectRenderer";
 import { comboBoxRenderer } from "./comboBoxRenderer";
-import { dropdownRenderer } from "./dropdownRenderer";
-import { integerRenderer } from "./integerRenderer";
-import { numberRenderer } from "./numberRenderer";
-import { radioRenderer } from "./radioRenderer";
-import { richTextRenderer } from "./richTextRenderer";
-import { twinlistRenderer, simpleTwinlistRenderer } from "./twinlistRenderer";
-import { sortListRenderer } from "./sortListRenderer";
-import { valueSwitchRenderer } from "./valueSwitchRenderer";
-import { textAreaRenderer } from "./textAreaRenderer";
 import { credentialsRenderer } from "./credentialsRenderer";
-import { localFileChooserRenderer } from "./localFileChooserRenderer";
-import { fileChooserRenderer } from "./fileChooserRenderer";
-import { legacyCredentialsRenderer } from "./legacyCredentialsRenderer";
-import { vennDiagramLayoutRenderer } from "./vennDiagramRenderer";
+import { dropdownRenderer } from "./dropdownRenderer";
 import { dynamicValueRenderer } from "./dynamicValueRenderer";
 import { editResetButtonRenderer } from "./editResetButtonRenderer";
 import { elementCheckboxRenderer } from "./elementCheckboxRenderer";
-import { textMessageRenderer } from "./textMessageRenderer";
+import { fileChooserRenderer } from "./fileChooserRenderer";
+import { horizontalLayoutRenderer } from "./horizontalLayoutRenderer";
+import { integerRenderer } from "./integerRenderer";
+import { legacyCredentialsRenderer } from "./legacyCredentialsRenderer";
 import { dateRenderer } from "./localDateRenderer";
+import { localFileChooserRenderer } from "./localFileChooserRenderer";
 import { timeRenderer } from "./localTimeRenderer";
+import { nameFilterRenderer } from "./nameFilterRenderer";
+import { numberRenderer } from "./numberRenderer";
+import { radioRenderer } from "./radioRenderer";
+import { richTextRenderer } from "./richTextRenderer";
+import { sectionLayoutRenderer } from "./sectionLayoutRenderer";
+import { simpleButtonRenderer } from "./simpleButtonRenderer";
+import { sortListRenderer } from "./sortListRenderer";
+import { textAreaRenderer } from "./textAreaRenderer";
+import { textMessageRenderer } from "./textMessageRenderer";
+import { simpleTwinlistRenderer, twinlistRenderer } from "./twinlistRenderer";
+import { valueSwitchRenderer } from "./valueSwitchRenderer";
+import { vennDiagramLayoutRenderer } from "./vennDiagramRenderer";
+import { verticalLayoutRenderer } from "./verticalLayoutRenderer";
 
 export const defaultRenderers = [
   /* layout renderers */

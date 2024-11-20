@@ -1,12 +1,14 @@
-import { beforeEach, describe, it, vi, expect, type Mock } from "vitest";
-import TestSettingsSubPanel, {
-  contentId,
-  expandButtonId,
-  type Props as TestComponentProps,
-} from "./TestSettingsSubPanel.vue";
+import { type Mock, beforeEach, describe, expect, it, vi } from "vitest";
 import { VueWrapper, mount } from "@vue/test-utils";
 import flushPromises from "flush-promises";
+
 import { Button, FunctionButton, SideDrawer } from "@knime/components";
+
+import TestSettingsSubPanel, {
+  type Props as TestComponentProps,
+  contentId,
+  expandButtonId,
+} from "./TestSettingsSubPanel.vue";
 
 describe("SettingsSubPanel", () => {
   let props: TestComponentProps,

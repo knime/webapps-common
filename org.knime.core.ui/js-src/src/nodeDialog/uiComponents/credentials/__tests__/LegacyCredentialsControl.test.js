@@ -1,15 +1,16 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import {
-  mountJsonFormsComponent,
-  initializesJsonFormsControl,
-  getControlBase,
-} from "@@/test-setup/utils/jsonFormsTestUtils";
-import LabeledControl from "../../label/LabeledControl.vue";
-import DialogLabel from "../../label/DialogLabel.vue";
-import { inputFormats } from "@/nodeDialog/constants";
 import flushPromises from "flush-promises";
-import LegacyCredentialsControl from "../LegacyCredentialsControl.vue";
+
+import {
+  getControlBase,
+  initializesJsonFormsControl,
+  mountJsonFormsComponent,
+} from "@@/test-setup/utils/jsonFormsTestUtils";
+import { inputFormats } from "@/nodeDialog/constants";
+import DialogLabel from "../../label/DialogLabel.vue";
+import LabeledControl from "../../label/LabeledControl.vue";
 import CredentialsControlBase from "../CredentialsControlBase.vue";
+import LegacyCredentialsControl from "../LegacyCredentialsControl.vue";
 
 describe("LegacyCredentialsControl.vue", () => {
   let props, wrapper, component;

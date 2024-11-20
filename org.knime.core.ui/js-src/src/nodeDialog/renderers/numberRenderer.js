@@ -1,7 +1,7 @@
-import { rankWith, isNumberControl } from "@jsonforms/core";
-import { priorityRanks, inputFormats } from "../constants";
-
 import { defineAsyncComponent } from "vue";
+import { isNumberControl, rankWith } from "@jsonforms/core";
+
+import { inputFormats, priorityRanks } from "../constants";
 
 const NumberControl = defineAsyncComponent(() =>
   import("../uiComponents/NumberControl.vue"),

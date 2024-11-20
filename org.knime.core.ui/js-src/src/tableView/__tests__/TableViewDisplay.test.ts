@@ -1,21 +1,24 @@
 /* eslint-disable vitest/max-nested-describe, max-lines */
-import { VueWrapper } from "@vue/test-utils";
-import { describe, it, beforeEach, expect, vi, type Mock } from "vitest";
-// @ts-ignore
-import { TableUIWithAutoSizeCalculation } from "@knime/knime-ui-table";
-import type { TableViewDisplayProps } from "../types";
-import { getDefaultProps, shallowMountDisplay } from "./utils/display";
-import specialColumns from "../utils/specialColumns";
-import TableViewDisplay from "../TableViewDisplay.vue";
+import { type Mock, beforeEach, describe, expect, it, vi } from "vitest";
 import { ref, unref } from "vue";
-import useColumnSizes from "../composables/useColumnSizes";
+import { VueWrapper } from "@vue/test-utils";
+
+// @ts-ignore
+import { LoadingIcon } from "@knime/components";
+import { TableUIWithAutoSizeCalculation } from "@knime/knime-ui-table";
+
+import TableViewDisplay from "../TableViewDisplay.vue";
 import useAutoSizes from "../composables/useAutoSizes";
+import useColumnSizes from "../composables/useColumnSizes";
+import type { TableViewDisplayProps } from "../types";
 import {
   RowHeightMode,
   SelectionMode,
   VerticalPaddingMode,
 } from "../types/ViewSettings";
-import { LoadingIcon } from "@knime/components";
+import specialColumns from "../utils/specialColumns";
+
+import { getDefaultProps, shallowMountDisplay } from "./utils/display";
 
 const useColumnSizesMock: { [key: string]: any } = {
   columnSizes: ref([50, 50, 50]),

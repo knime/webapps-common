@@ -1,8 +1,10 @@
-import { shallowMount } from "@vue/test-utils";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import DialogLinkModal, { type Props } from "../DialogLinkModal.vue";
-import { ref, nextTick } from "vue";
+import { nextTick, ref } from "vue";
+import { shallowMount } from "@vue/test-utils";
+
 import { CreateLinkModal } from "@knime/rich-text-editor";
+
+import DialogLinkModal, { type Props } from "../DialogLinkModal.vue";
 
 describe("DialogLinkModal", () => {
   let props: Props, showModalSpy: () => void, closeSpy: () => void;

@@ -1,23 +1,24 @@
+import { defineAsyncComponent } from "vue";
 import {
-  rankWith,
-  isNumberControl,
-  isDateTimeControl,
-  isBooleanControl,
-  isIntegerControl,
-  isStringControl,
-  isOneOfControl,
   isAnyOfControl,
+  isBooleanControl,
+  isDateTimeControl,
+  isIntegerControl,
+  isNumberControl,
+  isOneOfControl,
+  isStringControl,
+  rankWith,
   uiTypeIs,
 } from "@jsonforms/core";
+
 import { priorityRanks } from "../constants";
-import { numberRenderer } from "./numberRenderer";
+import DateTimeControl from "../uiComponents/DateTimeControl.vue";
+
 import { checkboxRenderer } from "./checkboxRenderer";
 import { integerRenderer } from "./integerRenderer";
+import { numberRenderer } from "./numberRenderer";
 import { textRenderer } from "./textRenderer";
 import { verticalLayoutRenderer } from "./verticalLayoutRenderer";
-
-import { defineAsyncComponent } from "vue";
-import DateTimeControl from "../uiComponents/DateTimeControl.vue";
 
 const OneOfDropdown = defineAsyncComponent(() =>
   import("../uiComponents/OneOfDropdown.vue"),

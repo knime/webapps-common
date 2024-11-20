@@ -1,22 +1,24 @@
 /* eslint-disable max-lines */
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import {
-  mountJsonFormsComponent,
-  initializesJsonFormsControl,
-  getControlBase,
-} from "@@/test-setup/utils/jsonFormsTestUtils";
-import TwinlistControl from "../TwinlistControl.vue";
-import TwinlistLoadingInfo from "../../loading/TwinlistLoadingInfo.vue";
-import LabeledControl from "../../label/LabeledControl.vue";
-import DialogLabel from "../../label/DialogLabel.vue";
+import flushPromises from "flush-promises";
+
 import {
   MultiModeTwinList,
-  Twinlist,
   MultiselectListBox,
+  Twinlist,
 } from "@knime/components";
-import { mergeDeep } from "@/nodeDialog/utils";
-import flushPromises from "flush-promises";
+
 import { createPersistSchema } from "@@/test-setup/utils/createPersistSchema";
+import {
+  getControlBase,
+  initializesJsonFormsControl,
+  mountJsonFormsComponent,
+} from "@@/test-setup/utils/jsonFormsTestUtils";
+import { mergeDeep } from "@/nodeDialog/utils";
+import DialogLabel from "../../label/DialogLabel.vue";
+import LabeledControl from "../../label/LabeledControl.vue";
+import TwinlistLoadingInfo from "../../loading/TwinlistLoadingInfo.vue";
+import TwinlistControl from "../TwinlistControl.vue";
 
 describe("TwinlistControl.vue", () => {
   let props;

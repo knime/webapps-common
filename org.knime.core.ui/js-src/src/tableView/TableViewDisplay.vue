@@ -1,25 +1,27 @@
 <script setup lang="ts">
-import { computed, reactive, onMounted, ref, type Ref, toRefs } from "vue";
+import { type Ref, computed, onMounted, reactive, ref, toRefs } from "vue";
+
+import { LoadingIcon } from "@knime/components";
 import {
-  TableUIWithAutoSizeCalculation,
-  type Rect,
   type ColumnConfig,
+  type Rect,
+  TableUIWithAutoSizeCalculation,
 } from "@knime/knime-ui-table";
-import ImageRenderer from "./renderers/ImageRenderer.vue";
-import HtmlRenderer from "./renderers/HtmlRenderer.vue";
+import type { DataValueViewConfig } from "@knime/ui-extension-service";
+
+import useAutoSizes from "./composables/useAutoSizes";
+import useColumnSizes from "./composables/useColumnSizes";
+import { BORDER_BOTTOM_WIDTH } from "./constants";
 import CodeRenderer from "./renderers/CodeRenderer.vue";
+import HtmlRenderer from "./renderers/HtmlRenderer.vue";
+import ImageRenderer from "./renderers/ImageRenderer.vue";
 import MultiLineTextRenderer from "./renderers/MultiLineTextRenderer.vue";
+import type { HeaderMenuItem, TableViewDisplayProps } from "./types";
+import { RowHeightMode } from "./types/ViewSettings";
 import getDataConfig from "./utils/getDataConfig";
 import getTableConfig from "./utils/getTableConfig";
-import useColumnSizes from "./composables/useColumnSizes";
-import useAutoSizes from "./composables/useAutoSizes";
-import type { HeaderMenuItem, TableViewDisplayProps } from "./types";
-import useBoolean from "./utils/useBoolean";
 import { separateSpecialColumns } from "./utils/specialColumns";
-import { BORDER_BOTTOM_WIDTH } from "./constants";
-import { RowHeightMode } from "./types/ViewSettings";
-import { LoadingIcon } from "@knime/components";
-import type { DataValueViewConfig } from "@knime/ui-extension-service";
+import useBoolean from "./utils/useBoolean";
 
 const emit = defineEmits<{
   pageChange: [pageNumberDiff: -1 | 1];

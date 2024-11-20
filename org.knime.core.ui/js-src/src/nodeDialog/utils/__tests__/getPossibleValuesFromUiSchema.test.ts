@@ -1,14 +1,15 @@
+import { describe, expect, it, vi } from "vitest";
+import { ref } from "vue";
+import flushPromises from "flush-promises";
+
 import type { Result } from "@/nodeDialog/api/types/Result";
 import type {
   ChoicesUiSchema,
   PossibleValue,
 } from "@/nodeDialog/types/ChoicesUiSchema";
-import { describe, expect, it, vi } from "vitest";
 import getPossibleValuesFromUiSchema, {
   withSpecialChoices,
 } from "../getPossibleValuesFromUiSchema";
-import { ref } from "vue";
-import flushPromises from "flush-promises";
 
 describe("generatePossibleValues", () => {
   const possibleValues = [

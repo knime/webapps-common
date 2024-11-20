@@ -1,7 +1,7 @@
-import { rankWith, isIntegerControl } from "@jsonforms/core";
-import { priorityRanks, inputFormats } from "../constants";
-
 import { defineAsyncComponent } from "vue";
+import { isIntegerControl, rankWith } from "@jsonforms/core";
+
+import { inputFormats, priorityRanks } from "../constants";
 
 const IntegerControl = defineAsyncComponent(() =>
   import("../uiComponents/IntegerControl.vue"),

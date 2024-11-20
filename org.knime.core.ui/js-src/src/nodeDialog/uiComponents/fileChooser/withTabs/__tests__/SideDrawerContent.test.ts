@@ -1,16 +1,18 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import SideDrawerContent from "../SideDrawerContent.vue";
 import { shallowMount } from "@vue/test-utils";
-import { TabBar } from "@knime/components";
-import FileExplorerTab from "../FileExplorerTab.vue";
-import UrlTab from "../url/UrlTab.vue";
 import flushPromises from "flush-promises";
-import ConnectionPreventsTab from "../ConnectionPreventsTab.vue";
+
+import { TabBar } from "@knime/components";
+
 import type {
   FileChooserProps,
   FileChooserValue,
 } from "../../types/FileChooserProps";
 import { FSCategory } from "../../types/FileChooserProps";
+import ConnectionPreventsTab from "../ConnectionPreventsTab.vue";
+import FileExplorerTab from "../FileExplorerTab.vue";
+import SideDrawerContent from "../SideDrawerContent.vue";
+import UrlTab from "../url/UrlTab.vue";
 
 describe("SideDrawerContent.vue", () => {
   let props: FileChooserProps;

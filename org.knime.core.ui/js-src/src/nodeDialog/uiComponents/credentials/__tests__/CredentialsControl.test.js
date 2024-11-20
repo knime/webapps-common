@@ -1,15 +1,17 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import {
-  mountJsonFormsComponent,
-  initializesJsonFormsControl,
-  getControlBase,
-} from "@@/test-setup/utils/jsonFormsTestUtils";
-import CredentialsControl from "../CredentialsControl.vue";
-import LabeledControl from "../../label/LabeledControl.vue";
-import DialogLabel from "../../label/DialogLabel.vue";
-import { InputField } from "@knime/components";
-import { inputFormats } from "@/nodeDialog/constants";
 import flushPromises from "flush-promises";
+
+import { InputField } from "@knime/components";
+
+import {
+  getControlBase,
+  initializesJsonFormsControl,
+  mountJsonFormsComponent,
+} from "@@/test-setup/utils/jsonFormsTestUtils";
+import { inputFormats } from "@/nodeDialog/constants";
+import DialogLabel from "../../label/DialogLabel.vue";
+import LabeledControl from "../../label/LabeledControl.vue";
+import CredentialsControl from "../CredentialsControl.vue";
 
 describe("CredentialsControl.vue", () => {
   let props, wrapper, component;

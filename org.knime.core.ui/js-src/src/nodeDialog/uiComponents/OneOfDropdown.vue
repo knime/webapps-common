@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { rendererProps } from "@jsonforms/vue";
-import { optionsMapper } from "../utils";
-import DropdownControl from "./DropdownControl.vue";
+
 import { useJsonFormsControlWithUpdate } from "../composables/components/useJsonFormsControlWithUpdate";
+import { optionsMapper } from "../utils";
+
+import DropdownControl from "./DropdownControl.vue";
 
 const props = defineProps(rendererProps());
 const { control } = useJsonFormsControlWithUpdate(props);

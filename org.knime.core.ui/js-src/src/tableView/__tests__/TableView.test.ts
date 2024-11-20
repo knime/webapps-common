@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import shallowMountReportingComponent from "@@/test-setup/utils/shallowMountReportingComponent";
 import TableView from "../TableView.vue";
 import TableViewInteractive from "../TableViewInteractive.vue";

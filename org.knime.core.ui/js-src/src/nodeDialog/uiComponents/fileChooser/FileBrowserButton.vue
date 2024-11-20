@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import FolderLenseIcon from "@knime/styles/img/icons/folder-lense.svg";
-import SettingsSubPanel from "@/nodeDialog/layoutComponents/settingsSubPanel/SettingsSubPanel.vue";
 import { FunctionButton } from "@knime/components";
+import FolderLenseIcon from "@knime/styles/img/icons/folder-lense.svg";
+
+import SettingsSubPanel from "@/nodeDialog/layoutComponents/settingsSubPanel/SettingsSubPanel.vue";
 
 interface Props {
   disabled: boolean;

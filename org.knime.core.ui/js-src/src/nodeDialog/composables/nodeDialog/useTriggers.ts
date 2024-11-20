@@ -1,5 +1,7 @@
 import type { Result } from "@/nodeDialog/api/types/Result";
+
 import type { DialogSettingsObject } from "./useUpdates";
+
 export type IndexedIsActive = { indices: string[]; isActive: boolean };
 export type IsActiveCallback = (
   indexIds: string[],

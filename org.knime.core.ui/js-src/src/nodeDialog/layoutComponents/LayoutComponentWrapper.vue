@@ -1,5 +1,6 @@
 <script>
 import { defineComponent } from "vue";
+
 import { injectShowAdvancedSettings } from "../composables/components/useAdvancedSettings";
 
 const LayoutComponentWrapper = defineComponent({

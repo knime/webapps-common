@@ -1,15 +1,17 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import {
-  mountJsonFormsComponent,
-  initializesJsonFormsControl,
-  getControlBase,
-} from "@@/test-setup/utils/jsonFormsTestUtils";
-import SimpleTwinlistControl from "../SimpleTwinlistControl.vue";
-import TwinlistLoadingInfo from "../../loading/TwinlistLoadingInfo.vue";
-import LabeledControl from "../../label/LabeledControl.vue";
-import DialogLabel from "../../label/DialogLabel.vue";
-import { Twinlist, MultiselectListBox } from "@knime/components";
 import flushPromises from "flush-promises";
+
+import { MultiselectListBox, Twinlist } from "@knime/components";
+
+import {
+  getControlBase,
+  initializesJsonFormsControl,
+  mountJsonFormsComponent,
+} from "@@/test-setup/utils/jsonFormsTestUtils";
+import DialogLabel from "../../label/DialogLabel.vue";
+import LabeledControl from "../../label/LabeledControl.vue";
+import TwinlistLoadingInfo from "../../loading/TwinlistLoadingInfo.vue";
+import SimpleTwinlistControl from "../SimpleTwinlistControl.vue";
 
 describe("SimpleTwinlistControl.vue", () => {
   let props, wrapper, component;

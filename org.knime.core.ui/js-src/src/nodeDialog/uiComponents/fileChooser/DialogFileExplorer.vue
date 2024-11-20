@@ -1,11 +1,25 @@
-<script lang="ts">
+<script setup lang="ts">
+import { computed, ref, toRefs, watch } from "vue";
+
+import {
+  Breadcrumb,
+  FileExplorer,
+  type FileExplorerItem,
+  InputField,
+  LoadingIcon,
+} from "@knime/components";
+import HouseIcon from "@knime/styles/img/icons/house.svg";
+
+import useFileChooserBackend from "./composables/useFileChooserBackend";
 import type {
   BackendType,
   Folder,
   FolderAndError,
   ParentFolder,
 } from "./types";
-interface Props {
+import { toFileExplorerItem } from "./utils";
+
+export interface DialogFileExplorerProps {
   initialFilePath?: string;
   isWriter?: boolean;
   filteredExtensions?: string[];
@@ -15,27 +29,12 @@ interface Props {
   openFileByExplorer?: boolean;
   breadcrumbRoot?: string | null;
 }
-export type { Props };
-</script>
-
-<script setup lang="ts">
-import { ref, computed, toRefs, watch } from "vue";
-import {
-  Breadcrumb,
-  FileExplorer,
-  InputField,
-  LoadingIcon,
-  type FileExplorerItem,
-} from "@knime/components";
-import useFileChooserBackend from "./composables/useFileChooserBackend";
-import { toFileExplorerItem } from "./utils";
-import HouseIcon from "@knime/styles/img/icons/house.svg";
 
 const currentPath = ref<string | null>(null);
 const currentParents = ref<ParentFolder[]>([]);
 
 const items = ref<FileExplorerItem[]>([]);
-const props = withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<DialogFileExplorerProps>(), {
   initialFilePath: "",
   isWriter: false,
   filteredExtensions: () => [],

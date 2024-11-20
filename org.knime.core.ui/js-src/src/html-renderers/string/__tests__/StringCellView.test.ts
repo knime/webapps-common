@@ -1,9 +1,11 @@
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+
+import { JsonDataService } from "@knime/ui-extension-service";
+
 import {
   type StringCellViewInitialData,
   addInnerHtml,
 } from "../StringCellView";
-import { JsonDataService } from "@knime/ui-extension-service";
 
 describe("StringValueView", () => {
   let htmlValueViewElement: HTMLElement;

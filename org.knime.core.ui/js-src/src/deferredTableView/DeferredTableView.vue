@@ -1,14 +1,15 @@
 // A table view which is not loaded immediately but on user request
 <script lang="ts">
+import { Button, SplitButton, SubMenu } from "@knime/components";
+import DropdownIcon from "@knime/styles/img/icons/arrow-dropdown.svg";
+import CircleArrow from "@knime/styles/img/icons/circle-arrow-down.svg";
 import {
   JsonDataService,
   type UIExtensionService,
 } from "@knime/ui-extension-service";
-import TableViewInteractive from "../tableView/TableViewInteractive.vue";
-import { Button, SubMenu, SplitButton } from "@knime/components";
-import CircleArrow from "@knime/styles/img/icons/circle-arrow-down.svg";
-import DropdownIcon from "@knime/styles/img/icons/arrow-dropdown.svg";
+
 import type { InitialData } from "@/tableView/types/InitialData";
+import TableViewInteractive from "../tableView/TableViewInteractive.vue";
 import "../common/main.css";
 
 const baseSubMenuItems = [

@@ -1,8 +1,9 @@
-import { computed, reactive, ref, watch, type Ref } from "vue";
+import { type Ref, computed, reactive, ref, watch } from "vue";
 
-import specialColumns from "../utils/specialColumns";
-const { INDEX, ROW_ID, SKIPPED_REMAINING_COLUMNS_COLUMN } = specialColumns;
 import type { ColumnSizes, TableViewDisplayProps } from "../types";
+import specialColumns from "../utils/specialColumns";
+
+const { INDEX, ROW_ID, SKIPPED_REMAINING_COLUMNS_COLUMN } = specialColumns;
 
 export interface UseColumnSizesOptions {
   header: Ref<

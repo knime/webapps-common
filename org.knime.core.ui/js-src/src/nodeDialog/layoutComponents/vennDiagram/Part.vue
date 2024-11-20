@@ -9,10 +9,11 @@
 </template>
 
 <script setup lang="ts">
+import { type PropType, useAttrs } from "vue";
 import type { ControlElement } from "@jsonforms/core";
 import { rendererProps } from "@jsonforms/vue";
+
 import useVennDiagramBooleanControl from "./useVennDiagramBooleanControl";
-import { useAttrs, type PropType } from "vue";
 
 const props = defineProps({
   ...rendererProps<ControlElement>(),

@@ -1,9 +1,10 @@
-import { it, describe, expect, beforeEach } from "vitest";
-import useRowHeight from "../useRowHeight";
+import { beforeEach, describe, expect, it } from "vitest";
+
 import {
   RowHeightMode,
   VerticalPaddingMode,
 } from "@/tableView/types/ViewSettings";
+import useRowHeight from "../useRowHeight";
 
 describe("useColumnSizes", () => {
   let comp: ReturnType<typeof useRowHeight>;

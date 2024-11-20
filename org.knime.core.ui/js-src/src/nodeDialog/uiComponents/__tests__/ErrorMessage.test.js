@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
+import { shallowMount } from "@vue/test-utils";
 
 import ErrorMessage from "../ErrorMessage.vue";
-import { shallowMount } from "@vue/test-utils";
 
 describe("ErrorMessage.vue", () => {
   const defaultProps = {

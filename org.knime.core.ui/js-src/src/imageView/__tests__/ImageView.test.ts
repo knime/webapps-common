@@ -1,23 +1,25 @@
 import {
-  describe,
-  it,
-  beforeEach,
-  expect,
-  vi,
-  afterEach,
   type Mock,
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
 } from "vitest";
-import ImageView from "../ImageView.vue";
+import { VueWrapper, mount } from "@vue/test-utils";
+import flushPromises from "flush-promises";
+
+import { Label } from "@knime/components";
 import {
   JsonDataService,
   ReportingService,
   ResourceService,
   SharedDataService,
 } from "@knime/ui-extension-service";
-import { Label } from "@knime/components";
-import flushPromises from "flush-promises";
-import { VueWrapper, mount } from "@vue/test-utils";
+
 import * as fetchImage from "@/utils/images";
+import ImageView from "../ImageView.vue";
 import type { ImageViewSettings } from "../types/ImageViewSettings";
 
 describe("ImageView.vue", () => {

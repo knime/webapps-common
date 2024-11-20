@@ -1,13 +1,15 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+import { TextArea } from "@knime/components";
+
 import {
-  mountJsonFormsComponent,
-  initializesJsonFormsControl,
   getControlBase,
+  initializesJsonFormsControl,
+  mountJsonFormsComponent,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
 import TextAreaControl from "../TextAreaControl.vue";
-import LabeledControl from "../label/LabeledControl.vue";
 import DialogLabel from "../label/DialogLabel.vue";
-import { TextArea } from "@knime/components";
+import LabeledControl from "../label/LabeledControl.vue";
 
 describe("TextControl.vue", () => {
   let defaultProps, wrapper, component;

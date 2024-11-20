@@ -1,26 +1,29 @@
 <script>
 import { computed, defineComponent, ref, watch } from "vue";
+import { composePaths, toDataPath } from "@jsonforms/core";
 import {
-  rendererProps,
   DispatchRenderer,
+  rendererProps,
   useJsonFormsArrayControl,
 } from "@jsonforms/vue";
-import { composePaths, toDataPath } from "@jsonforms/core";
-import { useJsonFormsControlWithUpdate } from "@/nodeDialog/composables/components/useJsonFormsControlWithUpdate";
+
 import { Button } from "@knime/components";
 import PlusIcon from "@knime/styles/img/icons/plus.svg";
-import DialogComponentWrapper from "@/nodeDialog/uiComponents/DialogComponentWrapper.vue";
-import ArrayLayoutItemControls from "./ArrayLayoutItemControls.vue";
-import ArrayLayoutItem from "./ArrayLayoutItem.vue";
+
 import { useDirtySetting } from "@/nodeDialog/composables/components/useDirtySetting";
+import { useJsonFormsControlWithUpdate } from "@/nodeDialog/composables/components/useJsonFormsControlWithUpdate";
 import useProvidedState from "@/nodeDialog/composables/components/useProvidedState";
 import {
-  setIndex,
-  deleteId,
   createNewId,
+  deleteId,
+  setIndex,
 } from "@/nodeDialog/composables/nodeDialog/useArrayIds";
-import inject from "@/nodeDialog/utils/inject";
 import { editResetButtonFormat } from "@/nodeDialog/renderers/editResetButtonRenderer";
+import DialogComponentWrapper from "@/nodeDialog/uiComponents/DialogComponentWrapper.vue";
+import inject from "@/nodeDialog/utils/inject";
+
+import ArrayLayoutItem from "./ArrayLayoutItem.vue";
+import ArrayLayoutItemControls from "./ArrayLayoutItemControls.vue";
 import useIsEdited from "./composables/useIsEdited";
 
 const ArrayLayout = defineComponent({

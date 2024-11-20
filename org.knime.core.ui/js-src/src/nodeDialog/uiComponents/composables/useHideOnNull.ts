@@ -1,5 +1,6 @@
+import { type MaybeRef, type Ref, computed, nextTick, unref, watch } from "vue";
+
 import { type Control } from "@/nodeDialog/types/Control";
-import { computed, unref, type MaybeRef, type Ref, watch, nextTick } from "vue";
 
 export default (
   {

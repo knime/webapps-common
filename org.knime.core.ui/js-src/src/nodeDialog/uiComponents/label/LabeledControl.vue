@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import DialogComponentWrapper from "../DialogComponentWrapper.vue";
-import DialogLabel from "./DialogLabel.vue";
 import { toRefs } from "vue";
+
 import { useTriggersReexecution } from "../../composables/components/useDialogControl";
 import type { Control } from "../../types/Control";
+import DialogComponentWrapper from "../DialogComponentWrapper.vue";
+
+import DialogLabel from "./DialogLabel.vue";
 
 const props = withDefaults(
   defineProps<{

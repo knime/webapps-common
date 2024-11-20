@@ -1,11 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 import {
-  mountJsonFormsComponent,
-  initializesJsonFormsControl,
   getControlBase,
+  initializesJsonFormsControl,
+  mountJsonFormsComponent,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
-import OneOfDropdown from "../OneOfDropdown.vue";
 import DropdownControl from "../DropdownControl.vue";
+import OneOfDropdown from "../OneOfDropdown.vue";
 
 describe("OneOfDropdown.vue", () => {
   let wrapper, props, component;

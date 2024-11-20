@@ -1,8 +1,9 @@
+import { ref } from "vue";
+
 import {
   CachingSelectionService,
   type UIExtensionService,
 } from "@knime/ui-extension-service";
-import { ref } from "vue";
 
 export default (knimeService: UIExtensionService) => {
   const selectionService = new CachingSelectionService(knimeService);

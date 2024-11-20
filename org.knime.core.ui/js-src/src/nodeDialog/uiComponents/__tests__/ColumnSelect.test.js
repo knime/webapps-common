@@ -1,16 +1,18 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { inject } from "vue";
+
+import { Dropdown } from "@knime/components";
+
+import { createPersistSchema } from "@@/test-setup/utils/createPersistSchema";
 import {
+  getControlBase,
   initializesJsonFormsControl,
   mountJsonFormsComponent,
-  getControlBase,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
+import { injectionKey as providedByComponentKey } from "@/nodeDialog/composables/components/useFlowVariables";
 import ColumnSelect from "../ColumnSelect.vue";
 import DropdownControl from "../DropdownControl.vue";
-import { Dropdown } from "@knime/components";
-import { injectionKey as providedByComponentKey } from "@/nodeDialog/composables/components/useFlowVariables";
 import DialogLabel from "../label/DialogLabel.vue";
-import { inject } from "vue";
-import { createPersistSchema } from "@@/test-setup/utils/createPersistSchema";
 
 describe("ColumnSelect.vue", () => {
   let wrapper, props, path, component, handleChange;

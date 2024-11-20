@@ -1,23 +1,24 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { InputField } from "@knime/components";
-import { mount } from "@vue/test-utils";
 import {
-  beforeEach,
+  type Mock,
   afterEach,
+  beforeEach,
   describe,
   expect,
   it,
   vi,
-  type Mock,
 } from "vitest";
+import { mount } from "@vue/test-utils";
 import flushPromises from "flush-promises";
 
-import FlowVariableExposer from "../FlowVariableExposer.vue";
-import type { FlowVariableSelectorProps } from "../../types/FlowVariableExposerProps";
-import ErrorMessage from "../../../ErrorMessage.vue";
-import { injectionKey as providedByComponentKey } from "@/nodeDialog/composables/components/useFlowVariables";
+import { InputField } from "@knime/components";
+
 import { type FlowSettings } from "@/nodeDialog/api/types";
+import { injectionKey as providedByComponentKey } from "@/nodeDialog/composables/components/useFlowVariables";
 import { injectionKey as flowVarMapKey } from "@/nodeDialog/composables/components/useProvidedFlowVariablesMap";
+import ErrorMessage from "../../../ErrorMessage.vue";
+import type { FlowVariableSelectorProps } from "../../types/FlowVariableExposerProps";
+import FlowVariableExposer from "../FlowVariableExposer.vue";
 
 describe("FlowVariableExposer", () => {
   let props: FlowVariableSelectorProps,

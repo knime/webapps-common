@@ -67,7 +67,7 @@
   },
   "devDependencies": {
     "@cyclonedx/cyclonedx-npm": "1.16.1",
-    "@knime/eslint-config": "8.1.0",
+    "@knime/eslint-config": "8.2.0",
     "@knime/licenses": "1.0.5",
     "@knime/utils": "1.0.13",
     "@knime/vue-headless-virtual-scroller": "0.1.1",

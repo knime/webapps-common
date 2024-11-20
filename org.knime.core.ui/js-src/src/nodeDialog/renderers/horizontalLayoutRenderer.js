@@ -1,7 +1,7 @@
-import { rankWith, uiTypeIs } from "@jsonforms/core";
-import { priorityRanks } from "../constants";
-
 import { defineAsyncComponent } from "vue";
+import { rankWith, uiTypeIs } from "@jsonforms/core";
+
+import { priorityRanks } from "../constants";
 
 const HorizontalLayout = defineAsyncComponent(() =>
   import("../layoutComponents/HorizontalLayout.vue"),

@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import DialogPopover from "@/nodeDialog/popover/DialogPopover.vue";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { mount } from "@vue/test-utils";
+import flushPromises from "flush-promises";
+
 import { Description, FunctionButton } from "@knime/components";
 import DescriptionIcon from "@knime/styles/img/icons/circle-help.svg";
 
-import { mount } from "@vue/test-utils";
-import { beforeEach, afterEach, describe, expect, it, vi } from "vitest";
-import flushPromises from "flush-promises";
-
+import DialogPopover from "@/nodeDialog/popover/DialogPopover.vue";
 import DescriptionPopover from "../DescriptionPopover.vue";
 import type { DescriptionPopoverProps } from "../types/DescriptionPopoverProps";
 

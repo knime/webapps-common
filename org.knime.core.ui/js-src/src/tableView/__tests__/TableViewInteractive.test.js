@@ -2,31 +2,33 @@
 /* eslint-disable max-nested-callbacks */
 /* eslint-disable max-lines */
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import consolaGlobalInstance from "consola";
+import flushPromises from "flush-promises";
 
 import {
-  JsonDataService,
+  TableUIWithAutoSizeCalculation,
+  constants as tableUIConstants,
+} from "@knime/knime-ui-table";
+import {
   CachingSelectionService,
+  JsonDataService,
   SharedDataService,
 } from "@knime/ui-extension-service";
 import { DataValueViewService } from "@knime/ui-extension-service/internal";
-import {
-  shallowMountInteractive,
-  changeViewSetting,
-} from "./utils/interactive";
+
 import TableViewDisplay from "../TableViewDisplay.vue";
-import flushPromises from "flush-promises";
-import {
-  constants as tableUIConstants,
-  TableUIWithAutoSizeCalculation,
-} from "@knime/knime-ui-table";
-import specialColumns from "../utils/specialColumns";
+import { MAX_NUM_PXL_BROWSER_LIMITATION } from "../TableViewInteractive.vue";
 import {
   AutoSizeColumnsToContent,
   RowHeightMode,
   SelectionMode,
 } from "../types/ViewSettings";
-import consolaGlobalInstance from "consola";
-import { MAX_NUM_PXL_BROWSER_LIMITATION } from "../TableViewInteractive.vue";
+import specialColumns from "../utils/specialColumns";
+
+import {
+  changeViewSetting,
+  shallowMountInteractive,
+} from "./utils/interactive";
 
 const { MIN_COLUMN_SIZE, ROW_MARGIN_BOTTOM } = tableUIConstants;
 const DEFAULT_COLUMN_SIZE = 100;

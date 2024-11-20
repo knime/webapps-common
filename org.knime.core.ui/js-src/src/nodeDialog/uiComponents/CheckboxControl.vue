@@ -1,15 +1,19 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { rendererProps } from "@jsonforms/vue";
+
 import { Checkbox } from "@knime/components";
 import ReexecutionIcon from "@knime/styles/img/icons/reexecution.svg";
-import FlowVariableButton from "./flowVariables/components/FlowVariableButton.vue";
-import ErrorMessage from "./ErrorMessage.vue";
-import DescriptionPopover from "./description/DescriptionPopover.vue";
-import DialogComponentWrapper from "./DialogComponentWrapper.vue";
+
 import useDialogControl, {
   useTriggersReexecution,
 } from "../composables/components/useDialogControl";
-import { rendererProps } from "@jsonforms/vue";
+
+import DialogComponentWrapper from "./DialogComponentWrapper.vue";
+import ErrorMessage from "./ErrorMessage.vue";
+import DescriptionPopover from "./description/DescriptionPopover.vue";
+import FlowVariableButton from "./flowVariables/components/FlowVariableButton.vue";
+
 const props = defineProps(rendererProps());
 const { control, onChange, disabled } = useDialogControl({ props });
 const hover = ref(false);

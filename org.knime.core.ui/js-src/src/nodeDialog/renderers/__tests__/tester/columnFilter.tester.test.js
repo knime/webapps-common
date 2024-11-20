@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { columnFilterTester } from "../../columnFilterRenderer";
-import { inputFormats } from "@/nodeDialog/constants/inputFormats";
+
 import { dialogInitialData } from "@@/test-setup/mocks/dialogData";
+import { inputFormats } from "@/nodeDialog/constants/inputFormats";
+import { columnFilterTester } from "../../columnFilterRenderer";
 
 describe("ColumnFilterTester", () => {
   it("applies on anyOf control with columnFilter format", () => {

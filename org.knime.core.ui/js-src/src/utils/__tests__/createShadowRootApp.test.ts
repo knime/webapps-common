@@ -1,7 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
-import createShadowRootApp from "../createShadowRootApp";
 import { defineComponent } from "vue";
+
 import type { UIExtensionService } from "@knime/ui-extension-service";
+
+import createShadowRootApp from "../createShadowRootApp";
 
 const heightCSS = `<style>
       @media screen {

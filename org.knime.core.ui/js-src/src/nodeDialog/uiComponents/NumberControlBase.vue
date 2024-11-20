@@ -1,8 +1,11 @@
 <script setup lang="ts">
-import { NumberInput } from "@knime/components";
-import { rendererProps } from "@jsonforms/vue";
-import useDialogControl from "../composables/components/useDialogControl";
 import { type PropType, computed } from "vue";
+import { rendererProps } from "@jsonforms/vue";
+
+import { NumberInput } from "@knime/components";
+
+import useDialogControl from "../composables/components/useDialogControl";
+
 import LabeledControl from "./label/LabeledControl.vue";
 
 const props = defineProps({

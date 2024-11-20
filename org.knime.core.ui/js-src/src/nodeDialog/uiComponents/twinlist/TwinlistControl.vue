@@ -1,9 +1,29 @@
-<script lang="ts">
+<!-- eslint-disable no-undefined -->
+<!-- eslint-disable class-methods-use-this -->
+<script setup lang="ts">
+import { type Ref, computed, markRaw, ref } from "vue";
+import { rendererProps } from "@jsonforms/vue";
+import type { PartialDeep } from "type-fest";
+
+import type { TwinlistModelValue } from "@knime/components";
+import { MultiModeTwinList } from "@knime/components";
+import { DefaultSettingComparator } from "@knime/ui-extension-service";
+
+import useDialogControl from "@/nodeDialog/composables/components/useDialogControl";
+import useProvidedState from "@/nodeDialog/composables/components/useProvidedState";
 import type {
   IdAndText,
   PossibleValue,
-} from "@/nodeDialog//types/ChoicesUiSchema";
-import type { TwinlistModelValue } from "@knime/components";
+} from "@/nodeDialog/types/ChoicesUiSchema";
+import type { Control } from "@/nodeDialog/types/Control";
+import { mergeDeep } from "@/nodeDialog/utils";
+import { withSpecialChoices } from "@/nodeDialog/utils/getPossibleValuesFromUiSchema";
+import inject from "@/nodeDialog/utils/inject";
+import LabeledControl from "../label/LabeledControl.vue";
+import TwinlistLoadingInfo from "../loading/TwinlistLoadingInfo.vue";
+
+import useUnknownValuesInTwinlist from "./useUnknownValuesInTwinlist";
+
 export type TwinlistData = {
   mode: string;
   manualFilter: {
@@ -22,26 +42,6 @@ export type TwinlistData = {
   };
   selected: string[] | null | undefined;
 };
-</script>
-
-<!-- eslint-disable no-undefined -->
-<!-- eslint-disable class-methods-use-this -->
-<script setup lang="ts">
-import { markRaw, type Ref, ref, computed } from "vue";
-import { rendererProps } from "@jsonforms/vue";
-import { mergeDeep } from "@/nodeDialog/utils";
-import { MultiModeTwinList } from "@knime/components";
-import inject from "@/nodeDialog/utils/inject";
-
-import type { Control } from "@/nodeDialog/types/Control";
-import type { PartialDeep } from "type-fest";
-import TwinlistLoadingInfo from "../loading/TwinlistLoadingInfo.vue";
-import useDialogControl from "@/nodeDialog/composables/components/useDialogControl";
-import LabeledControl from "../label/LabeledControl.vue";
-import useProvidedState from "@/nodeDialog/composables/components/useProvidedState";
-import { DefaultSettingComparator } from "@knime/ui-extension-service";
-import { withSpecialChoices } from "@/nodeDialog/utils/getPossibleValuesFromUiSchema";
-import useUnknownValuesInTwinlist from "./useUnknownValuesInTwinlist";
 
 type ControlWithTwinlistData = {
   [P in keyof Control]: P extends "data" ? TwinlistData : Control[P];

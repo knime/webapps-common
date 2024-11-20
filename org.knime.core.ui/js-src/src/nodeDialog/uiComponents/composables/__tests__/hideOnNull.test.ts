@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
-import useHideOnNull from "../useHideOnNull";
 import { ref } from "vue";
+
+import useHideOnNull from "../useHideOnNull";
 
 describe("hideOnNull", () => {
   const useHideOnNullWrapper = (

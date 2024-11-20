@@ -1,22 +1,24 @@
 import {
   afterEach,
-  beforeEach,
   beforeAll,
+  beforeEach,
   describe,
   expect,
   it,
   vi,
 } from "vitest";
-import {
-  mountJsonFormsComponent,
-  initializesJsonFormsControl,
-  getControlBase,
-} from "@@/test-setup/utils/jsonFormsTestUtils";
-import DateTimeControl from "../DateTimeControl.vue";
-import LabeledControl from "../label/LabeledControl.vue";
-import DialogLabel from "../label/DialogLabel.vue";
+
 import { DateTimeInput } from "@knime/components/date-time-input";
+
+import {
+  getControlBase,
+  initializesJsonFormsControl,
+  mountJsonFormsComponent,
+} from "@@/test-setup/utils/jsonFormsTestUtils";
 import DateControl from "@/nodeDialog/uiComponents/DateControl.vue";
+import DateTimeControl from "../DateTimeControl.vue";
+import DialogLabel from "../label/DialogLabel.vue";
+import LabeledControl from "../label/LabeledControl.vue";
 
 describe("DateControl.vue", () => {
   let defaultProps, wrapper, component;

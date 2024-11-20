@@ -1,12 +1,15 @@
 <script setup lang="ts" generic="SettingValue">
-import inject from "../utils/inject";
 import { computed, ref } from "vue";
 import { rendererProps } from "@jsonforms/vue";
-import DescriptionPopover from "./description/DescriptionPopover.vue";
-import DialogComponentWrapper from "./DialogComponentWrapper.vue";
+
 import { Button } from "@knime/components";
-import DynamicIcon, { type Icon } from "./DynamicIcon.vue";
+
 import { useJsonFormsControlWithUpdate } from "../composables/components/useJsonFormsControlWithUpdate";
+import inject from "../utils/inject";
+
+import DialogComponentWrapper from "./DialogComponentWrapper.vue";
+import DynamicIcon, { type Icon } from "./DynamicIcon.vue";
+import DescriptionPopover from "./description/DescriptionPopover.vue";
 
 const props = defineProps(rendererProps());
 const { control } = useJsonFormsControlWithUpdate(props);

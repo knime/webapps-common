@@ -3,15 +3,18 @@ export const DEFAULT_ANY_UNKNOWN_VALUES_ID = "<any unknown new column>";
 </script>
 
 <script setup lang="ts">
-import { SortList, Button } from "@knime/components";
-import useDialogControl from "../composables/components/useDialogControl";
-import { rendererProps } from "@jsonforms/vue";
-import LabeledControl from "./label/LabeledControl.vue";
-import inject from "../utils/inject";
 import { computed, onMounted, watch } from "vue";
+import { rendererProps } from "@jsonforms/vue";
 import { indexOf } from "lodash-es";
+
+import { Button, SortList } from "@knime/components";
+
+import useDialogControl from "../composables/components/useDialogControl";
 import useProvidedState from "../composables/components/useProvidedState";
 import { withSpecialChoices } from "../utils/getPossibleValuesFromUiSchema";
+import inject from "../utils/inject";
+
+import LabeledControl from "./label/LabeledControl.vue";
 
 const props = defineProps({
   ...rendererProps(),

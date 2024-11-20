@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import ArrowLeft from "@knime/styles/img/icons/arrow-left.svg";
 import { FunctionButton } from "@knime/components";
+import ArrowLeft from "@knime/styles/img/icons/arrow-left.svg";
 
 const emit = defineEmits(["click"]);
 </script>

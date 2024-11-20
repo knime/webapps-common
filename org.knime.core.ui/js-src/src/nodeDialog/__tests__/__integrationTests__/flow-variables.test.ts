@@ -6,29 +6,27 @@ import {
   it,
   vi,
 } from "vitest";
-import { DOMWrapper, mount, VueWrapper } from "@vue/test-utils";
-import { Dropdown, InputField } from "@knime/components";
-
-import { JsonDataService } from "@knime/ui-extension-service";
-
-import NodeDialog from "../../NodeDialog.vue";
+import { DOMWrapper, VueWrapper, mount } from "@vue/test-utils";
 import flushPromises from "flush-promises";
 
-import FlowVariableButton from "@/nodeDialog/uiComponents/flowVariables/components/FlowVariableButton.vue";
-import { getOptions } from "../utils";
+import { Dropdown, InputField } from "@knime/components";
+import { JsonDataService } from "@knime/ui-extension-service";
+
 import {
-  mockRegisterSettings,
-  registeredSettingState,
   controllingFlowVariableState,
   exposedFlowVariableState,
+  mockRegisterSettings,
+  registeredSettingState,
 } from "@@/test-setup/utils/integration/dirtySettingState";
-
 import type {
   FlowSettings,
   PossibleFlowVariable,
 } from "@/nodeDialog/api/types";
-import type { UpdateResult } from "@/nodeDialog/types/Update";
 import type { PersistSchema } from "@/nodeDialog/types/Persist";
+import type { UpdateResult } from "@/nodeDialog/types/Update";
+import FlowVariableButton from "@/nodeDialog/uiComponents/flowVariables/components/FlowVariableButton.vue";
+import NodeDialog from "../../NodeDialog.vue";
+import { getOptions } from "../utils";
 
 describe("flow variables", () => {
   const flowVar1 = {

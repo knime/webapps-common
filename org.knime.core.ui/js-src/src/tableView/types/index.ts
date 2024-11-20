@@ -1,9 +1,10 @@
-import type { UIExtensionService } from "@knime/ui-extension-service";
-import type { TableViewViewSettings } from "./ViewSettings";
 import type { MenuItem } from "@knime/components";
 import type { FilterConfig } from "@knime/knime-ui-table";
-import type { ColumnContentType } from "./Table";
+import type { UIExtensionService } from "@knime/ui-extension-service";
+
 import type { DataType } from "./InitialData";
+import type { ColumnContentType } from "./Table";
+import type { TableViewViewSettings } from "./ViewSettings";
 
 export type { DataType };
 export interface PageParams {

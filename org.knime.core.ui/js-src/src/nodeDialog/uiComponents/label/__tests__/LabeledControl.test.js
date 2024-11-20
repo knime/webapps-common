@@ -1,18 +1,19 @@
 import { beforeEach, describe, expect, it } from "vitest";
+import { ref } from "vue";
 import { mount } from "@vue/test-utils";
 
-import LabeledControl from "../LabeledControl.vue";
-import ErrorMessage from "../../ErrorMessage.vue";
-import FlowVariableButton from "../../flowVariables/components/FlowVariableButton.vue";
-import DescriptionPopover from "../../description/DescriptionPopover.vue";
-import ReexecutionIcon from "@knime/styles/img/icons/reexecution.svg";
-import { injectionKey as providedByComponentKey } from "@/nodeDialog/composables/components/useFlowVariables";
-import { ref } from "vue";
-import DialogLabel from "../DialogLabel.vue";
-import DialogComponentWrapper from "../../DialogComponentWrapper.vue";
 import { Label } from "@knime/components";
-import { injectionKey as injectionKeyHasNodeView } from "@/nodeDialog/composables/components/useHasNodeView";
+import ReexecutionIcon from "@knime/styles/img/icons/reexecution.svg";
+
 import { injectionKey as injectionKeyShowAdvancedSettings } from "@/nodeDialog/composables/components/useAdvancedSettings";
+import { injectionKey as providedByComponentKey } from "@/nodeDialog/composables/components/useFlowVariables";
+import { injectionKey as injectionKeyHasNodeView } from "@/nodeDialog/composables/components/useHasNodeView";
+import DialogComponentWrapper from "../../DialogComponentWrapper.vue";
+import ErrorMessage from "../../ErrorMessage.vue";
+import DescriptionPopover from "../../description/DescriptionPopover.vue";
+import FlowVariableButton from "../../flowVariables/components/FlowVariableButton.vue";
+import DialogLabel from "../DialogLabel.vue";
+import LabeledControl from "../LabeledControl.vue";
 
 describe("LabeledControl.vue", () => {
   let props, flowSettings;

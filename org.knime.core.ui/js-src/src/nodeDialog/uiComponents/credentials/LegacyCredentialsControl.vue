@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import useDialogControl from "@/nodeDialog/composables/components/useDialogControl";
 import { rendererProps } from "@jsonforms/vue";
+
+import useDialogControl from "@/nodeDialog/composables/components/useDialogControl";
+
 import CredentialsControlBase from "./CredentialsControlBase.vue";
-import type { Credentials } from "./types/Credentials";
 import LegacyFlowVariableHandler from "./LegacyFlowVariableHandler.vue";
+import type { Credentials } from "./types/Credentials";
 
 interface LegacyCredentials {
   credentials: Credentials;

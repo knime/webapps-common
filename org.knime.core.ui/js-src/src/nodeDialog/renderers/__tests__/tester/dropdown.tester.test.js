@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { dropdownTester } from "../../dropdownRenderer";
-import { inputFormats } from "@/nodeDialog/constants/inputFormats";
+
 import { dialogInitialData } from "@@/test-setup/mocks/dialogData";
+import { inputFormats } from "@/nodeDialog/constants/inputFormats";
+import { dropdownTester } from "../../dropdownRenderer";
 
 describe("dropdownTester", () => {
   it("applies on oneOf control with dropdown format", () => {

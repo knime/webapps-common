@@ -1,6 +1,7 @@
 import { isControl, rankWith } from "@jsonforms/core";
+
+import { inputFormats, priorityRanks } from "../constants";
 import TextMessageControl from "../uiComponents/TextMessageControl.vue";
-import { priorityRanks, inputFormats } from "../constants";
 
 export const textMessageTester = (uischema, _schema) =>
   isControl(uischema) && uischema.options?.format === inputFormats.textMessage;

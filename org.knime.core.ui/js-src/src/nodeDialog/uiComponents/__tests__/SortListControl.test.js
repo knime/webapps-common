@@ -1,16 +1,18 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import {
-  mountJsonFormsComponent,
-  initializesJsonFormsControl,
-  getControlBase,
-} from "@@/test-setup/utils/jsonFormsTestUtils";
-import LabeledControl from "../label/LabeledControl.vue";
-import DialogLabel from "../label/DialogLabel.vue";
 import flushPromises from "flush-promises";
+
+import { Button, SortList } from "@knime/components";
+
+import {
+  getControlBase,
+  initializesJsonFormsControl,
+  mountJsonFormsComponent,
+} from "@@/test-setup/utils/jsonFormsTestUtils";
 import SortListControl, {
   DEFAULT_ANY_UNKNOWN_VALUES_ID,
 } from "../SortListControl.vue";
-import { SortList, Button } from "@knime/components";
+import DialogLabel from "../label/DialogLabel.vue";
+import LabeledControl from "../label/LabeledControl.vue";
 
 describe("SortListControl.vue", () => {
   let props, wrapper, component;

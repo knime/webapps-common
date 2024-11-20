@@ -1,16 +1,19 @@
 <script setup lang="ts">
 import { computed, onMounted, watch } from "vue";
+import { rendererProps } from "@jsonforms/vue";
+
+import { type FileChooserOptions } from "@/nodeDialog/types/FileChooserUiSchema";
 import useDialogControl from "../../../composables/components/useDialogControl";
 import LabeledControl from "../../label/LabeledControl.vue";
-import { rendererProps } from "@jsonforms/vue";
-import { type FileChooserOptions } from "@/nodeDialog/types/FileChooserUiSchema";
-import { type FileChooserValue } from "../types/FileChooserProps";
-import FSLocationTextControl from "./FSLocationTextControl.vue";
+import FileBrowserButton from "../FileBrowserButton.vue";
 import { useFileChooserFileSystemsOptions } from "../composables/useFileChooserBrowseOptions";
 import useFileChooserStateChange from "../composables/useFileChooserStateChange";
-import FileBrowserButton from "../FileBrowserButton.vue";
 import useSideDrawerContent from "../composables/useSideDrawerContent";
+import { type FileChooserValue } from "../types/FileChooserProps";
+
+import FSLocationTextControl from "./FSLocationTextControl.vue";
 import SideDrawerContent from "./SideDrawerContent.vue";
+
 const props = defineProps(rendererProps());
 const {
   control,

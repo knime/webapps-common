@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import Left from "./Left.vue";
-import Right from "./Right.vue";
-import Inner from "./Inner.vue";
 import type { ControlElement } from "@jsonforms/core";
 import { rendererProps } from "@jsonforms/vue";
+
+import Inner from "./Inner.vue";
+import Left from "./Left.vue";
+import Right from "./Right.vue";
 
 const props = defineProps(
   rendererProps<{

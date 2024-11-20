@@ -1,27 +1,29 @@
 <script setup lang="ts">
 import {
-  JsonDataService,
-  ReportingService,
-  ResourceService,
-  SharedDataService,
-} from "@knime/ui-extension-service";
-import { fetchImage } from "@/utils/images";
-import OptionalLabel from "./OptionalLabel.vue";
-import OptionalFigure from "./OptionalFigure.vue";
-import type { ImageViewSettings } from "./types/ImageViewSettings";
-import "../common/main.css";
-
-import {
+  type Ref,
   inject,
   nextTick,
   onMounted,
   reactive,
   ref,
   toRef,
-  type Ref,
 } from "vue";
-import type { UIExtensionService } from "@knime/ui-extension-service";
+
+import {
+  JsonDataService,
+  ReportingService,
+  ResourceService,
+  SharedDataService,
+  type UIExtensionService,
+} from "@knime/ui-extension-service";
+
+import { fetchImage } from "@/utils/images";
+
 import NoPageBreak from "./NoPageBreak.vue";
+import OptionalFigure from "./OptionalFigure.vue";
+import OptionalLabel from "./OptionalLabel.vue";
+import type { ImageViewSettings } from "./types/ImageViewSettings";
+import "../common/main.css";
 
 const viewSettings: ImageViewSettings = reactive({
   title: "",

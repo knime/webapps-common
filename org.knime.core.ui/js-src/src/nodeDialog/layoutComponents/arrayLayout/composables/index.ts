@@ -1,6 +1,7 @@
+import { provide } from "vue";
+
 import type { Provided } from "@/nodeDialog/types/provided";
 import inject from "@/nodeDialog/utils/inject";
-import { provide } from "vue";
 
 export const addIndexToStateProviders = (indexId: string, index: number) => {
   const injectionKey = "addStateProviderListener";

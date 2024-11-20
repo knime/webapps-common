@@ -1,11 +1,13 @@
 <script setup lang="ts">
+import { type Ref, computed, onMounted, onUpdated, ref, watch } from "vue";
+
 import { JsonDataService } from "@knime/ui-extension-service";
-import { ref, type Ref, onMounted, onUpdated, computed, watch } from "vue";
+
 import TableViewDisplay from "./TableViewDisplay.vue";
-import getKnimeService from "./utils/getKnimeService";
+import useRowHeight from "./composables/useRowHeight";
 import type { ImageDimension } from "./types";
 import { SelectionMode } from "./types/ViewSettings";
-import useRowHeight from "./composables/useRowHeight";
+import getKnimeService from "./utils/getKnimeService";
 
 const knimeService = getKnimeService();
 const settings: Ref<any> = ref({});

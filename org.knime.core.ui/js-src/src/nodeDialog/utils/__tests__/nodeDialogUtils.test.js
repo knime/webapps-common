@@ -1,9 +1,10 @@
 import { describe, expect, it, test } from "vitest";
+
 import {
-  optionsMapper,
-  isModelSettingAndHasNodeView,
   hasAdvancedOptions,
+  isModelSettingAndHasNodeView,
   mergeDeep,
+  optionsMapper,
 } from "..";
 
 describe("Utils", () => {

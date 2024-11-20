@@ -1,7 +1,7 @@
-import { rankWith, isOneOfControl } from "@jsonforms/core";
-import { priorityRanks, inputFormats } from "../constants";
-
 import { defineAsyncComponent } from "vue";
+import { isOneOfControl, rankWith } from "@jsonforms/core";
+
+import { inputFormats, priorityRanks } from "../constants";
 
 const ValueSwitchControl = defineAsyncComponent(() =>
   import("../uiComponents/ValueSwitchControl.vue"),

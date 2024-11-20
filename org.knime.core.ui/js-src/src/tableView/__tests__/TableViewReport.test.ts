@@ -1,16 +1,18 @@
 import {
-  describe,
-  vi,
-  beforeEach,
-  it,
-  expect,
   type MockInstance,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
 } from "vitest";
-import { JsonDataService } from "@knime/ui-extension-service";
 import { shallowMount } from "@vue/test-utils";
-import TableViewReport from "../TableViewReport.vue";
-import TableViewDisplay from "../TableViewDisplay.vue";
 import flushPromises from "flush-promises";
+
+import { JsonDataService } from "@knime/ui-extension-service";
+
+import TableViewDisplay from "../TableViewDisplay.vue";
+import TableViewReport from "../TableViewReport.vue";
 import type { DataType } from "../types";
 import { SelectionMode, VerticalPaddingMode } from "../types/ViewSettings";
 

@@ -1,5 +1,6 @@
+import { type MaybeRef, type UnwrapRef, onMounted, ref, unref } from "vue";
+
 import inject from "@/nodeDialog/utils/inject";
-import { onMounted, ref, type MaybeRef, type UnwrapRef, unref } from "vue";
 
 export default <T>(
   stateProviderId: MaybeRef<string | undefined>,

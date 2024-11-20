@@ -1,13 +1,13 @@
-import { expect, describe, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { mount } from "@vue/test-utils";
 
+import { Button, SplitButton, SubMenu } from "@knime/components";
+import DropdownIcon from "@knime/styles/img/icons/arrow-dropdown.svg";
+import CircleArrow from "@knime/styles/img/icons/circle-arrow-down.svg";
 import { JsonDataService } from "@knime/ui-extension-service";
 
-import DeferredTableView from "../DeferredTableView.vue";
 import TableViewInteractive from "../../tableView/TableViewInteractive.vue";
-import { Button, SubMenu, SplitButton } from "@knime/components";
-import CircleArrow from "@knime/styles/img/icons/circle-arrow-down.svg";
-import DropdownIcon from "@knime/styles/img/icons/arrow-dropdown.svg";
+import DeferredTableView from "../DeferredTableView.vue";
 
 describe("DeferredTableView.vue", () => {
   const jsonDataServiceDataMock = vi

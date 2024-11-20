@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import { dialogInitialData } from "@@/test-setup/mocks/dialogData";
 import { inputFormats } from "@/nodeDialog/constants/inputFormats";
 import { checkboxTester } from "../../checkboxRenderer";

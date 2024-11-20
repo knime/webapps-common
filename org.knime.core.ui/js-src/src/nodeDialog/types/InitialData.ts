@@ -1,8 +1,10 @@
 import type { JsonSchema, UISchemaElement } from "@jsonforms/core";
+
 import type { FlowSettings } from "../api/types";
+
+import type { PersistSchema } from "./Persist";
 import type { SettingsData } from "./SettingsData";
 import type { Update, UpdateResult } from "./Update";
-import type { PersistSchema } from "./Persist";
 
 export interface InitialData {
   data: SettingsData;

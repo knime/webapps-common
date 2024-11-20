@@ -1,7 +1,7 @@
-import { and, hasType, rankWith, schemaMatches } from "@jsonforms/core";
-import { inputFormats, priorityRanks } from "@/nodeDialog/constants";
-
 import { defineAsyncComponent } from "vue";
+import { and, hasType, rankWith, schemaMatches } from "@jsonforms/core";
+
+import { inputFormats, priorityRanks } from "@/nodeDialog/constants";
 
 const ComboBoxControl = defineAsyncComponent(() =>
   import("../uiComponents/ComboBoxControl.vue"),

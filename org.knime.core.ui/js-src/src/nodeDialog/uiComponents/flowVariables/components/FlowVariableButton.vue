@@ -1,13 +1,12 @@
 <script setup lang="ts">
-import FlowVariableIcon from "./FlowVariableIcon.vue";
-import FlowVariablePopover from "./FlowVariablePopover.vue";
+import { computed, ref } from "vue";
 
+import { getFlowVariableSettingsProvidedByControl } from "@/nodeDialog/composables/components/useFlowVariables";
 import DialogPopover from "@/nodeDialog/popover/DialogPopover.vue";
-
 import type { FlowVariableButtonProps } from "../types/FlowVariableButtonProps";
 
-import { computed, ref } from "vue";
-import { getFlowVariableSettingsProvidedByControl } from "@/nodeDialog/composables/components/useFlowVariables";
+import FlowVariableIcon from "./FlowVariableIcon.vue";
+import FlowVariablePopover from "./FlowVariablePopover.vue";
 
 defineProps<FlowVariableButtonProps>();
 const emit = defineEmits(["controllingFlowVariableSet"]);

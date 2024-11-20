@@ -1,12 +1,15 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import DialogFileExplorer from "../../DialogFileExplorer.vue";
 import { type Ref, ref } from "vue";
 import { shallowMount } from "@vue/test-utils";
-import FileExplorerTab, { type Props } from "../FileExplorerTab.vue";
+
 import { applyButtonInjectionKey } from "@/nodeDialog/layoutComponents/settingsSubPanel";
+import DialogFileExplorer from "../../DialogFileExplorer.vue";
+import FileExplorerTab, {
+  type FileExplorerTabProps,
+} from "../FileExplorerTab.vue";
 
 describe("FileExplorerTab.vue", () => {
-  let props: Props,
+  let props: FileExplorerTabProps,
     applyDisabled: Ref<boolean>,
     onApply: Ref<undefined | (() => Promise<void>)>;
 

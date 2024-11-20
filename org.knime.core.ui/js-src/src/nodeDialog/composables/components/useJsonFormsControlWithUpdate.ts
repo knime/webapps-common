@@ -1,5 +1,6 @@
-import { useJsonFormsControl, type RendererProps } from "@jsonforms/vue";
-import { nextTick, toRef, type Ref } from "vue";
+import { type Ref, nextTick, toRef } from "vue";
+import { type RendererProps, useJsonFormsControl } from "@jsonforms/vue";
+
 import type { Control } from "@/nodeDialog/types/Control";
 import inject from "@/nodeDialog/utils/inject";
 

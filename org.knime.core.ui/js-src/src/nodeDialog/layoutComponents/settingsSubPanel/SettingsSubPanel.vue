@@ -6,11 +6,15 @@ export interface Props {
 
 <script setup lang="ts">
 import { ref, watch } from "vue";
-import { SideDrawer, Button } from "@knime/components";
-import Form from "../Form.vue";
+
+import { Button, SideDrawer } from "@knime/components";
+
 import inject from "../../utils/inject";
-import SidePanelBackArrow from "./SidePanelBackArrow.vue";
+import Form from "../Form.vue";
+
 import { setUpApplyButton } from ".";
+import SidePanelBackArrow from "./SidePanelBackArrow.vue";
+
 withDefaults(defineProps<Props>(), {
   showBackArrow: false,
 });

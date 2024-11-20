@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import useDialogControl from "../useDialogControl";
+
 const props = defineProps<{
   props: any;
 }>();

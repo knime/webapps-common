@@ -1,4 +1,4 @@
-import { type Ref, ref, type InjectionKey, provide, inject } from "vue";
+import { type InjectionKey, type Ref, inject, provide, ref } from "vue";
 
 // exported for tests only
 export const applyButtonInjectionKey: InjectionKey<{

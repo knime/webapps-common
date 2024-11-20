@@ -1,6 +1,8 @@
-import { ref, watch, type Ref } from "vue";
-import { type TwinlistData } from "./TwinlistControl.vue";
+import { type Ref, ref, watch } from "vue";
+
 import { getValuesInSet, getValuesNotInSet } from "@/nodeDialog/utils";
+
+import { type TwinlistData } from "./TwinlistControl.vue";
 
 interface PreviousAndNext {
   setNext: (next: string[]) => void;

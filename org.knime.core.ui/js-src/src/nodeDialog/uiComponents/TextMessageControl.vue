@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { rendererProps } from "@jsonforms/vue";
-import useProvidedState from "../composables/components/useProvidedState";
+
 import { InlineMessage, type InlineMessageVariant } from "@knime/components";
+
+import useProvidedState from "../composables/components/useProvidedState";
+
 interface Message {
   title: string;
   description: string;

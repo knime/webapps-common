@@ -1,20 +1,22 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { VueWrapper } from "@vue/test-utils";
+import flushPromises from "flush-promises";
+
+import { FunctionButton, SideDrawer } from "@knime/components";
+import FolderLenseIcon from "@knime/styles/img/icons/folder-lense.svg";
+
+import { createPersistSchema } from "@@/test-setup/utils/createPersistSchema";
 import {
-  mountJsonFormsComponent,
   getControlBase,
   initializesJsonFormsControl,
+  mountJsonFormsComponent,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
-import FileChooserControl from "../FileChooserControl.vue";
-import { VueWrapper } from "@vue/test-utils";
 import SettingsSubPanel from "@/nodeDialog/layoutComponents/settingsSubPanel/SettingsSubPanel.vue";
-import LabeledControl from "@/nodeDialog/uiComponents/label/LabeledControl.vue";
 import DialogLabel from "@/nodeDialog/uiComponents/label/DialogLabel.vue";
-import { SideDrawer, FunctionButton } from "@knime/components";
-import FolderLenseIcon from "@knime/styles/img/icons/folder-lense.svg";
-import SideDrawerContent from "../SideDrawerContent.vue";
-import flushPromises from "flush-promises";
+import LabeledControl from "@/nodeDialog/uiComponents/label/LabeledControl.vue";
 import FSLocationTextControl from "../FSLocationTextControl.vue";
-import { createPersistSchema } from "@@/test-setup/utils/createPersistSchema";
+import FileChooserControl from "../FileChooserControl.vue";
+import SideDrawerContent from "../SideDrawerContent.vue";
 
 describe("FileChooserControl.vue", () => {
   let props: any, wrapper: VueWrapper<any, any>, component: any;

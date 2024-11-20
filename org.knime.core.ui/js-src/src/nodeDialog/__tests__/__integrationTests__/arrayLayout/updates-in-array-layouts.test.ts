@@ -1,24 +1,24 @@
 /* eslint-disable vitest/max-nested-describe */
 /* eslint-disable max-lines */
-import { describe, it, vi, beforeEach, expect } from "vitest";
-import { mount, VueWrapper } from "@vue/test-utils";
-import { JsonDataService } from "@knime/ui-extension-service";
-
-import NodeDialog from "@/nodeDialog/NodeDialog.vue";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { ref } from "vue";
+import { VueWrapper, mount } from "@vue/test-utils";
 import flushPromises from "flush-promises";
 import { cloneDeep } from "lodash-es";
 
-import { getOptions } from "@/nodeDialog/__tests__/utils";
-import SimpleButtonControl from "@/nodeDialog/uiComponents/SimpleButtonControl.vue";
-import { Button, Dropdown, Checkbox } from "@knime/components";
+import { Button, Checkbox, Dropdown } from "@knime/components";
+import { JsonDataService } from "@knime/ui-extension-service";
+
 import { mockRegisterSettings } from "@@/test-setup/utils/integration/dirtySettingState";
+import NodeDialog from "@/nodeDialog/NodeDialog.vue";
+import { getOptions } from "@/nodeDialog/__tests__/utils";
 import type {
   Update,
   UpdateResult,
   ValueReference,
 } from "@/nodeDialog/types/Update";
+import SimpleButtonControl from "@/nodeDialog/uiComponents/SimpleButtonControl.vue";
 import TextControl from "@/nodeDialog/uiComponents/TextControl.vue";
-import { ref } from "vue";
 
 describe("updates in array layouts", () => {
   type Wrapper = VueWrapper<any> & {

@@ -3,19 +3,18 @@
  * A component can be mounted using composition API and the correct initialization of JSONForms can be verified on a
  * given vue test utils wrapper. */
 import { expect, vi } from "vitest";
-
+import { reactive, ref } from "vue";
 import { mount } from "@vue/test-utils";
-import { useJsonFormsLayout, useJsonFormsArrayControl } from "@jsonforms/vue";
-
-import * as useJsonFormsControlWithUpdateModule from "@/nodeDialog/composables/components/useJsonFormsControlWithUpdate";
-import { injectionKey as dirtySettingsInjectionKey } from "@/nodeDialog/composables/nodeDialog/useDirtySettings";
-import { injectionKey as flowVarMapKey } from "@/nodeDialog/composables/components/useProvidedFlowVariablesMap";
+import { useJsonFormsArrayControl, useJsonFormsLayout } from "@jsonforms/vue";
 import * as jsonformsVueModule from "@jsonforms/vue";
 
-import { getPossibleValuesFromUiSchema } from "@/nodeDialog/utils";
-import { reactive, ref } from "vue";
-import { createPersistSchema } from "./createPersistSchema";
 import { injectionKey as hasNodeViewInjectionKey } from "@/nodeDialog/composables/components/useHasNodeView";
+import * as useJsonFormsControlWithUpdateModule from "@/nodeDialog/composables/components/useJsonFormsControlWithUpdate";
+import { injectionKey as flowVarMapKey } from "@/nodeDialog/composables/components/useProvidedFlowVariablesMap";
+import { injectionKey as dirtySettingsInjectionKey } from "@/nodeDialog/composables/nodeDialog/useDirtySettings";
+import { getPossibleValuesFromUiSchema } from "@/nodeDialog/utils";
+
+import { createPersistSchema } from "./createPersistSchema";
 
 export const mountJsonFormsComponent = (
   component,

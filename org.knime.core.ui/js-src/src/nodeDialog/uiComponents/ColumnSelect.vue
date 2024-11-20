@@ -1,15 +1,18 @@
 <!-- eslint-disable class-methods-use-this -->
 <script setup lang="ts">
-import { rendererProps } from "@jsonforms/vue";
 import { computed, onMounted, watch, watchEffect } from "vue";
-import type { PossibleValue } from "../types/ChoicesUiSchema";
-import inject from "../utils/inject";
-import DropdownControl from "./DropdownControl.vue";
+import { rendererProps } from "@jsonforms/vue";
 import { isEqual } from "lodash-es";
+
+import { DefaultSettingComparator } from "@knime/ui-extension-service";
+
 import useDialogControl from "../composables/components/useDialogControl";
 import useProvidedState from "../composables/components/useProvidedState";
-import { DefaultSettingComparator } from "@knime/ui-extension-service";
+import type { PossibleValue } from "../types/ChoicesUiSchema";
 import { withSpecialChoices } from "../utils/getPossibleValuesFromUiSchema";
+import inject from "../utils/inject";
+
+import DropdownControl from "./DropdownControl.vue";
 
 class ColumnSelectValueComparator extends DefaultSettingComparator<
   { selected: string | null } | undefined,

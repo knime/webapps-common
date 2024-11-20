@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Label } from "@knime/components";
+
 defineProps<{
   title: string;
   scale: boolean;

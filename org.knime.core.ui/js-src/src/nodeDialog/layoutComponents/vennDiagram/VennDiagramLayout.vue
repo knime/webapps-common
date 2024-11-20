@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { rendererProps, DispatchRenderer } from "@jsonforms/vue";
-import VennDiagram from "./VennDiagram.vue";
-import VerticalLayoutBase from "../VerticalLayoutBase.vue";
 import type { ControlElement } from "@jsonforms/core";
+import { DispatchRenderer, rendererProps } from "@jsonforms/vue";
+
+import VerticalLayoutBase from "../VerticalLayoutBase.vue";
+
+import VennDiagram from "./VennDiagram.vue";
 
 const props = defineProps(
   rendererProps<{

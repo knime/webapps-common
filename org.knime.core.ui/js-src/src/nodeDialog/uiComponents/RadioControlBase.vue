@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { type Ref, computed, onMounted, ref } from "vue";
 import { rendererProps } from "@jsonforms/vue";
-import { optionsMapper } from "../utils";
+
 import { RadioButtons, ValueSwitch } from "@knime/components";
+
 import useDialogControl from "../composables/components/useDialogControl";
 import { type IdAndText } from "../types/ChoicesUiSchema";
+import { optionsMapper } from "../utils";
+
 import LabeledControl from "./label/LabeledControl.vue";
 
 const marginBottomValueSwitch = 0;

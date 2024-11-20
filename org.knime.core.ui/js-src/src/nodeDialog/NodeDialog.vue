@@ -1,47 +1,49 @@
 <script lang="ts">
-import type {
-  UIExtensionService,
-  CreateAlertParams,
-} from "@knime/ui-extension-service";
-import { JsonForms } from "@jsonforms/vue";
-import Form from "./layoutComponents/Form.vue";
-import "../common/main.css";
+import { inject, markRaw, nextTick, ref } from "vue";
 import { type JsonSchema, type UISchemaElement } from "@jsonforms/core";
-import { fallbackRenderers, defaultRenderers } from "./renderers";
+import { JsonForms } from "@jsonforms/vue";
+import { cloneDeep } from "lodash-es";
+
+import type {
+  CreateAlertParams,
+  UIExtensionService,
+} from "@knime/ui-extension-service";
+
 import {
   getPossibleValuesFromUiSchema,
   hasAdvancedOptions,
 } from "../nodeDialog/utils";
-import { cloneDeep } from "lodash-es";
-import { inject, markRaw, nextTick, ref } from "vue";
-import type { Provided, ProvidedForFlowVariables } from "./types/provided";
-import type { SettingsData } from "./types/SettingsData";
-import type { Update, UpdateResult } from "./types/Update";
-import type { Control } from "./types/Control";
-import getChoices from "./api/getChoices";
-import * as flowVariablesApi from "./api/flowVariables";
-import type { FlowSettings } from "./api/types";
 
-import useStateProviders from "./composables/nodeDialog/useStateProviders";
-import useUpdates from "./composables/nodeDialog/useUpdates";
-import useTriggers, {
-  type TriggerCallback,
-} from "./composables/nodeDialog/useTriggers";
-import useGlobalWatchers from "./composables/nodeDialog/useGlobalWatchers";
-import { provideAndGetSetupMethod } from "./composables/nodeDialog/useDirtySettings";
+import * as flowVariablesApi from "./api/flowVariables";
+import getChoices from "./api/getChoices";
+import type { FlowSettings } from "./api/types";
+import { useShowAdvancedSettings } from "./composables/components/useAdvancedSettings";
+import { useHasNodeView } from "./composables/components/useHasNodeView";
+import useProvidedFlowVariablesMap from "./composables/components/useProvidedFlowVariablesMap";
 import {
   createArrayAtPath,
   getArrayIdsRecord,
 } from "./composables/nodeDialog/useArrayIds";
-import useProvidedFlowVariablesMap from "./composables/components/useProvidedFlowVariablesMap";
 import useCurrentData from "./composables/nodeDialog/useCurrentData";
+import { provideAndGetSetupMethod } from "./composables/nodeDialog/useDirtySettings";
+import useGlobalWatchers from "./composables/nodeDialog/useGlobalWatchers";
 import useServices from "./composables/nodeDialog/useServices";
+import useStateProviders from "./composables/nodeDialog/useStateProviders";
+import useTriggers, {
+  type TriggerCallback,
+} from "./composables/nodeDialog/useTriggers";
+import useUpdates from "./composables/nodeDialog/useUpdates";
+import Form from "./layoutComponents/Form.vue";
 import LoadingDialog from "./loading/LoadingDialog.vue";
-import type { PersistSchema } from "./types/Persist";
+import { defaultRenderers, fallbackRenderers } from "./renderers";
+import type { Control } from "./types/Control";
 import type { InitialData } from "./types/InitialData";
-import { useHasNodeView } from "./composables/components/useHasNodeView";
-import { useShowAdvancedSettings } from "./composables/components/useAdvancedSettings";
+import type { PersistSchema } from "./types/Persist";
+import type { SettingsData } from "./types/SettingsData";
+import type { Update, UpdateResult } from "./types/Update";
+import type { Provided, ProvidedForFlowVariables } from "./types/provided";
 import { getConfigPaths } from "./utils/paths";
+import "../common/main.css";
 
 const renderers = [...fallbackRenderers, ...defaultRenderers];
 

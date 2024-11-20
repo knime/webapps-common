@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import NumberControlBase from "./NumberControlBase.vue";
 import { rendererProps } from "@jsonforms/vue";
+
+import NumberControlBase from "./NumberControlBase.vue";
+
 defineProps(rendererProps());
 </script>
 

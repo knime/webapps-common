@@ -1,7 +1,9 @@
-import { expect, describe, it } from "vitest";
-import { shallowMount, flushPromises } from "@vue/test-utils";
-import FlowVariableView from "../FlowVariableView.vue";
+import { describe, expect, it } from "vitest";
+import { flushPromises, shallowMount } from "@vue/test-utils";
+
 import { JsonDataService } from "@knime/ui-extension-service";
+
+import FlowVariableView from "../FlowVariableView.vue";
 
 describe("FlowVariableView.vue", () => {
   const initialData = [

@@ -7,9 +7,11 @@ export type { Props };
 </script>
 
 <script setup lang="ts">
-import CustomUrlFileChooser from "./CustomUrlFileChooser.vue";
-import { useApplyButton } from "@/nodeDialog/layoutComponents/settingsSubPanel";
 import { computed, onMounted, watch } from "vue";
+
+import { useApplyButton } from "@/nodeDialog/layoutComponents/settingsSubPanel";
+
+import CustomUrlFileChooser from "./CustomUrlFileChooser.vue";
 import { startsWithSchemeRegex } from "./urlUtil";
 
 const props = defineProps<Props>();

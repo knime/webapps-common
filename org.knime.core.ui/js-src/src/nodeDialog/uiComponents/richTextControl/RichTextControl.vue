@@ -1,14 +1,18 @@
 <script setup lang="ts">
+import { computed, ref } from "vue";
+import { rendererProps } from "@jsonforms/vue";
+
 import {
   RichTextEditor,
   createOnEscapeExtension,
   defaultLinkToolOptions,
 } from "@knime/rich-text-editor";
+
 import useDialogControl from "../../composables/components/useDialogControl";
-import { rendererProps } from "@jsonforms/vue";
 import LabeledControl from "../label/LabeledControl.vue";
-import { computed, ref } from "vue";
+
 import DialogLinkModal from "./DialogLinkModal.vue";
+
 const props = defineProps(rendererProps());
 const { control, onChange, disabled } = useDialogControl<string>({ props });
 

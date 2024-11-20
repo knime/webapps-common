@@ -1,4 +1,5 @@
 import { inject } from "vue";
+
 import type { Provided, ProvidedForFlowVariables } from "../types/provided";
 
 const typedInject = <T, K extends keyof T & string>(key: K) => {

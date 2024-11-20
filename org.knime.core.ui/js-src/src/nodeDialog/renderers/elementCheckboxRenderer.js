@@ -1,4 +1,5 @@
 import { rankWith } from "@jsonforms/core";
+
 import { priorityRanks } from "../constants";
 import ArrayLayoutItemCheckbox from "../layoutComponents/arrayLayout/ArrayLayoutItemCheckbox.vue";
 

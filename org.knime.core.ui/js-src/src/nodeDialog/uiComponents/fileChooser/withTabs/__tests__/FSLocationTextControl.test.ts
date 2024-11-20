@@ -1,11 +1,13 @@
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { shallowMount } from "@vue/test-utils";
+import flushPromises from "flush-promises";
+
+import { InputField } from "@knime/components";
+
 import FSLocationTextControl, {
   type Props as FSLocationTextInputProps,
   prefixes,
 } from "../FSLocationTextControl.vue";
-import { shallowMount } from "@vue/test-utils";
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import flushPromises from "flush-promises";
-import { InputField } from "@knime/components";
 
 describe("FSLocationTextControl.vue", () => {
   const currentSpacePrefix = "knime://knime.space/";

@@ -1,15 +1,16 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import {
-  mountJsonFormsComponent,
-  initializesJsonFormsControl,
-  getControlBase,
-} from "@@/test-setup/utils/jsonFormsTestUtils";
-import ComboBoxControl from "../ComboBoxControl.vue";
-import LabeledControl from "../label/LabeledControl.vue";
-import DialogLabel from "../label/DialogLabel.vue";
+import flushPromises from "flush-promises";
 
 import { ComboBox } from "@knime/components";
-import flushPromises from "flush-promises";
+
+import {
+  getControlBase,
+  initializesJsonFormsControl,
+  mountJsonFormsComponent,
+} from "@@/test-setup/utils/jsonFormsTestUtils";
+import ComboBoxControl from "../ComboBoxControl.vue";
+import DialogLabel from "../label/DialogLabel.vue";
+import LabeledControl from "../label/LabeledControl.vue";
 
 describe("ComboBoxControl.vue", () => {
   let props;

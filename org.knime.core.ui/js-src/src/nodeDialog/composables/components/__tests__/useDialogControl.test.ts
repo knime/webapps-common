@@ -1,24 +1,26 @@
 import {
+  type Mock,
+  type MockInstance,
   beforeEach,
   describe,
   expect,
   it,
   vi,
-  type Mock,
-  type MockInstance,
 } from "vitest";
-import * as UseJsonFormsControlWithUpdateModule from "../useJsonFormsControlWithUpdate";
-import * as UseFlowVariablesModule from "../useFlowVariables";
 import { type Ref, ref } from "vue";
-import type { FlowSettings } from "@/nodeDialog/api/types/index";
-import type { Control } from "@/nodeDialog/types/Control";
-import UseDialogControlTestComponent from "./UseDialogControlTestComponent.vue";
 import { mount } from "@vue/test-utils";
-import { injectionKey as injectionKeyFromUseDirtySettings } from "@/nodeDialog/composables/nodeDialog/useDirtySettings";
-import { injectionKey as injectionKeyAddedArrayLayoutElements } from "../useAddedArrayLayoutItem";
 import flushPromises from "flush-promises";
-import { injectionKey as flowVarMapKey } from "@/nodeDialog/composables/components/useProvidedFlowVariablesMap";
+
+import type { FlowSettings } from "@/nodeDialog/api/types/index";
 import { injectionKey as injectionKeyHasNodeView } from "@/nodeDialog/composables/components/useHasNodeView";
+import { injectionKey as flowVarMapKey } from "@/nodeDialog/composables/components/useProvidedFlowVariablesMap";
+import { injectionKey as injectionKeyFromUseDirtySettings } from "@/nodeDialog/composables/nodeDialog/useDirtySettings";
+import type { Control } from "@/nodeDialog/types/Control";
+import { injectionKey as injectionKeyAddedArrayLayoutElements } from "../useAddedArrayLayoutItem";
+import * as UseFlowVariablesModule from "../useFlowVariables";
+import * as UseJsonFormsControlWithUpdateModule from "../useJsonFormsControlWithUpdate";
+
+import UseDialogControlTestComponent from "./UseDialogControlTestComponent.vue";
 
 describe("useDialogControl", () => {
   const props: any = "foo";

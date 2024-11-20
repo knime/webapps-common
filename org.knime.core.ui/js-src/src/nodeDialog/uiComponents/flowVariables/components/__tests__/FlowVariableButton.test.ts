@@ -1,20 +1,20 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { FunctionButton } from "@knime/components";
-import FlowVariableIcon from "../FlowVariableIcon.vue";
-import FlowVariablePopover from "../FlowVariablePopover.vue";
-
-import DialogPopover from "@/nodeDialog/popover/DialogPopover.vue";
-
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { ref } from "vue";
 import { mount } from "@vue/test-utils";
-import { beforeEach, afterEach, describe, expect, it, vi } from "vitest";
 import flushPromises from "flush-promises";
-import FlowVariableButton from "../FlowVariableButton.vue";
-import type { FlowVariableButtonProps } from "../../types/FlowVariableButtonProps";
+
+import { FunctionButton } from "@knime/components";
+
 import {
   type ConfigPath,
   injectionKey as flowVariablesInjectionKey,
 } from "@/nodeDialog/composables/components/useFlowVariables";
-import { ref } from "vue";
+import DialogPopover from "@/nodeDialog/popover/DialogPopover.vue";
+import type { FlowVariableButtonProps } from "../../types/FlowVariableButtonProps";
+import FlowVariableButton from "../FlowVariableButton.vue";
+import FlowVariableIcon from "../FlowVariableIcon.vue";
+import FlowVariablePopover from "../FlowVariablePopover.vue";
 
 describe("FlowVariableButton.vue", () => {
   let props: FlowVariableButtonProps;

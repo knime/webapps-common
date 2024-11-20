@@ -1,7 +1,7 @@
-import { and, isControl, not, rankWith, schemaMatches } from "@jsonforms/core";
-import { inputFormats, priorityRanks } from "../constants";
-
 import { defineAsyncComponent } from "vue";
+import { and, isControl, not, rankWith, schemaMatches } from "@jsonforms/core";
+
+import { inputFormats, priorityRanks } from "../constants";
 
 const TwinlistControl = defineAsyncComponent(() =>
   import("../uiComponents/twinlist/TwinlistControl.vue"),

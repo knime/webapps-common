@@ -1,24 +1,23 @@
-import { describe, it, vi, beforeEach, expect } from "vitest";
-import { mount, VueWrapper } from "@vue/test-utils";
-import { JsonDataService } from "@knime/ui-extension-service";
-
-import NodeDialog from "@/nodeDialog/NodeDialog.vue";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { VueWrapper, mount } from "@vue/test-utils";
 import flushPromises from "flush-promises";
 import { cloneDeep } from "lodash-es";
 
-import { getOptions } from "@/nodeDialog/__tests__/utils";
+import { FunctionButton } from "@knime/components";
+import EditIcon from "@knime/styles/img/icons/pencil.svg";
+import ResetIcon from "@knime/styles/img/icons/reset-all.svg";
+import { JsonDataService } from "@knime/ui-extension-service";
+
 import { mockRegisterSettings } from "@@/test-setup/utils/integration/dirtySettingState";
+import NodeDialog from "@/nodeDialog/NodeDialog.vue";
+import { getOptions } from "@/nodeDialog/__tests__/utils";
+import EditResetButton from "@/nodeDialog/layoutComponents/arrayLayout/EditResetButton.vue";
 import type {
   IndexIdsValuePairs,
   Update,
   UpdateResult,
 } from "@/nodeDialog/types/Update";
 import TextControl from "@/nodeDialog/uiComponents/TextControl.vue";
-import EditResetButton from "@/nodeDialog/layoutComponents/arrayLayout/EditResetButton.vue";
-
-import { FunctionButton } from "@knime/components";
-import EditIcon from "@knime/styles/img/icons/pencil.svg";
-import ResetIcon from "@knime/styles/img/icons/reset-all.svg";
 
 describe("edit/reset button in array layouts", () => {
   type Wrapper = VueWrapper<any> & {

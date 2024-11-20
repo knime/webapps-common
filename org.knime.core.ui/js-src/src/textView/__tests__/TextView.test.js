@@ -1,11 +1,13 @@
-import { describe, it, beforeEach, expect, vi, afterEach } from "vitest";
-import TextView from "../TextView.vue";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import flushPromises from "flush-promises";
+
 import {
   JsonDataService,
   SharedDataService,
 } from "@knime/ui-extension-service";
+
 import shallowMountReportingComponent from "@@/test-setup/utils/shallowMountReportingComponent";
-import flushPromises from "flush-promises";
+import TextView from "../TextView.vue";
 
 describe("TextView.vue", () => {
   let wrapper, initialDataSpy, addSharedDataListenerSpy;

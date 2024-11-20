@@ -1,8 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import flushPromises from "flush-promises";
+
+import { InlineMessage } from "@knime/components";
+
 import { mountJsonFormsComponent } from "@@/test-setup/utils/jsonFormsTestUtils";
 import TextMessageControl from "../TextMessageControl.vue";
-import { InlineMessage } from "@knime/components";
-import flushPromises from "flush-promises";
 
 describe("TextMessageControl.vue", () => {
   let defaultProps, wrapper, component;

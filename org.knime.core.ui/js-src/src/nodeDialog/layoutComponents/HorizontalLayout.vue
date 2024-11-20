@@ -1,10 +1,11 @@
 <script>
 import { defineComponent } from "vue";
 import {
-  useJsonFormsLayout,
-  rendererProps,
   DispatchRenderer,
+  rendererProps,
+  useJsonFormsLayout,
 } from "@jsonforms/vue";
+
 import LayoutComponentWrapper from "./LayoutComponentWrapper.vue";
 
 const HorizontalLayout = defineComponent({

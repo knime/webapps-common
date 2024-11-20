@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import useBoolean from "../useBoolean";
 
 describe("useBoolean", () => {

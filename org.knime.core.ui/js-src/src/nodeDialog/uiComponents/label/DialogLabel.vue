@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { type Ref, nextTick, onMounted, ref } from "vue";
-import FlowVariableButton from "../flowVariables/components/FlowVariableButton.vue";
-import DescriptionPopover from "../description/DescriptionPopover.vue";
-import ErrorMessage from "../ErrorMessage.vue";
+
 import { Label } from "@knime/components";
 import ReexecutionIcon from "@knime/styles/img/icons/reexecution.svg";
+
+import ErrorMessage from "../ErrorMessage.vue";
+import DescriptionPopover from "../description/DescriptionPopover.vue";
+import FlowVariableButton from "../flowVariables/components/FlowVariableButton.vue";
 
 withDefaults(
   defineProps<{

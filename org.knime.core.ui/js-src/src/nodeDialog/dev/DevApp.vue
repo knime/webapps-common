@@ -1,14 +1,16 @@
 <script lang="ts">
 /* eslint-disable no-console */
 import {
+  type Alert,
+  type DataValueViewConfig,
   ExtensionTypes,
+  RenderingType,
   UIExtensionPushEvents,
   type UIExtensionService,
-  type Alert,
-  RenderingType,
-  type DataValueViewConfig,
 } from "@knime/ui-extension-service";
+
 import NodeDialog from "@/nodeDialog/NodeDialog.vue";
+
 import dataServiceMock from "./dataServiceMock";
 
 export default {

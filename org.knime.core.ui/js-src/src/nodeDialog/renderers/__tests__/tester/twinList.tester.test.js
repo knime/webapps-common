@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { twinlistTester } from "../../twinlistRenderer";
-import { inputFormats } from "@/nodeDialog/constants/inputFormats";
+
 import { dialogInitialData } from "@@/test-setup/mocks/dialogData";
+import { inputFormats } from "@/nodeDialog/constants/inputFormats";
+import { twinlistTester } from "../../twinlistRenderer";
 
 describe("twinlistTester", () => {
   it("applies on control with twinlist format and selected property", () => {

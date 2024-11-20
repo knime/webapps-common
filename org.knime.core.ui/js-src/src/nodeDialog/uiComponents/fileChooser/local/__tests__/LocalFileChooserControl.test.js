@@ -1,15 +1,17 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import {
-  mountJsonFormsComponent,
-  initializesJsonFormsControl,
-  getControlBase,
-} from "@@/test-setup/utils/jsonFormsTestUtils";
-import LabeledLocalFileChooserControl from "../LocalFileChooserControl.vue";
-import LabeledControl from "@/nodeDialog/uiComponents/label/LabeledControl.vue";
-import DialogLabel from "@/nodeDialog/uiComponents/label/DialogLabel.vue";
-import FileBrowserButton from "../../FileBrowserButton.vue";
+
 import { FunctionButton, InputField } from "@knime/components";
+
+import {
+  getControlBase,
+  initializesJsonFormsControl,
+  mountJsonFormsComponent,
+} from "@@/test-setup/utils/jsonFormsTestUtils";
+import DialogLabel from "@/nodeDialog/uiComponents/label/DialogLabel.vue";
+import LabeledControl from "@/nodeDialog/uiComponents/label/LabeledControl.vue";
+import FileBrowserButton from "../../FileBrowserButton.vue";
 import FileExplorerTab from "../../withTabs/FileExplorerTab.vue";
+import LabeledLocalFileChooserControl from "../LocalFileChooserControl.vue";
 
 describe("LabeledLocalFileChooserControl.vue", () => {
   let props, wrapper, component;

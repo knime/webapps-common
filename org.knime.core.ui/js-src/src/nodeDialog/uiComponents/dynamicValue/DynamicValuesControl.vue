@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { type ControlProps } from "@jsonforms/core";
 import {
   DispatchRenderer,
   rendererProps,
@@ -8,7 +9,6 @@ import {
 import DynamicValueControl, {
   type DynamicValueType,
 } from "./DynamicValueControl.vue";
-import { type ControlProps } from "@jsonforms/core";
 
 enum InputKind {
   SINGLE = "SINGLE",

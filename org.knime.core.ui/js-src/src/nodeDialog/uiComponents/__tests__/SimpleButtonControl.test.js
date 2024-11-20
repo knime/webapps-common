@@ -1,11 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import {
-  mountJsonFormsComponent,
-  getControlBase,
-} from "@@/test-setup/utils/jsonFormsTestUtils";
-import ReloadIcon from "@knime/styles/img/icons/reload.svg";
-import SimpleButtonControl from "../SimpleButtonControl.vue";
+
 import { Button } from "@knime/components";
+import ReloadIcon from "@knime/styles/img/icons/reload.svg";
+
+import {
+  getControlBase,
+  mountJsonFormsComponent,
+} from "@@/test-setup/utils/jsonFormsTestUtils";
+import SimpleButtonControl from "../SimpleButtonControl.vue";
 
 describe("SimpleButtonControl.vue", () => {
   let props, wrapper, component;

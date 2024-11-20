@@ -1,5 +1,6 @@
 <script>
 import { defineComponent } from "vue";
+
 import isSettingsVisibleMixin from "../mixins/isSettingsVisibleMixin";
 
 const DialogComponentWrapper = defineComponent({

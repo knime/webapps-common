@@ -1,15 +1,17 @@
 import type {
-  JsonDataService,
   CreateAlertParams,
+  JsonDataService,
 } from "@knime/ui-extension-service";
+
 import type { PossibleFlowVariable } from "../api/types";
-import type { getPossibleValuesFromUiSchema } from "../utils";
-import type { Control } from "./Control";
-import type { SettingsData } from "./SettingsData";
-import type { IdsRecord } from "../composables/nodeDialog/useArrayIds";
 import type { Result } from "../api/types/Result";
+import type { IdsRecord } from "../composables/nodeDialog/useArrayIds";
 import type { IndexedIsActive } from "../composables/nodeDialog/useTriggers";
+import type { getPossibleValuesFromUiSchema } from "../utils";
+
+import type { Control } from "./Control";
 import type { PersistSchema } from "./Persist";
+import type { SettingsData } from "./SettingsData";
 
 type getPossibleValuesFromUiSchema = (
   control: Control,

@@ -1,14 +1,16 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import {
-  mountJsonFormsComponent,
-  initializesJsonFormsControl,
-  getControlBase,
-} from "@@/test-setup/utils/jsonFormsTestUtils";
 import flushPromises from "flush-promises";
-import EditResetButton from "../EditResetButton.vue";
-import { LoadingIcon, FunctionButton } from "@knime/components";
+
+import { FunctionButton, LoadingIcon } from "@knime/components";
 import EditIcon from "@knime/styles/img/icons/pencil.svg";
 import ResetIcon from "@knime/styles/img/icons/reset-all.svg";
+
+import {
+  getControlBase,
+  initializesJsonFormsControl,
+  mountJsonFormsComponent,
+} from "@@/test-setup/utils/jsonFormsTestUtils";
+import EditResetButton from "../EditResetButton.vue";
 
 describe("EditResetButton.vue", () => {
   let defaultProps, wrapper, component;

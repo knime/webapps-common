@@ -1,12 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 import {
-  mountJsonFormsComponent,
-  initializesJsonFormsControl,
   getControlBase,
+  initializesJsonFormsControl,
+  mountJsonFormsComponent,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
+import ErrorMessage from "../ErrorMessage.vue";
 import IntegerControl from "../IntegerControl.vue";
 import NumberControlBase from "../NumberControlBase.vue";
-import ErrorMessage from "../ErrorMessage.vue";
 
 describe("IntegerControl.vue", () => {
   let defaultProps, wrapper, component;

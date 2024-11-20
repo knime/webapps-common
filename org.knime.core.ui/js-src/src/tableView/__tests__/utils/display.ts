@@ -1,13 +1,14 @@
-import { mount, shallowMount, type VueWrapper } from "@vue/test-utils";
-import type { TableViewDisplayProps } from "../../types";
-import TableViewDisplay from "../../TableViewDisplay.vue";
+import { type VueWrapper, mount, shallowMount } from "@vue/test-utils";
 import flushPromises from "flush-promises";
+
 import {
   AutoSizeColumnsToContent,
   RowHeightMode,
   SelectionMode,
   VerticalPaddingMode,
 } from "@/tableView/types/ViewSettings";
+import TableViewDisplay from "../../TableViewDisplay.vue";
+import type { TableViewDisplayProps } from "../../types";
 
 export const mountDisplay = async ({
   props,

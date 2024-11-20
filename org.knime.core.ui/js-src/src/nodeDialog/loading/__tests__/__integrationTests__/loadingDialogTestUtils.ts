@@ -1,9 +1,11 @@
-import { getOptions } from "@/nodeDialog/__tests__/utils";
-import NodeDialog from "@/nodeDialog/NodeDialog.vue";
-import { JsonDataService } from "@knime/ui-extension-service";
+import { vi } from "vitest";
 import { mount } from "@vue/test-utils";
 import flushPromises from "flush-promises";
-import { vi } from "vitest";
+
+import { JsonDataService } from "@knime/ui-extension-service";
+
+import NodeDialog from "@/nodeDialog/NodeDialog.vue";
+import { getOptions } from "@/nodeDialog/__tests__/utils";
 
 export const mockInitialData = (initialDataJson: object) =>
   vi

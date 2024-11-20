@@ -1,4 +1,5 @@
 import type { FileExplorerItem } from "@knime/components";
+
 import type { Item } from "./types";
 
 export const toFileExplorerItem = (props: Item): FileExplorerItem => {

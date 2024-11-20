@@ -1,14 +1,17 @@
+import { type ExtractPropTypes, type Ref, computed } from "vue";
 import { rendererProps } from "@jsonforms/vue";
-import { useJsonFormsControlWithUpdate } from "./useJsonFormsControlWithUpdate";
-import { type Ref, computed, type ExtractPropTypes } from "vue";
-import { isModelSettingAndHasNodeView } from "@/nodeDialog/utils";
-import { useFlowSettings } from "./useFlowVariables";
-import type { Control } from "@/nodeDialog/types/Control";
+
 import type { SettingComparator } from "@knime/ui-extension-service";
+
+import type { FlowSettings } from "@/nodeDialog/api/types";
+import type { Control } from "@/nodeDialog/types/Control";
+import { isModelSettingAndHasNodeView } from "@/nodeDialog/utils";
+
 import type { Stringifyable } from "./JsonSettingsComparator";
 import { useDirtySetting } from "./useDirtySetting";
-import type { FlowSettings } from "@/nodeDialog/api/types";
+import { useFlowSettings } from "./useFlowVariables";
 import { injectHasNodeView } from "./useHasNodeView";
+import { useJsonFormsControlWithUpdate } from "./useJsonFormsControlWithUpdate";
 
 export const useTriggersReexecution = (control: Ref<Control>) => {
   const hasNodeView = injectHasNodeView();

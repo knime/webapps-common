@@ -1,24 +1,27 @@
 <script setup lang="ts">
-import type {
-  FileChooserProps,
-  FileChooserValue,
-  FSCategory,
-} from "../types/FileChooserProps";
-import FileExplorerTab from "./FileExplorerTab.vue";
-import UrlTab from "./url/UrlTab.vue";
+import { type FunctionalComponent, computed, toRef } from "vue";
+
 import { TabBar } from "@knime/components";
-import LinkIcon from "@knime/styles/img/icons/link.svg";
-import FolderIcon from "@knime/styles/img/icons/folder.svg";
-import LocalSpaceIcon from "@knime/styles/img/icons/local-space.svg";
 import ComputerDesktopIcon from "@knime/styles/img/icons/computer-desktop.svg";
+import FolderIcon from "@knime/styles/img/icons/folder.svg";
+import LinkIcon from "@knime/styles/img/icons/link.svg";
+import LocalSpaceIcon from "@knime/styles/img/icons/local-space.svg";
 import PluginInputIcon from "@knime/styles/img/icons/plugin-input.svg";
-import KnimeIcon from "./knime.svg";
+
+import { getBackendType } from "../composables/useFileChooserBackend";
 import { useFileChooserBrowseOptions } from "../composables/useFileChooserBrowseOptions";
-import { computed, type FunctionalComponent, toRef } from "vue";
 import useFileChooserStateChange from "../composables/useFileChooserStateChange";
 import { type BackendType } from "../types";
-import { getBackendType } from "../composables/useFileChooserBackend";
+import type {
+  FSCategory,
+  FileChooserProps,
+  FileChooserValue,
+} from "../types/FileChooserProps";
+
 import ConnectionPreventsTab from "./ConnectionPreventsTab.vue";
+import FileExplorerTab from "./FileExplorerTab.vue";
+import KnimeIcon from "./knime.svg";
+import UrlTab from "./url/UrlTab.vue";
 
 const props = withDefaults(defineProps<FileChooserProps>(), {
   options: () => ({}),

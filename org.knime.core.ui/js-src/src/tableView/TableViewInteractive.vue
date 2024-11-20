@@ -1,36 +1,39 @@
 <!-- eslint-disable max-lines -->
 <script lang="ts">
-import {
-  JsonDataService,
-  type UIExtensionService,
-  SelectionModes,
-  SelectionService,
-  SharedDataService,
-} from "@knime/ui-extension-service";
-import {
-  DataValueViewService,
-  type DataValueViewConfig,
-} from "@knime/ui-extension-service/internal";
-import TableViewDisplay from "./TableViewDisplay.vue";
-import { createDefaultFilterConfig, arrayEquals } from "@/tableView/utils";
-import {
-  type TableViewViewSettings,
-  AutoSizeColumnsToContent,
-  type TableViewDialogSettings,
-  type StatisticsViewDialogSettings,
-  parseOnViewSettingsChangeSettings,
-} from "./types/ViewSettings";
-import type { InitialData } from "./types/InitialData";
-import type { Table, ColumnContentType } from "./types/Table";
-import type { HeaderMenuItem } from "./types";
-import specialColumns from "./utils/specialColumns";
 import { type PropType, inject } from "vue";
-import useSelectionCache from "./composables/useSelectionCache";
-import useRowHeight from "./composables/useRowHeight";
+
 import {
   type FilterConfig,
   constants as tableConstants,
 } from "@knime/knime-ui-table";
+import {
+  JsonDataService,
+  SelectionModes,
+  SelectionService,
+  SharedDataService,
+  type UIExtensionService,
+} from "@knime/ui-extension-service";
+import {
+  type DataValueViewConfig,
+  DataValueViewService,
+} from "@knime/ui-extension-service/internal";
+
+import { arrayEquals, createDefaultFilterConfig } from "@/tableView/utils";
+
+import TableViewDisplay from "./TableViewDisplay.vue";
+import useRowHeight from "./composables/useRowHeight";
+import useSelectionCache from "./composables/useSelectionCache";
+import type { HeaderMenuItem } from "./types";
+import type { InitialData } from "./types/InitialData";
+import type { ColumnContentType, Table } from "./types/Table";
+import {
+  AutoSizeColumnsToContent,
+  type StatisticsViewDialogSettings,
+  type TableViewDialogSettings,
+  type TableViewViewSettings,
+  parseOnViewSettingsChangeSettings,
+} from "./types/ViewSettings";
+import specialColumns from "./utils/specialColumns";
 
 const { ROW_ID, INDEX } = specialColumns;
 // -1 is the backend representation (columnName) for sorting the table by rowKeys

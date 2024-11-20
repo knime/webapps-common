@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import RadioControlBase from "./RadioControlBase.vue";
 import { rendererProps } from "@jsonforms/vue";
+
+import RadioControlBase from "./RadioControlBase.vue";
 
 defineProps(rendererProps());
 </script>

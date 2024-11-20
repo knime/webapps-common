@@ -1,23 +1,25 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Dropdown } from "@knime/components";
-import { mount } from "@vue/test-utils";
 import {
-  beforeEach,
+  type Mock,
+  type MockInstance,
   afterEach,
+  beforeEach,
   describe,
   expect,
   it,
   vi,
-  type Mock,
-  type MockInstance,
 } from "vitest";
+import { mount } from "@vue/test-utils";
 import flushPromises from "flush-promises";
-import FlowVariableSelector from "../FlowVariableSelector.vue";
-import type { FlowVariableSelectorProps } from "../../types/FlowVariableSelectorProps";
-import { type ProvidedForFlowVariables } from "@/nodeDialog/types/provided";
+
+import { Dropdown } from "@knime/components";
+
 import { type FlowSettings } from "@/nodeDialog/api/types";
 import { injectionKey as providedByComponentKey } from "@/nodeDialog/composables/components/useFlowVariables";
 import { injectionKey as flowVarMapKey } from "@/nodeDialog/composables/components/useProvidedFlowVariablesMap";
+import { type ProvidedForFlowVariables } from "@/nodeDialog/types/provided";
+import type { FlowVariableSelectorProps } from "../../types/FlowVariableSelectorProps";
+import FlowVariableSelector from "../FlowVariableSelector.vue";
 
 type MockedMethods<T extends Record<string, (...args: any[]) => any>> = {
   [K in keyof T]?: MockInstance<T[K]>;

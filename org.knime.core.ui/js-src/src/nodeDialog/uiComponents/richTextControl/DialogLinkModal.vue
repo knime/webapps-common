@@ -6,7 +6,8 @@
  * This is just a temporary workaround until the Modal component in webapps-common is itself based on a native dialog.
  * ( TODO: Remove and resolve properly with UIEXT-2148)
  */
-import { nextTick, type Ref, ref, watch } from "vue";
+import { type Ref, nextTick, ref, watch } from "vue";
+
 export type Props = {
   linkTool: {
     props: {

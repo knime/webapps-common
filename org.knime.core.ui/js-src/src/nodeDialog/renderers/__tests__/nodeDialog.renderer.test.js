@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
+
 import {
   dialogInitialData,
   expectedRenderers,
 } from "@@/test-setup/mocks/dialogData";
+
 import { determineRenderer } from "./rendererTestUtils";
 
 const getElementsToTest = (elements) =>

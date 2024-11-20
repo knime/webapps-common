@@ -1,7 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 import {
-  mountJsonFormsComponent,
   initializesJsonFormsLayout,
+  mountJsonFormsComponent,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
 import HorizontalLayout from "../HorizontalLayout.vue";
 

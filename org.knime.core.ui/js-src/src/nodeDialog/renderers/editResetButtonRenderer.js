@@ -1,4 +1,5 @@
 import { rankWith } from "@jsonforms/core";
+
 import { priorityRanks } from "../constants";
 import EditResetButton from "../layoutComponents/arrayLayout/EditResetButton.vue";
 

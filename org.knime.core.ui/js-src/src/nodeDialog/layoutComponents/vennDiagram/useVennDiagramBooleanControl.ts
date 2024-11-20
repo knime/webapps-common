@@ -1,7 +1,8 @@
-import useDialogControl from "@/nodeDialog/composables/components/useDialogControl";
+import { computed } from "vue";
 import type { ControlElement } from "@jsonforms/core";
 import type { RendererProps } from "@jsonforms/vue";
-import { computed } from "vue";
+
+import useDialogControl from "@/nodeDialog/composables/components/useDialogControl";
 
 export default (props: RendererProps<ControlElement>) => {
   const { control, onChange, disabled } = useDialogControl<boolean>({ props });

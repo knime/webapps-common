@@ -1,10 +1,11 @@
-import { shallowMount } from "@vue/test-utils";
 import { beforeEach, describe, expect, it } from "vitest";
-import UrlTab, { type Props as UrlTabProps } from "../UrlTab.vue";
-import CustomUrlFileChooser from "../CustomUrlFileChooser.vue";
-import { applyButtonInjectionKey } from "@/nodeDialog/layoutComponents/settingsSubPanel";
 import { type Ref, ref } from "vue";
+import { shallowMount } from "@vue/test-utils";
+
+import { applyButtonInjectionKey } from "@/nodeDialog/layoutComponents/settingsSubPanel";
 import ErrorMessage from "@/nodeDialog/uiComponents/ErrorMessage.vue";
+import CustomUrlFileChooser from "../CustomUrlFileChooser.vue";
+import UrlTab, { type Props as UrlTabProps } from "../UrlTab.vue";
 
 describe("UrlTab.vue", () => {
   let props: UrlTabProps, applyDisabled: Ref<boolean>;

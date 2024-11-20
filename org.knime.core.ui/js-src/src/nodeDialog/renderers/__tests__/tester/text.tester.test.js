@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { textTester } from "../../textRenderer";
+
 import { dialogInitialData } from "@@/test-setup/mocks/dialogData";
+import { textTester } from "../../textRenderer";
 
 describe("textTester", () => {
   it("applies on string control", () => {

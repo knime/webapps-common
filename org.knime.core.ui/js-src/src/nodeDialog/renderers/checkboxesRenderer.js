@@ -1,7 +1,7 @@
-import { rankWith, isAnyOfControl } from "@jsonforms/core";
-import { priorityRanks, inputFormats } from "../constants";
-
 import { defineAsyncComponent } from "vue";
+import { isAnyOfControl, rankWith } from "@jsonforms/core";
+
+import { inputFormats, priorityRanks } from "../constants";
 
 const CheckboxesControl = defineAsyncComponent(() =>
   import("../uiComponents/CheckboxesControl.vue"),

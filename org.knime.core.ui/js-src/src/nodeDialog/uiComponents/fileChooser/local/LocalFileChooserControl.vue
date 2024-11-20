@@ -1,14 +1,17 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import useDialogControl from "@/nodeDialog/composables/components/useDialogControl";
-import LabeledControl from "@/nodeDialog/uiComponents/label/LabeledControl.vue";
 import { rendererProps } from "@jsonforms/vue";
+
+import { InputField } from "@knime/components";
+
+import useDialogControl from "@/nodeDialog/composables/components/useDialogControl";
 import { type FileChooserOptions } from "@/nodeDialog/types/FileChooserUiSchema";
+import LabeledControl from "@/nodeDialog/uiComponents/label/LabeledControl.vue";
 import FileBrowserButton from "../FileBrowserButton.vue";
 import { useFileChooserBrowseOptions } from "../composables/useFileChooserBrowseOptions";
-import { InputField } from "@knime/components";
 import useSideDrawerContent from "../composables/useSideDrawerContent";
 import FileExplorerTab from "../withTabs/FileExplorerTab.vue";
+
 const props = defineProps(rendererProps());
 const { control, onChange, disabled } = useDialogControl<string>({ props });
 const uiSchemaOptions = computed(
