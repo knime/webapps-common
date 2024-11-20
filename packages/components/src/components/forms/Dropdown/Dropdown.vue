@@ -501,6 +501,7 @@ export default {
             title="Close"
             tabindex="0"
             class="button"
+            :compact="compact"
             @keydown.enter.stop
             @click.stop="handleResetInput"
           >
@@ -509,6 +510,7 @@ export default {
           <FunctionButton
             v-if="!isExpanded || !nonEmptySearchValue"
             class="button"
+            :compact="compact"
             :disabled="isDisabled"
             :title="isExpanded ? 'Cancel' : 'Expand'"
             :tabindex="isExpanded ? 0 : -1"
@@ -690,10 +692,10 @@ export default {
 
   /* stylelint-disable-next-line no-descending-specificity */
   & .icon {
-    --icon-size: 18px;
+    --icon-size: 18;
 
-    width: var(--icon-size);
-    height: var(--icon-size);
+    width: calc(var(--icon-size) * 1px);
+    height: calc(var(--icon-size) * 1px);
     stroke-width: calc(32px / 18);
     stroke: var(--knime-masala);
     pointer-events: none;
