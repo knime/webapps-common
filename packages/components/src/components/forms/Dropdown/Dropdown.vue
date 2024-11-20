@@ -446,78 +446,76 @@ export default {
         },
       ]"
     >
-      <div class="button-wrapper">
-        <div
-          :id="generateId('button')"
-          ref="button"
-          role="button"
+      <div
+        :id="generateId('button')"
+        ref="button"
+        role="button"
+        tabindex="0"
+        aria-haspopup="listbox"
+        :class="{
+          placeholder: showPlaceholder && !isExpanded,
+          missing: isMissing && !isExpanded,
+          'has-option-template': hasOptionTemplate && !isExpanded,
+        }"
+        :style="{
+          ...(isExpanded &&
+            hasOptionTemplate && {
+              height: `calc(${slotContainerHeight}px + 0 * var(--form-border-width))`,
+              boxSizing: 'content-box',
+            }),
+        }"
+        :aria-label="ariaLabel"
+        :aria-labelledby="generateId('button')"
+        :aria-expanded="isExpanded"
+        @click="toggleExpanded"
+        @keydown="handleKeyDownButton"
+      >
+        <input
+          v-if="isExpanded"
+          ref="searchInput"
+          :value="searchValue"
           tabindex="0"
-          aria-haspopup="listbox"
-          :class="{
-            placeholder: showPlaceholder && !isExpanded,
-            missing: isMissing && !isExpanded,
-            'has-option-template': hasOptionTemplate && !isExpanded,
-          }"
-          :style="{
-            ...(isExpanded &&
-              hasOptionTemplate && {
-                height: `calc(${slotContainerHeight}px + 0 * var(--form-border-width))`,
-                boxSizing: 'content-box',
-              }),
-          }"
-          :aria-label="ariaLabel"
-          :aria-labelledby="generateId('button')"
-          :aria-expanded="isExpanded"
-          @click="toggleExpanded"
-          @keydown="handleKeyDownButton"
-        >
-          <input
-            v-if="isExpanded"
-            ref="searchInput"
-            :value="searchValue"
-            tabindex="0"
-            role="searchbox"
-            class="search-input"
-            type="text"
-            @click.stop
-            @input="(e) => handleSearch((e.target as HTMLInputElement).value)"
+          role="searchbox"
+          class="search-input"
+          type="text"
+          @click.stop
+          @input="(e) => handleSearch((e.target as HTMLInputElement).value)"
+        />
+        <div v-else-if="hasOptionTemplate" ref="slotContainer">
+          <slot
+            name="option"
+            :slot-data="selectedOption?.slotData"
+            :is-missing="isMissing"
+            :selected-value="modelValue"
+            :expanded="false"
           />
-          <div v-else-if="hasOptionTemplate" ref="slotContainer">
-            <slot
-              name="option"
-              :slot-data="selectedOption?.slotData"
-              :is-missing="isMissing"
-              :selected-value="modelValue"
-              :expanded="false"
-            />
+        </div>
+        <span v-else ref="span">{{ displayText }}</span>
+        <div class="right">
+          <div v-if="hasRightIcon" class="loading-icon">
+            <slot name="icon-right" />
           </div>
-          <span v-else ref="span">{{ displayText }}</span>
-          <div class="right">
-            <div v-if="hasRightIcon" class="loading-icon">
-              <slot name="icon-right" />
-            </div>
-            <FunctionButton
-              v-if="isExpanded && nonEmptySearchValue"
-              ref="closeButton"
-              title="Close"
-              tabindex="0"
-              class="button"
-              @keydown.enter.stop
-              @click.stop="handleResetInput"
-            >
-              <CloseIcon class="icon" />
-            </FunctionButton>
-            <FunctionButton
-              v-if="!isExpanded || !nonEmptySearchValue"
-              class="button"
-              :disabled="isDisabled"
-              :title="isExpanded ? 'Cancel' : 'Expand'"
-              :tabindex="isExpanded ? 0 : -1"
-              @click.stop="toggleExpanded"
-            >
-              <DropdownIcon :class="['dropdown-icon', 'icon']" />
-            </FunctionButton>
-          </div>
+          <FunctionButton
+            v-if="isExpanded && nonEmptySearchValue"
+            ref="closeButton"
+            title="Close"
+            tabindex="0"
+            class="button"
+            @keydown.enter.stop
+            @click.stop="handleResetInput"
+          >
+            <CloseIcon class="icon" />
+          </FunctionButton>
+          <FunctionButton
+            v-if="!isExpanded || !nonEmptySearchValue"
+            class="button"
+            :disabled="isDisabled"
+            :title="isExpanded ? 'Cancel' : 'Expand'"
+            :tabindex="isExpanded ? 0 : -1"
+            @click.stop="toggleExpanded"
+          >
+            <DropdownIcon :class="['dropdown-icon', 'icon']" />
+          </FunctionButton>
         </div>
       </div>
       <ul
@@ -679,6 +677,7 @@ export default {
 
   &:not(.collapsed) [role="button"] {
     border-color: var(--knime-masala);
+    background: var(--knime-white);
   }
 
   &:not(.disabled) [role="button"] {
