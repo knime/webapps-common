@@ -46,7 +46,7 @@ definitions:
         script:
           - echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
           - corepack enable
-          - corepack prepare pnpm@latest-9 --activate
+          - corepack prepare pnpm@9.13.0 --activate # We should use pnpm@latest-9 again when https://github.com/pnpm/pnpm/issues/8788 is resolved
           - pnpm install
           - pnpm run publish
           - git push --follow-tags
