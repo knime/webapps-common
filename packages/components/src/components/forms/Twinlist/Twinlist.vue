@@ -824,7 +824,6 @@ export default {
       :handle-width="constants.RESIZE_HANDLE_WIDTH"
       connect-handles-on-resize
       :multiple-handles-handle-gap="`${constants.BUTTON_WIDTH}px`"
-      :disabled="disabled"
       @resize-move="onResizeMove"
       @resize-end="onResizeEnd"
     />
