@@ -22,7 +22,7 @@ definitions:
           depth: full # SonarCloud scanner needs the full history to assign issues properly
         script:
           - corepack enable
-          - corepack prepare pnpm@latest-9 --activate
+          - corepack prepare pnpm@9.13.0 --activate # We should use pnpm@latest-9 again when https://github.com/pnpm/pnpm/issues/8788 is resolved
           - pnpm install
           - pnpm run ci:lint-format
           - pnpm run build:ui-extension-service # temporary build step to enable type-check for ui-extension-renderer
