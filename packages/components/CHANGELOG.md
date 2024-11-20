@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.8.1
+
+### Patch Changes
+
+- 3b80728: Reenable scroll behaviour of sort list which automatically scrolls the selected moved option into the view
+
 ## 1.8.0
 
 ### Minor Changes
