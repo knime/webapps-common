@@ -1,5 +1,11 @@
 # @knime/utils
 
+## 1.1.2
+
+### Patch Changes
+
+- 15a4479: add utilities for file extensions
+
 ## 1.1.1
 
 ### Patch Changes

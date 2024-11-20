@@ -1,5 +1,13 @@
 # @knime/components
 
+## 1.8.2
+
+### Patch Changes
+
+- 15a4479: display failure details as tooltip of upload item
+- Updated dependencies [15a4479]
+  - @knime/utils@1.1.2
+
 ## 1.8.1
 
 ### Patch Changes

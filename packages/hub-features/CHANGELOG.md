@@ -1,5 +1,16 @@
 # @knime/hub-features
 
+## 1.0.10
+
+### Patch Changes
+
+- 15a4479: - fix mimetype detection for KNIME formats (.knwf, .knar)
+  - enforce a max queue size when processing uploads
+- Updated dependencies [15a4479]
+- Updated dependencies [15a4479]
+  - @knime/utils@1.1.2
+  - @knime/components@1.8.2
+
 ## 1.0.9
 
 ### Patch Changes
