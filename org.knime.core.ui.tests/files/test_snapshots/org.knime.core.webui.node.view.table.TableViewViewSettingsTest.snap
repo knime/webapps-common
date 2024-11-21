@@ -23,6 +23,7 @@
       "showRowKeys" : true,
       "title" : "Table View",
       "showTableSize" : true,
+      "showColumnCount" : true,
       "showColumnDataType" : true,
       "enablePagination" : false,
       "pageSize" : 10,
@@ -39,7 +40,8 @@
       "showOnlySelectedRows" : false,
       "showOnlySelectedRowsConfigurable" : true,
       "skipRemainingColumns" : false,
-      "enableDataValueViews" : false
+      "enableDataValueViews" : false,
+      "rowLabel" : "Rows"
     }
   },
   "schema" : {
@@ -259,6 +261,10 @@
             "description" : "Set the initial height of the rows.\n<ul>\n<li><b>Auto</b>: the rows are sized according to the largest element across all columns and rows within the first 11 rows or within the current page when the page size is smaller than 11. In case of reporting each row will be as high as its content.</li>\n<li><b>Custom</b>: shows as much as you need. For instance, shows images at a size that enables to grasp their gist.</li>\n</ul>",
             "default" : "AUTO"
           },
+          "rowLabel" : {
+            "type" : "string",
+            "default" : "Rows"
+          },
           "selectionMode" : {
             "oneOf" : [ {
               "const" : "EDIT",
@@ -273,6 +279,12 @@
             "title" : "Selection",
             "description" : "“Show” makes this view receive notifications about changes of the selection. “Edit” also allows you to change the selection and propagate any changes you make here to other views that show the selection.",
             "default" : "EDIT"
+          },
+          "showColumnCount" : {
+            "type" : "boolean",
+            "title" : "Show column count",
+            "description" : "Whether to show the number columns above the table or or not.",
+            "default" : true
           },
           "showColumnDataType" : {
             "type" : "boolean",
@@ -389,6 +401,21 @@
       }, {
         "type" : "Control",
         "scope" : "#/properties/view/properties/showTableSize",
+        "options" : {
+          "format" : "checkbox"
+        },
+        "rule" : {
+          "effect" : "HIDE",
+          "condition" : {
+            "scope" : "#/properties/view/properties/enablePagination",
+            "schema" : {
+              "const" : true
+            }
+          }
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/view/properties/showColumnCount",
         "options" : {
           "format" : "checkbox"
         },
@@ -564,6 +591,7 @@
           "showRowKeys" : { },
           "title" : { },
           "showTableSize" : { },
+          "showColumnCount" : { },
           "showColumnDataType" : { },
           "enablePagination" : { },
           "pageSize" : { },
@@ -617,6 +645,9 @@
             "configPaths" : [ ]
           },
           "enableDataValueViews" : {
+            "configPaths" : [ ]
+          },
+          "rowLabel" : {
             "configPaths" : [ ]
           }
         }
