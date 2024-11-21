@@ -153,11 +153,8 @@ public final class FlowVariableViewUtil {
         settings.m_skipRemainingColumns = true;
         settings.m_showOnlySelectedRowsConfigurable = false;
 
-        // Needs to be enabled to not lazily fetch data, 'ExpressionFlowVariableNodeDialog'
-        // wouldn't show anything otherwise
-        settings.m_enablePagination = false;
-
         // Custom settings for flow variable view
+        settings.m_enablePagination = false;
         settings.m_showColumnDataType = false;
         settings.m_showTableSize = true;
         settings.m_showColumnCount = false;
