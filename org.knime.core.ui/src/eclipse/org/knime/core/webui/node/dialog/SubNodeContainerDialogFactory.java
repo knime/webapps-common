@@ -130,7 +130,7 @@ public final class SubNodeContainerDialogFactory implements NodeDialogFactory {
 
     @Override
     public boolean hasNodeDialog() {
-        return !getConfigurationNodes().isEmpty();
+        return isSubNodeContainerNodeDialogEnabled() && !getConfigurationNodes().isEmpty();
     }
 
     /**
