@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.9.2
+
+### Patch Changes
+
+- ecf7936: Enable resize handle for twinlists even if the twinlist is disabled
+
 ## 1.9.1
 
 ### Patch Changes

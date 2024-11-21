@@ -1,5 +1,12 @@
 # @knime/virtual-tree
 
+## 1.2.16
+
+### Patch Changes
+
+- Updated dependencies [ecf7936]
+  - @knime/components@1.9.2
+
 ## 1.2.15
 
 ### Patch Changes
