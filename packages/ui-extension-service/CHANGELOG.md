@@ -1,5 +1,11 @@
 # @knime/ui-extension-service
 
+## 1.0.2
+
+### Patch Changes
+
+- c5069f0: Clean flawed flow variables on apply
+
 ## 1.0.1
 
 ### Patch Changes

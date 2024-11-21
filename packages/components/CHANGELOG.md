@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.9.1
+
+### Patch Changes
+
+- f21a042: Use background color instead of transparent background in dropdown
+
 ## 1.9.0
 
 ### Minor Changes
