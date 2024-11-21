@@ -130,6 +130,12 @@ final class ApplyData {
         final var changedModelSettings = modelApplyDataSettings.filter(ApplyDataSettings::hasChanged);
         final var changedViewSettings = viewApplyDataSettings.filter(ApplyDataSettings::hasChanged);
 
+
+        // count before `applyChange` to count before settings are validated
+        if (changedViewSettings.isPresent() || changedModelSettings.isPresent()) {
+            // count either change as settings change, but not twice if both changed
+            NodeTimer.GLOBAL_TIMER.incNodeSettingsChanged(m_nc);
+        }
         applyChange(wfm, nodeID, nodeSettings, changedModelSettings, changedViewSettings);
         callOnChangeModifyer(modelApplyDataSettings, viewApplyDataSettings);
     }
@@ -189,11 +195,6 @@ final class ApplyData {
     private void applyChange(final WorkflowManager wfm, final NodeID nodeID, final NodeSettings nodeSettings,
         final Optional<ApplyDataSettings> changedModelSettings, final Optional<ApplyDataSettings> changedViewSettings)
         throws InvalidSettingsException {
-
-        if (changedViewSettings.isPresent() || changedModelSettings.isPresent()) {
-            // count either change as settings change, but not twice if both changed
-            NodeTimer.GLOBAL_TIMER.incNodeSettingsChanged();
-        }
 
         if (changedViewSettings.isPresent()) {
             validateViewSettings(changedViewSettings.get());
