@@ -62,6 +62,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import org.apache.commons.math3.util.CombinatoricsUtils;
 import org.eclipse.core.runtime.CoreException;
@@ -751,23 +752,43 @@ public final class NodeRecommendationManager {
      */
     public static List<NodeRecommendation[]>
         joinRecommendationsWithoutDuplications(final List<NodeRecommendation>[] recommendations) {
+        var recommendationsJoined = joinRecommendations(recommendations);
+        return removeDuplicates(recommendationsJoined.stream()).toList();
+    }
+
+    /**
+     * Removes duplicates from a given stream of recommendations
+     *
+     * @param recommendations The original recommendations stream
+     * @return The stream without duplicates
+     */
+    public static Stream<NodeRecommendation[]> removeDuplicates(final Stream<NodeRecommendation[]> recommendations) {
+        Set<String> duplicates = new HashSet<>();
+        return recommendations.filter(nrs -> {
+            int idx = getNonNullIdx(nrs);
+            return duplicates.add(nrs[idx].toString());
+        });
+    }
+
+    /**
+     * Joins the elements of the recommendation lists by their element ranks, yet taking the possible equality of
+     * elements into account.
+     *
+     * The joining is done as follows:
+     *
+     * Assume two lists of recommendations, {a1,a2,a3,...} and {b1,b2,b3,...} and, e.g., a2==b2 (i.e. these are the same
+     * recommendations) the joined list of arrays is then [a1, null], [null, b1], [a2, b2], [a3, null], [b3, null]
+     *
+     * @param recommendations n lists of recommendations of possibly different sizes
+     *
+     * @return a list of recommendation arrays (the array potentially with <code>null</code>-entries) accordingly sorted
+     */
+    public static List<NodeRecommendation[]> joinRecommendations(final List<NodeRecommendation>[] recommendations) {
         var maxSize = 0;
         for (var l : recommendations) {
             maxSize = Math.max(maxSize, l.size());
         }
-        var recommendationsJoined = joinRecommendations(recommendations, maxSize);
-
-        // Remove duplicates from list
-        Set<String> duplicates = new HashSet<>();
-        List<NodeRecommendation[]> recommendationsWithoutDups = new ArrayList<>(recommendationsJoined.size());
-        for (var nrs : recommendationsJoined) {
-            int idx = getNonNullIdx(nrs);
-            if (duplicates.add(nrs[idx].toString())) {
-                recommendationsWithoutDups.add(nrs);
-            }
-        }
-
-        return recommendationsWithoutDups;
+        return joinRecommendations(recommendations, maxSize);
     }
 
     /**
