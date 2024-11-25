@@ -145,7 +145,7 @@ public interface UpdateSimulator {
          * @return the updated value
          */
         @SuppressWarnings("unchecked")
-        default <T> T getUiStateUdateAt(final Class<? extends StateProvider<T>> stateProviderClass) {
+        default <T> T getUiStateUpdateAt(final Class<? extends StateProvider<T>> stateProviderClass) {
             return (T)getMultiUiStateUpdateAt(stateProviderClass).get(0).value();
         }
 

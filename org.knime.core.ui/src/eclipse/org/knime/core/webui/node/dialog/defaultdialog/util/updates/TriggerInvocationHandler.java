@@ -77,10 +77,13 @@ public class TriggerInvocationHandler<I> {
      * @param <T> the type of the keys of the dependencies and resulting values in case of nested scopes (either by
      *            index by indexId)
      * @param widgetTrees
+     * @param context the current context
      * @return a invocation handler for updates within the supplied widget trees
      */
-    public static <T> TriggerInvocationHandler<T> fromWidgetTrees(final Collection<Tree<WidgetGroup>> widgetTrees) {
-        return new TriggerInvocationHandler<>(WidgetTreesToDependencyTreeUtil.widgetTreesToDependencyTree(widgetTrees));
+    public static <T> TriggerInvocationHandler<T> fromWidgetTrees(final Collection<Tree<WidgetGroup>> widgetTrees,
+        final DefaultNodeSettingsContext context) {
+        return new TriggerInvocationHandler<>(
+            WidgetTreesToDependencyTreeUtil.widgetTreesToDependencyTree(widgetTrees, context));
     }
 
     /**

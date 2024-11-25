@@ -69,23 +69,27 @@ import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTreeFacto
  */
 final class DataServiceTriggerInvocationHandler {
 
-    private TriggerInvocationHandler<String> m_triggerInvocationHandler;
+    private final TriggerInvocationHandler<String> m_triggerInvocationHandler;
 
-    DataServiceTriggerInvocationHandler(final Map<SettingsType, Class<? extends WidgetGroup>> settingsClasses) {
+    private final DefaultNodeSettingsContext m_context;
+
+    DataServiceTriggerInvocationHandler(final Map<SettingsType, Class<? extends WidgetGroup>> settingsClasses,
+        final DefaultNodeSettingsContext context) {
         final var widgetTreeFactory = new WidgetTreeFactory();
         final var widgetTrees = settingsClasses.entrySet().stream()
             .map(entry -> widgetTreeFactory.createTree(entry.getValue(), entry.getKey())).toList();
-        m_triggerInvocationHandler = TriggerInvocationHandler.fromWidgetTrees(widgetTrees);
+        m_context = context;
+        m_triggerInvocationHandler = TriggerInvocationHandler.fromWidgetTrees(widgetTrees, m_context);
     }
 
     List<UpdateResultsUtil.UpdateResult<String>> trigger(final String triggerId,
-        final Map<String, List<IndexedValue<String>>> rawDependencies, final DefaultNodeSettingsContext context) {
+        final Map<String, List<IndexedValue<String>>> rawDependencies) {
         final Function<ValueAndTypeReference, List<IndexedValue<String>>> dependencyProvider =
             valueAndTypeRef -> rawDependencies.get(valueAndTypeRef.getValueRef().getName()).stream()
-                .map(raw -> new IndexedValue<>(raw.indices(), parseValue(raw.value(), valueAndTypeRef, context)))
+                .map(raw -> new IndexedValue<>(raw.indices(), parseValue(raw.value(), valueAndTypeRef, m_context)))
                 .toList();
 
-        final var triggerResult = m_triggerInvocationHandler.invokeTrigger(triggerId, dependencyProvider, context);
+        final var triggerResult = m_triggerInvocationHandler.invokeTrigger(triggerId, dependencyProvider, m_context);
         return UpdateResultsUtil.toUpdateResults(triggerResult);
     }
 

@@ -61,6 +61,7 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.knime.core.node.util.CheckUtils;
 import org.knime.core.util.Pair;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.Vertex.VertexVisitor;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.WidgetTreesToValueRefsAndStateProviders.ValueProviderWrapper;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.WidgetTreesToValueRefsAndStateProviders.ValueRefWrapper;
@@ -83,12 +84,14 @@ final class ValueRefsAndValueProvidersAndUiStateProvidersToDependencyTree {
      * @param valueRefsAndStateProviders collected from settings
      * @return the trigger vertices of the resulting tree of vertices
      */
-    static Collection<TriggerVertex>
-        valueRefsAndStateProvidersToDependencyTree(final ValueRefsAndStateProviders valueRefsAndStateProviders) {
-        return new DependencyTreeCreator(valueRefsAndStateProviders).getTriggerVertices();
+    static Collection<TriggerVertex> valueRefsAndStateProvidersToDependencyTree(
+        final ValueRefsAndStateProviders valueRefsAndStateProviders, final DefaultNodeSettingsContext context) {
+        return new DependencyTreeCreator(valueRefsAndStateProviders, context).getTriggerVertices();
     }
 
     private static final class DependencyTreeCreator {
+
+        private final DefaultNodeSettingsContext m_context;
 
         private final Collection<ValueProviderWrapper> m_valueProviders;
 
@@ -111,7 +114,9 @@ final class ValueRefsAndValueProvidersAndUiStateProvidersToDependencyTree {
 
         private final Collection<Class<? extends StateProvider>> m_uiStateProviders;
 
-        DependencyTreeCreator(final ValueRefsAndStateProviders valueRefsAndStateProviders) {
+        DependencyTreeCreator(final ValueRefsAndStateProviders valueRefsAndStateProviders,
+            final DefaultNodeSettingsContext context) {
+            m_context = context;
             m_valueRefs = valueRefsAndStateProviders.valueRefs();
             m_valueProviders = valueRefsAndStateProviders.valueProviders();
             m_uiStateProviders = valueRefsAndStateProviders.uiStateProviders();
@@ -205,7 +210,7 @@ final class ValueRefsAndValueProvidersAndUiStateProvidersToDependencyTree {
                 final var stateProvider = stateVertex.createStateProvider();
                 CheckUtils.checkNotNull(stateProvider, "Failed to instantiate state provider class %s.",
                     stateVertex.getStateProviderClass());
-                final var stateProviderDependencyReceiver = new StateProviderDependencyReceiver();
+                final var stateProviderDependencyReceiver = new StateProviderDependencyReceiver(m_context);
                 stateProvider.init(stateProviderDependencyReceiver);
 
                 final Collection<Vertex> parentVertices = new HashSet<>();
@@ -244,6 +249,12 @@ final class ValueRefsAndValueProvidersAndUiStateProvidersToDependencyTree {
      * @author Paul Bärnreuther
      */
     private static final class StateProviderDependencyReceiver implements StateProvider.StateProviderInitializer {
+
+        private DefaultNodeSettingsContext m_context;
+
+        private StateProviderDependencyReceiver(final DefaultNodeSettingsContext context) {
+            m_context = context;
+        }
 
         private final Collection<Class<? extends Reference>> m_valueRefTriggers = new HashSet<>();
 
@@ -325,6 +336,11 @@ final class ValueRefsAndValueProvidersAndUiStateProvidersToDependencyTree {
 
         Collection<Class<? extends StateProvider>> getStateProviders() {
             return m_stateProviders;
+        }
+
+        @Override
+        public DefaultNodeSettingsContext getContext() {
+            return m_context;
         }
 
     }

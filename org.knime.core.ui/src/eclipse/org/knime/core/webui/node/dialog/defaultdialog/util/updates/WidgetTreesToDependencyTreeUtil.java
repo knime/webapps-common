@@ -54,6 +54,7 @@ import java.util.Map;
 
 import org.knime.core.util.Pair;
 import org.knime.core.webui.node.dialog.SettingsType;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.tree.Tree;
 import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTreeFactory;
@@ -69,35 +70,40 @@ public final class WidgetTreesToDependencyTreeUtil {
         // Utility
     }
 
-    static Collection<TriggerVertex> widgetTreesToDependencyTree(final Collection<Tree<WidgetGroup>> widgetTrees) {
+    static Collection<TriggerVertex> widgetTreesToDependencyTree(final Collection<Tree<WidgetGroup>> widgetTrees,
+        final DefaultNodeSettingsContext context) {
         final var valueRefsAndStateProviders =
             new WidgetTreesToValueRefsAndStateProviders().widgetTreesToValueRefsAndStateProviders(widgetTrees);
         return ValueRefsAndValueProvidersAndUiStateProvidersToDependencyTree
-            .valueRefsAndStateProvidersToDependencyTree(valueRefsAndStateProviders);
+            .valueRefsAndStateProvidersToDependencyTree(valueRefsAndStateProviders, context);
     }
 
     /**
      * Only for tests (since WidgetTree is not exposed to testing)
      *
      * @param settingsClasses
+     * @param context the current context
      * @return the triggers building the dependency tree and the invocation handler for these triggers
      */
     public static Pair<List<TriggerAndDependencies>, TriggerInvocationHandler<Integer>>
-        settingsToTriggersAndInvocationHandler(final Map<SettingsType, Class<? extends WidgetGroup>> settingsClasses) {
+        settingsToTriggersAndInvocationHandler(final Map<SettingsType, Class<? extends WidgetGroup>> settingsClasses,
+            final DefaultNodeSettingsContext context) {
         final var widgetTreeFactory = new WidgetTreeFactory();
         final var widgetTrees = settingsClasses.entrySet().stream()
             .map(entry -> widgetTreeFactory.createTree(entry.getValue(), entry.getKey())).toList();
-        return widgetTreesToTriggersAndInvocationHandler(widgetTrees);
+        return widgetTreesToTriggersAndInvocationHandler(widgetTrees, context);
     }
 
     /**
      * @param <T>
      * @param widgetTrees
+     * @param context the current context
      * @return a list of all triggers and their associated dependencies and an associated invocation handler.
      */
     public static <T> Pair<List<TriggerAndDependencies>, TriggerInvocationHandler<T>>
-        widgetTreesToTriggersAndInvocationHandler(final Collection<Tree<WidgetGroup>> widgetTrees) {
-        final var dependencyTree = widgetTreesToDependencyTree(widgetTrees);
+        widgetTreesToTriggersAndInvocationHandler(final Collection<Tree<WidgetGroup>> widgetTrees,
+            final DefaultNodeSettingsContext context) {
+        final var dependencyTree = widgetTreesToDependencyTree(widgetTrees, context);
         final var listOfTriggers = getTriggersWithDependencies(dependencyTree);
         return new Pair<>(listOfTriggers, new TriggerInvocationHandler<>(dependencyTree));
     }

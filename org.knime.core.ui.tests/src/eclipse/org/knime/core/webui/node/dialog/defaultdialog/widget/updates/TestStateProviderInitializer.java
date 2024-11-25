@@ -50,6 +50,7 @@ package org.knime.core.webui.node.dialog.defaultdialog.widget.updates;
 
 import java.util.function.Supplier;
 
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider.StateProviderInitializer;
 
 /**
@@ -98,6 +99,14 @@ public class TestStateProviderInitializer implements StateProviderInitializer {
     public void computeAfterOpenDialog() {
         throw new IllegalStateException("This method should not have been called in this test.");
 
+    }
+
+    @Override
+    public DefaultNodeSettingsContext getContext() {
+        /**
+         * Use the {@link DialogUpdateSimulator} instead if a non-null context is required here.
+         */
+        return null;
     }
 
 }

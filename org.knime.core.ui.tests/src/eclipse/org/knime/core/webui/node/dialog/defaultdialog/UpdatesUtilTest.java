@@ -107,19 +107,26 @@ public class UpdatesUtilTest {
     }
 
     static ObjectNode buildUpdates(final Map<SettingsType, WidgetGroup> settings) {
+        return buildUpdates(settings, createDefaultNodeSettingsContext());
+    }
+
+    static ObjectNode buildUpdates(final Map<SettingsType, WidgetGroup> settings,
+        final DefaultNodeSettingsContext context) {
         final var objectNode = new ObjectMapper().createObjectNode();
         final Map<SettingsType, Class<? extends WidgetGroup>> settingsClasses =
             MapValuesUtil.mapValues(settings, WidgetGroup::getClass);
-        UpdatesUtil.addUpdates(
-            objectNode, settingsClasses.entrySet().stream()
-                .map(e -> new WidgetTreeFactory().createTree(e.getValue(), e.getKey())).toList(),
-            settings, createDefaultNodeSettingsContext());
+        UpdatesUtil.addUpdates(objectNode, settingsClasses.entrySet().stream()
+            .map(e -> new WidgetTreeFactory().createTree(e.getValue(), e.getKey())).toList(), settings, context);
         return objectNode;
     }
 
     @SuppressWarnings("javadoc")
     public static ObjectNode buildUpdates(final WidgetGroup settings) {
         return buildUpdates(Map.of(SettingsType.MODEL, settings));
+    }
+
+    private static ObjectNode buildUpdatesWithNullContext(final WidgetGroup settings) {
+        return buildUpdates(Map.of(SettingsType.MODEL, settings), null);
     }
 
     @Test
@@ -386,6 +393,37 @@ public class UpdatesUtilTest {
         assertThatJson(response).inPath("$.globalUpdates[0].trigger.id").isString()
             .isEqualTo(TestSettings.MyButtonRef.class.getName());
         assertThatJson(response).inPath("$.globalUpdates[0].dependencies").isArray().hasSize(0);
+    }
+
+    @Test
+    void testUpdateDependingOnTheContext() {
+        class TestSettings implements DefaultNodeSettings {
+
+            static final class OnlyProvideWhenContextIsNull implements StateProvider<String> {
+
+                @Override
+                public void init(final StateProviderInitializer initializer) {
+                    if (initializer.getContext() != null) {
+                        initializer.computeBeforeOpenDialog();
+                    }
+                }
+
+                @Override
+                public String computeState(final DefaultNodeSettingsContext context) {
+                    return "Some value computed from the context";
+                }
+
+            }
+
+            @ValueProvider(OnlyProvideWhenContextIsNull.class)
+            @Widget(description = "", title = "")
+            String m_settings;
+        }
+
+        final var settings = new TestSettings();
+
+        assertThatJson(buildUpdates(settings)).inPath("$.initialUpdates").isArray().hasSize(1);
+        assertThatJson(buildUpdatesWithNullContext(settings)).inPath("$.initialUpdates").isAbsent();
     }
 
     @Test

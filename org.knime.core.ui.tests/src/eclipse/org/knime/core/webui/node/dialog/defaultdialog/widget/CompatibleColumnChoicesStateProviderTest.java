@@ -129,7 +129,7 @@ class CompatibleColumnChoicesStateProviderTest {
     }
 
     private static void assertColumnChoices(final UpdateSimulatorResult result, final String... expectedColumnNames) {
-        var columnChoices = result.getUiStateUdateAt(ColumnProvider.class);
+        var columnChoices = result.getUiStateUpdateAt(ColumnProvider.class);
         assertThat(Arrays.stream(columnChoices).map(PossibleColumnValue::id).toList())
             .isEqualTo(List.of(expectedColumnNames));
     }

@@ -94,7 +94,8 @@ public class DialogUpdateSimulator implements UpdateSimulator {
     public DialogUpdateSimulator(final Map<SettingsType, WidgetGroup> settings,
         final DefaultNodeSettingsContext context) {
         final var pair = settingsToTriggersAndInvocationHandler(
-            settings.entrySet().stream().collect(Collectors.toMap(Entry::getKey, e -> e.getValue().getClass())));
+            settings.entrySet().stream().collect(Collectors.toMap(Entry::getKey, e -> e.getValue().getClass())),
+            context);
         m_listOfTriggers = pair.getFirst();
         m_triggerInvocationHandler = pair.getSecond();
         m_settings = settings;

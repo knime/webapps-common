@@ -85,7 +85,7 @@ class DialogUpdateSimulatorTest {
 
     static void assertResults(final UpdateSimulatorResult updateSimulatorResult) {
         assertThat(updateSimulatorResult.getValueUpdateAt("field")).isEqualTo(DEPENDENCY);
-        assertThat(updateSimulatorResult.getUiStateUdateAt(TestSettings.PlaceholderProvider.class))
+        assertThat(updateSimulatorResult.getUiStateUpdateAt(TestSettings.PlaceholderProvider.class))
             .isEqualTo(DEPENDENCY);
         final var multiValueUpdate = updateSimulatorResult.getMultiValueUpdatesInArrayAt(PATH_TO_ELEMENT_FIELD);
         final var multiUiStateUpdate = updateSimulatorResult

@@ -236,6 +236,11 @@ final class InvokeTrigger<I> {
             private <T> Supplier<T> vertexToSupplier(final Vertex vertex) {
                 return () -> (T)m_getParentValue.apply(vertex);
             }
+
+            @Override
+            public DefaultNodeSettingsContext getContext() {
+                return m_context;
+            }
         }
 
         @Override

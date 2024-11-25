@@ -86,7 +86,9 @@ public final class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialog
 
     private final AsyncChoicesGetter m_asyncChoicesGetter;
 
-    private final DataServiceTriggerInvocationHandler m_triggerInvocationHandler;
+    final Map<SettingsType, Class<? extends WidgetGroup>> m_keyToSettingsClassMap;
+
+    private DataServiceTriggerInvocationHandler m_triggerInvocationHandler;
 
     /**
      * @param settingsClasses the classes of the {@link DefaultNodeSettings} associated to the dialog.
@@ -96,14 +98,21 @@ public final class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialog
     public DefaultNodeDialogDataServiceImpl(
         final Map<SettingsType, Class<? extends DefaultNodeSettings>> settingsClasses,
         final AsyncChoicesGetter asyncChoicesGetter) {
-        final Map<SettingsType, Class<? extends WidgetGroup>> keyToSettingsClassMap = new EnumMap<>(SettingsType.class);
-        settingsClasses.forEach(keyToSettingsClassMap::put);
-        m_buttonActionHandlers = new ButtonWidgetActionHandlerHolder(keyToSettingsClassMap.values());
-        m_buttonUpdateHandlers = new ButtonWidgetUpdateHandlerHolder(keyToSettingsClassMap.values());
-        m_choicesUpdateHandlers = new ChoicesWidgetUpdateHandlerHolder(keyToSettingsClassMap.values());
+        m_keyToSettingsClassMap = new EnumMap<>(SettingsType.class);
+        settingsClasses.forEach(m_keyToSettingsClassMap::put);
+        m_buttonActionHandlers = new ButtonWidgetActionHandlerHolder(m_keyToSettingsClassMap.values());
+        m_buttonUpdateHandlers = new ButtonWidgetUpdateHandlerHolder(m_keyToSettingsClassMap.values());
+        m_choicesUpdateHandlers = new ChoicesWidgetUpdateHandlerHolder(m_keyToSettingsClassMap.values());
         m_requestHandler = new DataServiceRequestHandler();
-        m_triggerInvocationHandler = new DataServiceTriggerInvocationHandler(keyToSettingsClassMap);
         m_asyncChoicesGetter = asyncChoicesGetter;
+    }
+
+    DataServiceTriggerInvocationHandler getTriggerInvocationHandler() {
+        if (m_triggerInvocationHandler == null) {
+            m_triggerInvocationHandler =
+                new DataServiceTriggerInvocationHandler(m_keyToSettingsClassMap, createContext());
+        }
+        return m_triggerInvocationHandler;
     }
 
     static DefaultNodeSettingsContext createContext() {
@@ -166,9 +175,9 @@ public final class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialog
         final Map<String, List<IndexedValue<String>>> rawDependenciesUnparsed)
         throws InterruptedException, ExecutionException {
         ErrorHandlingSingleton.reset();
-        final var context = createContext();
+        final var triggerInvocationHandler = getTriggerInvocationHandler();
         return m_requestHandler.handleRequest(widgetId,
-            () -> m_triggerInvocationHandler.trigger(triggerClass, rawDependenciesUnparsed, context));
+            () -> triggerInvocationHandler.trigger(triggerClass, rawDependenciesUnparsed));
     }
 
     @Override

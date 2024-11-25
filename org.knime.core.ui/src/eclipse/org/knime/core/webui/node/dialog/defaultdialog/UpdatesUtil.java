@@ -119,7 +119,7 @@ public final class UpdatesUtil {
     static void addUpdates(final ObjectNode rootNode, final Collection<Tree<WidgetGroup>> widgetTrees,
         final Map<SettingsType, WidgetGroup> settings, final DefaultNodeSettingsContext context) {
         final var pair =
-            WidgetTreesToDependencyTreeUtil.<Integer> widgetTreesToTriggersAndInvocationHandler(widgetTrees);
+            WidgetTreesToDependencyTreeUtil.<Integer> widgetTreesToTriggersAndInvocationHandler(widgetTrees, context);
         final var triggersWithDependencies = pair.getFirst();
         final var invocationHandler = pair.getSecond();
         final var partitioned = triggersWithDependencies.stream()

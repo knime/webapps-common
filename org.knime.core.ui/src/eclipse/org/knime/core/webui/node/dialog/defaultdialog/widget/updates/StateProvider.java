@@ -79,6 +79,13 @@ public interface StateProvider<S> {
     interface StateProviderInitializer {
 
         /**
+         * Use this method if the update mechanism should depend on the context of the dialog.
+         *
+         * @return the current context
+         */
+        DefaultNodeSettingsContext getContext();
+
+        /**
          * Sets value ref as <b>Trigger</b> and as <b>Dependency</b>, i.e.:
          *
          * Refer to a {@link Widget} with this method to recompute the provided state on every change of that setting
