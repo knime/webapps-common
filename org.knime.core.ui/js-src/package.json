@@ -54,7 +54,7 @@
     "@knime/knime-ui-table": "^0.5.15",
     "@knime/rich-text-editor": "1.2.14",
     "@knime/styles": "1.0.9",
-    "@knime/ui-extension-service": "1.0.1",
+    "@knime/ui-extension-service": "1.0.2",
     "@tiptap/core": "2.1.10",
     "date-fns": "2.29.3",
     "focus-trap-vue": "4.0.2",
