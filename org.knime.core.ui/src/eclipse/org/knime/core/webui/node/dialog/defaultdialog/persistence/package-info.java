@@ -47,6 +47,23 @@
  *   May 2, 2023 (Paul Bärnreuther): created
  */
 /**
- * TODO: UIEXT-797: Fill with content
+ * This package contains the logic and API for defining how {@link DefaultNodeSettings} are persisted to
+ * {@link NodeSettings}.
+ *
+ * <p>
+ * A {@link org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor NodeSettingsPersistor} is
+ * responsible for persisting one kind of java type. Such persistors can be attached to classes (via the
+ * {@link org.knime.core.webui.node.dialog.defaultdialog.persistence.Persistor @Persistor} annotation) and fields (via
+ * the {@link org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist @Persist} annotation) within
+ * {@link DefaultNodeSettings}.
+ * </p>
+ *
+ * <p>
+ * Per default settings are persisted field and most java types have a default persistor that is automatically used. So
+ * usually, setting custom persistors is only required for achieving backwards-compatibility. In this case, the
+ * {@link org.knime.core.webui.node.dialog.defaultdialog.persistence.field.DefaultPersistorWithDeprecations
+ * DefaultPersistorWithDeprecations} that is only able to load but no to save old settings might be a better fit than a
+ * persistor with a custom save method.
+ * </p>
  */
 package org.knime.core.webui.node.dialog.defaultdialog.persistence;

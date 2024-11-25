@@ -53,10 +53,9 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 
 /**
- * A helper interface that simplifies loading of deprecated configs through the wrapper
- * {@link DefaultPersistorWithDeprecationsWrapper}. Persistor classes can implement this interface in case they have at
- * least one deprecated configs and use the defaults persistor load and save methods. Implementing classes should not
- * override load and save, but should override {@link #getConfigsDeprecations()}.
+ * Use this interface when the default persistor should be used but also, for backwards-compatiblity to a previous
+ * state, settings need to be loaded from an old state. Implementing classes should not override load and save, but
+ * instead define the old state and how to load from it within {@link #getConfigsDeprecations()}.
  *
  * @author Robin Gerling
  * @param <T> the type of object loaded by the persistor
