@@ -4,7 +4,6 @@
  * Includes PopoverContent for easier creation via h() function in createHint. Completes hint on click outside.
  */
 import { type MaybeRef, onMounted, ref, toRef, unref, watch } from "vue";
-import { onClickOutside } from "@vueuse/core";
 
 import { sleep } from "@knime/utils";
 
@@ -22,12 +21,6 @@ interface Props extends Omit<BasePopoverProps, "reference"> {
 }
 
 const props = defineProps<Props>();
-
-// click outside
-const basePopover = ref<InstanceType<typeof BasePopover>>();
-onClickOutside(basePopover, () => {
-  props.completeHint();
-});
 
 // get element from DOM via selector
 const referenceElement = ref<MaybeElement>();
@@ -49,11 +42,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <BasePopover
-    ref="basePopover"
-    :placement="placement"
-    :reference="referenceElement"
-  >
+  <BasePopover :placement="placement" :reference="referenceElement">
     <PopoverContent
       v-bind="content"
       @close="completeHint"
