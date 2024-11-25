@@ -53,6 +53,7 @@ import java.util.function.Supplier;
 
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.NodeContainer;
+import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.webui.data.rpc.json.impl.ObjectMapperUtil;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -102,6 +103,9 @@ public final class InitialDataService<D> extends AbstractDataService {
      * @return the initial data serialized into a string
      */
     public String getInitialData() {
+        if (m_nc != null) {
+            NodeContext.pushContext(m_nc);
+        }
         try {
             final var root = m_mapper.createObjectNode();
             // Since the DataServiceContext is public API, warning messages could have been wrongfully added to it.
@@ -141,6 +145,9 @@ public final class InitialDataService<D> extends AbstractDataService {
             return errorMessage;
         } finally {
             DataServiceContext.remove();
+            if (m_nc != null) {
+                NodeContext.removeLastContext();
+            }
         }
     }
 

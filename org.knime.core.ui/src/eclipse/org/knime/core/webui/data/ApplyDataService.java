@@ -54,8 +54,8 @@ import java.util.function.Function;
 
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.interactive.ReExecutable;
+import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeContext;
-import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.webui.data.rpc.json.impl.ObjectMapperUtil;
 
@@ -78,7 +78,7 @@ public final class ApplyDataService<D> extends AbstractDataService {
 
     private WorkflowManager m_wfm;
 
-    private NodeID m_nodeId;
+    private NodeContainer m_nc;
 
     private final Deserializer<D> m_deserializer;
 
@@ -91,17 +91,16 @@ public final class ApplyDataService<D> extends AbstractDataService {
             var mapper = ObjectMapperUtil.getInstance().getObjectMapper();
             m_deserializer = s -> {
                 if (builder.m_dataType.equals(String.class)) {
-                    return (D) s;
+                    return (D)s;
                 }
                 return mapper.readValue(s, builder.m_dataType);
             };
         } else {
             m_deserializer = builder.m_deserializer;
         }
+        m_nc = DataServiceUtil.getNodeContainerFromContext();
         if (m_reExecutable != null) {
-            var nc = NodeContext.getContext().getNodeContainer();
-            m_wfm = nc.getParent();
-            m_nodeId = nc.getID();
+            m_wfm = m_nc.getParent();
         }
     }
 
@@ -127,6 +126,19 @@ public final class ApplyDataService<D> extends AbstractDataService {
      * @throws IOException
      */
     public void applyData(final String dataString) throws IOException {
+        if (m_nc != null) {
+            NodeContext.pushContext(m_nc);
+        }
+        try {
+            applyDataWithContext(dataString);
+        } finally {
+            if (m_nc != null) {
+                NodeContext.removeLastContext();
+            }
+        }
+    }
+
+    private void applyDataWithContext(final String dataString) throws IOException {
         var data = m_deserializer.deserialize(dataString);
         if (m_dataApplier != null) {
             m_dataApplier.apply(data);
@@ -150,7 +162,7 @@ public final class ApplyDataService<D> extends AbstractDataService {
      */
     public void reExecute(final String data) throws IOException {
         if (m_reExecutable != null) {
-            m_wfm.reExecuteNode(m_nodeId, m_deserializer.deserialize(data), false);
+            m_wfm.reExecuteNode(m_nc.getID(), m_deserializer.deserialize(data), false);
         }
     }
 
@@ -184,6 +196,7 @@ public final class ApplyDataService<D> extends AbstractDataService {
 
     /**
      * The builder.
+     *
      * @param <D>
      */
     public static final class ApplyDataServiceBuilder<D> extends AbstractDataServiceBuilder {
