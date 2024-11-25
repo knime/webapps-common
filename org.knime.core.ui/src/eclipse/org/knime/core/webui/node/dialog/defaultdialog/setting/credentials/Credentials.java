@@ -61,6 +61,8 @@ import java.util.Optional;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.workflow.NodeContext;
+import org.knime.core.node.workflow.NodeID;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.NodeSettingsPersistorWithConfigKey;
 
@@ -178,13 +180,18 @@ public final class Credentials {
         public void serialize(final Credentials value, final JsonGenerator gen, final SerializerProvider serializers)
             throws IOException {
             final var fieldId = toFieldId(gen.getOutputContext());
+            final var nodeID = getNodeId();
             gen.writeStartObject();
             final var password = value.getPassword();
-            addPassword(gen, IS_HIDDEN_PASSWORD_KEY, password, fieldId + "." + PASSWORD_KEY);
+            addPassword(gen, IS_HIDDEN_PASSWORD_KEY, password, fieldId + "." + PASSWORD_KEY, nodeID);
             final var secondFactor = value.getSecondFactor();
-            addPassword(gen, IS_HIDDEN_SECOND_FACTOR_KEY, secondFactor, fieldId + "." + SECOND_FACTOR_KEY);
+            addPassword(gen, IS_HIDDEN_SECOND_FACTOR_KEY, secondFactor, fieldId + "." + SECOND_FACTOR_KEY, nodeID);
             serializers.defaultSerializeField(USERNAME_KEY, value.getUsername(), gen);
             gen.writeEndObject();
+        }
+
+        private static NodeID getNodeId() {
+            return NodeContext.getContext().getNodeContainer().getID();
         }
 
         private static String toFieldId(final JsonStreamContext context) {
@@ -202,11 +209,11 @@ public final class Credentials {
         }
 
         private static void addPassword(final JsonGenerator gen, final String hiddenPasswordKey, final String password,
-            final String passwordId) throws IOException {
+            final String passwordId, final NodeID nodeID) throws IOException {
             if (password == null || password.isEmpty()) {
                 gen.writeBooleanField(hiddenPasswordKey, false);
             } else {
-                PasswordHolder.addPassword(passwordId, password);
+                PasswordHolder.addPassword(nodeID, passwordId, password);
                 gen.writeBooleanField(hiddenPasswordKey, true);
             }
         }
@@ -228,20 +235,22 @@ public final class Credentials {
                 password = credentials.getPassword();
                 secondFactor = credentials.getSecondAuthenticationFactor().orElse("");
             } else {
-                password = getPassword(node, IS_HIDDEN_PASSWORD_KEY, PASSWORD_KEY, fieldId + "." + PASSWORD_KEY);
+                final var nodeID = CredentialsSerializer.getNodeId();
+                password =
+                    getPassword(node, IS_HIDDEN_PASSWORD_KEY, PASSWORD_KEY, fieldId + "." + PASSWORD_KEY, nodeID);
                 secondFactor = getPassword(node, IS_HIDDEN_SECOND_FACTOR_KEY, SECOND_FACTOR_KEY,
-                    fieldId + "." + SECOND_FACTOR_KEY);
+                    fieldId + "." + SECOND_FACTOR_KEY, nodeID);
             }
             return new Credentials(username, password, secondFactor);
         }
 
         private static String getPassword(final JsonNode node, final String hiddenPasswordKey, final String passwordKey,
-            final String passwordId) {
+            final String passwordId, final NodeID nodeID) {
             final var isHiddenPassword = node.get(hiddenPasswordKey);
             if (isHiddenPassword == null || isHiddenPassword.isNull() || !isHiddenPassword.asBoolean()) {
                 return extractString(node, passwordKey);
             }
-            return Optional.ofNullable(PasswordHolder.get(passwordId)).orElse("");
+            return Optional.ofNullable(PasswordHolder.get(nodeID, passwordId)).orElse("");
         }
 
         private static String extractString(final JsonNode node, final String key) {

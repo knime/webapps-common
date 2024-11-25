@@ -60,6 +60,7 @@ import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
+import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeTimer;
 import org.knime.core.node.workflow.WorkflowManager;
@@ -111,9 +112,12 @@ final class ApplyData {
 
     void applyData(final String data) throws IOException {
         try {
+            NodeContext.pushContext(m_nc);
             applyDataOrThrow(data);
         } catch (InvalidSettingsException ex) {
             throw new IOException("Invalid node settings: " + ex.getMessage(), ex);
+        } finally {
+            NodeContext.removeLastContext();
         }
     }
 

@@ -51,7 +51,6 @@ package org.knime.core.webui.node.dialog.defaultdialog.setting.credentials;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -66,6 +65,7 @@ import org.junit.jupiter.api.Test;
 import org.knime.core.node.workflow.CredentialsProvider;
 import org.knime.core.node.workflow.ICredentials;
 import org.knime.core.node.workflow.NodeContainer;
+import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.node.workflow.NodeID;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
@@ -140,11 +140,11 @@ class CredentialsTest {
                 .containsEntry("isHiddenPassword", true) //
                 .containsEntry("isHiddenSecondFactor", true) //
                 .containsOnlyKeys("username", "isHiddenPassword", "isHiddenSecondFactor");
-            assertThat(
-                PasswordHolder.get(String.format("%s.credentials.password", CredentialsTestSettings.class.getName())))
+            assertThat(PasswordHolder.get(nodeContainer.get().getID(),
+                String.format("%s.credentials.password", CredentialsTestSettings.class.getName())))
                     .isEqualTo("password");
-            assertThat(PasswordHolder
-                .get(String.format("%s.credentials.secondFactor", CredentialsTestSettings.class.getName())))
+            assertThat(PasswordHolder.get(nodeContainer.get().getID(),
+                String.format("%s.credentials.secondFactor", CredentialsTestSettings.class.getName())))
                     .isEqualTo("second factor");
         }
 
@@ -160,9 +160,8 @@ class CredentialsTest {
                 .containsEntry("isHiddenPassword", false) //
                 .containsEntry("isHiddenSecondFactor", false) //
                 .containsOnlyKeys("username", "isHiddenPassword", "isHiddenSecondFactor");
-            assertThat(
-                PasswordHolder.get(String.format("%s.credentials.password", CredentialsTestSettings.class.getName())))
-                    .isNull();
+            assertThat(PasswordHolder.get(nodeContainer.get().getID(),
+                String.format("%s.credentials.password", CredentialsTestSettings.class.getName()))).isNull();
         }
 
         @Test
@@ -177,15 +176,15 @@ class CredentialsTest {
                 .containsEntry("isHiddenPassword", true) //
                 .containsEntry("isHiddenSecondFactor", false) //
                 .containsOnlyKeys("username", "isHiddenPassword", "isHiddenSecondFactor");
-            assertThat(
-                PasswordHolder.get(String.format("%s.credentials.password", CredentialsTestSettings.class.getName())))
+            assertThat(PasswordHolder.get(nodeContainer.get().getID(),
+                String.format("%s.credentials.password", CredentialsTestSettings.class.getName())))
                     .isEqualTo("password");
-            assertThat(PasswordHolder.get(String.format("%s.secondFactor", CredentialsTestSettings.class.getName())))
-                .isNull();
+            assertThat(PasswordHolder.get(nodeContainer.get().getID(),
+                String.format("%s.secondFactor", CredentialsTestSettings.class.getName()))).isNull();
         }
 
         @Test
-        void throwsIfMultipleNodeIdsUseTheSameCredentialsField() {
+        void testDoesNotThrowIfMultipleNodeIdsUseTheSameCredentialsField() {
             class CredentialsTestSettings {
                 Credentials credentials = new Credentials("username", "password");
             }
@@ -195,21 +194,29 @@ class CredentialsTest {
             final var secondNodeContainerMock = mock(NodeContainer.class);
             when(secondNodeContainerMock.getID()).thenReturn(new NodeID(getCurrentId() + 1));
             final var settings = new CredentialsTestSettings();
-            assertThrows(IllegalArgumentException.class, () -> serialize(settings, secondNodeContainerMock));
+            assertDoesNotThrow(() -> serialize(settings, secondNodeContainerMock));
         }
 
         private JsonNode serialize(final Object settings) {
-
             return serialize(settings, nodeContainer.get());
         }
 
         private JsonNode serialize(final Object settings, final NodeContainer nc) {
-
-            PasswordHolder.activate(nc.getID());
+            NodeContext.pushContext(nc);
             try {
                 return objectMapper.valueToTree(settings);
             } finally {
-                PasswordHolder.deactivate();
+                NodeContext.removeLastContext();
+            }
+        }
+
+        private <T> T deserialize(final JsonNode result, final Class<T> testSettingsClass)
+            throws JsonProcessingException {
+            NodeContext.pushContext(nodeContainer.get());
+            try {
+                return objectMapper.treeToValue(result, testSettingsClass);
+            } finally {
+                NodeContext.removeLastContext();
             }
         }
 
@@ -220,7 +227,7 @@ class CredentialsTest {
         @Test
         void testDeserialize() throws JsonProcessingException, IllegalArgumentException {
             final var result = serialize(new DeserializeTestSettings());
-            final DeserializeTestSettings settings = objectMapper.treeToValue(result, DeserializeTestSettings.class);
+            final DeserializeTestSettings settings = deserialize(result, DeserializeTestSettings.class);
             assertThat(settings.credentials.getPassword()).isEqualTo("password");
             assertThat(settings.credentials.getUsername()).isEqualTo("username");
             assertThat(settings.credentials.getSecondFactor()).isEqualTo("second factor");
@@ -234,7 +241,7 @@ class CredentialsTest {
         void testDeserializeEmptyPassword() throws JsonProcessingException, IllegalArgumentException {
             final var result = serialize(new DeserializeEmptyPasswordTestSettings());
             final DeserializeEmptyPasswordTestSettings settings =
-                objectMapper.treeToValue(result, DeserializeEmptyPasswordTestSettings.class);
+                deserialize(result, DeserializeEmptyPasswordTestSettings.class);
             assertThat(settings.credentials.getPassword()).isEmpty();
             assertThat(settings.credentials.getUsername()).isEqualTo("username");
         }
@@ -247,7 +254,7 @@ class CredentialsTest {
         void testDeserializeEmptySecondFactor() throws JsonProcessingException, IllegalArgumentException {
             final var result = serialize(new DeserializeEmptySecondFactorTestSettings());
             final DeserializeEmptySecondFactorTestSettings settings =
-                objectMapper.treeToValue(result, DeserializeEmptySecondFactorTestSettings.class);
+                deserialize(result, DeserializeEmptySecondFactorTestSettings.class);
             assertThat(settings.credentials.getPassword()).isEqualTo("password");
             assertThat(settings.credentials.getUsername()).isEqualTo("username");
             assertThat(settings.credentials.getSecondFactor()).isEmpty();
@@ -261,7 +268,7 @@ class CredentialsTest {
             final var newPassword = "newPassword";
             credentialsJson.put("password", newPassword);
             final DeserializeEmptyPasswordTestSettings settings =
-                objectMapper.treeToValue(result, DeserializeEmptyPasswordTestSettings.class);
+                deserialize(result, DeserializeEmptyPasswordTestSettings.class);
             assertThat(settings.credentials.getPassword()).isEqualTo(newPassword);
             assertThat(settings.credentials.getUsername()).isEqualTo("username");
         }
@@ -274,7 +281,7 @@ class CredentialsTest {
             final var newSecondFactor = "newSecondFactor";
             credentialsJson.put("secondFactor", newSecondFactor);
             final DeserializeEmptySecondFactorTestSettings settings =
-                objectMapper.treeToValue(result, DeserializeEmptySecondFactorTestSettings.class);
+                deserialize(result, DeserializeEmptySecondFactorTestSettings.class);
             assertThat(settings.credentials.getPassword()).isEqualTo("password");
             assertThat(settings.credentials.getUsername()).isEqualTo("username");
             assertThat(settings.credentials.getSecondFactor()).isEqualTo(newSecondFactor);
@@ -290,7 +297,7 @@ class CredentialsTest {
             credentialsJson.put("password", newPassword);
             final var newSecondFactor = "";
             credentialsJson.put("secondFactor", newSecondFactor);
-            final DeserializeTestSettings settings = objectMapper.treeToValue(result, DeserializeTestSettings.class);
+            final DeserializeTestSettings settings = deserialize(result, DeserializeTestSettings.class);
             assertThat(settings.credentials.getPassword()).isEqualTo(newPassword);
             assertThat(settings.credentials.getSecondFactor()).isEqualTo(newSecondFactor);
         }
@@ -315,7 +322,7 @@ class CredentialsTest {
             PasswordHolder.setCredentialsProvider(credentialsProvider);
             try {
                 final DeserializeFlowVariableTestSettings settings =
-                    objectMapper.treeToValue(result, DeserializeFlowVariableTestSettings.class);
+                    deserialize(result, DeserializeFlowVariableTestSettings.class);
                 verify(credentialsProvider).get(flowVarName);
                 assertThat(settings.credentials.getPassword()).isEqualTo(flowVarPassword);
                 assertThat(settings.credentials.getSecondFactor()).isEqualTo(flowVarSecondFactor);
@@ -360,7 +367,7 @@ class CredentialsTest {
             credentialsJson.put("flowVariableName", "myFlowVariable");
 
             final DeserializeFlowVariableTestSettings settings =
-                objectMapper.treeToValue(result, DeserializeFlowVariableTestSettings.class);
+                deserialize(result, DeserializeFlowVariableTestSettings.class);
             assertThat(settings.credentials.getPassword()).isEmpty();
             assertThat(settings.credentials.getSecondFactor()).isEmpty();
         }

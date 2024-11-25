@@ -61,7 +61,6 @@ import org.knime.core.node.NodeSettings;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeContext;
-import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.PasswordHolder;
 import org.knime.core.webui.node.dialog.internal.VariableSettings;
 
 /**
@@ -91,12 +90,10 @@ final class InitialData {
         var specs = getInputSpecsExcludingVariablePort(m_nc);
 
         NodeContext.pushContext(m_nc);
-        PasswordHolder.activate(m_nc.getID());
         try {
             Map<SettingsType, NodeAndVariableSettingsRO> settings = getSettingsOverwrittenByVariables();
             return m_nodeSettingsService.fromNodeSettings(settings, specs);
         } finally {
-            PasswordHolder.deactivate();
             NodeContext.removeLastContext();
         }
     }

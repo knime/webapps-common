@@ -66,8 +66,6 @@ import org.knime.core.node.workflow.NodeID;
  */
 public final class PasswordHolder {
 
-    private static final ThreadLocal<NodeID> currentNodeID = new ThreadLocal<NodeID>();
-
     private static final ThreadLocal<CredentialsProvider> credentialsProvider = new ThreadLocal<CredentialsProvider>();
 
     private PasswordHolder() {
@@ -79,25 +77,31 @@ public final class PasswordHolder {
     private static final Map<NodeID, Set<String>> PASSWORD_IDS_PER_NODE_ID = new HashMap<>();
 
     /**
-     * Call this method in order to allow writing passwords to the password holder. The passwords are associated with
-     * the given nodeID to be removed later using {@link #removeAllPasswordsOfDialog}.
-     *
-     * @param nodeID
+     * This method throws an exception if {@link #activate} has not been called.
      */
-    public static final void activate(final NodeID nodeID) {
-        final var current = currentNodeID.get();
-        if (current != null && !nodeID.equals(current)) {
-            throw new IllegalStateException(
-                "PasswordHolder is activated for two different nodes within the same thread.");
-        }
-        currentNodeID.set(nodeID);
+    static synchronized void addPassword(final NodeID nodeID, final String passwordId, final String password) {
+        final var combinedId = combineNodeIdAndPasswordId(nodeID, passwordId);
+        accociatePasswordIdToNode(combinedId, nodeID);
+        PASSWORDS.put(combinedId, password);
     }
 
-    /**
-     * Deactivate writing new passwords to the password holder
-     */
-    public static final void deactivate() {
-        currentNodeID.remove();
+    private static String combineNodeIdAndPasswordId(final NodeID nodeId, final String passwordId) {
+        return String.format("%s:%s", nodeId, passwordId);
+    }
+
+    static synchronized String get(final NodeID nodeID, final String passwordId) {
+        final var combinedId = combineNodeIdAndPasswordId(nodeID, passwordId);
+        return PASSWORDS.get(combinedId);
+    }
+
+    private static void accociatePasswordIdToNode(final String passwordId, final NodeID nodeId) {
+        PASSWORD_IDS_PER_NODE_ID.compute(nodeId, (k, v) -> {
+            if (v == null) {
+                v = new HashSet<>();
+            }
+            v.add(passwordId);
+            return v;
+        });
     }
 
     /**
@@ -113,62 +117,8 @@ public final class PasswordHolder {
         passwordIds.stream().forEach(PasswordHolder::remove);
     }
 
-    /**
-     * This method throws an exception if {@link #activate} has not been called.
-     */
-    static synchronized void addPassword(final String passwordId, final String password) {
-        final var nodeID = currentNodeID.get();
-        if (nodeID == null) {
-            return;
-        }
-        validateAgainstKnownLimitations(passwordId, password, nodeID);
-        accociatePasswordIdToNode(passwordId, nodeID);
-        PASSWORDS.put(passwordId, password);
-    }
-
-    /**
-     * Currently, it is a known limitation, that we cannot associate the nodeId with the saved passwords, as this is not
-     * known during deserialization. Thus, only one active node dialog is allowed to hold passwords with the same
-     * passwordId at a time. TODO: UIEXT-1375 resolve this limitation
-     *
-     * @param passwordId associated to the field. It entails only the name of the field and the full name of its
-     *            containing class.
-     * @param password
-     * @param nodeId
-     */
-    private static void validateAgainstKnownLimitations(final String passwordId, final String password,
-        final NodeID nodeId) {
-        if (isAlreadySet(passwordId) && isNotAlreadySetForNode(passwordId, nodeId)) {
-            throw new IllegalStateException(
-                "Multiple active node dialogs containing credentials at the same time are not supported yet.");
-        }
-    }
-
-    private static boolean isAlreadySet(final String passwordId) {
-        return get(passwordId) != null;
-    }
-
-    private static boolean isNotAlreadySetForNode(final String passwordId, final NodeID nodeId) {
-        final var alreadySetIdsForNode = PASSWORD_IDS_PER_NODE_ID.get(nodeId);
-        return alreadySetIdsForNode == null || !alreadySetIdsForNode.contains(passwordId);
-    }
-
-    static synchronized String get(final String passwordId) {
-        return PASSWORDS.get(passwordId);
-    }
-
-    private static void remove(final String passwordId) {
-        PASSWORDS.remove(passwordId);
-    }
-
-    private static void accociatePasswordIdToNode(final String passwordId, final NodeID nodeId) {
-        PASSWORD_IDS_PER_NODE_ID.compute(nodeId, (k, v) -> {
-            if (v == null) {
-                v = new HashSet<>();
-            }
-            v.add(passwordId);
-            return v;
-        });
+    private static void remove(final String combinedId) {
+        PASSWORDS.remove(combinedId);
     }
 
     /**
