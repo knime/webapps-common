@@ -147,15 +147,7 @@ public class TableViewViewSettings implements DefaultNodeSettings {
     @Layout(ViewSection.class)
     public boolean m_showTableSize = true;
 
-    /**
-     * Whether to show the number columns above the table or or not
-     */
-    @Widget(title = "Show column count",
-        description = "Whether to show the number columns above the table or or not.")
-    @Persist(optional = true)
-    @Effect(predicate = EnablePagination.class, type = EffectType.HIDE)
-    @Layout(ViewSection.class)
-    public boolean m_showColumnCount = true;
+
 
     /**
      * Whether to show the data type of every column in the header or not
@@ -411,6 +403,12 @@ public class TableViewViewSettings implements DefaultNodeSettings {
      */
     @Persist(hidden = true, optional = true)
     public String m_rowLabel = "Rows";
+
+    /**
+     * Whether to show the number columns above the table or or not
+     */
+    @Persist(hidden = true, optional = true)
+    public boolean m_showColumnCount = true;
 
     /**
      * Create a new {@link TableViewViewSettings} with default values

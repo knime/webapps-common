@@ -23,7 +23,6 @@
       "showRowKeys" : true,
       "title" : "Table View",
       "showTableSize" : true,
-      "showColumnCount" : true,
       "showColumnDataType" : true,
       "enablePagination" : false,
       "pageSize" : 10,
@@ -41,7 +40,8 @@
       "showOnlySelectedRowsConfigurable" : true,
       "skipRemainingColumns" : false,
       "enableDataValueViews" : false,
-      "rowLabel" : "Rows"
+      "rowLabel" : "Rows",
+      "showColumnCount" : true
     }
   },
   "schema" : {
@@ -282,8 +282,6 @@
           },
           "showColumnCount" : {
             "type" : "boolean",
-            "title" : "Show column count",
-            "description" : "Whether to show the number columns above the table or or not.",
             "default" : true
           },
           "showColumnDataType" : {
@@ -401,21 +399,6 @@
       }, {
         "type" : "Control",
         "scope" : "#/properties/view/properties/showTableSize",
-        "options" : {
-          "format" : "checkbox"
-        },
-        "rule" : {
-          "effect" : "HIDE",
-          "condition" : {
-            "scope" : "#/properties/view/properties/enablePagination",
-            "schema" : {
-              "const" : true
-            }
-          }
-        }
-      }, {
-        "type" : "Control",
-        "scope" : "#/properties/view/properties/showColumnCount",
         "options" : {
           "format" : "checkbox"
         },
@@ -591,7 +574,6 @@
           "showRowKeys" : { },
           "title" : { },
           "showTableSize" : { },
-          "showColumnCount" : { },
           "showColumnDataType" : { },
           "enablePagination" : { },
           "pageSize" : { },
@@ -648,6 +630,9 @@
             "configPaths" : [ ]
           },
           "rowLabel" : {
+            "configPaths" : [ ]
+          },
+          "showColumnCount" : {
             "configPaths" : [ ]
           }
         }
