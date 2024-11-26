@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.9.3
+
+### Patch Changes
+
+- 14cc92c: remove clickoutside to dismiss behavior for hints
+
 ## 1.9.2
 
 ### Patch Changes
