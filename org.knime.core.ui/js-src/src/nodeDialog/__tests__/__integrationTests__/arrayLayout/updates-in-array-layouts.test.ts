@@ -304,7 +304,19 @@ describe("updates in array layouts", () => {
     const myChoicesProvider = "myChoicesProvider";
     makeTextDropdownWithChoicesProvider(myChoicesProvider);
 
-    return mockRPCResultToUpdateElementDropdownChoices(myChoicesProvider);
+    const { getNthDropdownChoices, possibleValues } =
+      mockRPCResultToUpdateElementDropdownChoices(myChoicesProvider);
+    initialDataJson.initialUpdates.push({
+      id: myChoicesProvider,
+      values: [
+        {
+          indices: [],
+          value: possibleValues.value,
+        },
+      ],
+      scopes: null,
+    });
+    return { getNthDropdownChoices, possibleValues };
   };
 
   describe("ui triggers and ui states", () => {
@@ -332,13 +344,19 @@ describe("updates in array layouts", () => {
           triggerNthButton,
         } = await prepareDropdownUpdatedByButton();
 
+        const initialPossibleValues = possibleValues.value;
+        const updatedPossibleValues = [{ id: "James", text: "Bond" }];
+        possibleValues.value = updatedPossibleValues;
+
         await triggerNthButton(wrapper, index);
 
         expect(getNthDropdownChoices(wrapper, index)).toStrictEqual(
-          possibleValues.value,
+          updatedPossibleValues,
         );
         otherIndices.forEach((otherIndex) =>
-          expect(getNthDropdownChoices(wrapper, otherIndex)).toStrictEqual([]),
+          expect(getNthDropdownChoices(wrapper, otherIndex)).toStrictEqual(
+            initialPossibleValues,
+          ),
         );
       },
     );
