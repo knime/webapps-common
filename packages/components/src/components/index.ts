@@ -27,6 +27,7 @@ import Modal from "./Modal/Modal.vue";
 import OpenSourceCredits from "./OpenSourceCredits/OpenSourceCredits.vue";
 import Pill, { type PillVariant } from "./Pill/Pill.vue";
 import SideDrawer from "./SideDrawer/SideDrawer.vue";
+import SkeletonItem from "./SkeletonItem/SkeletonItem.vue";
 import StyledListItem from "./StyleListItem/StyledListItem.vue";
 import SubMenu from "./SubMenu/SubMenu.vue";
 import svgWithTitle from "./SvgWithTitle/svgWithTitle";
@@ -91,6 +92,7 @@ export {
   PlusButton,
   PortIcon,
   SideDrawer,
+  SkeletonItem,
   SplitButton,
   StyledListItem,
   SubMenu,
