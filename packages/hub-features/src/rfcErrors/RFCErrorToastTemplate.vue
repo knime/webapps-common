@@ -6,8 +6,7 @@ import { Button } from "@knime/components";
 import CheckIcon from "@knime/styles/img/icons/check.svg";
 import CopyIcon from "@knime/styles/img/icons/copy.svg";
 
-// see https://www.rfc-editor.org/rfc/rfc9457 for api error specification
-interface ApiErrorTemplateProps {
+interface Props {
   headline: string; // toast headline, will not be displayed here but needed when copying to clipboard
   title: string;
   details?: string[];
@@ -17,7 +16,7 @@ interface ApiErrorTemplateProps {
   errorId?: string;
 }
 
-const props = defineProps<ApiErrorTemplateProps>();
+const props = defineProps<Props>();
 const emits = defineEmits(["showMore"]);
 
 const { copy, copied } = useClipboard({
@@ -54,6 +53,7 @@ const errorForClipboard = computed(() => {
       details = props.details[0];
     }
   }
+
   let errorText = `${props.headline}\n\n`;
   errorText += `${props.title}\n\n`;
   errorText += details ? `Details: ${details}\n\n` : "";
@@ -151,9 +151,7 @@ const onShowDetailsClicked = () => {
   }
 }
 
-.copy-icon {
-  &svg {
-    width: 12px;
-  }
+svg.copy-icon {
+  width: 12px;
 }
 </style>

@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { ref } from "vue";
 import { mount } from "@vue/test-utils";
 
-import ApiErrorTemplate from "../ApiErrorTemplate.vue";
+import RFCErrorToastTemplate from "../RFCErrorToastTemplate.vue";
 
 const { useClipboardMock } = vi.hoisted(() => ({
   useClipboardMock: vi.fn(),
@@ -12,7 +12,7 @@ vi.mock("@vueuse/core", () => ({
   useClipboard: useClipboardMock,
 }));
 
-describe("ApiErrorTemplate", () => {
+describe("RFCErrorToastTemplate.vue", () => {
   const defaultProps = {
     headline: "Toast headline",
     title: "There was an error",
@@ -30,7 +30,7 @@ describe("ApiErrorTemplate", () => {
       copy: copyMock,
       copied: copiedMock,
     });
-    const wrapper = mount(ApiErrorTemplate, {
+    const wrapper = mount(RFCErrorToastTemplate, {
       props,
     });
     return {
