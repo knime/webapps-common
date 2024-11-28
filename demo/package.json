@@ -21,6 +21,7 @@
   "dependencies": {
     "@fontsource/roboto": "^5.0.13",
     "@fontsource/roboto-mono": "^5.0.18",
+    "@knime/hub-features": "workspace:*",
     "@knime/components": "workspace:*",
     "@knime/licenses": "workspace:*",
     "@knime/rich-text-editor": "workspace:*",

@@ -1,7 +1,6 @@
-import { vi } from "vitest";
+import { type Mock, vi } from "vitest";
 import { config } from "@vue/test-utils";
 import consola from "consola";
-import createFetchMock from "vitest-fetch-mock";
 
 // @ts-ignore
 window.global.consola = consola;
@@ -9,7 +8,20 @@ window.global.consola = consola;
 // see https://test-utils.vuejs.org/migration/#shallowmount-and-renderstubdefaultslot
 config.global.renderStubDefaultSlot = true;
 
-const fetchMocker = createFetchMock(vi);
+declare global {
+  // eslint-disable-next-line no-var
+  var $ofetchMock: Mock;
+  namespace NodeJS {
+    interface Global {
+      $ofetchMock: Mock;
+    }
+  }
+}
 
-// sets globalThis.fetch and globalThis.fetchMock to our mocked version
-fetchMocker.enableMocks();
+vi.mock("./src/common/ofetchClient", () => {
+  globalThis.$ofetchMock = vi.fn(() => Promise.resolve({}));
+
+  return {
+    $ofetch: globalThis.$ofetchMock,
+  };
+});

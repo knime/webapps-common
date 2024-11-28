@@ -13,11 +13,11 @@ type Props = {
    */
   height?: `${number}px` | `${number}%`;
   /**
-   * First color of the animation gradiend. Defaults to GrayUltraLight
+   * First color of the animation gradient. Defaults to GrayUltraLight
    */
   color1?: string;
   /**
-   * Second color of the animation gradiend. Defaults to Porcelain
+   * Second color of the animation gradient. Defaults to Porcelain
    */
   color2?: string;
   /**

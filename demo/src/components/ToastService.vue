@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Button } from "@knime/components";
 import { type Toast, useToasts } from "@knime/components";
+import { rfcErrors } from "@knime/hub-features";
 import Interactive from "@knime/styles/img/icons/interactive.svg";
 
 import CodeExample from "./demo/CodeExample.vue";
@@ -326,6 +327,24 @@ const callbackToast: Toast = {
     },
   ],
 };
+
+const rfcError = new rfcErrors.RFCError({
+  title:
+    "Could not load the workflow from the deployment. Check if the workflow version for this deployment is still available.",
+  details: [
+    'Could not load workflow "/Users/some team/some space/workflowname" for deployment "cdf0fc54a-fasd123123-asd1234123-adfa123"',
+    'Something else happend with workflow "/Users/some team/some space/workflowname" for deployment "cdf0fc54a-fasd123123-asd1234123-adfa123"',
+  ],
+  status: 123,
+  date: new Date(),
+  requestId: "134123212413412321241341",
+  errorId: "abcdefg",
+});
+
+const apiErrorToast = rfcErrors.toToast({
+  headline: "Deployment could not be created",
+  rfcError,
+});
 </script>
 
 <template>
@@ -437,6 +456,9 @@ const callbackToast: Toast = {
               >
               <Button with-border compact @click="show(callbackToast)"
                 >Toast with a callback</Button
+              >
+              <Button with-border compact @click="show(apiErrorToast)"
+                >Toast with an api error</Button
               >
             </div>
           </div>

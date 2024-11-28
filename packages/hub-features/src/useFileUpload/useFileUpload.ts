@@ -1,7 +1,11 @@
 import { computed, ref } from "vue";
+import { FetchError } from "ofetch";
 
 import { useUploadManager } from "@knime/components";
 import { getFileMimeType, promise } from "@knime/utils";
+
+import { $ofetch } from "../common/ofetchClient";
+import { rfcErrors } from "../rfcErrors";
 
 const DEFAULT_MAX_UPLOAD_QUEUE_SIZE = 10;
 
@@ -35,8 +39,8 @@ type UseFileUploadOptions = {
  *  ```
  *   {
  *      "items": {
- *          "my-file.txt": { itemContentType: "text/plain" },
- *          "folder/my-file.zip": { itemContentType: "application/zip" },
+ *          "my-file.txt": { itemContentType: "text/plain", itemContentSize: 5000 },
+ *          "folder/my-file.zip": { itemContentType: "application/zip", itemContentSize: 5000 },
  *      }
  *   }
  *  ```
@@ -93,7 +97,6 @@ type UseFileUploadOptions = {
  * </template>
  * ```
  */
-
 export const useFileUpload = (options: UseFileUploadOptions = {}) => {
   const baseUrl = computed(() => options.apiBaseUrl ?? DEFAULT_API_BASE_URL);
 
@@ -110,7 +113,10 @@ export const useFileUpload = (options: UseFileUploadOptions = {}) => {
       Object.fromEntries(
         Object.entries(fileDictionary).map(([name, file]) => [
           name,
-          { itemContentType: getFileMimeType(file) },
+          {
+            itemContentType: getFileMimeType(file),
+            itemContentSize: file.size,
+          },
         ]),
       );
 
@@ -118,58 +124,45 @@ export const useFileUpload = (options: UseFileUploadOptions = {}) => {
       items: Record<string, { uploadId: string }>;
     };
 
-    return fetch(`${baseUrl.value}/repository/${parentId}/manifest`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json;charset=UTF8" },
-      body: JSON.stringify({ items }),
-    })
-      .then((response) => response.json() as Promise<PrepareUploadResponse>)
-      .then(({ items }) => {
-        return Object.keys(items).map((name) => {
-          const { uploadId } = items[name];
-          const file = fileDictionary[name];
-          return { uploadId, file };
-        });
+    return $ofetch<PrepareUploadResponse>(
+      `${baseUrl.value}/repository/${parentId}/manifest`,
+      { method: "POST", body: { items } },
+    ).then(({ items }) => {
+      return Object.keys(items).map((name) => {
+        const { uploadId } = items[name];
+        const file = fileDictionary[name];
+        return { uploadId, file };
       });
+    });
   };
 
-  const resolveFilePartUploadURL = async (
-    uploadId: string,
-    partNumber: number,
-  ) => {
+  const resolveFilePartUploadURL = (uploadId: string, partNumber: number) => {
     type UploadURLResponse = {
       method: string;
       url: string;
       header: { Host: string };
     };
 
-    const response = await fetch(
+    return $ofetch<UploadURLResponse>(
       `${baseUrl.value}/uploads/${uploadId}/parts/?partNumber=${partNumber}`,
       { method: "POST" },
     );
-
-    return response.json() as Promise<UploadURLResponse>;
   };
 
-  const completeUpload = async (
+  const completeUpload = (
     uploadId: string,
     partIds: Record<number, string>,
   ) => {
-    const response = await fetch(`${baseUrl.value}/uploads/${uploadId}`, {
+    return $ofetch(`${baseUrl.value}/uploads/${uploadId}`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(partIds),
+      body: partIds,
     });
-
-    return response.json();
   };
 
-  const cancelUpload = async (uploadId: string) => {
-    const response = await fetch(`${baseUrl.value}/uploads/${uploadId}`, {
+  const cancelUpload = (uploadId: string) => {
+    return $ofetch(`${baseUrl.value}/uploads/${uploadId}`, {
       method: "DELETE",
     });
-
-    return response.json();
   };
 
   const useUploadManagerResult = useUploadManager({
@@ -205,35 +198,44 @@ export const useFileUpload = (options: UseFileUploadOptions = {}) => {
     return files.slice(0, maxUploadQueueSize - totalPendingUploads.value);
   };
 
-  const isPreparingUpload = ref(false);
+  const prepareQueueSize = ref(0);
 
   return {
     ...useUploadManagerResult,
 
-    isPreparingUpload: computed(() => isPreparingUpload.value),
+    isPreparingUpload: computed(() => prepareQueueSize.value > 0),
+    totalFilesBeingPrepared: computed(() => prepareQueueSize.value),
 
     start: async (parentId: string, files: File[]) => {
       try {
-        isPreparingUpload.value = true;
+        const enqueableFiles = getEnqueueableFiles(files);
 
-        // TODO: HUB-9102: improve error handling here. see ticket for details
+        if (enqueableFiles.length === 0) {
+          return;
+        }
+
+        prepareQueueSize.value += enqueableFiles.length;
+
         const uploadPayload = await promise.retryPromise(() =>
-          prepareUpload(parentId, getEnqueueableFiles(files)),
+          prepareUpload(parentId, enqueableFiles),
         );
 
-        isPreparingUpload.value = false;
+        prepareQueueSize.value -= enqueableFiles.length;
 
         useUploadManagerResult.start(parentId, uploadPayload);
       } catch (error) {
-        // TODO: HUB-8152 process max file size error
-        consola.error(error);
+        if (error instanceof FetchError) {
+          throw rfcErrors.tryParse(error);
+        }
+
+        throw error;
       }
     },
 
     cancel: (uploadId: string) => {
       useUploadManagerResult.cancel(uploadId);
       cancelUpload(uploadId).catch((error) => {
-        consola.error("There was a problem canceling the upload", { error });
+        consola.error("There was a problem cancelling the upload", { error });
       });
     },
   };

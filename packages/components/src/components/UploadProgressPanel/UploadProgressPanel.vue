@@ -3,19 +3,35 @@ import { computed, toRef, watch } from "vue";
 
 import CollapsiblePanel from "../CollapsiblePanel/CollapsiblePanel.vue";
 import ProgressList from "../Progress/ProgressList/ProgressList.vue";
+import SkeletonItem from "../SkeletonItem/SkeletonItem.vue";
 
 import UploadProgressPanelItem from "./UploadProgressPanelItem.vue";
 import type { UploadItem } from "./types";
 
 type Props = {
+  /**
+   * List of items that the upload is comprised of
+   */
   items: UploadItem[];
+  /**
+   * Whether each individual upload item can cancel the upload
+   */
   allowCancel?: boolean;
+  /**
+   * Whether items can be removed individually after they've completed (or failed)
+   * each upload
+   */
   allowRemove?: boolean;
+  /**
+   * Indicates the number of items to show as placeholder skeletons
+   */
+  placeholderItems?: number;
 };
 
 const props = withDefaults(defineProps<Props>(), {
   allowRemove: true,
   allowCancel: true,
+  placeholderItems: 0,
 });
 
 const emit = defineEmits<{
@@ -35,8 +51,10 @@ const title = computed(
   () => `Uploaded ${uploadedItems.value} of ${totalItems.value} file(s)`,
 );
 
-const hasSomeItemInProgress = computed(() =>
-  props.items.some(({ status }) => status === "inprogress"),
+const hasSomeItemInProgress = computed(
+  () =>
+    props.items.some(({ status }) => status === "inprogress") ||
+    props.placeholderItems > 0,
 );
 
 watch(toRef(props, "items"), (newItems, prevItems) => {
@@ -70,6 +88,13 @@ watch(toRef(props, "items"), (newItems, prevItems) => {
         </template>
       </UploadProgressPanelItem>
     </ProgressList>
+
+    <SkeletonItem
+      :loading="placeholderItems > 0"
+      height="59px"
+      :repeat="placeholderItems"
+      repeat-gap="1px"
+    />
   </CollapsiblePanel>
 </template>
 

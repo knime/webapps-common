@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { mount } from "@vue/test-utils";
 
 import CollapsiblePanel from "../../CollapsiblePanel/CollapsiblePanel.vue";
+import SkeletonItem from "../../SkeletonItem/SkeletonItem.vue";
 import UploadProgressPanel from "../UploadProgressPanel.vue";
 import UploadProgressPanelItem from "../UploadProgressPanelItem.vue";
 import type { UploadItem } from "../types";
@@ -35,9 +36,9 @@ describe("UploadProgressPanel.vue", () => {
     items: [item1, item2, item3],
   };
 
-  const doMount = () => {
+  const doMount = ({ props }: { props?: Partial<ComponentProps> } = {}) => {
     const wrapper = mount(UploadProgressPanel, {
-      props: { ...defaultProps },
+      props: { ...defaultProps, ...props },
     });
 
     return { wrapper };
@@ -99,5 +100,38 @@ describe("UploadProgressPanel.vue", () => {
 
     await wrapper.setProps({ items: [] });
     expect(wrapper.emitted("close")).toBeDefined();
+  });
+
+  it("should render placeholder items", async () => {
+    const { wrapper } = doMount({ props: { placeholderItems: 2 } });
+
+    expect(wrapper.findComponent(SkeletonItem).props("loading")).toBe(true);
+    expect(wrapper.findComponent(SkeletonItem).props("repeat")).toBe(2);
+
+    await wrapper.setProps({ placeholderItems: 0 });
+
+    expect(wrapper.findComponent(SkeletonItem).props("loading")).toBe(false);
+    expect(wrapper.findComponent(SkeletonItem).props("repeat")).toBe(0);
+  });
+
+  it("should determine when the panel is closeable", async () => {
+    const { wrapper } = doMount();
+
+    expect(wrapper.findComponent(CollapsiblePanel).props("closeable")).toBe(
+      false,
+    );
+
+    // just one completed item
+    await wrapper.setProps({ items: [item3] });
+
+    expect(wrapper.findComponent(CollapsiblePanel).props("closeable")).toBe(
+      true,
+    );
+
+    // add placeholders -> new items are possibly coming => can't close
+    await wrapper.setProps({ placeholderItems: 2 });
+    expect(wrapper.findComponent(CollapsiblePanel).props("closeable")).toBe(
+      false,
+    );
   });
 });

@@ -8,14 +8,18 @@ const loading = ref(true);
 
 <template>
   <section>
-    <p>
-      Skeleton loader component which can take varying sizes (width/height) to
-      match the needed use-case. It will <b>NOT</b> make assumptions about size,
-      so by default it will set width and height to 100% if not specified as
-      props. Has variants which can help you further match the element being
-      faked, but these only revolve around making the border-radius match, again
-      leaving the size up to you.
-    </p>
+    <div class="grid-container">
+      <div class="grid-item-12">
+        <p>
+          Skeleton loader component which can take varying sizes (width/height)
+          to match the needed use-case. It will <b>NOT</b> make assumptions
+          about size, so by default it will set width and height to 100% if not
+          specified as props. Has variants which can help you further match the
+          element being faked, but these only revolve around making the
+          border-radius match, again leaving the size up to you.
+        </p>
+      </div>
+    </div>
 
     <div class="grid-container">
       <div class="grid-item-4">
