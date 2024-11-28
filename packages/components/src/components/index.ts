@@ -16,7 +16,6 @@ import IdleReadyButton from "./IdleReadyButton/IdleReadyButton.vue";
 import InlineMessage, {
   type InlineMessageVariant,
 } from "./InlineMessage/InlineMessage.vue";
-import LegacyBrowserWarning from "./LegacyBrowserWarning/LegacyBrowserWarning.vue";
 import LinkList from "./LinkList/LinkList.vue";
 import LoadingIcon from "./LoadingIcon/LoadingIcon.vue";
 import LocalDateTime from "./LocalDateTime/LocalDateTime.vue";
@@ -75,7 +74,6 @@ export {
   FileSelector,
   FunctionButton,
   IdleReadyButton,
-  LegacyBrowserWarning,
   LinkList,
   LoadingIcon,
   LocalDateTime,
