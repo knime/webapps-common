@@ -1,5 +1,14 @@
 # @knime/hub-features
 
+## 1.0.16
+
+### Patch Changes
+
+- 5b0167e: - Add RFC error utils to handle API error responses
+  - Improve error handling for manifest upload request
+- Updated dependencies [5b0167e]
+  - @knime/components@1.11.0
+
 ## 1.0.15
 
 ### Patch Changes

@@ -1,5 +1,12 @@
 # @knime/components
 
+## 1.11.0
+
+### Minor Changes
+
+- 5b0167e: - Add SkeletonItem component.
+  - Remove ApiErrorToast template
+
 ## 1.10.0
 
 ### Minor Changes
