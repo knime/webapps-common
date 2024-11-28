@@ -72,21 +72,17 @@ const onServiceCreated = (service: {
 };
 
 const showMessageFromNodeInfo = (nodeInfo: ExtensionConfig["nodeInfo"]) => {
-  const alertMessage = nodeInfo?.nodeErrorMessage ?? nodeInfo?.nodeWarnMessage;
-
-  if (!alertMessage) {
-    return;
+  if (nodeInfo?.nodeErrorMessage) {
+    props.apiLayer.sendAlert({
+      message: nodeInfo.nodeErrorMessage,
+      type: AlertType.ERROR,
+    });
+  } else if (nodeInfo?.nodeWarnMessage) {
+    props.apiLayer.sendAlert({
+      warnings: [{ message: nodeInfo.nodeWarnMessage }],
+      type: AlertType.WARN,
+    });
   }
-
-  const isError = nodeInfo?.nodeErrorMessage;
-  const nodeId = props.extensionConfig.nodeId;
-
-  props.apiLayer.sendAlert({
-    message: alertMessage,
-    type: isError ? AlertType.ERROR : AlertType.WARN,
-    subtitle: "",
-    nodeId,
-  });
 };
 
 watch(toRef(props, "extensionConfig"), () => {

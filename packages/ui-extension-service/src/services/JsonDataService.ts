@@ -1,13 +1,11 @@
 import { DataServiceType } from "../types/DataServiceType";
 import { AlertType } from "../types/alert";
-import { createJsonRpcRequest } from "../utils";
+import { createJsonRpcRequest, initialDataResponseToAlert } from "../utils";
 
 import { AbstractService } from "./AbstractService";
+import type { InitialDataResponse } from "./types/initialDataTypes";
+import type { JSONRPCError, JSONRPCResponse } from "./types/jsonRPCTypes";
 import type { JsonDataServiceAPILayer } from "./types/serviceApiLayers";
-import { createAlert } from "./utils";
-
-const MAX_MESSAGE_LEN = 160;
-
 /**
  * A utility class to interact with JsonDataServices implemented by a UI Extension node.
  */
@@ -37,7 +35,7 @@ export class JsonDataService extends AbstractService<JsonDataServiceAPILayer> {
           typeof response === "string" && response !== ""
             ? JSON.parse(response)
             : response,
-        )
+        ) as Promise<{ result?: any }>
     );
   }
 
@@ -59,15 +57,19 @@ export class JsonDataService extends AbstractService<JsonDataServiceAPILayer> {
     if (typeof initialData === "string") {
       initialData = JSON.parse(initialData);
     }
-    const { result, warningMessages, userError, internalError } =
-      initialData || {};
-    if (userError || internalError) {
-      this.handleError(userError || internalError);
+    if (!initialData) {
+      // eslint-disable-next-line no-undefined
+      return undefined;
     }
-    if (warningMessages) {
-      this.handleWarnings(warningMessages);
+    initialData satisfies InitialDataResponse;
+    const error = initialDataResponseToAlert(initialData);
+    if (error) {
+      this.handleError(error);
     }
-    return Promise.resolve(result);
+    if (initialData.warningMessages) {
+      this.handleWarnings(initialData.warningMessages);
+    }
+    return initialData.result;
   }
 
   /**
@@ -89,18 +91,26 @@ export class JsonDataService extends AbstractService<JsonDataServiceAPILayer> {
         createJsonRpcRequest(params.method || "getData", params.options),
       ),
     );
-    let wrappedResult = response?.result || {};
-    if (typeof wrappedResult === "string") {
-      wrappedResult = JSON.parse(wrappedResult);
+    // https://www.jsonrpc.org/specification#response_object:~:text=method%27s%20expected%20parameters.-,5%20Response%20object,-When%20a%20rpc
+    if (!response?.result) {
+      // eslint-disable-next-line no-undefined
+      return undefined;
     }
-    const { error, warningMessages, result } = wrappedResult;
-    if (error) {
-      this.handleError({ ...(error.data || {}), ...error });
+    const jsonRPCResponse: JSONRPCResponse =
+      typeof response.result === "string"
+        ? JSON.parse(response.result)
+        : response.result;
+    if (jsonRPCResponse.error) {
+      this.handleError(jsonRPCResponse.error);
+      // eslint-disable-next-line no-undefined
+      return undefined;
+    } else {
+      const { result, warningMessages } = jsonRPCResponse;
+      if (warningMessages) {
+        this.handleWarnings(warningMessages);
+      }
+      return result;
     }
-    if (warningMessages) {
-      this.handleWarnings(warningMessages);
-    }
-    return Promise.resolve(result);
   }
 
   /**
@@ -117,74 +127,21 @@ export class JsonDataService extends AbstractService<JsonDataServiceAPILayer> {
     );
   }
 
-  private handleError(
-    error: {
-      details?: string;
-      stackTrace?: any;
-      typeName?: string;
-      message?: string;
-      code?: string | number;
-    } = {},
-  ) {
-    const {
-      details = "",
-      stackTrace = "",
-      typeName = "",
-      message = "",
-      code,
-    } = error;
-    let messageSubject = "";
-    let messageBody = "";
-    if (message) {
-      if (message.length <= MAX_MESSAGE_LEN) {
-        messageSubject = message;
-      } else {
-        messageBody = message;
-      }
+  private handleError(error: JSONRPCError) {
+    if (error.data) {
+      this.baseService.sendAlert({ type: AlertType.ERROR, ...error });
     }
-    if (typeName) {
-      if (messageSubject) {
-        messageBody = typeName;
-      } else {
-        messageSubject = typeName;
-      }
-    }
-    if (details) {
-      messageBody = messageBody ? `${messageBody}\n\n${details}` : details;
-    }
-    if (Array.isArray(stackTrace)) {
-      const formattedStack = stackTrace.join("\n\t");
-      messageBody = messageBody
-        ? `${messageBody}\n\n${formattedStack}`
-        : formattedStack;
-    }
-    messageBody = messageBody.trim();
-    this.baseService.sendAlert(
-      createAlert(this.baseService.getConfig(), {
-        subtitle: messageSubject || "Something went wrong",
-        message:
-          messageBody ||
-          "No further information available. Please check the workflow configuration.",
-        type: AlertType.ERROR,
-        code,
-      }),
-    );
+    this.baseService.sendAlert({
+      type: AlertType.ERROR,
+      originalCode: error.code,
+      message: error.message,
+    });
   }
 
-  private handleWarnings(warningMessages: [string]) {
-    let subtitle;
-    const message = warningMessages?.join("\n\n");
-    if (warningMessages?.length > 1) {
-      subtitle = `${warningMessages?.length} messages`;
-    } else if (message?.length > MAX_MESSAGE_LEN) {
-      subtitle = "Expand for details";
-    }
-    this.baseService.sendAlert(
-      createAlert(this.baseService.getConfig(), {
-        type: AlertType.WARN,
-        message,
-        subtitle,
-      }),
-    );
+  private handleWarnings(warningMessages: string[]) {
+    this.baseService.sendAlert({
+      type: AlertType.WARN,
+      warnings: warningMessages.map((message) => ({ message })),
+    });
   }
 }

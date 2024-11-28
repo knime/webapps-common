@@ -1,21 +1,33 @@
-import type { CreateAlertParams } from "../types/alert";
+import { type AlertParams, AlertType } from "../types/alert";
 
 import { AbstractService } from "./AbstractService";
+import { USER_ERROR_CODE } from "./types/jsonRPCTypes";
 import type { AlertingServiceAPILayer } from "./types/serviceApiLayers";
-import { createAlert } from "./utils";
 
 /**
  * A service that can be used to send warnings or errors to the embedder.
  */
 export class AlertingService extends AbstractService<AlertingServiceAPILayer> {
-  sendAlert(params: CreateAlertParams, isDialog = false) {
-    const alert = createAlert(this.baseService.getConfig(), params);
-    if (isDialog) {
-      /** In order to circumvent the Node: MISSING header in the AlertGlobal
-       * component in the pagebuilder
-       */
-      alert.nodeInfo.nodeName = " ";
+  sendAlert(params: AlertParams) {
+    if (params.type === AlertType.WARN) {
+      this.baseService.sendAlert({
+        type: params.type,
+        warnings: [
+          {
+            message: params.message,
+            details: params.details,
+          },
+        ],
+      });
+    } else {
+      this.baseService.sendAlert({
+        code: USER_ERROR_CODE,
+        type: params.type,
+        message: params.message,
+        data: {
+          details: params.details,
+        },
+      });
     }
-    this.baseService.sendAlert(alert);
   }
 }

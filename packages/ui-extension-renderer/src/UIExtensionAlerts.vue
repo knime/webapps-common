@@ -1,34 +1,39 @@
 <script setup lang="ts">
-import type { Alert } from "@knime/ui-extension-service";
+import { computed } from "vue";
+
+import { type Alert, AlertType } from "@knime/ui-extension-service";
 
 import UIExtensionErrorOverlay from "./UIExtensionErrorOverlay.vue";
 import UIExtensionWarningButton from "./UIExtensionWarningButton.vue";
 
 type Props = {
-  alert?: Alert | null;
+  alert: Alert | null;
 };
-
-withDefaults(defineProps<Props>(), {
-  alert: null,
-});
+const props = defineProps<Props>();
 
 const emit = defineEmits<{
-  display: [];
+  display: [Alert];
 }>();
+
+const warningAlert = computed(() =>
+  props.alert?.type === AlertType.WARN ? props.alert : null,
+);
+const errorAlert = computed(() =>
+  props.alert?.type === AlertType.ERROR ? props.alert : null,
+);
 </script>
 
 <template>
   <UIExtensionErrorOverlay
-    :alert="alert"
+    :alert="errorAlert"
     class="error"
     v-bind="$attrs"
-    @display="emit('display')"
+    @display="emit('display', $event)"
   />
-
   <UIExtensionWarningButton
-    :alert="alert"
+    :alert="warningAlert"
     class="warning"
     v-bind="$attrs"
-    @display="emit('display')"
+    @display="emit('display', $event)"
   />
 </template>

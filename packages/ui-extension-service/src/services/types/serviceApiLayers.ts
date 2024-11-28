@@ -1,5 +1,4 @@
 import {
-  type AlertConfig,
   ExtensionTypes,
   type Identifiers,
   type UIExtensionServiceAPILayer,
@@ -10,11 +9,9 @@ import type { RenderingConfig } from "../../types/RenderingConfig";
 export type AlertingServiceAPILayer = Pick<
   UIExtensionServiceAPILayer,
   "sendAlert"
-> & {
-  getConfig: () => AlertConfig;
-};
+>;
 
-type ColorServiceExtensionConfig = AlertConfig & {
+type ColorServiceExtensionConfig = {
   colorModels?: Record<string, ColorModel>;
   columnNamesColorModel?: ColorModel;
 };
@@ -48,11 +45,10 @@ export type ImageGenerationServiceAPILayer = Pick<
   "imageGenerated"
 > & { getConfig: () => ImageGenerationServiceExtensionConfig };
 
-type JsonDataServiceExtensionConfig = AlertConfig &
-  Identifiers & {
-    extensionType: ExtensionTypes;
-    initialData?: any;
-  };
+type JsonDataServiceExtensionConfig = Identifiers & {
+  extensionType: ExtensionTypes;
+  initialData?: any;
+};
 
 export type JsonDataServiceAPILayer = Pick<
   UIExtensionServiceAPILayer,

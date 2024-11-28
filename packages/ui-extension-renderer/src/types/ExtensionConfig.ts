@@ -1,5 +1,6 @@
 import { type UIExtensionServiceConfig } from "@knime/ui-extension-service";
 
+import type { NodeInfo } from "./NodeInfo";
 import { type ResourceInfo } from "./ResourceInfo";
 
 /**
@@ -9,4 +10,5 @@ import { type ResourceInfo } from "./ResourceInfo";
  */
 export type ExtensionConfig = UIExtensionServiceConfig & {
   resourceInfo: ResourceInfo;
+  nodeInfo?: NodeInfo;
 };

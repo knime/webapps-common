@@ -2,7 +2,7 @@ import type { ColorModel } from "./ColorModel";
 import { DataServiceType } from "./DataServiceType";
 import { ExtensionTypes } from "./ExtensionTypes";
 import type { RenderingConfig } from "./RenderingConfig";
-import type { Alert, AlertConfig } from "./alert";
+import type { Alert } from "./alert";
 import { UIExtensionPushEvents } from "./pushEvents";
 
 export type Identifiers = {
@@ -23,46 +23,45 @@ export type Identifiers = {
 /**
  * The configuration of the client-side UIExtension implementation
  */
-export type UIExtensionServiceConfig = AlertConfig &
-  Identifiers & {
-    /**
-     * the type of the extension (effects the api behavior).
-     */
-    extensionType: ExtensionTypes;
-    /**
-     * optional initial data to provide directly to the UI Extension.
-     */
-    initialData?: any;
-    /**
-     * optional initial selection to provide directly to the UI Extension.
-     */
-    initialSelection?: any;
-    /**
-     * optional initial state supplying the UI Extension with the shared state of
-     * already existing other UI Extensions.
-     */
-    initialSharedData?: any;
-    /**
-     * rendering config to determine in which context the ui extension is rendered
-     */
-    renderingConfig?: RenderingConfig;
-    hasNodeView: boolean;
-    writeProtected?: boolean;
-    /**
-     * optional color model per column used to map data cell values
-     * (numeric xor nominal) of a column to hexadecimal color codes
-     */
-    colorModels?: Record<string, ColorModel>;
-    /**
-     * optional color model used to map column names to hexadecimal color
-     * codes
-     */
-    columnNamesColorModel?: ColorModel;
-    /**
-     * whether the ui-extension (dialog) should initially be opened in large mode
-     */
-    startEnlarged?: boolean;
-  };
+export type UIExtensionServiceConfig = Identifiers & {
+  /**
+   * the type of the extension (effects the api behavior).
+   */
+  extensionType: ExtensionTypes;
+  /**
+   * optional initial data to provide directly to the UI Extension.
+   */
+  initialData?: any;
+  /**
+   * optional initial selection to provide directly to the UI Extension.
+   */
+  initialSelection?: any;
+  /**
+   * optional initial state supplying the UI Extension with the shared state of
+   * already existing other UI Extensions.
+   */
+  initialSharedData?: any;
+  /**
+   * rendering config to determine in which context the ui extension is rendered
+   */
+  renderingConfig?: RenderingConfig;
+  hasNodeView: boolean;
+  writeProtected?: boolean;
+  /**
+   * optional color model per column used to map data cell values
+   * (numeric xor nominal) of a column to hexadecimal color codes
+   */
+  colorModels?: Record<string, ColorModel>;
+  /**
+   * optional color model used to map column names to hexadecimal color
+   * codes
+   */
+  columnNamesColorModel?: ColorModel;
+  /**
+   * whether the ui-extension (dialog) should initially be opened in large mode
+   */
+  startEnlarged?: boolean;
+};
 
 export enum ApplyState {
   CLEAN,

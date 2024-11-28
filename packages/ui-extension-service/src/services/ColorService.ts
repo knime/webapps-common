@@ -10,7 +10,6 @@ import type { UIExtensionService } from "../types/uiExtensionService";
 
 import { AbstractService } from "./AbstractService";
 import type { ColorServiceAPILayer } from "./types/serviceApiLayers";
-import { createAlert } from "./utils";
 
 // TODO: UIEXT-858 Provide this default color via color model
 const lightGray = "#D3D3D3";
@@ -112,12 +111,14 @@ export class ColorService extends AbstractService<ColorServiceAPILayer> {
       }
     }
     if (!suppressWarning) {
-      this.baseService.sendAlert(
-        createAlert(this.baseService.getConfig(), {
-          type: AlertType.WARN,
-          message: `No color handler found for the given column name "${columnName}".`,
-        }),
-      );
+      this.baseService.sendAlert({
+        type: AlertType.WARN,
+        warnings: [
+          {
+            message: `No color handler found for the given column name "${columnName}".`,
+          },
+        ],
+      });
     }
     return null;
   }

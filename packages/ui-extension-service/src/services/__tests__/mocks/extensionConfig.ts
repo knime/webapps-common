@@ -44,13 +44,6 @@ export const extensionConfig: UIExtensionServiceConfig = {
   nodeId: "123",
   projectId: "knime workflow",
   workflowId: "root:10",
-  nodeInfo: {
-    nodeAnnotation: "",
-    nodeState: "executed",
-    nodeErrorMessage: "",
-    nodeWarnMessage: "",
-    nodeName: "Scatter Plot",
-  },
   extensionType: ExtensionTypes.VIEW,
   hasNodeView: true,
   startEnlarged: true,

@@ -126,12 +126,6 @@ describe("UIExtension.vue", () => {
       };
       const message = "test error";
 
-      const expectedAlertBase = {
-        message,
-        subtitle: "",
-        nodeId: componentExtensionConfig.nodeId,
-      };
-
       it("displays errors from the extensionConfig", () => {
         const sendAlertSpy = vi.fn();
         props.extensionConfig.nodeInfo = {
@@ -148,7 +142,7 @@ describe("UIExtension.vue", () => {
         });
 
         const expectedAlert = {
-          ...expectedAlertBase,
+          message,
           type: AlertType.ERROR,
         };
 
@@ -170,8 +164,8 @@ describe("UIExtension.vue", () => {
         });
 
         const expectedAlert = {
-          ...expectedAlertBase,
           type: AlertType.WARN,
+          warnings: [{ message }],
         };
         expect(sendAlertSpy).toHaveBeenCalledWith(expectedAlert);
       });

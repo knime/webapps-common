@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import { computed } from "vue";
-
 import CloseIcon from "@knime/styles/img/icons/close.svg";
-import type { Alert } from "@knime/ui-extension-service";
+import type { ErrorAlert } from "@knime/ui-extension-service";
 
 import Popover from "./Popover.vue";
 
@@ -15,32 +13,28 @@ import Popover from "./Popover.vue";
  */
 
 type Props = {
-  alert?: Alert | null;
+  alert: ErrorAlert | null;
 };
 
-const props = withDefaults(defineProps<Props>(), {
-  alert: null,
-});
+defineProps<Props>();
 
 const emit = defineEmits<{
-  display: [];
+  display: [ErrorAlert];
 }>();
-
-const isActive = computed(() => props.alert && props.alert?.type === "error");
 </script>
 
 <template>
   <Popover
-    v-if="isActive"
+    v-if="alert"
     active
-    :class="['node-popover', { active: isActive }]"
+    :class="['node-popover', { active: alert }]"
     :type="'error'"
   >
     <template #popoverContent>
       <div
         class="error-wrapper"
         title="Click to see more details."
-        @click="emit('display')"
+        @click="emit('display', alert)"
       >
         <CloseIcon class="icon" />
       </div>

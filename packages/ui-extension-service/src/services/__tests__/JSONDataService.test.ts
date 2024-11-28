@@ -10,10 +10,14 @@ import {
 
 import { setUpCustomEmbedderService } from "../../embedder";
 import { DataServiceType } from "../../types/DataServiceType";
-import { type Alert, AlertType } from "../../types/alert";
+import { INTERNAL_ERROR_CODE, USER_ERROR_CODE } from "../../types/alert";
 import { JsonDataService } from "../JsonDataService";
+import type {
+  JsonRpcOtherError,
+  JsonRpcUserError,
+} from "../types/jsonRPCTypes";
 
-import { extensionConfig, longMessage } from "./mocks";
+import { extensionConfig } from "./mocks";
 
 describe("JsonDataService", () => {
   const defaultExtensionConfig = extensionConfig;
@@ -155,11 +159,11 @@ describe("JsonDataService", () => {
       const response = await jsonDataService.initialData();
       expect(response).toBeFalsy();
       expect(sendAlert).toBeCalledWith({
-        code: undefined, // eslint-disable-line no-undefined
-        message: "More information",
-        nodeId: extensionConfig.nodeId,
-        nodeInfo: extensionConfig.nodeInfo,
-        subtitle: "Something went wrong",
+        code: USER_ERROR_CODE,
+        message: "Something went wrong",
+        data: {
+          details: "More information",
+        },
         type: "error",
       });
     });
@@ -177,11 +181,12 @@ describe("JsonDataService", () => {
       const response = await jsonDataService.initialData();
       expect(response).toBeFalsy();
       expect(sendAlert).toBeCalledWith({
-        code: undefined, // eslint-disable-line no-undefined
-        message: expect.stringContaining(expectedError.stackTrace.join("\n\t")),
-        nodeId: extensionConfig.nodeId,
-        nodeInfo: extensionConfig.nodeInfo,
-        subtitle: "Java heap space",
+        code: INTERNAL_ERROR_CODE,
+        message: "Java heap space",
+        data: {
+          typeName: "OutOfMemoryError",
+          stackTrace: ["Line 1", "Line 2"],
+        },
         type: "error",
       });
     });
@@ -198,36 +203,52 @@ describe("JsonDataService", () => {
       const response = await jsonDataService.initialData();
       expect(response).toStrictEqual(initialData.result);
       expect(sendAlert).toBeCalledWith({
-        code: undefined, // eslint-disable-line no-undefined
-        message: initialData.warningMessages.join("\n\n"),
-        nodeId: extensionConfig.nodeId,
-        nodeInfo: extensionConfig.nodeInfo,
-        subtitle: "2 messages",
         type: "warn",
+        warnings: [{ message: "Warn" }, { message: "ing" }],
       });
     });
 
     it("handles errors during data service requests", async () => {
-      const expectedError = {
-        code: -32001,
+      const error = {
+        code: USER_ERROR_CODE,
         message: "Frequency Column Universe_0_0 is not present in table.",
         data: {
           details: "More information",
         },
-      };
+      } satisfies JsonRpcUserError;
       const { jsonDataService, callNodeDataService, sendAlert } =
         constructJsonDataService(extensionConfig);
       callNodeDataService.mockResolvedValue({
-        result: { error: expectedError },
+        result: { error },
       });
       const response = await jsonDataService.data();
       expect(response).toBeFalsy();
       expect(sendAlert).toBeCalledWith({
-        code: -32001,
-        message: expectedError.data.details,
-        nodeId: extensionConfig.nodeId,
-        nodeInfo: extensionConfig.nodeInfo,
-        subtitle: expectedError.message,
+        code: USER_ERROR_CODE,
+        message: error.message,
+        type: "error",
+        data: {
+          details: error.data.details,
+        },
+      });
+    });
+
+    it("handles other errors during data service requests", async () => {
+      const error = {
+        code: 123,
+        message: "Something went wrong",
+        data: null,
+      } satisfies JsonRpcOtherError;
+      const { jsonDataService, callNodeDataService, sendAlert } =
+        constructJsonDataService(extensionConfig);
+      callNodeDataService.mockResolvedValue({
+        result: { error },
+      });
+      const response = await jsonDataService.data();
+      expect(response).toBeFalsy();
+      expect(sendAlert).toBeCalledWith({
+        originalCode: error.code,
+        message: error.message,
         type: "error",
       });
     });
@@ -243,94 +264,9 @@ describe("JsonDataService", () => {
       const response = await jsonDataService.data();
       expect(response).toStrictEqual(data.result);
       expect(sendAlert).toBeCalledWith({
-        code: undefined, // eslint-disable-line no-undefined
-        message: data.warningMessages.join("\n\n"),
-        nodeId: extensionConfig.nodeId,
-        nodeInfo: extensionConfig.nodeInfo,
-        subtitle: "2 messages",
+        warnings: [{ message: "Warn" }, { message: "ing" }],
         type: "warn",
       });
-    });
-  });
-
-  describe("alert formatting", () => {
-    let jsonDataService: JsonDataService, sendAlertSpy: Mock;
-
-    beforeEach(() => {
-      const constructed = constructJsonDataService(extensionConfig);
-      sendAlertSpy = constructed.sendAlert;
-      jsonDataService = constructed.jsonDataService;
-    });
-
-    it("formats a single warning message", () => {
-      // @ts-expect-error accessing private method
-      jsonDataService.handleWarnings(["Message 1"]);
-      const sentMessage = sendAlertSpy.mock.calls[0][0] as Alert;
-      expect(sentMessage.message).toBe("Message 1");
-      expect(sentMessage.type).toBe(AlertType.WARN);
-      expect(sentMessage.subtitle).toBeFalsy();
-    });
-
-    it("formats multiple warning messages", () => {
-      const warnings = ["Message 1", "Message 2"];
-      // @ts-expect-error accessing private method
-      jsonDataService.handleWarnings(warnings);
-      const sentMessage = sendAlertSpy.mock.calls[0][0] as Alert;
-      expect(sentMessage.message).toBe(warnings.join("\n\n"));
-      expect(sentMessage.type).toBe(AlertType.WARN);
-      expect(sentMessage.subtitle).toBe("2 messages");
-    });
-
-    it("formats long warning messages", () => {
-      // @ts-expect-error accessing private method
-      jsonDataService.handleWarnings([longMessage]);
-      const sentMessage = sendAlertSpy.mock.calls[0][0] as Alert;
-      expect(sentMessage.message).toBe(longMessage);
-      expect(sentMessage.type).toBe(AlertType.WARN);
-      expect(sentMessage.subtitle).toBe("Expand for details");
-    });
-
-    it("formats default error", () => {
-      // @ts-expect-error accessing private method
-      jsonDataService.handleError({});
-      const sentMessage = sendAlertSpy.mock.calls[0][0] as Alert;
-      expect(sentMessage.message).toBe(
-        "No further information available. Please check the workflow configuration.",
-      );
-      expect(sentMessage.type).toBe(AlertType.ERROR);
-      expect(sentMessage.subtitle).toBe("Something went wrong");
-    });
-
-    it("formats long error message", () => {
-      // @ts-expect-error accessing private method
-      jsonDataService.handleError({ message: longMessage });
-      const sentMessage = sendAlertSpy.mock.calls[0][0] as Alert;
-      expect(sentMessage.message).toBe(longMessage);
-      expect(sentMessage.type).toBe(AlertType.ERROR);
-      expect(sentMessage.subtitle).toBe("Something went wrong");
-    });
-
-    it("formats all error information", () => {
-      // @ts-expect-error accessing private method
-      jsonDataService.handleError({
-        details: "Something went wrong",
-        stackTrace: ["Line1", "Line2"],
-        typeName: "NullPointerException",
-        message: "Please check the workflow configuration",
-        code: 401,
-      });
-      const sentMessage = sendAlertSpy.mock.calls[0][0] as Alert;
-      expect(sentMessage).toStrictEqual({
-        code: 401,
-        nodeId: extensionConfig.nodeId,
-        message: expect.any(String),
-        nodeInfo: extensionConfig.nodeInfo,
-        subtitle: "Please check the workflow configuration",
-        type: AlertType.ERROR,
-      });
-      expect(sentMessage.message).toContain("NullPointerException");
-      expect(sentMessage.message).toContain("Something went wrong");
-      expect(sentMessage.message).toContain("Line1\n\tLine2");
     });
   });
 });

@@ -1,32 +1,26 @@
 <script setup lang="ts">
-import { computed } from "vue";
-
 import { FunctionButton } from "@knime/components";
 import SignWarningIcon from "@knime/styles/img/icons/sign-warning.svg";
-import type { Alert } from "@knime/ui-extension-service";
+import type { WarningAlert } from "@knime/ui-extension-service";
 
 type Props = {
-  alert?: Alert | null;
+  alert: WarningAlert | null;
 };
 
-const props = withDefaults(defineProps<Props>(), {
-  alert: null,
-});
+defineProps<Props>();
 
 const emit = defineEmits<{
-  display: [];
+  display: [WarningAlert];
 }>();
-
-const isWarning = computed(() => props.alert?.type === "warn");
 </script>
 
 <template>
   <FunctionButton
-    v-if="isWarning"
+    v-if="alert"
     primary
     class="warning-button"
     title="Show warnings"
-    @click="emit('display')"
+    @click="emit('display', alert)"
   >
     <SignWarningIcon />
   </FunctionButton>
