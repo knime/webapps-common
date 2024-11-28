@@ -152,6 +152,9 @@ const demoComponents = {
     TimePartInput: defineAsyncComponent(
       () => import("./components/TimePartInput.vue"),
     ),
+    DateTimeFormatInput: defineAsyncComponent(
+      () => import("./components/DateTimeFormatInput.vue"),
+    ),
     IntervalInput: defineAsyncComponent(
       () => import("./components/IntervalInput.vue"),
     ),
