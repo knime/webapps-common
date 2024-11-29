@@ -566,8 +566,12 @@ export default {
     }
 
     & :deep(.vc-popover-content) {
+      --vc-rounded: 0;
+      --vc-rounded-lg: 0;
+
       /* popover box shadow */
-      box-shadow: var(--shadow-elevation-1);
+      box-shadow: var(--shadow-elevation-2);
+      border: 0;
     }
 
     & :deep(.vc-arrow):not(:hover),
@@ -576,10 +580,6 @@ export default {
     }
 
     & :deep(.vc-container) {
-      /* remove roundness */
-      --vc-rounded: 0;
-      --vc-rounded-lg: 0;
-
       /* color prop value (in our case 'masala' see above) and vc-COLOR-PROP-NAME need to be defined */
       --masala-100: var(--theme-date-input-accent-100);
       --masala-200: var(--theme-date-input-accent-200);
@@ -621,8 +621,6 @@ export default {
       --vc-gray-700: var(--theme-date-input-gray-700);
       --vc-gray-800: var(--theme-date-input-gray-800);
       --vc-gray-900: var(--theme-date-input-gray-900);
-
-      border: 1px solid var(--vc-gray-400);
     }
 
     /* -- end v-calendar 'theme' */
