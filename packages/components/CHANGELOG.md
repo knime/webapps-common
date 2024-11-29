@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.10.0
+
+### Minor Changes
+
+- c0fc6a3: Removed LegacyBrowserWarning
+
 ## 1.9.3
 
 ### Patch Changes
