@@ -79,7 +79,7 @@ public final class DataServiceException extends RuntimeException {
 
     /**
      *
-     * @param message a message describing the this exception
+     * @param message a message describing this exception
      * @param details a message providing further details about this exception
      */
     public DataServiceException(final String message, final String details) {

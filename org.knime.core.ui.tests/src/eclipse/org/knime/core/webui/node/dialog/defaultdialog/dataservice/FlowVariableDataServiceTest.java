@@ -79,6 +79,7 @@ import org.knime.core.node.workflow.VariableType;
 import org.knime.core.node.workflow.VariableType.BooleanType;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.webui.data.DataServiceContextTest;
+import org.knime.core.webui.data.DataServiceException;
 import org.knime.core.webui.node.dialog.NodeDialog;
 import org.knime.core.webui.node.dialog.NodeDialogManagerTest;
 import org.knime.core.webui.node.dialog.SettingsType;
@@ -279,7 +280,7 @@ class FlowVariableDataServiceTest {
             + "}";
 
         @Test
-        void testGetFlowVariableOverrideValue() throws JsonProcessingException, InvalidSettingsException {
+        void testGetFlowVariableOverrideValue() throws JsonProcessingException {
             final var dataPath = new LinkedList<String>(List.of("view", "myViewSetting"));
             final var dataService = getDataServiceWithConverter(settingsClasses);
             assertThat(((JsonNode)dataService.getFlowVariableOverrideValue(DATA, dataPath)).textValue())
@@ -287,7 +288,7 @@ class FlowVariableDataServiceTest {
         }
 
         @Test
-        void testGetFlowVariableOverrideValueWithConfigKey() throws JsonProcessingException, InvalidSettingsException {
+        void testGetFlowVariableOverrideValueWithConfigKey() throws JsonProcessingException {
             final var dataPath = new LinkedList<String>(List.of("model", "nestedSetting", "myModelSetting"));
             final var dataService = getDataServiceWithConverter(settingsClasses);
             assertThat(((JsonNode)dataService.getFlowVariableOverrideValue(DATA, dataPath)).asBoolean())
@@ -307,10 +308,10 @@ class FlowVariableDataServiceTest {
             + "}";
 
         @Test
-        void testThrowsOnOverrideError() throws JsonProcessingException, InvalidSettingsException {
+        void testThrowsOnOverrideError() throws JsonProcessingException {
             final var dataPath = new LinkedList<String>(List.of("model", "nestedSetting", "myModelSetting"));
             final var dataService = getDataServiceWithConverter(settingsClasses);
-            final var invalidSettingsException = assertThrows(InvalidSettingsException.class,
+            final var invalidSettingsException = assertThrows(DataServiceException.class,
                 () -> dataService.getFlowVariableOverrideValue(STRING_OVERRIDES_BOOLEAN_DATA, dataPath));
             assertThat(invalidSettingsException.getMessage()).isEqualTo(
                 "Unable to parse \"stringvar1_value\" (variable \"stringVar1\") as boolean expression (settings parameter \"myModelSettingConfigKey\")");
@@ -336,10 +337,10 @@ class FlowVariableDataServiceTest {
         }
 
         @Test
-        void testThrowsOnLoadError() throws JsonProcessingException, InvalidSettingsException {
+        void testThrowsOnLoadError() throws JsonProcessingException {
             final var dataPath = new LinkedList<String>(List.of("model", "enumField"));
             final var dataService = getDataServiceWithConverter(Map.of(SettingsType.MODEL, TestSettingsWithEnum.class));
-            final var invalidSettingsException = assertThrows(InvalidSettingsException.class,
+            final var invalidSettingsException = assertThrows(DataServiceException.class,
                 () -> dataService.getFlowVariableOverrideValue(WRONG_ENUM_VALUE_OVERRIDE, dataPath));
             assertThat(invalidSettingsException.getMessage())
                 .isEqualTo(String.format("Invalid value 'stringVar1_value'. Possible values: A, B, C",

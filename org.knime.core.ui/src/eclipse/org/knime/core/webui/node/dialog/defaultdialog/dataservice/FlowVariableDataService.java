@@ -54,6 +54,7 @@ import java.util.Map;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
+import org.knime.core.webui.data.DataServiceException;
 import org.knime.core.webui.node.dialog.internal.VariableSettings;
 
 /**
@@ -94,9 +95,9 @@ interface FlowVariableDataService {
      *            particular this has to start with its settings type ("view" or "model"). This data path determines
      *            which 'sub settings' of the current settings are being returned.
      * @return the settings at the given data-path with the settings-values indirectly derived from flow variables
-     * @throws InvalidSettingsException
+     * @throws DataServiceException in case overriding fails
      */
     Object getFlowVariableOverrideValue(final String textSettings, final LinkedList<String> dataPath)
-        throws InvalidSettingsException;
+        throws DataServiceException;
 
 }

@@ -67,6 +67,7 @@ import org.knime.core.node.config.ConfigEditTreeModel;
 import org.knime.core.node.workflow.FlowVariable;
 import org.knime.core.node.workflow.VariableType;
 import org.knime.core.node.workflow.VariableTypeRegistry;
+import org.knime.core.webui.data.DataServiceException;
 import org.knime.core.webui.node.dialog.NodeDialog;
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeDialog;
@@ -126,12 +127,18 @@ public final class FlowVariableDataServiceImpl implements FlowVariableDataServic
 
     @Override
     public Object getFlowVariableOverrideValue(final String textSettings, final LinkedList<String> dataPath)
-        throws InvalidSettingsException {
-        var context = createContext();
-        final var settingsType = extractSettingsType(dataPath.get(0));
-        final var settingsTree = textSettingsToNodeAndVariableSettings(textSettings, settingsType, context);
-        final var data = m_converter.nodeSettingsToDataJson(settingsType, settingsTree, context);
-        return jsonAtPath(dataPath, data);
+        throws DataServiceException {
+        try {
+            var context = createContext();
+            final var settingsType = extractSettingsType(dataPath.get(0));
+            final var settingsTree = textSettingsToNodeAndVariableSettings(textSettings, settingsType, context);
+            final var data = m_converter.nodeSettingsToDataJson(settingsType, settingsTree, context);
+            return jsonAtPath(dataPath, data);
+        } catch (InvalidSettingsException e) {
+            throw new DataServiceException(e.getMessage(),
+                String.format("Because of an invalid current value of the controlling flow variable, "
+                    + "it is not possible to preview this value in the dialog.", String.join(".", dataPath)));
+        }
     }
 
     private NodeSettings textSettingsToNodeAndVariableSettings(final String textSettings, final SettingsType type,
