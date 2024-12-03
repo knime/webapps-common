@@ -51,6 +51,8 @@ package org.knime.core.webui.node.dialog.defaultdialog.util;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+import j2html.utils.EscapeUtil;
+
 /**
  * A utility class for creating nested settings descriptions (e.g. for enums and array layouts)
  *
@@ -90,7 +92,7 @@ public final class DescriptionUtil {
 
     private static String createConstantListItem(final TitleAndDescription entry) {
         var description = entry.hasDescription() ? (": " + entry.description()) : "";
-        return "\n<li><b>%s</b>%s</li>".formatted(entry.title(), description);//NOSONAR
+        return "\n<li><b>%s</b>%s</li>".formatted(EscapeUtil.escape(entry.title()), description);//NOSONAR
     }
 
 }

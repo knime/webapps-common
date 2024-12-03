@@ -67,7 +67,11 @@ public final class TestWebUINodeModelSettings implements DefaultNodeSettings {
 
     static final class Element implements DefaultNodeSettings {
 
-        @Widget(title = "An element setting", description = "An element description")
+        /**
+         * We check that the title and description are added to the description of the array field. The '&' in the title
+         * should be escaped in this case since the description is used in an HTML context.
+         */
+        @Widget(title = "An element setting &", description = "An element description")
         int m_elementSetting;
     }
 
