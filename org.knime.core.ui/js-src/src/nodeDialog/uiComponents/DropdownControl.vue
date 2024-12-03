@@ -130,8 +130,8 @@ const getUpdateOptionsMethod = async (
     if (state === "FAIL") {
       message.forEach((msg: string) => {
         sendAlert({
-          type: AlertType.ERROR,
           message: msg,
+          type: AlertType.ERROR,
         });
       });
       handleResult([]);

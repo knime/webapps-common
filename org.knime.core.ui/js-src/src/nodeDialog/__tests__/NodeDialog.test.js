@@ -166,10 +166,10 @@ describe("NodeDialog.vue", () => {
 
       expect(await applyListener()).toStrictEqual({ isApplied: false });
       expect(applyDataSpy).toHaveBeenCalled();
-      expect(sendAlert).toHaveBeenCalledWith(
-        { message: "Settings are bad!" },
-        true,
-      );
+      expect(sendAlert).toHaveBeenCalledWith({
+        message: "Settings are bad!",
+        type: "error",
+      });
     });
 
     it("logs error that apply data been thrown", () => {
@@ -197,7 +197,7 @@ describe("NodeDialog.vue", () => {
     const wrapper = shallowMount(NodeDialog, options);
     const callParams = { type: AlertType.ERROR, message: "message" };
     wrapper.vm.sendAlert(callParams);
-    expect(sendAlert).toHaveBeenCalledWith(callParams, true);
+    expect(sendAlert).toHaveBeenCalledWith(callParams);
   });
 
   it("provides 'getAvailableFlowVariables' method", () => {
@@ -298,14 +298,11 @@ describe("NodeDialog.vue", () => {
         },
       });
       expect(choices).toStrictEqual([]);
-      expect(sendAlert).toHaveBeenCalledWith(
-        {
-          type: AlertType.ERROR,
-          subtitle: "Failed to fetch possible values.",
-          message: myMessage,
-        },
-        true,
-      );
+      expect(sendAlert).toHaveBeenCalledWith({
+        message: "Failed to fetch possible values.",
+        details: myMessage,
+        type: "error",
+      });
     });
 
     it("displays an error when getChoices returns state 'CANCELED'", async () => {
@@ -320,13 +317,11 @@ describe("NodeDialog.vue", () => {
         },
       });
       expect(choices).toStrictEqual([]);
-      expect(sendAlert).toHaveBeenCalledWith(
-        {
-          type: AlertType.ERROR,
-          subtitle: `Receiving possible values from ${choicesProviderClass} canceled.`,
-        },
-        true,
-      );
+      expect(sendAlert).toHaveBeenCalledWith({
+        message: "Fetching possible values has been canceled.",
+        details: `Fetching possible values from ${choicesProviderClass} has been canceled.`,
+        type: "error",
+      });
     });
   });
 
@@ -696,12 +691,10 @@ describe("NodeDialog.vue", () => {
       });
 
       await wrapper.vm.trigger({ id: triggerId });
-      expect(sendAlert).toHaveBeenCalledWith(
-        {
-          message: errorMessage,
-        },
-        true,
-      );
+      expect(sendAlert).toHaveBeenCalledWith({
+        message: errorMessage,
+        type: "error",
+      });
     });
 
     it("handles updates triggered before the dialog is opened", async () => {

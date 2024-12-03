@@ -3,7 +3,8 @@ import { composePaths, toDataPath } from "@jsonforms/core";
 import { get, set } from "lodash-es";
 
 import {
-  type CreateAlertParams,
+  type AlertParams,
+  AlertType,
   type DialogSettings,
   JsonDataService,
   type UIExtensionService,
@@ -146,7 +147,7 @@ export default ({
     isActive: IsActiveCallback,
     callback: TriggerCallback,
   ) => void;
-  sendAlert: (params: CreateAlertParams) => void;
+  sendAlert: (params: AlertParams) => void;
   publishSettings: () => void;
   pathIsControlledByFlowVariable: (path: string) => boolean;
 }) => {
@@ -279,6 +280,7 @@ export default ({
     messages?.forEach((message) =>
       sendAlert({
         message,
+        type: AlertType.ERROR,
       }),
     );
   };

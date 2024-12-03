@@ -1,7 +1,4 @@
-import type {
-  CreateAlertParams,
-  JsonDataService,
-} from "@knime/ui-extension-service";
+import type { AlertParams, JsonDataService } from "@knime/ui-extension-service";
 
 import type { PossibleFlowVariable } from "../api/types";
 import type { Result } from "../api/types/Result";
@@ -33,7 +30,7 @@ type addStateProviderListener<T> = (
 type getData = (
   params: Parameters<JsonDataService["data"]>[0] & object,
 ) => Promise<any>;
-type sendAlert = (params: CreateAlertParams) => void;
+type sendAlert = (params: AlertParams) => void;
 
 export interface Provided {
   getPossibleValuesFromUiSchema: getPossibleValuesFromUiSchema;

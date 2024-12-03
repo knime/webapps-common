@@ -4,9 +4,9 @@ import { type JsonSchema, type UISchemaElement } from "@jsonforms/core";
 import { JsonForms } from "@jsonforms/vue";
 import { cloneDeep } from "lodash-es";
 
-import type {
-  CreateAlertParams,
-  UIExtensionService,
+import {
+  AlertType,
+  type UIExtensionService,
 } from "@knime/ui-extension-service";
 
 import {
@@ -102,8 +102,7 @@ export default {
       sharedDataService!.shareData(publishedData);
     };
 
-    const sendAlert = (params: CreateAlertParams) =>
-      alertingService.sendAlert(params, true);
+    const sendAlert = alertingService.sendAlert.bind(alertingService);
     const {
       addStateProviderListener,
       callStateProviderListener,
@@ -352,7 +351,7 @@ export default {
     async applySettings() {
       const { result } = await this.jsonDataService!.applyData(this.getData());
       if (result) {
-        this.sendAlert({ message: result });
+        this.sendAlert({ message: result, type: AlertType.ERROR });
         return { isApplied: false };
       }
       return { isApplied: true };

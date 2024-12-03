@@ -1,6 +1,6 @@
 import { type Ref, ref, watch } from "vue";
 
-import { AlertType, type AlertingService } from "@knime/ui-extension-service";
+import { type AlertParams, AlertType } from "@knime/ui-extension-service";
 
 import type { Result } from "../api/types/Result";
 import type {
@@ -19,7 +19,7 @@ const extractFromUiSchemaOptions = <Key extends keyof ChoicesUiSchemaOptions>(
 
 const extractPossibleValues = (
   asyncResult: Result<PossibleValue[]>,
-  sendAlert: (params: Parameters<AlertingService["sendAlert"]>[0]) => void,
+  sendAlert: (params: AlertParams) => void,
   choicesProviderClass: string,
 ) => {
   const { state } = asyncResult;
@@ -28,15 +28,16 @@ const extractPossibleValues = (
   } else {
     if (state === "CANCELED") {
       sendAlert({
+        message: "Fetching possible values has been canceled.",
+        details: `Fetching possible values from ${choicesProviderClass} has been canceled.`,
         type: AlertType.ERROR,
-        subtitle: `Receiving possible values from ${choicesProviderClass} canceled.`,
       });
     }
     if (state === "FAIL") {
       sendAlert({
+        message: "Failed to fetch possible values.",
+        details: asyncResult.message[0],
         type: AlertType.ERROR,
-        subtitle: "Failed to fetch possible values.",
-        message: asyncResult.message[0],
       });
     }
     return [];
@@ -116,7 +117,7 @@ export default async (
   getAsyncPossibleValues: (
     choicesProviderClass: string,
   ) => Promise<Result<PossibleValue[]> | undefined>,
-  sendAlert: (params: Parameters<AlertingService["sendAlert"]>[0]) => void,
+  sendAlert: (params: AlertParams) => void,
 ) => {
   let normalPossibleValues = extractFromUiSchemaOptions(
     control,
