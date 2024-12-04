@@ -1,8 +1,8 @@
 /* eslint-disable func-style */
 import sleep from "../sleep";
 
-const DEFAULT_RETRY_DELAY_MS = 0;
-const DEFAULT_RETRY_COUNT = 5;
+export const DEFAULT_RETRY_DELAY_MS = 0;
+export const DEFAULT_RETRY_COUNT = 5;
 
 /**
  * Helper to add retry capability to an async function
@@ -11,12 +11,17 @@ const DEFAULT_RETRY_COUNT = 5;
  * @param retryDelayMS delay in-between retries in millisecs. defaults to 0
  * @param excludeError predicate fn to exclude specific errors from causing a retry
  */
-export async function retryPromise<T>(
-  fn: () => Promise<T>,
+export async function retryPromise<T>({
+  fn,
   retryCount = DEFAULT_RETRY_COUNT,
   retryDelayMS = DEFAULT_RETRY_DELAY_MS,
-  excludeError?: (error: Error) => boolean,
-) {
+  excludeError,
+}: {
+  fn: () => Promise<T>;
+  retryCount?: number;
+  retryDelayMS?: number;
+  excludeError?: (error: Error) => boolean;
+}) {
   try {
     return await fn();
   } catch (error) {
@@ -28,7 +33,12 @@ export async function retryPromise<T>(
       await sleep(retryDelayMS);
 
       // eslint-disable-next-line no-return-await
-      return await retryPromise(fn, retryCount - 1, retryDelayMS);
+      return await retryPromise({
+        fn,
+        retryCount: retryCount - 1,
+        retryDelayMS,
+        excludeError,
+      });
     }
 
     throw error;

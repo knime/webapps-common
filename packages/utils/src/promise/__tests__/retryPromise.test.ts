@@ -24,7 +24,7 @@ describe("retryPromise", () => {
     const doneSpy = vi.fn();
     const catchSpy = vi.fn();
 
-    const promise = retryPromise(() => mockFetchCall())
+    const promise = retryPromise({ fn: () => mockFetchCall() })
       .then(doneSpy)
       .catch(catchSpy);
 
@@ -41,7 +41,7 @@ describe("retryPromise", () => {
 
     const doneSpy = vi.fn();
 
-    const promise = retryPromise(() => mockFetchCall()).then(doneSpy);
+    const promise = retryPromise({ fn: () => mockFetchCall() }).then(doneSpy);
 
     await promise.catch(() => {}); // ignore errors caught by test
     expect(() => promise).rejects.toThrowError(error);
@@ -57,12 +57,12 @@ describe("retryPromise", () => {
 
     const doneSpy = vi.fn();
 
-    const promise = retryPromise(
-      () => mockFetchCall(),
-      2,
-      0,
-      (e) => e instanceof MyError,
-    ).then(doneSpy);
+    const promise = retryPromise({
+      fn: () => mockFetchCall(),
+      retryCount: 2,
+      retryDelayMS: 0,
+      excludeError: (e) => e instanceof MyError,
+    }).then(doneSpy);
 
     await promise.catch(() => {}); // ignore errors caught by test
     expect(() => promise).rejects.toThrowError(myError);

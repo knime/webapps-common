@@ -26,7 +26,7 @@ vi.mock("@knime/utils", async (importOriginal) => {
       }),
     },
     promise: {
-      retryPromise: (fn: () => any) => fn(),
+      retryPromise: ({ fn }: { fn: () => any }) => fn(),
     },
   };
 });

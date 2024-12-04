@@ -54,7 +54,7 @@ vi.mock("@knime/utils", async (importOriginal) => {
   return {
     ...actual,
     promise: {
-      retryPromise: vi.fn((fn: () => any) => fn()),
+      retryPromise: vi.fn(({ fn }: { fn: () => any }) => fn()),
     },
   };
 });
@@ -165,6 +165,19 @@ describe("useFileUpload", () => {
     expect(totalFilesBeingPrepared.value).toBe(4);
 
     await flushPromises();
+
+    expect(isPreparingUpload.value).toBe(false);
+    expect(totalFilesBeingPrepared.value).toBe(0);
+  });
+
+  it("should handle prepare state on prepare failure", async () => {
+    (promise.retryPromise as any).mockRejectedValueOnce(new Error("Whoopsie"));
+
+    const { start, isPreparingUpload, totalFilesBeingPrepared } = useFileUpload(
+      { apiBaseUrl: mockAPIUrl },
+    );
+
+    await expect(() => start(parentId, [file1, file2])).rejects.toThrowError();
 
     expect(isPreparingUpload.value).toBe(false);
     expect(totalFilesBeingPrepared.value).toBe(0);

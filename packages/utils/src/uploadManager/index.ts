@@ -261,11 +261,11 @@ export const createUploadManager = (config: UploaderManagerConfig) => {
       const chunk = file.slice(start, end);
 
       try {
-        const { method, url } = await retryPromise(
-          () => getUploadFilePartUrl(uploadId, chunkIndex + 1),
-          DEFAULT_RETRY_COUNT,
-          DEFAULT_RETRY_DELAY_MS,
-        );
+        const { method, url } = await retryPromise({
+          fn: () => getUploadFilePartUrl(uploadId, chunkIndex + 1),
+          retryCount: DEFAULT_RETRY_COUNT,
+          retryDelayMS: DEFAULT_RETRY_DELAY_MS,
+        });
 
         consola.trace("File part upload url resolved", { method, url });
 
@@ -279,8 +279,8 @@ export const createUploadManager = (config: UploaderManagerConfig) => {
         };
 
         const filePartResponse = await runAbortablePromise(() =>
-          retryPromise(
-            () =>
+          retryPromise({
+            fn: () =>
               uploadChunkWithProgress({
                 method,
                 url,
@@ -289,9 +289,9 @@ export const createUploadManager = (config: UploaderManagerConfig) => {
                 onProgress: onChunkUploadProgress,
                 abortSignal: abortController.signal,
               }),
-            DEFAULT_RETRY_COUNT,
-            DEFAULT_RETRY_DELAY_MS,
-          ),
+            retryCount: DEFAULT_RETRY_COUNT,
+            retryDelayMS: DEFAULT_RETRY_DELAY_MS,
+          }),
         );
 
         consola.trace(

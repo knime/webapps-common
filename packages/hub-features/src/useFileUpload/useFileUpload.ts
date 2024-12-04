@@ -11,6 +11,8 @@ const DEFAULT_MAX_UPLOAD_QUEUE_SIZE = 10;
 
 const DEFAULT_API_BASE_URL = "/_/api";
 
+const DEFAULT_RETRY_DELAY_MS = 50;
+
 type UseFileUploadOptions = {
   /**
    * Max number of concurrent uploads allowed in the upload queue.
@@ -170,7 +172,7 @@ export const useFileUpload = (options: UseFileUploadOptions = {}) => {
 
     onFileUploadComplete: ({ uploadId, filePartIds }) => {
       promise
-        .retryPromise(() => completeUpload(uploadId, filePartIds))
+        .retryPromise({ fn: () => completeUpload(uploadId, filePartIds) })
         .then(() => {
           options.onFileUploadComplete?.(uploadId, filePartIds);
         })
@@ -207,20 +209,21 @@ export const useFileUpload = (options: UseFileUploadOptions = {}) => {
     totalFilesBeingPrepared: computed(() => prepareQueueSize.value),
 
     start: async (parentId: string, files: File[]) => {
+      const enqueableFiles = getEnqueueableFiles(files);
       try {
-        const enqueableFiles = getEnqueueableFiles(files);
-
         if (enqueableFiles.length === 0) {
           return;
         }
 
         prepareQueueSize.value += enqueableFiles.length;
 
-        const uploadPayload = await promise.retryPromise(() =>
-          prepareUpload(parentId, enqueableFiles),
-        );
-
-        prepareQueueSize.value -= enqueableFiles.length;
+        const uploadPayload = await promise.retryPromise({
+          fn: () => prepareUpload(parentId, enqueableFiles),
+          excludeError: (error: FetchError) =>
+            // eslint-disable-next-line no-magic-numbers
+            Boolean(error.statusCode && error.statusCode < 500),
+          retryDelayMS: DEFAULT_RETRY_DELAY_MS,
+        });
 
         useUploadManagerResult.start(parentId, uploadPayload);
       } catch (error) {
@@ -229,6 +232,9 @@ export const useFileUpload = (options: UseFileUploadOptions = {}) => {
         }
 
         throw error;
+      } finally {
+        // errors can only be thrown in the prepareUpload call, useUploadManagerResult.start does its own error handling
+        prepareQueueSize.value -= enqueableFiles.length;
       }
     },
 

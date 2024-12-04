@@ -56,6 +56,7 @@ describe("uploadManager", () => {
   const getUploadId = createIdGenerator();
 
   describe("success", () => {
+    // eslint-disable-next-line vitest/no-focused-tests
     it("should handle `uploadFiles`", async () => {
       setup();
       const { uploadFiles } = createUploadManager({
