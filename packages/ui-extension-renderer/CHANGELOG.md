@@ -1,5 +1,16 @@
 # @knime/ui-extension-renderer
 
+## 1.2.0
+
+### Minor Changes
+
+- f51877c: Change UI Extension Alert API to expose more details to the embedder
+
+### Patch Changes
+
+- Updated dependencies [f51877c]
+  - @knime/ui-extension-service@1.1.0
+
 ## 1.1.48
 
 ### Patch Changes
