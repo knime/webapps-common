@@ -134,7 +134,7 @@ public final class FlowVariableDataServiceImpl implements FlowVariableDataServic
             final var settingsTree = textSettingsToNodeAndVariableSettings(textSettings, settingsType, context);
             final var data = m_converter.nodeSettingsToDataJson(settingsType, settingsTree, context);
             return jsonAtPath(dataPath, data);
-        } catch (InvalidSettingsException e) {
+        } catch (InvalidSettingsException e) { // NOSONAR
             throw new DataServiceException(e.getMessage(),
                 String.format("Because of an invalid current value of the controlling flow variable, "
                     + "it is not possible to preview this value in the dialog.", String.join(".", dataPath)));
