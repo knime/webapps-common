@@ -1,5 +1,17 @@
 # @knime/rich-text-editor
 
+## 1.3.0
+
+### Minor Changes
+
+- 893d560: Add IntervalInput component for setting either date or time intervals
+
+### Patch Changes
+
+- Updated dependencies [893d560]
+  - @knime/components@1.12.0
+  - @knime/utils@1.2.0
+
 ## 1.2.49
 
 ### Patch Changes

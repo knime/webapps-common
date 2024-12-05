@@ -1,5 +1,16 @@
 # @knime/components
 
+## 1.12.0
+
+### Minor Changes
+
+- 893d560: Add IntervalInput component for setting either date or time intervals
+
+### Patch Changes
+
+- Updated dependencies [893d560]
+  - @knime/utils@1.2.0
+
 ## 1.11.1
 
 ### Patch Changes
