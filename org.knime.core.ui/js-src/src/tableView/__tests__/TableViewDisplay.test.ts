@@ -574,7 +574,7 @@ describe("TableViewDisplay.vue", () => {
           settings,
           firstRowImageDimensions,
           currentRowHeight,
-          hasDynamicRowHeight,
+          enableDynamicRowHeight,
         },
       ] = (useAutoSizes as any).mock.calls[0];
       expect(unref(settings)).toStrictEqual(props.settings);
@@ -582,9 +582,9 @@ describe("TableViewDisplay.vue", () => {
         props.firstRowImageDimensions,
       );
       expect(unref(currentRowHeight)).toBe(props.currentRowHeight);
-      expect(unref(hasDynamicRowHeight)).toBe(false);
+      expect(unref(enableDynamicRowHeight)).toBe(false);
       await wrapper.setProps({ enableDynamicRowHeight: true });
-      expect(unref(hasDynamicRowHeight)).toBe(true);
+      expect(unref(enableDynamicRowHeight)).toBe(true);
     });
 
     it("uses useColumnSizes with correct values", () => {

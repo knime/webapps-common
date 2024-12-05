@@ -1,5 +1,7 @@
 import { type Ref, computed, ref } from "vue";
 
+import { constants as tableConstants } from "@knime/knime-ui-table";
+
 import { BORDER_BOTTOM_WIDTH } from "../constants";
 import type {
   ColumnSizes,
@@ -8,6 +10,8 @@ import type {
 } from "../types";
 import { AutoSizeColumnsToContent, RowHeightMode } from "../types/ViewSettings";
 import type { TableViewViewSettings } from "../types/ViewSettings";
+
+const { MAX_AUTO_ROW_HEIGHT } = tableConstants;
 
 type RelevantViewSettings = Pick<
   TableViewViewSettings,
@@ -19,14 +23,14 @@ export interface UseAutoSizesOptions {
     TableViewDisplayProps["firstRowImageDimensions"]
   >;
   currentRowHeight: Ref<number>;
-  hasDynamicRowHeight: Ref<boolean>;
+  enableDynamicRowHeight: Ref<boolean>;
 }
 
 export default ({
   settings,
   firstRowImageDimensions,
   currentRowHeight,
-  hasDynamicRowHeight,
+  enableDynamicRowHeight,
 }: UseAutoSizesOptions) => {
   const autoColumnSizes: Ref<ColumnSizes> = ref({});
 
@@ -50,24 +54,51 @@ export default ({
       AutoSizeColumnsToContent.FIT_CONTENT_AND_HEADER,
   );
 
+  const getImageAutoSizeWidthFromHeight = (
+    height: number,
+    imageDimension: ImageDimension,
+  ) => {
+    const { widthInPx, heightInPx } = imageDimension;
+    return Math.min(Math.floor((widthInPx * height) / heightInPx), widthInPx);
+  };
+
+  const scaleToMaxAutoRowHeight = (
+    imageDimension: ImageDimension,
+  ): ImageDimension => {
+    const scaledHeight = Math.min(
+      MAX_AUTO_ROW_HEIGHT,
+      imageDimension.heightInPx,
+    );
+    const scaledWidth = getImageAutoSizeWidthFromHeight(
+      scaledHeight,
+      imageDimension,
+    );
+    return {
+      widthInPx: scaledWidth,
+      heightInPx: scaledHeight,
+    };
+  };
+
   const fixedSizes = computed(() => {
     const fixedColumnSizes: ColumnSizes = {};
     const fixedRowHeights: ColumnSizes = {};
     // calculate the size of an img column by the ratio of the original img and the current row height
     Object.entries(firstRowImageDimensions.value).forEach(
       ([columnName, imageDimension]: [string, ImageDimension]) => {
-        const { widthInPx, heightInPx } = imageDimension;
         if (settings.value.rowHeightMode === RowHeightMode.AUTO) {
+          // height is variable but only up to a max auto row height in some cases.
+          const { widthInPx, heightInPx } = enableDynamicRowHeight.value
+            ? imageDimension
+            : scaleToMaxAutoRowHeight(imageDimension);
           fixedColumnSizes[columnName] = widthInPx;
           fixedRowHeights[columnName] = heightInPx;
         } else {
-          const autoSizeWidth = hasDynamicRowHeight.value
-            ? widthInPx
-            : Math.min(
-                Math.floor((widthInPx * innerRowHeight.value) / heightInPx),
-                widthInPx,
-              );
-          fixedColumnSizes[columnName] = autoSizeWidth;
+          // height is fixed to innerRowHeight. The width is calculated by the ratio of the image
+          const height = innerRowHeight.value;
+          fixedColumnSizes[columnName] = getImageAutoSizeWidthFromHeight(
+            height,
+            imageDimension,
+          );
         }
       },
     );

@@ -120,12 +120,6 @@ const {
   enableDynamicRowHeight,
 } = toRefs(props);
 
-const hasDynamicRowHeight = computed(
-  () =>
-    enableDynamicRowHeight.value &&
-    settings.value.rowHeightMode === RowHeightMode.AUTO,
-);
-
 const {
   autoColumnSizes,
   autoColumnSizesActive,
@@ -136,7 +130,7 @@ const {
   settings,
   firstRowImageDimensions,
   currentRowHeight,
-  hasDynamicRowHeight,
+  enableDynamicRowHeight,
 });
 
 const {
@@ -151,6 +145,12 @@ const {
   autoColumnSizes,
   autoColumnSizesActive,
 });
+
+const hasDynamicRowHeight = computed(
+  () =>
+    enableDynamicRowHeight.value &&
+    settings.value.rowHeightMode === RowHeightMode.AUTO,
+);
 
 const dataConfig = computed(() => {
   const conf = getDataConfig({

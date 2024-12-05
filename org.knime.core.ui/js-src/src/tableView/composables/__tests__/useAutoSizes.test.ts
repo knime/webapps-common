@@ -19,7 +19,7 @@ describe("useAutoSizes", () => {
       }),
       currentRowHeight,
       firstRowImageDimensions: ref({}),
-      hasDynamicRowHeight: ref(false),
+      enableDynamicRowHeight: ref(false),
     };
   });
 
@@ -101,23 +101,22 @@ describe("useAutoSizes", () => {
       });
     });
 
-    it("sets the correct column sizes of image columns on dynamic row height", () => {
-      initialDataMock.settings.value.rowHeightMode = RowHeightMode.CUSTOM;
-      initialDataMock.hasDynamicRowHeight.value = true;
+    it("sets the correct column sizes of image columns on automatic fixed row height", () => {
       const { autoColumnSizesOptions } = useAutoSizes(initialDataMock);
 
       expect(autoColumnSizesOptions.value).toStrictEqual({
         calculateForBody: true,
         calculateForHeader: false,
         fixedSizes: {
-          col1: 150,
-          col2: 120,
+          col1: 120,
+          col2: 96, // 120 (max row height) / 150 (height) * 120 (width)
           col3: 150,
         },
       });
     });
 
-    it("sets the correct column sizes of image columns on automatic row height", () => {
+    it("sets the correct column sizes of image columns on automatic dynamic row height", () => {
+      initialDataMock.enableDynamicRowHeight.value = true;
       const { autoColumnSizesOptions } = useAutoSizes(initialDataMock);
 
       expect(autoColumnSizesOptions.value).toStrictEqual({
