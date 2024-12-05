@@ -6,7 +6,7 @@ import { createDragGhosts } from "../utils/dragGhostHelpers";
 
 type UseItemDraggingOptions = {
   items: Ref<Array<FileExplorerItem>>;
-  itemRefs: Ref<HTMLElement[] | null>;
+  itemElements: Ref<Array<{ itemIndex: number; element: HTMLElement }>>;
   itemBACK: Ref<HTMLElement | null>;
   multiSelection: UseMultiSelectionReturn;
   shouldUseCustomDragPreview: Ref<boolean>;
@@ -36,7 +36,7 @@ export const useItemDragging = (options: UseItemDraggingOptions) => {
   const {
     items,
     itemBACK,
-    itemRefs,
+    itemElements,
     shouldUseCustomDragPreview,
     getCustomPreviewEl,
     multiSelection,
@@ -53,15 +53,23 @@ export const useItemDragging = (options: UseItemDraggingOptions) => {
     selectedItems.value.map((item) => item.id),
   );
 
-  const getItemElementByRefIndex = (
+  const getElementByItemIndex = (
     index: number,
     isGoBackItem = false,
-  ): HTMLElement =>
-    isGoBackItem
-      ? itemBACK.value!
-      : // except for the "Go back" item, all others are present within a v-for
-        // so the refs are returned in a collection
-        itemRefs.value![index];
+  ): HTMLElement | null => {
+    if (isGoBackItem) {
+      return itemBACK.value!;
+    }
+
+    const elementInfo = itemElements.value.find(
+      ({ itemIndex }) => itemIndex === index,
+    );
+    if (elementInfo) {
+      return elementInfo.element;
+    }
+
+    return null;
+  };
 
   const onDragStart = (event: DragEvent, index: number) => {
     isDragging.value = true;
@@ -93,15 +101,21 @@ export const useItemDragging = (options: UseItemDraggingOptions) => {
     );
 
     // map an index to an object that will be used to generate the ghost
-    const toGhostTarget = (_index: number) => ({
-      targetEl: getItemElementByRefIndex(_index),
-      textContent: items.value[_index].name,
-    });
+    const toGhostTarget = (_index: number) => {
+      const targetEl = getElementByItemIndex(_index);
+      return targetEl
+        ? {
+            targetEl,
+            textContent: items.value[_index].name,
+          }
+        : null;
+    };
 
     const selectedTargets = ([] as Array<ReturnType<typeof toGhostTarget>>)
       // add the item that initiated the drag at the beginning of the array
       .concat(toGhostTarget(index))
-      .concat(otherSelectedIndexes.map(toGhostTarget));
+      .concat(otherSelectedIndexes.map(toGhostTarget))
+      .filter((t) => t !== null);
 
     const dragGhostHelpers = createDragGhosts({
       dragStartEvent: event,
@@ -129,8 +143,8 @@ export const useItemDragging = (options: UseItemDraggingOptions) => {
     }
 
     if (index !== startDragItemIndex.value) {
-      const draggedOverEl = getItemElementByRefIndex(index, isGoBackItem);
-      draggedOverEl.classList.add("dragging-over");
+      const draggedOverEl = getElementByItemIndex(index, isGoBackItem);
+      draggedOverEl?.classList.add("dragging-over");
     }
   };
 
@@ -166,8 +180,8 @@ export const useItemDragging = (options: UseItemDraggingOptions) => {
     index: number,
     isGoBackItem = false,
   ) => {
-    const draggedOverEl = getItemElementByRefIndex(index, isGoBackItem);
-    draggedOverEl.classList.remove("dragging-over");
+    const draggedOverEl = getElementByItemIndex(index, isGoBackItem);
+    draggedOverEl?.classList.remove("dragging-over");
   };
 
   const hasDroppedInside = ref(false);
@@ -188,8 +202,8 @@ export const useItemDragging = (options: UseItemDraggingOptions) => {
     index: number,
     isGoBackItem = false,
   ): DropReturn => {
-    const droppedEl = getItemElementByRefIndex(index, isGoBackItem);
-    droppedEl.classList.remove("dragging-over");
+    const droppedEl = getElementByItemIndex(index, isGoBackItem);
+    droppedEl?.classList.remove("dragging-over");
 
     hasDroppedInside.value = true;
 
