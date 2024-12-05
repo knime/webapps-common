@@ -220,7 +220,6 @@ final class UiSchemaOptionsGenerator {
                     break;
                 case LOCAL_DATE:
                     options.put(TAG_FORMAT, Format.LOCAL_DATE);
-                    disableTimeFields(options);
                     break;
                 case LOCAL_TIME:
                     options.put(TAG_FORMAT, Format.LOCAL_TIME);
@@ -266,9 +265,8 @@ final class UiSchemaOptionsGenerator {
         if (annotatedWidgets.contains(DateTimeWidget.class)) {
 
             final var dateTimeWidget = m_node.getAnnotation(DateTimeWidget.class).orElseThrow();
-            options.put(TAG_FORMAT, Format.LOCAL_DATE);
-            selectTimeFields(options, dateTimeWidget.showTime(), dateTimeWidget.showSeconds(),
-                dateTimeWidget.showMilliseconds());
+            options.put(TAG_FORMAT, Format.DATE_TIME);
+            selectTimeFields(options, dateTimeWidget.showSeconds(), dateTimeWidget.showMilliseconds());
             if (!dateTimeWidget.timezone().isEmpty()) {
                 options.put("timezone", dateTimeWidget.timezone());
             }
@@ -664,13 +662,9 @@ final class UiSchemaOptionsGenerator {
         state.put("text", buttonState.text());
     }
 
-    private static void disableTimeFields(final ObjectNode options) {
-        selectTimeFields(options, false, false, false);
-    }
-
-    private static void selectTimeFields(final ObjectNode options, final boolean showTime, final boolean showSeconds,
+    private static void selectTimeFields(final ObjectNode options, final boolean showSeconds,
         final boolean showMilliseconds) {
-        options.put("showTime", showTime);
+        options.put("showTime", true);
         options.put("showSeconds", showSeconds);
         options.put("showMilliseconds", showMilliseconds);
     }

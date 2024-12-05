@@ -53,21 +53,24 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZonedDateTime;
 
 /**
- * A widget annotation to display a date string as a date picker with several formatting options. Displays only the date
- * per default.
+ * A widget annotation to display a date string as a date-time picker with several formatting options.
+ *
+ * Note that for only date or only time, one should instead of a string use a {@link LocalDate} or {@link LocalTime}.
+ * respectively.
+ *
+ * This widget will furthermore be REMOVED, once also all other cases are handled by default renderers for the java
+ * types. Still missing are {@ink LocalDateTime} and {@link ZonedDateTime}.
  *
  * @author Rupert Ettrich
  */
 @Retention(RUNTIME)
 @Target(FIELD)
 public @interface DateTimeWidget {
-
-    /**
-     * @return whether to show hours and minutes
-     */
-    boolean showTime() default false;
 
     /**
      * @return whether to show seconds

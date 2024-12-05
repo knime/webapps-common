@@ -14,17 +14,16 @@ describe("DateTimeControl", () => {
     },
   };
 
-  it("dateTimeControl config error", () => {
+  it("determines DateTimeControl from schema", () => {
     const uiSchema = {
-      // This error is intentional.
-      type: "Controll",
+      type: "Control",
       scope: "#/properties/dateTime",
     };
 
-    expect(determineRenderer(uiSchema, schema)).toBeUndefined();
+    expect(determineRenderer(uiSchema, schema)).toBe("DateTimeControl");
   });
 
-  it("textControl with options", () => {
+  it("determines DateTimeControl from uischema", () => {
     const uiSchema = {
       type: "Control",
       scope: "#/properties/dateTime",
@@ -33,15 +32,39 @@ describe("DateTimeControl", () => {
       },
     };
 
-    expect(determineRenderer(uiSchema, schema)).toBe("DateTimeControl");
-  });
-
-  it("textControl without options", () => {
-    const uiSchema = {
-      type: "Control",
-      scope: "#/properties/dateTime",
+    const schema = {
+      type: "object",
+      properties: {
+        dateTime: {
+          type: "string",
+        },
+      },
     };
 
     expect(determineRenderer(uiSchema, schema)).toBe("DateTimeControl");
+  });
+
+  it("detemines DateControl from uischema", () => {
+    const uiSchema = {
+      type: "Control",
+      scope: "#/properties/dateTime",
+      options: {
+        format: "localDate",
+      },
+    };
+
+    expect(determineRenderer(uiSchema, schema)).toBe("DateControl");
+  });
+
+  it("determines TimeControl from uischema", () => {
+    const uiSchema = {
+      type: "Control",
+      scope: "#/properties/dateTime",
+      options: {
+        format: "localTime",
+      },
+    };
+
+    expect(determineRenderer(uiSchema, schema)).toBe("TimeControl");
   });
 });

@@ -105,7 +105,6 @@ public class TableViewViewSettings implements DefaultNodeSettings {
     /**
      * The selected columns to be displayed.
      */
-
     @Widget(title = "Displayed columns", description = "Select the columns that should be displayed in the table")
     @ChoicesWidget(choices = AllColumns.class)
     @Persist(customPersistor = StringArrayToColumnFilterPersistor.class)
@@ -146,8 +145,6 @@ public class TableViewViewSettings implements DefaultNodeSettings {
     @Effect(predicate = EnablePagination.class, type = EffectType.HIDE)
     @Layout(ViewSection.class)
     public boolean m_showTableSize = true;
-
-
 
     /**
      * Whether to show the data type of every column in the header or not

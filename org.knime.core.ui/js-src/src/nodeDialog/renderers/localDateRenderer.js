@@ -10,7 +10,7 @@ const DateControl = defineAsyncComponent({
 export const hasLocalDateFormat = (uischema, _schema) =>
   uischema.options?.format === inputFormats.localDate;
 
-export const dateRenderer = {
+export const localDateRenderer = {
   name: "DateControl",
   renderer: DateControl,
   tester: rankWith(priorityRanks.default, hasLocalDateFormat),

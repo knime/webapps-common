@@ -6,6 +6,7 @@ import { columnFilterRenderer } from "./columnFilterRenderer";
 import { columnSelectRenderer } from "./columnSelectRenderer";
 import { comboBoxRenderer } from "./comboBoxRenderer";
 import { credentialsRenderer } from "./credentialsRenderer";
+import { dateTimeRenderer } from "./dateTimeRenderer";
 import { dropdownRenderer } from "./dropdownRenderer";
 import { dynamicValueRenderer } from "./dynamicValueRenderer";
 import { editResetButtonRenderer } from "./editResetButtonRenderer";
@@ -14,9 +15,9 @@ import { fileChooserRenderer } from "./fileChooserRenderer";
 import { horizontalLayoutRenderer } from "./horizontalLayoutRenderer";
 import { integerRenderer } from "./integerRenderer";
 import { legacyCredentialsRenderer } from "./legacyCredentialsRenderer";
-import { dateRenderer } from "./localDateRenderer";
+import { localDateRenderer } from "./localDateRenderer";
 import { localFileChooserRenderer } from "./localFileChooserRenderer";
-import { timeRenderer } from "./localTimeRenderer";
+import { localTimeRenderer } from "./localTimeRenderer";
 import { nameFilterRenderer } from "./nameFilterRenderer";
 import { numberRenderer } from "./numberRenderer";
 import { radioRenderer } from "./radioRenderer";
@@ -48,8 +49,9 @@ export const defaultRenderers = [
   nameFilterRenderer,
   columnSelectRenderer,
   comboBoxRenderer,
-  dateRenderer,
-  timeRenderer,
+  localDateRenderer,
+  localTimeRenderer,
+  dateTimeRenderer,
   dropdownRenderer,
   integerRenderer,
   numberRenderer,

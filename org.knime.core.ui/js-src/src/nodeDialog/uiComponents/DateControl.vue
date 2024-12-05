@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { computed } from "vue";
 import { rendererProps } from "@jsonforms/vue";
 
 import { DateTimeInput } from "@knime/components/date-time-input";
@@ -10,8 +9,6 @@ import LabeledControl from "./label/LabeledControl.vue";
 
 const props = defineProps(rendererProps());
 const { control, disabled, onChange } = useDialogControl<string>({ props });
-
-const options = computed(() => control.value.uischema.options);
 </script>
 
 <template>
@@ -24,11 +21,8 @@ const options = computed(() => control.value.uischema.options);
       :id="labelForId"
       two-lines
       :model-value="new Date(control.data)"
-      class="date-time"
       :required="true"
       :show-time="false"
-      :timezone="options?.timezone"
-      :date-format="options?.dateFormat"
       compact
       :disabled="disabled"
       @update:model-value="onChange"

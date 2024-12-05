@@ -10,7 +10,7 @@ const TimeControl = defineAsyncComponent({
 export const hasLocalTimeFormat = (uischema, _schema) =>
   uischema.options?.format === inputFormats.localTime;
 
-export const timeRenderer = {
+export const localTimeRenderer = {
   name: "TimeControl",
   renderer: TimeControl,
   tester: rankWith(

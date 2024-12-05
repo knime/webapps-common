@@ -30,7 +30,6 @@ const maximum = computed(() =>
       :id="labelForId"
       two-lines
       :model-value="new Date(control.data)"
-      class="date-time"
       :required="true"
       :show-time="options?.showTime"
       :show-seconds="options?.showSeconds"

@@ -185,9 +185,6 @@ class UiSchemaOptionsTest {
         assertThatJson(response).inPath("$.elements[4].options.format").isString().isEqualTo("columnSelection");
         assertThatJson(response).inPath("$.elements[5].scope").isString().contains("localDate");
         assertThatJson(response).inPath("$.elements[5].options.format").isString().isEqualTo("localDate");
-        assertThatJson(response).inPath("$.elements[5].options.showTime").isBoolean().isFalse();
-        assertThatJson(response).inPath("$.elements[5].options.showSeconds").isBoolean().isFalse();
-        assertThatJson(response).inPath("$.elements[5].options.showMilliseconds").isBoolean().isFalse();
         assertThatJson(response).inPath("$.elements[6].scope").isString().contains("localTime");
         assertThatJson(response).inPath("$.elements[6].options.format").isString().isEqualTo("localTime");
         assertThatJson(response).inPath("$.elements[7].scope").isString().contains("credentials");
@@ -808,11 +805,9 @@ class UiSchemaOptionsTest {
 
         var response = buildTestUiSchema(DateTimeDefaultTestSettings.class);
         assertThatJson(response).inPath("$.elements[0]").isObject().containsKey("options");
-        assertThatJson(response).inPath("$.elements[0].options.format").isString().isEqualTo("localDate");
-        assertThatJson(response).inPath("$.elements[0].options.showTime").isBoolean().isFalse();
+        assertThatJson(response).inPath("$.elements[0].options.format").isString().isEqualTo("dateTime");
         assertThatJson(response).inPath("$.elements[0].options.showSeconds").isBoolean().isFalse();
         assertThatJson(response).inPath("$.elements[0].options.showMilliseconds").isBoolean().isFalse();
-        assertThatJson(response).inPath("$.elements[0].options").isObject().doesNotContainKey("dateFormat");
         assertThatJson(response).inPath("$.elements[0].options").isObject().doesNotContainKey("timezone");
         assertThatJson(response).inPath("$.elements[0].options").isObject().doesNotContainKey("minimum");
         assertThatJson(response).inPath("$.elements[0].options").isObject().doesNotContainKey("maximum");
@@ -823,15 +818,14 @@ class UiSchemaOptionsTest {
         class DateTimeDefaultTestSettings implements DefaultNodeSettings {
 
             @Widget(title = "", description = "")
-            @DateTimeWidget(showTime = true, showSeconds = true, showMilliseconds = true, minDate = "2023-06-12",
+            @DateTimeWidget(showSeconds = true, showMilliseconds = true, minDate = "2023-06-12",
                 maxDate = "2023-06-14", timezone = "America/Dawson_Creek")
             String m_dateTime;
         }
 
         var response = buildTestUiSchema(DateTimeDefaultTestSettings.class);
         assertThatJson(response).inPath("$.elements[0]").isObject().containsKey("options");
-        assertThatJson(response).inPath("$.elements[0].options.format").isString().isEqualTo("localDate");
-        assertThatJson(response).inPath("$.elements[0].options.showTime").isBoolean().isTrue();
+        assertThatJson(response).inPath("$.elements[0].options.format").isString().isEqualTo("dateTime");
         assertThatJson(response).inPath("$.elements[0].options.showSeconds").isBoolean().isTrue();
         assertThatJson(response).inPath("$.elements[0].options.showMilliseconds").isBoolean().isTrue();
         assertThatJson(response).inPath("$.elements[0].options.timezone").isString().isEqualTo("America/Dawson_Creek");

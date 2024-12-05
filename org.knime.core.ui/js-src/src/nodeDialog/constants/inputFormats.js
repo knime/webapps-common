@@ -24,4 +24,5 @@ export const inputFormats = {
   textMessage: "textMessage",
   localTime: "localTime",
   localDate: "localDate",
+  dateTime: "dateTime",
 };
