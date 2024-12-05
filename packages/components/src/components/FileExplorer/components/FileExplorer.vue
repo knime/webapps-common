@@ -1,7 +1,13 @@
+<!-- eslint-disable max-lines -->
 <script setup lang="ts">
 import { computed, nextTick, ref, toRef, toRefs, watch } from "vue";
+import { useResizeObserver } from "@vueuse/core";
 
 import { navigatorUtils } from "@knime/utils";
+import {
+  SameSizeManager,
+  useVirtualLine,
+} from "@knime/vue-headless-virtual-scroller";
 
 import { useFocusableMultiSelection } from "../../../composables/multiSelection/useFocusableMultiSelection";
 import useClickOutside from "../../../composables/useClickOutside";
@@ -33,6 +39,16 @@ interface Props {
    * List of items to be rendered for the displayed directory
    */
   items: Array<FileExplorerItemType>;
+  /**
+   * Enables or disables virtual item scrolling for the component.
+   * When enabled, only the visible items are rendered, improving performance
+   * for large lists by reducing the number of DOM elements. Default: `false`
+   */
+  virtual?: boolean;
+  /**
+   * Height of each item row in px.
+   */
+  itemHeight?: number;
   /**
    * Determines whether the "back" item should be rendered or not
    */
@@ -86,6 +102,7 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   mode: "normal",
   fullPath: "",
+  itemHeight: 38,
   isRootFolder: true,
   activeRenamedItemId: null,
   disableContextMenu: false,
@@ -131,9 +148,48 @@ const changeDirectory = (pathId: string) => {
 };
 
 /** Refs */
-const itemRefs = ref<{ $el: HTMLElement }[]>([]);
+const virtualItemRefs = ref<InstanceType<typeof FileExplorerItem>[]>([]);
 const itemBack = ref<{ $el: HTMLElement } | null>(null);
 const table = ref<null | HTMLElement>(null);
+
+/** Virtualization */
+const heightPerRow = computed(() => props.itemHeight + 2 /* item margin */);
+const VIRTUAL_ITEM_BUFFER = 16;
+const virtualSizeManager = new SameSizeManager(
+  computed(() => props.items.length),
+  heightPerRow.value,
+);
+const {
+  indices: virtualIndices,
+  containerProps,
+  scrolledAreaStyles,
+} = useVirtualLine(
+  {
+    sizeManager: virtualSizeManager,
+    buffer: VIRTUAL_ITEM_BUFFER * heightPerRow.value,
+  },
+  "vertical",
+  table,
+);
+
+const renderedIndices = computed(() =>
+  props.virtual
+    ? virtualIndices.value.toArray()
+    : Array.from({ length: props.items.length }, (_, i) => i),
+);
+const renderedItems = computed(() =>
+  renderedIndices.value.map((i) => props.items[i]),
+);
+
+const scrollIntoView = (index: number) => {
+  if (index === -1) {
+    return;
+  }
+  containerProps.ref.value?.scrollTo({
+    top: virtualSizeManager.toOffset(index),
+    behavior: "smooth",
+  });
+};
 
 /** MULTISELECTION */
 const multiSelection = useFocusableMultiSelection({
@@ -158,9 +214,11 @@ const selectedItems = computed(() =>
   selectedIndexes.value.map((index) => props.items[index]),
 );
 
-const getItemElement = (index: number) => {
-  return itemRefs.value[index]?.$el;
-};
+const getItemElement = (index: number): HTMLElement | null =>
+  virtualItemRefs.value?.find(
+    ({ $props }) =>
+      $props.item?.id && $props.item.id === props.items[index]?.id,
+  )?.$el ?? null;
 
 const selectItems = (itemIds: string[]) => {
   // look up item indices
@@ -179,8 +237,7 @@ const selectItems = (itemIds: string[]) => {
 
   // scroll to first selected item
   const firstIndex = itemIndices.slice().sort().at(0) ?? -1; // NOSONAR
-  const element = itemRefs.value[firstIndex]?.$el;
-  element?.scrollIntoView({ behavior: "smooth", block: "center" });
+  scrollIntoView(firstIndex);
 };
 
 // handle selection of items via prop change
@@ -233,9 +290,7 @@ const {
   onDrop,
 } = useItemDragging({
   itemBACK: computed(() => (itemBack.value ? itemBack.value.$el : null)),
-  itemRefs: computed(() =>
-    itemRefs.value ? itemRefs.value.map(({ $el }) => $el) : null,
-  ),
+  getItemElement,
   draggingAnimationMode: toRef(props, "draggingAnimationMode"),
   isDirectory,
   items: toRefs(props).items,
@@ -344,6 +399,10 @@ const openContextMenu = (
 ) => {
   const element = getItemElement(index);
 
+  if (!element) {
+    return;
+  }
+
   if (event instanceof MouseEvent) {
     contextMenuPos.value.x = event.clientX;
     contextMenuPos.value.y = event.clientY;
@@ -440,132 +499,171 @@ useClickOutside({
   targets: [table, toRef(props, "clickOutsideException")],
   callback: () => resetSelection(focusedIndex.value),
 });
+
+// Force update the virtual scroll position at the end of setup
+// needed for the initial set of virtual items to be correct
+useResizeObserver(containerProps.ref, containerProps.onScroll);
 </script>
 
 <template>
-  <table
-    ref="table"
-    tabindex="0"
-    :class="{ 'keyboard-focus': keyPressedUntilMouseClick }"
-    aria-label="list of files in the current folder"
-    @focus="handleFocusOnTable"
-    @keydown="handleKeyboardNavigation"
-  >
-    <thead>
-      <tr>
-        <th scope="col">Type</th>
-        <th class="name" scope="col">Name</th>
-      </tr>
-    </thead>
-    <tbody :class="mode">
-      <FileExplorerItemBack
-        v-if="!isRootFolder"
-        ref="itemBack"
-        tabindex="-1"
-        :class="{
-          'keyboard-focus': keyPressedUntilMouseClick,
-        }"
-        :is-dragging="isDragging"
-        @dragenter="onDragEnter($event, -1, true)"
-        @dragleave="onDragLeave($event, -1, true)"
-        @dragover="onDragOver"
-        @drop.prevent="forwardEmit('moveItems', onDrop($event, -1, true))"
-        @keydown.enter.stop.prevent="changeDirectory('..')"
-        @click="changeDirectory('..')"
-      />
-
-      <FileExplorerItem
-        v-for="(item, index) in items"
-        :key="index"
-        ref="itemRefs"
-        tabindex="-1"
-        :class="{
-          'keyboard-focus': keyPressedUntilMouseClick,
-        }"
-        :item="item"
-        :title="item.name"
-        :is-dragging="isDragging"
-        :is-selected="isSelected(index)"
-        :is-rename-active="item.id === renamedItemId"
-        :blacklisted-names="blacklistedNames"
-        :is-dragging-enabled="!disableDragging"
-        @dragstart="onDragStart($event, index)"
-        @dragenter="onDragEnter($event, index)"
-        @dragover="onDragOver"
-        @dragleave="onDragLeave($event, index)"
-        @dragend="forwardEmit('dragend', onDragEnd($event, item))"
-        @drag="forwardEmit('drag', onDrag($event, item))"
-        @click="onItemClick(item, $event, index)"
-        @contextmenu="openContextMenu($event, item, index)"
-        @keydown.shift.f10="openContextMenu($event, item, index)"
-        @drop="forwardEmit('moveItems', onDrop($event, index))"
-        @dblclick="openFileOrEnterFolder(item)"
-        @keydown.delete.stop.prevent="deleteSelectedItems"
-        @keydown.f2.stop.prevent="renameItem(item, index)"
-        @keydown.enter.prevent="handleEnterKey($event, item)"
-        @rename:submit="emit('renameFile', $event)"
-        @rename:clear="renamedItemId = null"
+  <div class="file-explorer" :class="{ 'virtual-scrolling': props.virtual }">
+    <table
+      tabindex="0"
+      class="virtual-scrollcontainer"
+      :class="{ 'keyboard-focus': keyPressedUntilMouseClick }"
+      aria-label="list of files in the current folder"
+      v-bind="containerProps"
+      @focus="handleFocusOnTable"
+      @keydown="handleKeyboardNavigation"
+    >
+      <tbody :class="mode">
+        <FileExplorerItemBack
+          v-if="!isRootFolder"
+          ref="itemBack"
+          tabindex="-1"
+          class="file-explorer-item"
+          :class="{
+            'keyboard-focus': keyPressedUntilMouseClick,
+          }"
+          :is-dragging="isDragging"
+          @dragenter="onDragEnter($event, -1, true)"
+          @dragleave="onDragLeave($event, -1, true)"
+          @dragover="onDragOver"
+          @drop.prevent="forwardEmit('moveItems', onDrop($event, -1, true))"
+          @keydown.enter.stop.prevent="changeDirectory('..')"
+          @click="changeDirectory('..')"
+        />
+      </tbody>
+      <thead>
+        <tr>
+          <th scope="col">Type</th>
+          <th class="name" scope="col">Name</th>
+        </tr>
+      </thead>
+      <tbody
+        :class="mode"
+        :style="{ ...scrolledAreaStyles, flexDirection: 'column' }"
       >
-        <template v-if="$slots.itemIcon" #icon>
-          <slot name="itemIcon" :item="item" />
-        </template>
+        <FileExplorerItem
+          v-for="(item, vIndex) in renderedItems"
+          :key="item.id"
+          ref="virtualItemRefs"
+          tabindex="-1"
+          class="file-explorer-item"
+          :class="{
+            'keyboard-focus': keyPressedUntilMouseClick,
+          }"
+          :item="item"
+          :title="item.name"
+          :is-dragging="isDragging"
+          :is-selected="isSelected(renderedIndices[vIndex])"
+          :is-rename-active="item.id === renamedItemId"
+          :blacklisted-names="blacklistedNames"
+          :is-dragging-enabled="!disableDragging"
+          @dragstart="onDragStart($event, renderedIndices[vIndex])"
+          @dragenter="onDragEnter($event, renderedIndices[vIndex])"
+          @dragover="onDragOver"
+          @dragleave="onDragLeave($event, renderedIndices[vIndex])"
+          @dragend="forwardEmit('dragend', onDragEnd($event, item))"
+          @drag="forwardEmit('drag', onDrag($event, item))"
+          @click="onItemClick(item, $event, renderedIndices[vIndex])"
+          @contextmenu="openContextMenu($event, item, renderedIndices[vIndex])"
+          @keydown.shift.f10="
+            openContextMenu($event, item, renderedIndices[vIndex])
+          "
+          @drop="
+            forwardEmit('moveItems', onDrop($event, renderedIndices[vIndex]))
+          "
+          @dblclick="openFileOrEnterFolder(item)"
+          @keydown.delete.stop.prevent="deleteSelectedItems"
+          @keydown.f2.stop.prevent="renameItem(item, renderedIndices[vIndex])"
+          @keydown.enter.prevent="handleEnterKey($event, item)"
+          @rename:submit="emit('renameFile', $event)"
+          @rename:clear="renamedItemId = null"
+        >
+          <template v-if="$slots.itemIcon" #icon>
+            <slot name="itemIcon" :item="item" />
+          </template>
 
-        <template v-if="$slots.itemContent" #default="slotProps">
+          <template v-if="$slots.itemContent" #default="slotProps">
+            <slot
+              name="itemContent"
+              :item="item"
+              :is-rename-active="slotProps.isRenameActive"
+              :is-selected="slotProps.isSelected"
+            />
+          </template>
+        </FileExplorerItem>
+
+        <tr v-if="items.length === 0" class="empty">
+          <td>
+            <slot name="emptyFolder">Folder is empty</slot>
+          </td>
+        </tr>
+      </tbody>
+
+      <div
+        v-if="draggingAnimationMode !== 'disabled'"
+        ref="customPreviewContainer"
+        class="custom-preview"
+      >
+        <slot name="customDragPreview">
+          <div ref="customDragPreviewPlaceholder" />
+        </slot>
+      </div>
+
+      <FileExplorerContextMenu
+        v-if="
+          !props.disableContextMenu && isContextMenuVisible && contextMenuAnchor
+        "
+        :position="contextMenuPos"
+        :anchor="contextMenuAnchor"
+        :selected-items="selectedItems"
+        @item-click="onContextMenuItemClick"
+        @close="() => closeContextMenu()"
+      >
+        <template #default="slotProps">
           <slot
-            name="itemContent"
-            :item="item"
-            :is-rename-active="slotProps.isRenameActive"
-            :is-selected="slotProps.isSelected"
+            name="contextMenu"
+            :is-context-menu-visible="isContextMenuVisible"
+            :position="contextMenuPos"
+            :anchor="contextMenuAnchor"
+            :close-context-menu="() => closeContextMenu()"
+            :is-multiple-selection-active="
+              isMultipleSelectionActive(contextMenuAnchor.index)
+            "
+            v-bind="slotProps"
           />
         </template>
-      </FileExplorerItem>
-
-      <tr v-if="items.length === 0" class="empty">
-        <td>
-          <slot name="emptyFolder">Folder is empty</slot>
-        </td>
-      </tr>
-    </tbody>
-
-    <div
-      v-if="draggingAnimationMode !== 'disabled'"
-      ref="customPreviewContainer"
-      class="custom-preview"
-    >
-      <slot name="customDragPreview">
-        <div ref="customDragPreviewPlaceholder" />
-      </slot>
-    </div>
-
-    <FileExplorerContextMenu
-      v-if="
-        !props.disableContextMenu && isContextMenuVisible && contextMenuAnchor
-      "
-      :position="contextMenuPos"
-      :anchor="contextMenuAnchor"
-      :selected-items="selectedItems"
-      @item-click="onContextMenuItemClick"
-      @close="() => closeContextMenu()"
-    >
-      <template #default="slotProps">
-        <slot
-          name="contextMenu"
-          :is-context-menu-visible="isContextMenuVisible"
-          :position="contextMenuPos"
-          :anchor="contextMenuAnchor"
-          :close-context-menu="() => closeContextMenu()"
-          :is-multiple-selection-active="
-            isMultipleSelectionActive(contextMenuAnchor.index)
-          "
-          v-bind="slotProps"
-        />
-      </template>
-    </FileExplorerContextMenu>
-  </table>
+      </FileExplorerContextMenu>
+    </table>
+  </div>
 </template>
 
 <style lang="postcss" scoped>
 @import url("@knime/styles/css/mixins.css");
+
+.file-explorer {
+  display: flex;
+  flex: 1 0 0%;
+  flex-direction: column;
+
+  &.virtual-scrolling {
+    min-height: 0;
+  }
+}
+
+.virtual-scrollcontainer {
+  overflow: hidden auto;
+
+  /* 'block' to use the virtual height set on its child */
+  display: block;
+  flex-direction: column;
+}
+
+.file-explorer-item {
+  height: v-bind("itemHeight +'px'");
+}
 
 thead {
   /* Hide table head for better readability but keeping it for a11y reasons */
@@ -582,6 +680,10 @@ tbody {
   display: block;
   width: 100%;
   border-spacing: 0;
+}
+
+table {
+  height: 100%;
 }
 
 table:focus {

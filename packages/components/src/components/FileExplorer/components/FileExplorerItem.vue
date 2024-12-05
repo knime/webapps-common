@@ -176,7 +176,9 @@ const onRenameSubmit = (keyupEvent: KeyboardEvent, isClickAway = false) => {
   & .item-content {
     width: 100%;
     height: 100%;
+    display: flex;
     flex: 2 1 auto;
+    align-items: center;
     padding: calc(var(--item-padding) * 1px);
     text-overflow: ellipsis;
     overflow: hidden;

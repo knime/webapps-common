@@ -108,10 +108,10 @@ describe("FileExplorer.vue", () => {
     customSlots?: { contextMenu?: any; itemIcon?: any; itemContent?: any };
   };
 
-  const scrollIntoView = vi.fn();
+  const scrollTo = vi.fn();
 
   beforeAll(() => {
-    HTMLElement.prototype.scrollIntoView = scrollIntoView;
+    HTMLElement.prototype.scrollTo = scrollTo;
   });
 
   const valueOrEmpty = <T>(input: T, key: keyof typeof input) =>
@@ -259,7 +259,7 @@ describe("FileExplorer.vue", () => {
 
       expect(getRenderedItems(wrapper).at(2)?.classes()).toContain("selected");
       expect(getRenderedItems(wrapper).at(3)?.classes()).toContain("selected");
-      expect(scrollIntoView).toHaveBeenCalled();
+      expect(scrollTo).toHaveBeenCalled();
     });
 
     it("should select items on change of items prop", async () => {
@@ -275,7 +275,7 @@ describe("FileExplorer.vue", () => {
       });
 
       expect(getRenderedItems(wrapper).at(6)?.classes()).toContain("selected");
-      expect(scrollIntoView).toHaveBeenCalled();
+      expect(scrollTo).toHaveBeenCalled();
     });
 
     it("should disable multi-selection based on configuration", async () => {
