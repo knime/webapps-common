@@ -1,5 +1,14 @@
 # @knime/hub-features
 
+## 1.0.17
+
+### Patch Changes
+
+- 9fa8163: bugfix/improvements in uploads: retry only on server error, reset placeholder skeleton on prepare upload error
+- Updated dependencies [9fa8163]
+  - @knime/components@1.11.1
+  - @knime/utils@1.1.3
+
 ## 1.0.16
 
 ### Patch Changes

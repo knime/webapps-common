@@ -1,5 +1,11 @@
 # @knime/utils
 
+## 1.1.3
+
+### Patch Changes
+
+- 9fa8163: bugfix/improvements in uploads: retry only on server error, reset placeholder skeleton on prepare upload error
+
 ## 1.1.2
 
 ### Patch Changes
