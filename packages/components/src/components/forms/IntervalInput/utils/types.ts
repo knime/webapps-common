@@ -1,4 +1,4 @@
-import type { intervalUtils } from "packages/utils/src";
+import type { intervalUtils } from "@knime/utils";
 
 export type UsedIntervalFormatsType = "DATE" | "TIME";
 export type AllowedIntervalFormatsType = "DATE" | "TIME" | "DATE_OR_TIME";
