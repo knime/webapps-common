@@ -1,14 +1,21 @@
 export { JsonDataService } from "./JsonDataService";
 export {
   SelectionService,
-  SelectionModes,
-  type SelectionEventCallbackParams,
+  type SelectionMode,
+  type SelectionParams,
 } from "./SelectionService";
 export { CachingSelectionService } from "./CachingSelectionService";
-export { ReportingService } from "./ReportingService";
+export {
+  ReportingService,
+  type ReportRenderingConfig,
+} from "./ReportingService";
 export { DialogService } from "./DialogService";
 export { SharedDataService } from "./SharedDataService";
-export { AlertingService } from "./AlertingService";
+export {
+  AlertingService,
+  type AlertParams,
+  type AlertType,
+} from "./AlertingService";
 export { ResourceService } from "./ResourceService";
 export { ImageGenerationService } from "./ImageGenerationService";
 export { DataValueViewService } from "./DataValueViewService";

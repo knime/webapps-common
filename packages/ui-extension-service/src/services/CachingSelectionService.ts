@@ -1,9 +1,9 @@
-import type { UIExtensionService } from "../types";
+import type {
+  SelectionParams,
+  UIExtensionService,
+} from "@knime/ui-extension-renderer/api";
 
-import {
-  type SelectionEventCallbackParams,
-  SelectionService,
-} from "./SelectionService";
+import { SelectionService } from "./SelectionService";
 import type { SelectionServiceAPILayer } from "./types/serviceApiLayers";
 
 /**
@@ -18,10 +18,7 @@ export class CachingSelectionService extends SelectionService {
     this.addOnSelectionChangeCallback(this.addBackendSelection.bind(this));
   }
 
-  private addBackendSelection({
-    mode,
-    selection = [],
-  }: SelectionEventCallbackParams) {
+  private addBackendSelection({ mode, selection = [] }: SelectionParams) {
     switch (mode) {
       case "ADD":
         this.addToChache(selection);

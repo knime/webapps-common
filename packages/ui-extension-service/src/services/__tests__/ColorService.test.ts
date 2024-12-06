@@ -1,9 +1,12 @@
 /* eslint-disable no-magic-numbers */
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { setUpCustomEmbedderService } from "../../embedder";
-import type { UIExtensionService } from "../../index";
-import { type ColorModel, ColorModelType } from "../../types/ColorModel";
+import {
+  type ColorModel,
+  type UIExtensionService,
+} from "@knime/ui-extension-renderer/api";
+import { setUpCustomEmbedderService } from "@knime/ui-extension-renderer/testing";
+
 import {
   ColorService,
   NominalColorHandler,
@@ -37,9 +40,9 @@ describe("ColorService", () => {
   let colorService: ColorService,
     uiExtensionService: UIExtensionService<ColorServiceAPILayer>;
 
-  const colorModels = {
+  const colorModels: Record<string, ColorModel> = {
     [numericColumnName]: {
-      type: ColorModelType.NUMERIC as const,
+      type: "NUMERIC",
       model: {
         minColor: "#0000FF",
         maxColor: "#FF0000",
@@ -48,7 +51,7 @@ describe("ColorService", () => {
       },
     },
     [nominalColumnName]: {
-      type: ColorModelType.NOMINAL as const,
+      type: "NOMINAL",
       model: {
         red: "#FF0000",
         green: "#00FF00",
@@ -108,8 +111,8 @@ describe("ColorService", () => {
     });
 
     it("returns the given column names color model", () => {
-      const columnNamesColorModel = {
-        type: ColorModelType.NOMINAL as const,
+      const columnNamesColorModel: ColorModel = {
+        type: "NOMINAL",
         model: {
           column1: "#FF0000",
           column2: "#00FF00",

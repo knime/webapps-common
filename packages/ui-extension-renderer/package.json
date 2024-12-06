@@ -11,11 +11,11 @@
     "!src/**/__tests__/*",
     "CHANGELOG.md"
   ],
-  "module": "src/index.ts",
   "exports": {
-    ".": {
-      "import": "./src/index.ts"
-    }
+    "./api": "./src/api/index.ts",
+    "./vue": "./src/vueComponents/index.ts",
+    "./iframe": "./iframe.ts",
+    "./testing": "./testing.ts"
   },
   "scripts": {
     "type-check": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
@@ -24,7 +24,6 @@
   "dependencies": {
     "@knime/components": "workspace:*",
     "@knime/styles": "workspace:*",
-    "@knime/ui-extension-service": "workspace:*",
     "@vueuse/shared": "^10.10.0"
   },
   "peerDependencies": {

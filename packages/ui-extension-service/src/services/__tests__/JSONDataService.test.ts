@@ -8,13 +8,15 @@ import {
   vi,
 } from "vitest";
 
-import { setUpCustomEmbedderService } from "../../embedder";
-import { DataServiceType } from "../../types/DataServiceType";
-import { INTERNAL_ERROR_CODE, USER_ERROR_CODE } from "../../types/alert";
+import { type DataServiceType } from "@knime/ui-extension-renderer/api";
+import { setUpCustomEmbedderService } from "@knime/ui-extension-renderer/testing";
+
 import { JsonDataService } from "../JsonDataService";
-import type {
-  JsonRpcOtherError,
-  JsonRpcUserError,
+import {
+  INTERNAL_ERROR_CODE,
+  type JsonRpcOtherError,
+  type JsonRpcUserError,
+  USER_ERROR_CODE,
 } from "../types/jsonRPCTypes";
 
 import { extensionConfig } from "./mocks";
@@ -67,7 +69,7 @@ describe("JsonDataService", () => {
       const response = await jsonDataService.initialData();
       expect(callNodeDataService).toHaveBeenCalledWith(
         expect.objectContaining({
-          serviceType: DataServiceType.INITIAL_DATA,
+          serviceType: "initial_data" satisfies DataServiceType,
         }),
       );
       expect(response).toStrictEqual(extensionConfig.initialData);
@@ -86,7 +88,7 @@ describe("JsonDataService", () => {
       jsonDataService.data();
 
       const parameters = getFirstCallParameter(callNodeDataService);
-      expect(parameters.serviceType).toBe(DataServiceType.DATA);
+      expect(parameters.serviceType).toBe("data" satisfies DataServiceType);
     });
 
     it("calls data service with options", () => {
@@ -140,7 +142,7 @@ describe("JsonDataService", () => {
       await jsonDataService.applyData(appliedData);
       const parameter = getFirstCallParameter(callNodeDataService);
       expect(parameter).toMatchObject({
-        serviceType: DataServiceType.APPLY_DATA,
+        serviceType: "apply_data" satisfies DataServiceType,
         dataServiceRequest: JSON.stringify(appliedData),
       });
     });

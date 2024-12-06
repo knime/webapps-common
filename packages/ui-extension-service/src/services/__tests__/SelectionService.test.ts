@@ -1,11 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { setUpCustomEmbedderService } from "../../embedder";
-import type { UIExtensionServiceConfig } from "../../index";
 import {
-  type SelectionEventCallbackParams,
-  SelectionModes,
-} from "../../services/SelectionService";
+  type SelectionEventPayload,
+  type UIExtensionServiceConfig,
+} from "@knime/ui-extension-renderer/api";
+import { setUpCustomEmbedderService } from "@knime/ui-extension-renderer/testing";
+
 import { SelectionService } from "../SelectionService";
 
 import { extensionConfig } from "./mocks";
@@ -17,6 +17,7 @@ describe("SelectionService", () => {
     const apiLayer = {
       updateDataPointSelection: vi.fn(),
       getConfig: () => extensionConfig,
+      sendAlert: vi.fn(),
     };
     const embedder = setUpCustomEmbedderService(apiLayer);
     const selectionService = new SelectionService(embedder.service);
@@ -60,29 +61,50 @@ describe("SelectionService", () => {
       };
 
       expect(updateDataPointSelection.mock.calls[0][0]).toStrictEqual({
-        mode: SelectionModes.ADD,
+        mode: "ADD",
         selection: params,
         ...idParams,
       });
 
       await selectionService.remove(params);
       expect(updateDataPointSelection.mock.calls[1][0]).toStrictEqual({
-        mode: SelectionModes.REMOVE,
+        mode: "REMOVE",
         selection: params,
         ...idParams,
       });
       await selectionService.replace(params);
       expect(updateDataPointSelection.mock.calls[2][0]).toStrictEqual({
-        mode: SelectionModes.REPLACE,
+        mode: "REPLACE",
         selection: params,
         ...idParams,
       });
     });
 
-    const selectionPayload: SelectionEventCallbackParams = {
-      mode: SelectionModes.ADD,
+    const selectionPayload: SelectionEventPayload = {
+      ...extensionConfig,
+      mode: "ADD",
       selection: ["a", "c"],
     };
+
+    it("sends an alert if the selection result contains an error", () => {
+      const { selectionService, sendAlert, dispatchPushEvent } =
+        constructSelectionService(extensionConfig);
+
+      selectionService.addOnSelectionChangeCallback(vi.fn());
+      const error = "some error";
+      dispatchPushEvent({
+        eventType: "SelectionEvent",
+        payload: {
+          ...selectionPayload,
+          error,
+          selection: null,
+        },
+      });
+      expect(sendAlert).toHaveBeenCalledWith({
+        message: "some error",
+        type: "error",
+      });
+    });
 
     it("adds callback to event with addOnSelectionChangeCallback", () => {
       const { selectionService, dispatchPushEvent } =
@@ -110,12 +132,12 @@ describe("SelectionService", () => {
 
       dispatchPushEvent({
         eventType: "SelectionEvent",
-        payload: { nodeId: "otherNodeId", ...selectionPayload },
+        payload: { ...selectionPayload, nodeId: "otherNodeId" },
       });
       expect(callback).not.toHaveBeenCalled();
       dispatchPushEvent({
         eventType: "SelectionEvent",
-        payload: { nodeId: extensionConfig.nodeId, ...selectionPayload },
+        payload: selectionPayload,
       });
       expect(callback).not.toHaveBeenCalledWith(testPayload);
     });
@@ -131,7 +153,7 @@ describe("SelectionService", () => {
 
       dispatchPushEvent({
         eventType: "SelectionEvent",
-        payload: { nodeId: extensionConfig.nodeId, ...selectionPayload },
+        payload: selectionPayload,
       });
 
       expect(callback).not.toHaveBeenCalled();

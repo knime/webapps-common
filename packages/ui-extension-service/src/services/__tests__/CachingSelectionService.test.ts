@@ -1,13 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { setUpCustomEmbedderService } from "../../embedder";
 import {
-  CachingSelectionService,
-  SelectionService,
-  UIExtensionPushEvents,
+  type UIExtensionPushEvents,
   type UIExtensionService,
-} from "../../index";
-import { SelectionModes } from "../SelectionService";
+} from "@knime/ui-extension-renderer/api";
+import { setUpCustomEmbedderService } from "@knime/ui-extension-renderer/testing";
+
+import { CachingSelectionService, SelectionService } from "../../index";
 import type { SelectionServiceAPILayer } from "../types/serviceApiLayers";
 
 import { extensionConfig } from "./mocks";
@@ -15,7 +14,9 @@ import { extensionConfig } from "./mocks";
 describe("CachingSelectionService", () => {
   let cachingSelectionService: CachingSelectionService,
     knimeService: UIExtensionService<SelectionServiceAPILayer>,
-    dispatchPushEvent: (event: UIExtensionPushEvents.PushEvent<any>) => void;
+    dispatchPushEvent: (
+      event: UIExtensionPushEvents.PushEvent<"SelectionEvent">,
+    ) => void;
 
   const setInitialSelection = (initialSelection: string[]) => {
     vi.spyOn(SelectionService.prototype, "initialSelection").mockResolvedValue(
@@ -26,6 +27,7 @@ describe("CachingSelectionService", () => {
 
   beforeEach(() => {
     const embedderService = setUpCustomEmbedderService({
+      sendAlert: vi.fn(),
       updateDataPointSelection: vi
         .fn()
         .mockResolvedValue('{"result": "backend-result"}'),
@@ -45,9 +47,9 @@ describe("CachingSelectionService", () => {
   });
 
   it.each([
-    [SelectionModes.ADD, ["0"], ["1", "3", "6"], ["0", "1", "3", "6"]],
-    [SelectionModes.REMOVE, ["0"], ["0"], []],
-    [SelectionModes.REPLACE, ["0"], ["1", "3", "6"], ["1", "3", "6"]],
+    ["ADD" as const, ["0"], ["1", "3", "6"], ["0", "1", "3", "6"]],
+    ["REMOVE" as const, ["0"], ["0"], []],
+    ["REPLACE" as const, ["0"], ["1", "3", "6"], ["1", "3", "6"]],
   ])(
     "correctly updates the selected keys on backend selection with selection mode %s",
     async (selectionMode, initialSelection, newSelection, selectedKeys) => {

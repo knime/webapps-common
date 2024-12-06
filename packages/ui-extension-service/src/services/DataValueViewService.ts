@@ -1,4 +1,7 @@
-import { type DataValueViewConfig, UIExtensionPushEvents } from "..";
+import type {
+  DataValueViewConfig,
+  UIExtensionPushEvents,
+} from "@knime/ui-extension-renderer/api";
 
 import { AbstractService } from "./AbstractService";
 import type { DataValueViewAPILayer } from "./types/serviceApiLayers";
@@ -18,7 +21,7 @@ export class DataValueViewService extends AbstractService<DataValueViewAPILayer>
    */
   setDataValueViewStateListener(listener: (isOpen: boolean) => void) {
     this.baseService.addPushEventListener(
-      UIExtensionPushEvents.EventTypes.DataValueViewShownEvent,
+      "DataValueViewShownEvent" satisfies UIExtensionPushEvents.KnownEventType,
       (isOpen) => listener(isOpen ?? false),
     );
   }

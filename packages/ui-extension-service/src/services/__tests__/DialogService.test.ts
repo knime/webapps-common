@@ -2,8 +2,9 @@
 import { describe, expect, it, vi } from "vitest";
 import flushPromises from "flush-promises";
 
-import { setUpCustomEmbedderService } from "../../embedder";
-import { ApplyState, UIExtensionPushEvents, ViewState } from "../../index";
+import { type APILayerDirtyState } from "@knime/ui-extension-renderer/api";
+import { setUpCustomEmbedderService } from "@knime/ui-extension-renderer/testing";
+
 import { DialogService } from "../DialogService";
 
 import { extensionConfig } from "./mocks";
@@ -53,16 +54,16 @@ describe("DialogService", () => {
 
     aViewSetting.setValue("newSetting");
     expect(onDirtyStateChange).toHaveBeenNthCalledWith(1, {
-      apply: ApplyState.EXEC,
-      view: ViewState.EXEC,
-    });
+      apply: "executed",
+      view: "executed",
+    } satisfies APILayerDirtyState);
 
     aModelSetting.setValue("newSetting");
 
     expect(onDirtyStateChange).toHaveBeenNthCalledWith(2, {
-      apply: ApplyState.CONFIG,
-      view: ViewState.CONFIG,
-    });
+      apply: "configured",
+      view: "configured",
+    } satisfies APILayerDirtyState);
   });
 
   it("listens to ApplyData push events and sets isApplied when finished successfully", async () => {
@@ -80,11 +81,10 @@ describe("DialogService", () => {
       .mockImplementation(() => Promise.resolve({ isApplied }));
     dialogService.setApplyListener(applySettingsMock);
 
-    const dispatchApplyEvent = () => {
-      dispatchPushEvent<UIExtensionPushEvents.EventTypes.ApplyDataEvent>({
-        eventType: UIExtensionPushEvents.EventTypes.ApplyDataEvent,
+    const dispatchApplyEvent = () =>
+      dispatchPushEvent({
+        eventType: "ApplyDataEvent",
       });
-    };
 
     dispatchApplyEvent();
     expect(applySettingsMock).toHaveBeenCalled();
@@ -92,9 +92,9 @@ describe("DialogService", () => {
     expect(onApplied).toHaveBeenCalledWith({ isApplied: false });
     onApplied.mockReset();
 
-    const cleanState = {
-      apply: ApplyState.CLEAN,
-      view: ViewState.CLEAN,
+    const cleanState: APILayerDirtyState = {
+      apply: "clean",
+      view: "clean",
     };
     expect(onDirtyStateChange).not.toHaveBeenCalledWith(cleanState);
 
@@ -118,7 +118,7 @@ describe("DialogService", () => {
     const payload = { mode: "large" as const };
 
     dispatchPushEvent({
-      eventType: UIExtensionPushEvents.EventTypes.DisplayModeEvent,
+      eventType: "DisplayModeEvent",
       payload,
     });
 
@@ -134,7 +134,7 @@ describe("DialogService", () => {
     dialogService.removeOnDisplayModeChangeCallback(callback);
 
     dispatchPushEvent({
-      eventType: UIExtensionPushEvents.EventTypes.DisplayModeEvent,
+      eventType: "DisplayModeEvent",
       payload: { mode: "large" },
     });
 

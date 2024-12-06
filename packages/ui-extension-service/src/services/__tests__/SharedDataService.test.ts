@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { setUpCustomEmbedderService } from "../../embedder";
-import { UIExtensionPushEvents } from "../../index";
+import { setUpCustomEmbedderService } from "@knime/ui-extension-renderer/testing";
+
 import { SharedDataService } from "../SharedDataService";
 import type { SharedDataServiceAPILayer } from "../types/serviceApiLayers";
 
@@ -42,7 +42,7 @@ describe("SharedDataService", () => {
     const payload = {};
 
     dispatchPushEvent({
-      eventType: UIExtensionPushEvents.EventTypes.DataEvent,
+      eventType: "DataEvent",
       payload,
     });
     expect(mockDataChangeCallback).toHaveBeenCalledWith(payload);

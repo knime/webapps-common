@@ -1,15 +1,14 @@
-import { UIExtensionPushEvents, type UIExtensionService } from "../types";
+import type {
+  UIExtensionPushEvents,
+  UIExtensionService,
+} from "@knime/ui-extension-renderer/api";
 
 import { AbstractService } from "./AbstractService";
 import { createDialogDirtyStateHandler } from "./dialogDirtyState";
 import type { DialogServiceAPILayer } from "./types/serviceApiLayers";
 
-export interface DisplayModeEventPayload {
-  mode: "small" | "large";
-}
-
 export interface DisplayModeEventCallbackParams
-  extends Pick<DisplayModeEventPayload, "mode"> {}
+  extends Pick<UIExtensionPushEvents.DisplayModeEventPayload, "mode"> {}
 
 /**
  * A utility class to interact with Dialog settings implemented by a UI Extension node.
@@ -55,7 +54,7 @@ export class DialogService extends AbstractService<DialogServiceAPILayer> {
    */
   setApplyListener(applyListener: () => Promise<{ isApplied: boolean }>) {
     return this.baseService.addPushEventListener(
-      UIExtensionPushEvents.EventTypes.ApplyDataEvent,
+      "ApplyDataEvent" satisfies UIExtensionPushEvents.KnownEventType,
       () => {
         applyListener().then(({ isApplied }) => {
           if (isApplied) {
@@ -78,7 +77,7 @@ export class DialogService extends AbstractService<DialogServiceAPILayer> {
     callback: (event: DisplayModeEventCallbackParams) => void,
   ): void {
     const removeCallback = this.baseService.addPushEventListener(
-      UIExtensionPushEvents.EventTypes.DisplayModeEvent,
+      "DisplayModeEvent" satisfies UIExtensionPushEvents.KnownEventType,
       // @ts-ignore
       callback,
     );

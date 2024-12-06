@@ -1,12 +1,10 @@
 import * as convert from "color-convert";
 
-import {
-  type ColorModel,
-  ColorModelType,
-  type NumericColorModel,
-} from "../types/ColorModel";
-import { AlertType } from "../types/alert";
-import type { UIExtensionService } from "../types/uiExtensionService";
+import type {
+  ColorModel,
+  NumericColorModel,
+  UIExtensionService,
+} from "@knime/ui-extension-renderer/api";
 
 import { AbstractService } from "./AbstractService";
 import type { ColorServiceAPILayer } from "./types/serviceApiLayers";
@@ -104,7 +102,7 @@ export class ColorService extends AbstractService<ColorServiceAPILayer> {
   public getColorHandler(columnName: string, suppressWarning: boolean = false) {
     if (columnName in this.colorModels) {
       const colorModel = this.colorModels[columnName];
-      if (colorModel.type === ColorModelType.NUMERIC) {
+      if (colorModel.type === "NUMERIC") {
         return new NumericColorHandler(colorModel.model);
       } else {
         return new NominalColorHandler(colorModel.model);
@@ -112,7 +110,7 @@ export class ColorService extends AbstractService<ColorServiceAPILayer> {
     }
     if (!suppressWarning) {
       this.baseService.sendAlert({
-        type: AlertType.WARN,
+        type: "warn",
         warnings: [
           {
             message: `No color handler found for the given column name "${columnName}".`,
@@ -126,7 +124,7 @@ export class ColorService extends AbstractService<ColorServiceAPILayer> {
   public getColumnNamesColorHandler() {
     if (this.columnNamesColorModel) {
       const { model, type } = this.columnNamesColorModel;
-      if (type === ColorModelType.NOMINAL) {
+      if (type === "NOMINAL") {
         return new NominalColorHandler(model);
       } else {
         throw new Error(

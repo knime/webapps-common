@@ -4,7 +4,6 @@ import { set } from "lodash-es";
 import { v4 as uuidv4 } from "uuid";
 
 import { Checkbox } from "@knime/components";
-import { AlertType } from "@knime/ui-extension-service";
 
 import LabeledControl from "../higherOrderComponents/control/LabeledControl.vue";
 import type { VueControlProps } from "../higherOrderComponents/control/types";
@@ -117,7 +116,7 @@ const getUpdateOptionsMethod = async (
       message.forEach((msg: string) => {
         sendAlert({
           message: msg,
-          type: AlertType.ERROR,
+          type: "error",
         });
       });
       handleResult([]);

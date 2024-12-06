@@ -1,6 +1,5 @@
 /* eslint-disable no-magic-numbers */
-import { ExtensionTypes } from "../../../types/ExtensionTypes";
-import type { UIExtensionServiceConfig } from "../../../types/uiExtensionService";
+import type { UIExtensionServiceConfig } from "@knime/ui-extension-renderer/api";
 
 export const extensionConfig: UIExtensionServiceConfig = {
   initialData: {
@@ -44,7 +43,7 @@ export const extensionConfig: UIExtensionServiceConfig = {
   nodeId: "123",
   projectId: "knime workflow",
   workflowId: "root:10",
-  extensionType: ExtensionTypes.VIEW,
+  extensionType: "view",
   hasNodeView: true,
   startEnlarged: true,
 };

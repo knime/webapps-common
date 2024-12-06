@@ -2,7 +2,7 @@
  *  This file is only used to check that the exposed API Layer for embedders
  * is exactly the layer required by all of the services
  */
-import type { UIExtensionServiceAPILayer } from "../../types";
+import type { UIExtensionServiceAPILayer } from "@knime/ui-extension-renderer/api";
 
 import type {
   AlertingServiceAPILayer,

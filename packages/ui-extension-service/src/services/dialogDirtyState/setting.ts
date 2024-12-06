@@ -1,5 +1,5 @@
 /* eslint-disable class-methods-use-this */
-import { ApplyState, ViewState } from "../../types";
+import type { ApplyState, ViewState } from "@knime/ui-extension-renderer/api";
 
 import { useDirtyStates } from ".";
 import {
@@ -70,43 +70,43 @@ export const createSetting =
 
     const dirtyStates = useDirtyStates(
       {
-        apply: () => {
+        apply: (): ApplyState => {
           if (controllingFlowVariables.isFlawed()) {
-            return ApplyState.IDLE;
+            return "idle";
           }
           if (exposedFlowVariables.isModified()) {
-            return ApplyState.CONFIG;
+            return "configured";
           }
           if (modelOrView === "model") {
             if (
               settingsValue.isModified() ||
               controllingFlowVariables.isModified()
             ) {
-              return ApplyState.CONFIG;
+              return "configured";
             }
-            return ApplyState.CLEAN;
+            return "clean";
           } else {
             if (settingsValue.isModified() && exposedFlowVariables.isSet()) {
               // Node output changes
-              return ApplyState.CONFIG;
+              return "configured";
             }
             if (
               settingsValue.isModified() ||
               controllingFlowVariables.isModified()
             ) {
-              return ApplyState.EXEC;
+              return "executed";
             }
-            return ApplyState.CLEAN;
+            return "clean";
           }
         },
-        view: () => {
+        view: (): ViewState => {
           if (controllingFlowVariables.isFlawed()) {
-            return ViewState.IDLE;
+            return "idle";
           }
           if (!settingsValue.isModified()) {
-            return ViewState.CLEAN;
+            return "clean";
           }
-          return modelOrView === "model" ? ViewState.CONFIG : ViewState.EXEC;
+          return modelOrView === "model" ? "configured" : "executed";
         },
       },
       () => globalOnChange(),

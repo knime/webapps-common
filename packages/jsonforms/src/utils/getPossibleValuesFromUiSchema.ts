@@ -1,12 +1,11 @@
 import { type Ref, ref, watch } from "vue";
 
-import { type AlertParams, AlertType } from "@knime/ui-extension-service";
-
 import type {
   ChoicesUiSchema,
   ChoicesUiSchemaOptions,
   PossibleValue,
 } from "../types/ChoicesUiSchema";
+import type { AlertParams } from "../types/alert";
 
 const extractFromUiSchemaOptions = <Key extends keyof ChoicesUiSchemaOptions>(
   control: { uischema: ChoicesUiSchema },
@@ -29,14 +28,14 @@ const extractPossibleValues = (
       sendAlert({
         message: "Fetching possible values has been canceled.",
         details: `Fetching possible values from ${choicesProviderClass} has been canceled.`,
-        type: AlertType.ERROR,
+        type: "error",
       });
     }
     if (state === "FAIL") {
       sendAlert({
         message: "Failed to fetch possible values.",
         details: asyncResult.message[0],
-        type: AlertType.ERROR,
+        type: "error",
       });
     }
     return [];

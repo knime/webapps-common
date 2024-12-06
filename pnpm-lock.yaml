@@ -299,9 +299,6 @@ importers:
       '@knime/styles':
         specifier: workspace:*
         version: link:../styles
-      '@knime/ui-extension-service':
-        specifier: workspace:*
-        version: link:../ui-extension-service
       '@knime/utils':
         specifier: workspace:*
         version: link:../utils
@@ -573,9 +570,6 @@ importers:
       '@knime/styles':
         specifier: workspace:*
         version: link:../styles
-      '@knime/ui-extension-service':
-        specifier: workspace:*
-        version: link:../ui-extension-service
       '@vueuse/shared':
         specifier: ^10.10.0
         version: 10.10.0(vue@3.4.27(typescript@5.4.5))
@@ -620,6 +614,9 @@ importers:
         specifier: 9.0.1
         version: 9.0.1
     devDependencies:
+      '@knime/ui-extension-renderer':
+        specifier: workspace:*
+        version: link:../ui-extension-renderer
       '@tsconfig/node20':
         specifier: 20.1.2
         version: 20.1.2

@@ -1,7 +1,6 @@
 export {
   JsonDataService,
   SelectionService,
-  SelectionModes,
   CachingSelectionService,
   DialogService,
   SharedDataService,
@@ -16,12 +15,13 @@ export {
   type SettingComparator,
   DefaultSettingComparator,
   type SettingState,
-  type SelectionEventCallbackParams,
+  type AlertParams,
+  type AlertType,
+  type SelectionMode,
+  type SelectionParams,
+  type ReportRenderingConfig,
 } from "./services";
 
-export * from "./types";
+export type { UIExtensionService } from "@knime/ui-extension-renderer/api";
 
 export { KnimeUtils } from "./utils/KnimeUtils";
-
-export { setUpEmbedderService, setUpIframeEmbedderService } from "./embedder";
-export * from "./types/uiExtensionService";

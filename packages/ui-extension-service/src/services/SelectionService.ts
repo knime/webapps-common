@@ -1,33 +1,15 @@
-import { UIExtensionPushEvents } from "../types/pushEvents";
-import type { UIExtensionService } from "../types/uiExtensionService";
+import type {
+  SelectionEventPayload,
+  SelectionMode,
+  SelectionParams,
+  UIExtensionPushEvents,
+  UIExtensionService,
+} from "@knime/ui-extension-renderer/api";
 
 import { AbstractService } from "./AbstractService";
 import type { SelectionServiceAPILayer } from "./types/serviceApiLayers";
 
-/**
- * Selection service modes available by default to UI Extension nodes.
- */
-export enum SelectionModes {
-  ADD = "ADD",
-  REMOVE = "REMOVE",
-  REPLACE = "REPLACE",
-}
-export interface SelectionEventPayload {
-  projectId: string;
-  workflowId: string;
-  nodeId: string;
-  mode: SelectionModes;
-  selection?: string[];
-  error: string | null;
-}
-
-export type SelectionMode = SelectionModes;
-
-export interface SelectionEventCallbackParams {
-  mode: SelectionModes;
-  selection?: string[];
-}
-
+export type { SelectionMode, SelectionParams };
 /**
  * SelectionService provides methods to handle data selection.
  * To use it, the relating Java implementation also needs to use the SelectionService.
@@ -67,7 +49,7 @@ export class SelectionService extends AbstractService<SelectionServiceAPILayer> 
    * @returns {Promise<any>} - based on backend implementation.
    */
   private updateSelection(
-    mode: SelectionModes,
+    mode: SelectionMode,
     selection: string[],
   ): Promise<any> {
     const config = this.baseService.getConfig();
@@ -90,7 +72,7 @@ export class SelectionService extends AbstractService<SelectionServiceAPILayer> 
    * @returns {Promise<any>} based on backend implementation.
    */
   add(selection: string[]): Promise<any> {
-    return this.updateSelection(SelectionModes.ADD, selection);
+    return this.updateSelection("ADD", selection);
   }
 
   /**
@@ -99,7 +81,7 @@ export class SelectionService extends AbstractService<SelectionServiceAPILayer> 
    * @returns {Promise<any>} based on backend implementation.
    */
   remove(selection: string[]): Promise<any> {
-    return this.updateSelection(SelectionModes.REMOVE, selection);
+    return this.updateSelection("REMOVE", selection);
   }
 
   /**
@@ -108,23 +90,29 @@ export class SelectionService extends AbstractService<SelectionServiceAPILayer> 
    * @returns {Promise<any>} based on backend implementation.
    */
   replace(selection: string[]): Promise<any> {
-    return this.updateSelection(SelectionModes.REPLACE, selection);
+    return this.updateSelection("REPLACE", selection);
   }
 
   /**
    * Adds callback that will be triggered on data selection change outside the scope of the view.
    */
   addOnSelectionChangeCallback(
-    callback: (event: SelectionEventCallbackParams) => void,
+    callback: (event: SelectionParams) => void,
   ): void {
-    const wrappedCallback = (event?: SelectionEventPayload): void => {
-      const { nodeId, selection, mode } = event || {};
-      if (this.baseService.getConfig().nodeId === nodeId && mode) {
-        callback({ selection, mode });
+    const wrappedCallback = (event: SelectionEventPayload): void => {
+      if (this.baseService.getConfig().nodeId === event.nodeId && event.mode) {
+        if (typeof event.error === "string") {
+          this.baseService.sendAlert({
+            message: event.error,
+            type: "error",
+          });
+        } else {
+          callback(event);
+        }
       }
     };
     const removeCallback = this.baseService.addPushEventListener(
-      UIExtensionPushEvents.EventTypes.SelectionEvent,
+      "SelectionEvent" satisfies UIExtensionPushEvents.KnownEventType,
       wrappedCallback,
     );
     this.removeCallbacksMap.set(callback, removeCallback);
@@ -136,7 +124,7 @@ export class SelectionService extends AbstractService<SelectionServiceAPILayer> 
    * @returns {void}
    */
   removeOnSelectionChangeCallback(
-    callback: (event: SelectionEventCallbackParams) => void,
+    callback: (event: SelectionParams) => void,
   ): void {
     this.removeCallbacksMap.get(callback)?.();
     this.removeCallbacksMap.delete(callback);
@@ -148,14 +136,7 @@ export class SelectionService extends AbstractService<SelectionServiceAPILayer> 
    * @param {array} rowKeys - data with which the selection should be updated
    * @returns {Promise<any>}
    */
-  publishOnSelectionChange(selectionMode: SelectionModes, rowKeys: string[]) {
-    const methodMap: {
-      [key in SelectionModes]: (selection: string[]) => Promise<any>;
-    } = {
-      [SelectionModes.ADD]: this.add.bind(this),
-      [SelectionModes.REMOVE]: this.remove.bind(this),
-      [SelectionModes.REPLACE]: this.replace.bind(this),
-    };
-    return methodMap[selectionMode](rowKeys);
+  publishOnSelectionChange(selectionMode: SelectionMode, rowKeys: string[]) {
+    return this.updateSelection(selectionMode, rowKeys);
   }
 }

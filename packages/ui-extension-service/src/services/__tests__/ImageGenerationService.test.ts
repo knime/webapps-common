@@ -1,19 +1,16 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { setUpCustomEmbedderService } from "../../embedder";
-import type { UIExtensionServiceConfig } from "../../index";
-import {
-  ImageFormat,
-  type ImageGenerationRenderingConfig,
-  RenderingType,
-} from "../../types/RenderingConfig";
+import { type ImageGenerationRenderingConfig } from "@knime/ui-extension-renderer/api";
+import { setUpCustomEmbedderService } from "@knime/ui-extension-renderer/testing";
+
 import { ImageGenerationService } from "../ImageGenerationService";
+import type { ImageGenerationServiceExtensionConfig } from "../types/serviceApiLayers";
 
 import { extensionConfig } from "./mocks";
 
 describe("ImageGenerationService", () => {
   const constructImageGenerationService = (
-    extensionConfig: UIExtensionServiceConfig,
+    extensionConfig: ImageGenerationServiceExtensionConfig,
   ) => {
     const apiLayer = {
       imageGenerated: vi.fn(),
@@ -27,10 +24,10 @@ describe("ImageGenerationService", () => {
   };
 
   it("returns the image file format", () => {
-    const imageFormat = ImageFormat.PNG;
+    const imageFormat = "PNG";
     const localRenderingConfig: ImageGenerationRenderingConfig = {
       actionId: "actionId",
-      type: RenderingType.IMAGE,
+      type: "IMAGE",
       imageFormat,
     };
     const { imageGenerationService } = constructImageGenerationService({
@@ -50,9 +47,9 @@ describe("ImageGenerationService", () => {
   });
 
   it("sets isImageGenerationActive to false if the type in the renderingConfig is not IMAGE", () => {
-    const localExtensionConfig = {
+    const localExtensionConfig: ImageGenerationServiceExtensionConfig = {
       ...extensionConfig,
-      renderingConfig: { actionId: null, type: RenderingType.DEFAULT },
+      renderingConfig: { type: "DEFAULT" },
     };
     const { imageGenerationService } =
       constructImageGenerationService(localExtensionConfig);
@@ -60,9 +57,13 @@ describe("ImageGenerationService", () => {
   });
 
   it("sets isImageGenerationActive to true if the type in the renderingConfig is IMAGE", () => {
-    const localExtensionConfig = {
+    const localExtensionConfig: ImageGenerationServiceExtensionConfig = {
       ...extensionConfig,
-      renderingConfig: { actionId: null, type: RenderingType.IMAGE },
+      renderingConfig: {
+        actionId: "someActionId",
+        type: "IMAGE",
+        imageFormat: "PNG",
+      },
     };
     const { imageGenerationService } =
       constructImageGenerationService(localExtensionConfig);

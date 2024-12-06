@@ -1,4 +1,9 @@
-import { type APILayerDirtyState, ApplyState, ViewState } from "../../types";
+/* eslint-disable no-magic-numbers */
+import type {
+  APILayerDirtyState,
+  ApplyState,
+  ViewState,
+} from "@knime/ui-extension-renderer/api";
 
 import type { SettingComparator } from "./SettingComparator";
 import { createSetting } from "./setting";
@@ -45,8 +50,8 @@ const useDirtyStatesGeneric =
   };
 
 export const useDirtyStates = useDirtyStatesGeneric<APILayerDirtyState>({
-  apply: ApplyState.CLEAN,
-  view: ViewState.CLEAN,
+  apply: "clean",
+  view: "clean",
 });
 
 export const createDialogDirtyStateHandler = (
@@ -59,17 +64,34 @@ export const createDialogDirtyStateHandler = (
 
   const getStates = () => settings.map(({ getState }) => getState());
 
+  const applyStateRanking = {
+    clean: 0,
+    executed: 1,
+    configured: 2,
+    idle: 3,
+  } as const satisfies Record<ApplyState, number>;
+
+  const viewStateRanking = applyStateRanking satisfies Record<
+    ViewState,
+    number
+  >;
+
+  const compareByRank =
+    <T extends string>(ranking: Record<T, number>) =>
+    (a: T, b: T) =>
+      ranking[a] - ranking[b];
+
   const construct = {
     apply: () =>
       getStates()
         .map(({ apply }) => apply)
-        .sort()
-        .pop() ?? ApplyState.CLEAN,
+        .sort(compareByRank(applyStateRanking))
+        .pop() ?? "clean",
     view: () =>
       getStates()
         .map(({ view }) => view)
-        .sort()
-        .pop() ?? ViewState.CLEAN,
+        .sort(compareByRank(viewStateRanking))
+        .pop() ?? "clean",
   };
 
   const { onChange } = useDirtyStates(construct, onDirtyStateChange);

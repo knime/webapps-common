@@ -1,12 +1,9 @@
 /* eslint-disable class-methods-use-this */
 import { type Mock, beforeEach, describe, expect, it, vi } from "vitest";
 
-import {
-  type APILayerDirtyState,
-  ApplyState,
-  DefaultSettingComparator,
-  ViewState,
-} from "../../../index";
+import type { APILayerDirtyState } from "@knime/ui-extension-renderer/api";
+
+import { DefaultSettingComparator } from "../../../index";
 import { createDialogDirtyStateHandler } from "../../dialogDirtyState";
 
 describe("dialogDirtyState", () => {
@@ -22,8 +19,8 @@ describe("dialogDirtyState", () => {
 
   beforeEach(() => {
     dirtyState = {
-      apply: ApplyState.CLEAN,
-      view: ViewState.CLEAN,
+      apply: "clean",
+      view: "clean",
     };
     onDirtyStateChange = vi.fn((newDirtyState: APILayerDirtyState) => {
       dirtyState = newDirtyState;
@@ -36,8 +33,8 @@ describe("dialogDirtyState", () => {
   const expectCleanStateAfterApply = () => {
     onApply();
     expect(dirtyState).toStrictEqual({
-      apply: ApplyState.CLEAN,
-      view: ViewState.CLEAN,
+      apply: "clean",
+      view: "clean",
     });
   };
 
@@ -46,13 +43,13 @@ describe("dialogDirtyState", () => {
       .addControllingFlowVariable("flowVarName")
       .unset();
     expect(dirtyState).toStrictEqual({
-      apply: ApplyState.CONFIG,
-      view: ViewState.CLEAN,
+      apply: "configured",
+      view: "clean",
     });
     addSetting("view")({ initialValue: "foo" }).setValue("bar");
     expect(dirtyState).toStrictEqual({
-      apply: ApplyState.CONFIG,
-      view: ViewState.EXEC,
+      apply: "configured",
+      view: "executed",
     });
     expectCleanStateAfterApply();
   });
@@ -88,22 +85,22 @@ describe("dialogDirtyState", () => {
     });
 
     expect(dirtyState).toStrictEqual({
-      apply: ApplyState.CLEAN,
-      view: ViewState.CLEAN,
+      apply: "clean",
+      view: "clean",
     });
 
     setting.setValue("B");
 
     expect(dirtyState).toStrictEqual({
-      apply: ApplyState.CONFIG,
-      view: ViewState.CONFIG,
+      apply: "configured",
+      view: "configured",
     });
 
     setting.setValue("A2");
 
     expect(dirtyState).toStrictEqual({
-      apply: ApplyState.CLEAN,
-      view: ViewState.CLEAN,
+      apply: "clean",
+      view: "clean",
     });
 
     expectCleanStateAfterApply();
@@ -126,8 +123,8 @@ describe("dialogDirtyState", () => {
         exposedVariable.set("otherVar");
 
         expect(dirtyState).toStrictEqual({
-          apply: ApplyState.CONFIG,
-          view: ViewState.CLEAN,
+          apply: "configured",
+          view: "clean",
         });
 
         expectCleanStateAfterApply();
@@ -141,8 +138,8 @@ describe("dialogDirtyState", () => {
         controllingVariable.set("otherVar", { isFlawed: true });
 
         expect(dirtyState).toStrictEqual({
-          apply: ApplyState.IDLE,
-          view: ViewState.IDLE,
+          apply: "idle",
+          view: "idle",
         });
 
         expectCleanStateAfterApply();
@@ -155,21 +152,21 @@ describe("dialogDirtyState", () => {
         const controllingVariable = setting.addControllingFlowVariable("myVar");
         controllingVariable.set("otherVar");
         expect(dirtyState).not.toStrictEqual({
-          apply: ApplyState.CLEAN,
-          view: ViewState.CLEAN,
+          apply: "clean",
+          view: "clean",
         });
         controllingVariable.unset();
 
         expect(dirtyState).not.toStrictEqual({
-          apply: ApplyState.CLEAN,
-          view: ViewState.CLEAN,
+          apply: "clean",
+          view: "clean",
         });
 
         controllingVariable.set("myVar");
 
         expect(dirtyState).toStrictEqual({
-          apply: ApplyState.CLEAN,
-          view: ViewState.CLEAN,
+          apply: "clean",
+          view: "clean",
         });
       });
 
@@ -180,21 +177,21 @@ describe("dialogDirtyState", () => {
         const exposedVariable = setting.addExposedFlowVariable("myVar");
         exposedVariable.set("otherVar");
         expect(dirtyState).not.toStrictEqual({
-          apply: ApplyState.CLEAN,
-          view: ViewState.CLEAN,
+          apply: "clean",
+          view: "clean",
         });
         exposedVariable.unset();
 
         expect(dirtyState).not.toStrictEqual({
-          apply: ApplyState.CLEAN,
-          view: ViewState.CLEAN,
+          apply: "clean",
+          view: "clean",
         });
 
         exposedVariable.set("myVar");
 
         expect(dirtyState).toStrictEqual({
-          apply: ApplyState.CLEAN,
-          view: ViewState.CLEAN,
+          apply: "clean",
+          view: "clean",
         });
       });
     },
@@ -214,8 +211,8 @@ describe("dialogDirtyState", () => {
       setting.setValue("bar");
 
       expect(dirtyState).toStrictEqual({
-        apply: ApplyState.EXEC,
-        view: ViewState.EXEC,
+        apply: "executed",
+        view: "executed",
       });
       expectCleanStateAfterApply();
     });
@@ -228,8 +225,8 @@ describe("dialogDirtyState", () => {
       setting.addExposedFlowVariable("myVar");
 
       expect(dirtyState).toStrictEqual({
-        apply: ApplyState.CONFIG,
-        view: ViewState.EXEC,
+        apply: "configured",
+        view: "executed",
       });
       expectCleanStateAfterApply();
     });
@@ -242,8 +239,8 @@ describe("dialogDirtyState", () => {
       setting.setValue("bar");
 
       expect(dirtyState).toStrictEqual({
-        apply: ApplyState.CONFIG,
-        view: ViewState.EXEC,
+        apply: "configured",
+        view: "executed",
       });
       expectCleanStateAfterApply();
     });
@@ -256,8 +253,8 @@ describe("dialogDirtyState", () => {
       setting.setValue("bar");
 
       expect(dirtyState).toStrictEqual({
-        apply: ApplyState.EXEC,
-        view: ViewState.EXEC,
+        apply: "executed",
+        view: "executed",
       });
       expectCleanStateAfterApply();
     });
@@ -270,8 +267,8 @@ describe("dialogDirtyState", () => {
       controllingVariable.set("otherVar");
 
       expect(dirtyState).toStrictEqual({
-        apply: ApplyState.EXEC,
-        view: ViewState.CLEAN,
+        apply: "executed",
+        view: "clean",
       });
       expectCleanStateAfterApply();
     });
@@ -291,8 +288,8 @@ describe("dialogDirtyState", () => {
       setting.setValue("bar");
 
       expect(dirtyState).toStrictEqual({
-        apply: ApplyState.CONFIG,
-        view: ViewState.CONFIG,
+        apply: "configured",
+        view: "configured",
       });
       expectCleanStateAfterApply();
     });
@@ -305,8 +302,8 @@ describe("dialogDirtyState", () => {
       controllingVariable.set("otherVar");
 
       expect(dirtyState).toStrictEqual({
-        apply: ApplyState.CONFIG,
-        view: ViewState.CLEAN,
+        apply: "configured",
+        view: "clean",
       });
       expectCleanStateAfterApply();
     });

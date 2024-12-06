@@ -1,8 +1,3 @@
-import {
-  type ImageGenerationRenderingConfig,
-  RenderingType,
-} from "../types/RenderingConfig";
-
 import { AbstractService } from "./AbstractService";
 import type { ImageGenerationServiceAPILayer } from "./types/serviceApiLayers";
 
@@ -13,16 +8,20 @@ import type { ImageGenerationServiceAPILayer } from "./types/serviceApiLayers";
  */
 export class ImageGenerationService extends AbstractService<ImageGenerationServiceAPILayer> {
   isImageGenerationActive() {
-    return (
-      this.baseService.getConfig().renderingConfig?.type === RenderingType.IMAGE
-    );
+    return this.baseService.getConfig().renderingConfig?.type === "IMAGE";
   }
 
+  /**
+   * @throws {Error} if image generation is not active.
+   */
   getImageFormat() {
-    return (
-      this.baseService.getConfig()
-        .renderingConfig as ImageGenerationRenderingConfig
-    ).imageFormat;
+    const renderingConfig = this.baseService.getConfig().renderingConfig;
+    if (renderingConfig?.type !== "IMAGE") {
+      throw new Error(
+        "Image generation is not active. Check this via isImageGenerationActive first.",
+      );
+    }
+    return renderingConfig.imageFormat;
   }
 
   /**

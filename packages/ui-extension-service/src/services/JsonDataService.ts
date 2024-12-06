@@ -1,5 +1,5 @@
-import { DataServiceType } from "../types/DataServiceType";
-import { AlertType } from "../types/alert";
+import type { DataServiceType } from "@knime/ui-extension-renderer/api";
+
 import { createJsonRpcRequest, initialDataResponseToAlert } from "../utils";
 
 import { AbstractService } from "./AbstractService";
@@ -51,7 +51,7 @@ export class JsonDataService extends AbstractService<JsonDataServiceAPILayer> {
     if (initialDataPerConfig) {
       initialData = initialDataPerConfig;
     } else {
-      initialData = await this.callDataService(DataServiceType.INITIAL_DATA);
+      initialData = await this.callDataService("initial_data");
     }
 
     if (typeof initialData === "string") {
@@ -86,7 +86,7 @@ export class JsonDataService extends AbstractService<JsonDataServiceAPILayer> {
    */
   async data(params: { method?: string; options?: any } = {}) {
     const response = await this.callDataService(
-      DataServiceType.DATA,
+      "data",
       JSON.stringify(
         createJsonRpcRequest(params.method || "getData", params.options),
       ),
@@ -121,18 +121,15 @@ export class JsonDataService extends AbstractService<JsonDataServiceAPILayer> {
    * @returns {Promise} rejected or resolved depending on backend response.
    */
   applyData(data: any) {
-    return this.callDataService(
-      DataServiceType.APPLY_DATA,
-      JSON.stringify(data),
-    );
+    return this.callDataService("apply_data", JSON.stringify(data));
   }
 
   private handleError(error: JSONRPCError) {
     if (error.data) {
-      this.baseService.sendAlert({ type: AlertType.ERROR, ...error });
+      this.baseService.sendAlert({ type: "error", ...error });
     }
     this.baseService.sendAlert({
-      type: AlertType.ERROR,
+      type: "error",
       originalCode: error.code,
       message: error.message,
     });
@@ -140,7 +137,7 @@ export class JsonDataService extends AbstractService<JsonDataServiceAPILayer> {
 
   private handleWarnings(warningMessages: string[]) {
     this.baseService.sendAlert({
-      type: AlertType.WARN,
+      type: "warn",
       warnings: warningMessages.map((message) => ({ message })),
     });
   }

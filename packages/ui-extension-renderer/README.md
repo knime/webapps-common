@@ -12,16 +12,16 @@ npm install @knime/ui-extensions-renderer
 
 ## Usage
 
-To use it in your project, you can import it as follows:
+To use it in your vue project, you can import it as follows:
 
 ```javascript
-import { UIExtension } from "@knime/ui-extensions-renderer";
+import { UIExtension } from "@knime/ui-extensions-renderer/vue";
 ```
 
 or import types as follow:
 
 ```typescript
-import type { ExtensionConfig } from "@knime/ui-extensions-renderer";
+import type { ExtensionConfig } from "@knime/ui-extensions-renderer/vue";
 ```
 
 # Join the Community!

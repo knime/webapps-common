@@ -1,8 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
 
+import { setUpCustomEmbedderService } from "@knime/ui-extension-renderer/testing";
+
 import { AlertingService } from "..";
-import { setUpCustomEmbedderService } from "../../embedder";
-import { AlertType, USER_ERROR_CODE } from "../../types/alert";
+import { USER_ERROR_CODE } from "../types/jsonRPCTypes";
 
 describe("AlertingService", () => {
   const constructAlertingService = () => {
@@ -23,10 +24,10 @@ describe("AlertingService", () => {
     alertingService.sendAlert({
       message: "Hello",
       details: "World",
-      type: AlertType.ERROR,
+      type: "error",
     });
     expect(sendAlert).toHaveBeenCalledWith({
-      type: AlertType.ERROR,
+      type: "error",
       code: USER_ERROR_CODE,
       message: "Hello",
       data: {
@@ -38,12 +39,12 @@ describe("AlertingService", () => {
   it("sends warning alerts", () => {
     const { alertingService, sendAlert } = constructAlertingService();
     alertingService.sendAlert({
-      type: AlertType.WARN,
+      type: "warn",
       message: "Hello",
       details: "World",
     });
     expect(sendAlert).toHaveBeenCalledWith({
-      type: AlertType.WARN,
+      type: "warn",
       warnings: [
         {
           message: "Hello",
