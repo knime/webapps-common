@@ -73,33 +73,39 @@ watch(toRef(props, "items"), (newItems, prevItems) => {
     :closeable="!hasSomeItemInProgress"
     @close="emit('close')"
   >
-    <ProgressList>
-      <UploadProgressPanelItem
-        v-for="item in items"
-        :key="item.id"
-        :item="item"
-        :allow-cancel="allowCancel"
-        :allow-remove="allowRemove"
-        @remove="emit('remove', item)"
-        @cancel="emit('cancel', item)"
-      >
-        <template #extra-actions>
-          <slot name="extra-actions" />
-        </template>
-      </UploadProgressPanelItem>
-    </ProgressList>
-
-    <SkeletonItem
-      :loading="placeholderItems > 0"
-      height="59px"
-      :repeat="placeholderItems"
-      repeat-gap="1px"
-    />
+    <div class="upload-panel-content">
+      <ProgressList class="progress-list">
+        <UploadProgressPanelItem
+          v-for="item in items"
+          :key="item.id"
+          :item="item"
+          :allow-cancel="allowCancel"
+          :allow-remove="allowRemove"
+          @remove="emit('remove', item)"
+          @cancel="emit('cancel', item)"
+        >
+          <template #extra-actions>
+            <slot name="extra-actions" />
+          </template>
+        </UploadProgressPanelItem>
+      </ProgressList>
+      <SkeletonItem
+        :loading="placeholderItems > 0"
+        height="59px"
+        :repeat="placeholderItems"
+        repeat-gap="1px"
+      />
+    </div>
   </CollapsiblePanel>
 </template>
 
 <style lang="postcss" scoped>
 .upload-panel {
   width: 400px;
+}
+
+.upload-panel-content {
+  max-height: 50vh;
+  overflow-y: auto;
 }
 </style>
