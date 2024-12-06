@@ -1,5 +1,14 @@
 # @knime/virtual-tree
 
+## 1.3.1
+
+### Patch Changes
+
+- d58ea81: Fix direct import to prevent typescript error
+- Updated dependencies [d58ea81]
+  - @knime/components@1.12.1
+  - @knime/utils@1.2.1
+
 ## 1.3.0
 
 ### Minor Changes

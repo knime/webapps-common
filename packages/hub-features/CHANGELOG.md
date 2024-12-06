@@ -1,5 +1,14 @@
 # @knime/hub-features
 
+## 1.1.1
+
+### Patch Changes
+
+- d58ea81: Fix direct import to prevent typescript error
+- Updated dependencies [d58ea81]
+  - @knime/components@1.12.1
+  - @knime/utils@1.2.1
+
 ## 1.1.0
 
 ### Minor Changes

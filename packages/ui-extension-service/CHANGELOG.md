@@ -1,5 +1,11 @@
 # @knime/ui-extension-service
 
+## 1.2.1
+
+### Patch Changes
+
+- d58ea81: Fix direct import to prevent typescript error
+
 ## 1.2.0
 
 ### Minor Changes
