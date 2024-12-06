@@ -1,4 +1,4 @@
-import { UIExtensionPushEvents } from "../../types";
+import { type UIExtensionPushEvents } from "../../../types/serviceApiLayer";
 
 export interface WrappedIframePushEvent<T, S> {
   type: S;

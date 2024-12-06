@@ -1,7 +1,10 @@
 import { v4 as uuidv4 } from "uuid";
 
-import type { API, PayloadForKey, RequestForKey } from "../types";
-import { toWrappedEventOfType } from "../utils/events";
+import type {
+  API,
+  PayloadForKey,
+  RequestForKey,
+} from "../../../ui-extension-renderer/src/logic/iframe/types";
 
 const REQUEST_TIMEOUT_MS = 10000;
 
@@ -35,7 +38,8 @@ export default <A extends API, K extends keyof API & string>(
     iframeWindow.addEventListener("message", handler);
     const requestMessage: RequestForKey<A, K> = {
       requestId,
-      ...toWrappedEventOfType(payload, "UIExtensionRequest"),
+      payload,
+      type: "UIExtensionRequest",
     };
     iframeWindow.parent.postMessage(requestMessage, "*");
 

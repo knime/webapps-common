@@ -1,10 +1,11 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
-  UIExtensionPushEvents,
+  type UIExtensionPushEvents,
   type UIExtensionService,
   setUpIframeEmbedderService,
-} from "../../index";
+} from "@knime/ui-extension-renderer";
+
 import { getInitializedBaseServiceProxy } from "../../services/AbstractService";
 
 class Embedder<APILayer extends { getConfig: () => {} }> {

@@ -28,6 +28,7 @@
     "@types/color-convert": "2.0.3",
     "@types/uuid": "9.0.8",
     "@vitest/coverage-v8": "2.1.1",
+    "@knime/ui-extension-renderer": "workspace:*",
     "flush-promises": "1.0.2",
     "husky": "9.0.11",
     "jsdom": "24.0.0",

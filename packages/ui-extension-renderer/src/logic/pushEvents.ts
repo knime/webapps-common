@@ -1,4 +1,4 @@
-import type { UIExtensionPushEvents as Events } from "./types";
+import type { UIExtensionPushEvents as Events } from "../types/serviceApiLayer";
 
 class MapOfArrays<K, V> {
   private map = new Map<K, V[]>();

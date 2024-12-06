@@ -4,7 +4,4 @@
  *
  * @enum
  */
-export enum ExtensionTypes {
-  DIALOG = "dialog",
-  VIEW = "view",
-}
+export type ExtensionType = "dialog" | "view";

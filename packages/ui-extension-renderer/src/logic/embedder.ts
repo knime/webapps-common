@@ -1,11 +1,12 @@
 export * from "./iframe/embedder";
 
-import { DefaultEventHandler } from "./pushEvents";
-import { UIExtensionPushEvents } from "./types/pushEvents";
 import type {
   UIExtensionService,
   UIExtensionServiceAPILayer,
-} from "./types/uiExtensionService";
+} from "../types/serviceApiLayer";
+import { type UIExtensionPushEvents } from "../types/serviceApiLayer/pushEvents";
+
+import { DefaultEventHandler } from "./pushEvents";
 
 export const addDefaults = (
   apiLayer: UIExtensionServiceAPILayer,

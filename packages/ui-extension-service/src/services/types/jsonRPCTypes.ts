@@ -5,9 +5,6 @@ export interface JSONRPCSuccessResponse {
   warningMessages?: string[];
 }
 
-export const USER_ERROR_CODE = -32001;
-export const INTERNAL_ERROR_CODE = -32000;
-
 export type JsonRpcUserError = {
   code: typeof USER_ERROR_CODE;
   message: string;

@@ -1,10 +1,10 @@
-import {
-  ExtensionTypes,
-  type Identifiers,
-  type UIExtensionServiceAPILayer,
-} from "../../types";
-import type { ColorModel } from "../../types/ColorModel";
-import type { RenderingConfig } from "../../types/RenderingConfig";
+import type {
+  ColorModel,
+  ExtensionType,
+  Identifiers,
+  RenderingConfig,
+  UIExtensionServiceAPILayer,
+} from "@knime/ui-extension-renderer";
 
 export type AlertingServiceAPILayer = Pick<
   UIExtensionServiceAPILayer,
@@ -46,7 +46,7 @@ export type ImageGenerationServiceAPILayer = Pick<
 > & { getConfig: () => ImageGenerationServiceExtensionConfig };
 
 type JsonDataServiceExtensionConfig = Identifiers & {
-  extensionType: ExtensionTypes;
+  extensionType: ExtensionType;
   initialData?: any;
 };
 
@@ -64,7 +64,7 @@ export type SharedDataServiceAPILayer = Pick<
   "publishData"
 > & { getConfig: () => SharedDataServiceExtensionConfig };
 
-type ReportingServiceExtensionConfig = {
+export type ReportingServiceExtensionConfig = {
   renderingConfig?: RenderingConfig;
 };
 

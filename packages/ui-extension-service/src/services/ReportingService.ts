@@ -1,7 +1,4 @@
-import {
-  RenderingType,
-  type ReportRenderingConfig,
-} from "../types/RenderingConfig";
+import { type ReportRenderingConfig } from "@knime/ui-extension-renderer";
 
 import { AbstractService } from "./AbstractService";
 import type { ReportingServiceAPILayer } from "./types/serviceApiLayers";
@@ -14,8 +11,7 @@ export class ReportingService extends AbstractService<ReportingServiceAPILayer> 
   isReportingActive() {
     const { renderingConfig } = this.baseService.getConfig();
     return (
-      renderingConfig?.type === RenderingType.REPORT &&
-      (renderingConfig as ReportRenderingConfig).canBeUsedInReport
+      renderingConfig?.type === "REPORT" && renderingConfig.canBeUsedInReport
     );
   }
 

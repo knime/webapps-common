@@ -1,7 +1,4 @@
-export enum ColorModelType {
-  NUMERIC = "NUMERIC",
-  NOMINAL = "NOMINAL",
-}
+export type ColorModelType = "NUMERIC" | "NOMINAL";
 
 export type NumericColorModel = {
   minValue: number;
@@ -12,10 +9,10 @@ export type NumericColorModel = {
 
 export type ColorModel =
   | {
-      type: ColorModelType.NUMERIC;
+      type: "NUMERIC";
       model: NumericColorModel;
     }
   | {
-      type: ColorModelType.NOMINAL;
+      type: "NOMINAL";
       model: Record<string, string>;
     };

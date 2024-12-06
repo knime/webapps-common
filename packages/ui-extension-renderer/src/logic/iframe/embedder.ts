@@ -1,5 +1,5 @@
+import type { UIExtensionServiceAPILayer } from "../../types/serviceApiLayer";
 import { addDefaults } from "../embedder";
-import type { UIExtensionServiceAPILayer } from "../types/uiExtensionService";
 
 import { IframeDispatchEvent } from "./pushEvents";
 import type { PayloadForKey, RequestFor, Response } from "./types";

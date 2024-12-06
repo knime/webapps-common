@@ -1,11 +1,12 @@
 import type {
+  API,
+  ProxyMethodFor,
   UIExtensionService,
   UIExtensionServiceAPILayer,
-} from "../../types/uiExtensionService";
-import { IframeAddEventListener } from "../pushEvents";
-import type { API, ProxyMethodFor } from "../types";
+} from "@knime/ui-extension-renderer";
 
 import callEmbedderMethod from "./callEmbedderMethod";
+import { IframeAddEventListener } from "./pushEvents";
 
 /**
  * Makes the given method asynchronous by making the return type a promise if not already so

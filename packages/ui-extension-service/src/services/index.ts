@@ -1,9 +1,5 @@
 export { JsonDataService } from "./JsonDataService";
-export {
-  SelectionService,
-  SelectionModes,
-  type SelectionEventCallbackParams,
-} from "./SelectionService";
+export { SelectionService } from "./SelectionService";
 export { CachingSelectionService } from "./CachingSelectionService";
 export { ReportingService } from "./ReportingService";
 export { DialogService } from "./DialogService";

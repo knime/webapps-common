@@ -1,19 +1,16 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { setUpCustomEmbedderService } from "../../embedder";
-import type { UIExtensionServiceConfig } from "../../index";
-import {
-  ImageFormat,
-  RenderingType,
-  type ReportRenderingConfig,
-} from "../../types/RenderingConfig";
+import { setUpCustomEmbedderService } from "@knime/ui-extension-renderer";
+import { type ReportRenderingConfig } from "@knime/ui-extension-renderer";
+
 import { ReportingService } from "../ReportingService";
+import type { ReportingServiceExtensionConfig } from "../types/serviceApiLayers";
 
 import { extensionConfig } from "./mocks";
 
 describe("ReportingService", () => {
   const constructReportingService = (
-    extensionConfig: UIExtensionServiceConfig,
+    extensionConfig: ReportingServiceExtensionConfig,
   ) => {
     const apiLayer = {
       setReportingContent: vi.fn(),
@@ -27,7 +24,7 @@ describe("ReportingService", () => {
   it("sets isReportingActive to false if the type of the renderingConfig is not REPORT", () => {
     const localExtensionConfig = {
       ...extensionConfig,
-      renderingConfig: { type: RenderingType.DEFAULT },
+      renderingConfig: { type: "DEFAULT" },
     };
     const { reportingService } =
       constructReportingService(localExtensionConfig);
@@ -37,7 +34,7 @@ describe("ReportingService", () => {
   it("sets isReportingActive to false if the type of the renderingConfig is REPORT but it cannot be used in report", () => {
     const localExtensionConfig = {
       ...extensionConfig,
-      renderingConfig: { type: RenderingType.REPORT, canBeUsedInReport: false },
+      renderingConfig: { type: "REPORT", canBeUsedInReport: false },
     };
     const { reportingService } =
       constructReportingService(localExtensionConfig);
@@ -47,7 +44,7 @@ describe("ReportingService", () => {
   it("sets isReportingActive to true if the type of the renderingConfig is REPORT and it can be used in report", () => {
     const localExtensionConfig = {
       ...extensionConfig,
-      renderingConfig: { type: RenderingType.REPORT, canBeUsedInReport: true },
+      renderingConfig: { type: "REPORT", canBeUsedInReport: true },
     };
     const { reportingService } =
       constructReportingService(localExtensionConfig);
@@ -56,9 +53,9 @@ describe("ReportingService", () => {
   });
 
   it("returns the image file format", () => {
-    const imageFormat = ImageFormat.PNG;
+    const imageFormat = "PNG";
     const localRenderingConfig: ReportRenderingConfig = {
-      type: RenderingType.REPORT,
+      type: "REPORT",
       imageFormat,
       canBeUsedInReport: true,
     };

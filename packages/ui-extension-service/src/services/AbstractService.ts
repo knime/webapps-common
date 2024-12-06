@@ -1,5 +1,6 @@
-import { createProxy } from "../iframe/serviceProxy";
-import type { UIExtensionService } from "../types/uiExtensionService";
+import type { UIExtensionService } from "@knime/ui-extension-renderer";
+
+import { createProxy } from "../iframe/";
 
 /**
  * exported for test purposes

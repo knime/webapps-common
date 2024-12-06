@@ -6,8 +6,13 @@ import type { ResourceInfo } from "./types/ResourceInfo";
 import { ResourceTypes } from "./types/ResourceTypes";
 import type { UIExtensionAPILayer } from "./types/UIExtensionAPILayer";
 
-// TODO: UIEXT-2136 Remove this export once the UIExtensionServiceAPILayer is moved to this package
-export * from "@knime/ui-extension-service";
+export * from "./types/serviceApiLayer";
+
+export * from "./logic";
+
+// For tests only
+export { setUpCustomEmbedderService } from "./logic/embedder";
+export { setUpIframeEmbedderService } from "./logic/iframe/embedder";
 
 export {
   UIExtension,

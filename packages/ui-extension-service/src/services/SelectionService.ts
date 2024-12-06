@@ -1,32 +1,9 @@
-import { UIExtensionPushEvents } from "../types/pushEvents";
+import type { UIExtensionPushEvents } from "@knime/ui-extension-renderer";
+
 import type { UIExtensionService } from "../types/uiExtensionService";
 
 import { AbstractService } from "./AbstractService";
 import type { SelectionServiceAPILayer } from "./types/serviceApiLayers";
-
-/**
- * Selection service modes available by default to UI Extension nodes.
- */
-export enum SelectionModes {
-  ADD = "ADD",
-  REMOVE = "REMOVE",
-  REPLACE = "REPLACE",
-}
-export interface SelectionEventPayload {
-  projectId: string;
-  workflowId: string;
-  nodeId: string;
-  mode: SelectionModes;
-  selection?: string[];
-  error: string | null;
-}
-
-export type SelectionMode = SelectionModes;
-
-export interface SelectionEventCallbackParams {
-  mode: SelectionModes;
-  selection?: string[];
-}
 
 /**
  * SelectionService provides methods to handle data selection.

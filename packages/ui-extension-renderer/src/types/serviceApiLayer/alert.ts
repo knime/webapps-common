@@ -1,16 +1,7 @@
-/* eslint-disable no-magic-numbers */
+export const USER_ERROR_CODE = -32001;
+export const INTERNAL_ERROR_CODE = -32000;
 
-import {
-  INTERNAL_ERROR_CODE,
-  USER_ERROR_CODE,
-} from "../services/types/jsonRPCTypes";
-
-export { INTERNAL_ERROR_CODE, USER_ERROR_CODE };
-
-export enum AlertType {
-  ERROR = "error",
-  WARN = "warn",
-}
+export type AlertType = "error" | "warn";
 
 export type WarningData = {
   message: string;
@@ -18,14 +9,14 @@ export type WarningData = {
 };
 
 export type WarningAlert = {
-  type: AlertType.WARN;
+  type: "warn";
   warnings: WarningData[];
 };
 
 export type ErrorDetails = {};
 
 export type UserErrorAlert = {
-  type: AlertType.ERROR;
+  type: "error";
   code: typeof USER_ERROR_CODE;
   message: string;
   data: {
@@ -34,7 +25,7 @@ export type UserErrorAlert = {
 };
 
 export type InternalErrorAlert = {
-  type: AlertType.ERROR;
+  type: "error";
   code: typeof INTERNAL_ERROR_CODE;
   message: string;
   data: {
@@ -44,7 +35,7 @@ export type InternalErrorAlert = {
 };
 
 export type OtherErrorAlert = {
-  type: AlertType.ERROR;
+  type: "error";
   /**
    * This code is just an internal tool to identify the error type. If there exists a
    * specific code for the error, it is instead stored in the `originalCode` field.
@@ -66,15 +57,3 @@ export type OtherErrorAlert = {
 export type ErrorAlert = UserErrorAlert | InternalErrorAlert | OtherErrorAlert;
 
 export type Alert = ErrorAlert | WarningAlert;
-
-export type AlertParams = {
-  type: AlertType;
-  /**
-   * Message that should become visible to the user.
-   */
-  message: string;
-  /**
-   * Additional details about the problem that are displayed on demand.
-   */
-  details?: string;
-};
