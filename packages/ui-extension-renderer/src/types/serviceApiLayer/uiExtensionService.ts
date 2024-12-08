@@ -1,9 +1,10 @@
 import type { ColorModel } from "./ColorModel";
-import { DataServiceType } from "./DataServiceType";
-import { ExtensionTypes } from "./ExtensionTypes";
+import type { DataServiceType } from "./DataServiceType";
+import type { ExtensionType } from "./ExtensionTypes";
 import type { RenderingConfig } from "./RenderingConfig";
 import type { Alert } from "./alert";
-import { UIExtensionPushEvents } from "./pushEvents";
+import type { UIExtensionPushEvents } from "./pushEvents";
+import type { SelectionMode } from "./selection";
 
 export type Identifiers = {
   /**
@@ -27,7 +28,7 @@ export type UIExtensionServiceConfig = Identifiers & {
   /**
    * the type of the extension (effects the api behavior).
    */
-  extensionType: ExtensionTypes;
+  extensionType: ExtensionType;
   /**
    * optional initial data to provide directly to the UI Extension.
    */
@@ -63,19 +64,46 @@ export type UIExtensionServiceConfig = Identifiers & {
   startEnlarged?: boolean;
 };
 
-export enum ApplyState {
-  CLEAN,
-  EXEC,
-  CONFIG,
-  IDLE,
-}
+export type ApplyState =
+  /**
+   * Settings are clean, so they do not need to be applied.
+   */
+  | "clean"
+  /**
+   *Settings are dirty, i.e. can be applied, but if the node is currently executed,
+   *applying the settings does not reset the node.
+   */
+  | "executed"
+  /**
+   * Settings are dirty, i.e. can be applied. If they are applied the node will have to be
+   * reset and requires re-execution
+   */
+  | "configured"
+  /**
+   * The settings are dirty and invalid, leaving the node in an idle state when applied.
+   * We sometimes do want to allow applying such settings when they could become valid
+   * at a later point without changing the dialog (e.g. when the value of a flow variable
+   *  changes)
+   */
+  | "idle";
 
-export enum ViewState {
-  CLEAN,
-  EXEC,
-  CONFIG,
-  IDLE,
-}
+export type ViewState =
+  /**
+   * Settings are clean.
+   */
+  | "clean"
+  /**
+   * The settings are dirty but previewing these settings in the view is still possible without a re-execution.
+   */
+  | "executed"
+  /**
+   * The settings are dirty and require re-execution to show the resulting view.
+   */
+  | "configured"
+  /**
+   * The settings are dirty and invalid, i.e. it is not even possible to execute the node with these settings.
+   */
+  | "idle";
 
 export type APILayerDirtyState = { apply: ApplyState; view: ViewState };
 
@@ -129,7 +157,7 @@ export type UIExtensionServiceAPILayer = {
   ) => Promise<KnimeUiApiResponse>;
 
   updateDataPointSelection: (
-    params: Identifiers & { mode: string; selection: string[] },
+    params: Identifiers & { mode: SelectionMode; selection: string[] },
   ) => Promise<any>;
 
   setReportingContent: (content: string | false) => void;

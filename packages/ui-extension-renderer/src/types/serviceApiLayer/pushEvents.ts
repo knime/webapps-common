@@ -1,3 +1,5 @@
+import type { SelectionEventPayload } from "./selection";
+
 export namespace UIExtensionPushEvents {
   export type KnownEventType =
     /**
@@ -11,25 +13,6 @@ export namespace UIExtensionPushEvents {
 
   export interface DisplayModeEventPayload {
     mode: "small" | "large";
-  }
-
-  /**
-   * Selection service modes available by default to UI Extension nodes.
-   */
-  export type SelectionMode = "REPLACE" | "ADD" | "REMOVE";
-
-  export interface SelectionEventPayload {
-    projectId: string;
-    workflowId: string;
-    nodeId: string;
-    mode: SelectionMode;
-    selection?: string[];
-    error: string | null;
-  }
-
-  export interface SelectionEventCallbackParams {
-    mode: SelectionMode;
-    selection?: string[];
   }
 
   type KnownPushEvents = {

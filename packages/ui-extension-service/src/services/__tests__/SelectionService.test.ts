@@ -1,11 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { setUpCustomEmbedderService } from "../../embedder";
-import type { UIExtensionServiceConfig } from "../../index";
 import {
-  type SelectionEventCallbackParams,
-  SelectionModes,
-} from "../../services/SelectionService";
+  type SelectionEventPayload,
+  type UIExtensionServiceConfig,
+  setUpCustomEmbedderService,
+} from "@knime/ui-extension-renderer";
+
 import { SelectionService } from "../SelectionService";
 
 import { extensionConfig } from "./mocks";
@@ -60,27 +60,27 @@ describe("SelectionService", () => {
       };
 
       expect(updateDataPointSelection.mock.calls[0][0]).toStrictEqual({
-        mode: SelectionModes.ADD,
+        mode: "ADD",
         selection: params,
         ...idParams,
       });
 
       await selectionService.remove(params);
       expect(updateDataPointSelection.mock.calls[1][0]).toStrictEqual({
-        mode: SelectionModes.REMOVE,
+        mode: "REMOVE",
         selection: params,
         ...idParams,
       });
       await selectionService.replace(params);
       expect(updateDataPointSelection.mock.calls[2][0]).toStrictEqual({
-        mode: SelectionModes.REPLACE,
+        mode: "REPLACE",
         selection: params,
         ...idParams,
       });
     });
 
-    const selectionPayload: SelectionEventCallbackParams = {
-      mode: SelectionModes.ADD,
+    const selectionPayload: SelectionEventPayload = {
+      mode: "ADD",
       selection: ["a", "c"],
     };
 

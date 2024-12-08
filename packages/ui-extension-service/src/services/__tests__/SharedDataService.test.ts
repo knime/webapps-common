@@ -1,7 +1,10 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { setUpCustomEmbedderService } from "../../embedder";
-import { UIExtensionPushEvents } from "../../index";
+import {
+  type UIExtensionPushEvents,
+  setUpCustomEmbedderService,
+} from "@knime/ui-extension-renderer";
+
 import { SharedDataService } from "../SharedDataService";
 import type { SharedDataServiceAPILayer } from "../types/serviceApiLayers";
 

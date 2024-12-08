@@ -1,4 +1,4 @@
-import { type APILayerDirtyState, ApplyState, ViewState } from "../../types";
+import type { APILayerDirtyState } from "@knime/ui-extension-renderer";
 
 import type { SettingComparator } from "./SettingComparator";
 import { createSetting } from "./setting";
@@ -45,8 +45,8 @@ const useDirtyStatesGeneric =
   };
 
 export const useDirtyStates = useDirtyStatesGeneric<APILayerDirtyState>({
-  apply: ApplyState.CLEAN,
-  view: ViewState.CLEAN,
+  apply: "clean",
+  view: "clean",
 });
 
 export const createDialogDirtyStateHandler = (
@@ -64,12 +64,12 @@ export const createDialogDirtyStateHandler = (
       getStates()
         .map(({ apply }) => apply)
         .sort()
-        .pop() ?? ApplyState.CLEAN,
+        .pop() ?? "clean",
     view: () =>
       getStates()
         .map(({ view }) => view)
         .sort()
-        .pop() ?? ViewState.CLEAN,
+        .pop() ?? "clean",
   };
 
   const { onChange } = useDirtyStates(construct, onDirtyStateChange);

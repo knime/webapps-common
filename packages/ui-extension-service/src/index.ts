@@ -1,7 +1,6 @@
 export {
   JsonDataService,
   SelectionService,
-  SelectionModes,
   CachingSelectionService,
   DialogService,
   SharedDataService,
@@ -16,7 +15,6 @@ export {
   type SettingComparator,
   DefaultSettingComparator,
   type SettingState,
-  type SelectionEventCallbackParams,
 } from "./services";
 
 export { KnimeUtils } from "./utils/KnimeUtils";
