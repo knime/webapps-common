@@ -80,6 +80,7 @@ describe("SelectionService", () => {
     });
 
     const selectionPayload: SelectionEventPayload = {
+      ...extensionConfig,
       mode: "ADD",
       selection: ["a", "c"],
     };
@@ -110,12 +111,12 @@ describe("SelectionService", () => {
 
       dispatchPushEvent({
         eventType: "SelectionEvent",
-        payload: { nodeId: "otherNodeId", ...selectionPayload },
+        payload: { ...selectionPayload, nodeId: "otherNodeId" },
       });
       expect(callback).not.toHaveBeenCalled();
       dispatchPushEvent({
         eventType: "SelectionEvent",
-        payload: { nodeId: extensionConfig.nodeId, ...selectionPayload },
+        payload: selectionPayload,
       });
       expect(callback).not.toHaveBeenCalledWith(testPayload);
     });
@@ -131,7 +132,7 @@ describe("SelectionService", () => {
 
       dispatchPushEvent({
         eventType: "SelectionEvent",
-        payload: { nodeId: extensionConfig.nodeId, ...selectionPayload },
+        payload: selectionPayload,
       });
 
       expect(callback).not.toHaveBeenCalled();

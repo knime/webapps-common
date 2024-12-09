@@ -22,9 +22,11 @@ describe("ReportingService", () => {
   };
 
   it("sets isReportingActive to false if the type of the renderingConfig is not REPORT", () => {
-    const localExtensionConfig = {
+    const localExtensionConfig: ReportingServiceExtensionConfig = {
       ...extensionConfig,
-      renderingConfig: { type: "DEFAULT" },
+      renderingConfig: {
+        type: "DEFAULT",
+      },
     };
     const { reportingService } =
       constructReportingService(localExtensionConfig);
@@ -32,9 +34,13 @@ describe("ReportingService", () => {
   });
 
   it("sets isReportingActive to false if the type of the renderingConfig is REPORT but it cannot be used in report", () => {
-    const localExtensionConfig = {
+    const localExtensionConfig: ReportingServiceExtensionConfig = {
       ...extensionConfig,
-      renderingConfig: { type: "REPORT", canBeUsedInReport: false },
+      renderingConfig: {
+        type: "REPORT",
+        canBeUsedInReport: false,
+        imageFormat: "PNG",
+      },
     };
     const { reportingService } =
       constructReportingService(localExtensionConfig);
@@ -42,9 +48,13 @@ describe("ReportingService", () => {
   });
 
   it("sets isReportingActive to true if the type of the renderingConfig is REPORT and it can be used in report", () => {
-    const localExtensionConfig = {
+    const localExtensionConfig: ReportingServiceExtensionConfig = {
       ...extensionConfig,
-      renderingConfig: { type: "REPORT", canBeUsedInReport: true },
+      renderingConfig: {
+        type: "REPORT",
+        canBeUsedInReport: true,
+        imageFormat: "PNG",
+      },
     };
     const { reportingService } =
       constructReportingService(localExtensionConfig);

@@ -36,7 +36,7 @@ export type DialogServiceAPILayer = Pick<
   getConfig: () => DialogServiceExtensionConfig;
 };
 
-type ImageGenerationServiceExtensionConfig = {
+export type ImageGenerationServiceExtensionConfig = {
   renderingConfig?: RenderingConfig;
 };
 

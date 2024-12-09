@@ -10,10 +10,6 @@ export * from "./types/serviceApiLayer";
 
 export * from "./logic";
 
-// For tests only
-export { setUpCustomEmbedderService } from "./logic/embedder";
-export { setUpIframeEmbedderService } from "./logic/iframe/embedder";
-
 export {
   UIExtension,
   UIExtensionAlerts,

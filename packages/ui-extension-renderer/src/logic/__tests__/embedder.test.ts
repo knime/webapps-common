@@ -1,25 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { setUpCustomEmbedderService, setUpEmbedderService } from "../embedder";
-import {
-  DialogService,
-  JsonDataService,
-  ReportingService,
-  ResourceService,
-  SelectionService,
-} from "../index";
+import { setUpCustomEmbedderService } from "../embedder";
 
 describe("setUpEmbedderService", () => {
-  it("can be used to create services", () => {
-    const embedder = setUpEmbedderService({} as any);
-    new JsonDataService(embedder.service);
-    new ReportingService(embedder.service);
-    new SelectionService(embedder.service);
-    new DialogService(embedder.service);
-    new SelectionService(embedder.service);
-    new ResourceService(embedder.service);
-  });
-
   it("passes method calls to the apiLayer", () => {
     const apiLayer = { someMethod: vi.fn() };
     const defaultEmbedder = setUpCustomEmbedderService(apiLayer);

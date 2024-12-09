@@ -1,7 +1,7 @@
 import type {
-  SelectionEventCallbackParams,
   SelectionEventPayload,
   SelectionMode,
+  SelectionParams,
   UIExtensionPushEvents,
   UIExtensionService,
 } from "@knime/ui-extension-renderer";
@@ -96,12 +96,15 @@ export class SelectionService extends AbstractService<SelectionServiceAPILayer> 
    * Adds callback that will be triggered on data selection change outside the scope of the view.
    */
   addOnSelectionChangeCallback(
-    callback: (event: SelectionEventCallbackParams) => void,
+    callback: (event: SelectionParams) => void,
   ): void {
-    const wrappedCallback = (event?: SelectionEventPayload): void => {
-      const { nodeId, selection, mode } = event || {};
-      if (this.baseService.getConfig().nodeId === nodeId && mode) {
-        callback({ selection, mode });
+    const wrappedCallback = (event: SelectionEventPayload): void => {
+      if (this.baseService.getConfig().nodeId === event.nodeId && event.mode) {
+        if (typeof event.error === "string") {
+          // TODO: Send an alert via the alerting service
+        } else {
+          callback(event);
+        }
       }
     };
     const removeCallback = this.baseService.addPushEventListener(
@@ -117,7 +120,7 @@ export class SelectionService extends AbstractService<SelectionServiceAPILayer> 
    * @returns {void}
    */
   removeOnSelectionChangeCallback(
-    callback: (event: SelectionEventCallbackParams) => void,
+    callback: (event: SelectionParams) => void,
   ): void {
     this.removeCallbacksMap.get(callback)?.();
     this.removeCallbacksMap.delete(callback);

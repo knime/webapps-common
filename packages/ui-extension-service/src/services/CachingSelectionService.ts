@@ -1,5 +1,5 @@
 import type {
-  UIExtensionPushEvents,
+  SelectionParams,
   UIExtensionService,
 } from "@knime/ui-extension-renderer";
 
@@ -18,10 +18,7 @@ export class CachingSelectionService extends SelectionService {
     this.addOnSelectionChangeCallback(this.addBackendSelection.bind(this));
   }
 
-  private addBackendSelection({
-    mode,
-    selection = [],
-  }: UIExtensionPushEvents.SelectionEventCallbackParams) {
+  private addBackendSelection({ mode, selection = [] }: SelectionParams) {
     switch (mode) {
       case "ADD":
         this.addToChache(selection);

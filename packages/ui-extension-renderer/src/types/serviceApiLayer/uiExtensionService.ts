@@ -4,7 +4,7 @@ import type { ExtensionType } from "./ExtensionTypes";
 import type { RenderingConfig } from "./RenderingConfig";
 import type { Alert } from "./alert";
 import type { UIExtensionPushEvents } from "./pushEvents";
-import type { SelectionMode } from "./selection";
+import type { SelectionParams } from "./selection";
 
 export type Identifiers = {
   /**
@@ -156,9 +156,7 @@ export type UIExtensionServiceAPILayer = {
     params: object | readonly unknown[] | undefined,
   ) => Promise<KnimeUiApiResponse>;
 
-  updateDataPointSelection: (
-    params: Identifiers & { mode: SelectionMode; selection: string[] },
-  ) => Promise<any>;
+  updateDataPointSelection: (params: SelectionParams) => Promise<any>;
 
   setReportingContent: (content: string | false) => void;
 

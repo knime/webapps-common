@@ -19,7 +19,7 @@ export namespace UIExtensionPushEvents {
     SelectionEvent: SelectionEventPayload;
     DisplayModeEvent: DisplayModeEventPayload;
     DataEvent: any;
-    ApplyDataEvent: never;
+    ApplyDataEvent: undefined;
     DataValueViewShownEvent: boolean;
   };
 
@@ -28,10 +28,22 @@ export namespace UIExtensionPushEvents {
    */
   export type EventType = KnownEventType | Omit<string, KnownEventType>;
 
-  export type PushEvent<N extends EventType = any, P = any> = {
+  type MakePayloadOptionalIfUndefined<
+    T extends { eventType: any; payload: any },
+  > = T["payload"] extends undefined
+    ? {
+        eventType: T["eventType"];
+        payload?: undefined; // NOSONAR
+      }
+    : T;
+
+  export type PushEvent<
+    N extends EventType = any,
+    P = any,
+  > = MakePayloadOptionalIfUndefined<{
     eventType: N;
-    payload?: N extends keyof KnownPushEvents ? KnownPushEvents[N] : P;
-  };
+    payload: N extends keyof KnownPushEvents ? KnownPushEvents[N] : P;
+  }>;
 
   export type SelectionEvent = PushEvent<"SelectionEvent">;
   export type DataEvent = PushEvent<"DataEvent">;

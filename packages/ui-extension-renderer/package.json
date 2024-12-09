@@ -15,6 +15,12 @@
   "exports": {
     ".": {
       "import": "./src/index.ts"
+    },
+    "./api": {
+      "import": "./src/types/serviceApiLayer/index.ts"
+    },
+    "./testing": {
+      "import": "./src/logic/embedder"
     }
   },
   "scripts": {
