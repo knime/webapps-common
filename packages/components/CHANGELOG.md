@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.12.2
+
+### Patch Changes
+
+- 7765daf: add max-height to UploadProgressPanel, make it scrollable on overflow
+
 ## 1.12.1
 
 ### Patch Changes
