@@ -10,15 +10,16 @@ import { Button, Checkbox, Dropdown } from "@knime/components";
 import { JsonDataService } from "@knime/ui-extension-service";
 
 import { mockRegisterSettings } from "@@/test-setup/utils/integration/dirtySettingState";
-import NodeDialog from "@/nodeDialog/NodeDialog.vue";
-import { getOptions } from "@/nodeDialog/__tests__/utils";
+
+import NodeDialog from "./../../../NodeDialog.vue";
+import { getOptions } from "./../../../__tests__/utils";
 import type {
   Update,
   UpdateResult,
   ValueReference,
-} from "@/nodeDialog/types/Update";
-import SimpleButtonControl from "@/nodeDialog/uiComponents/SimpleButtonControl.vue";
-import TextControl from "@/nodeDialog/uiComponents/TextControl.vue";
+} from "./../../../types/Update";
+import SimpleButtonControl from "./../../../uiComponents/SimpleButtonControl.vue";
+import TextControl from "./../../../uiComponents/TextControl.vue";
 
 describe("updates in array layouts", () => {
   type Wrapper = VueWrapper<any> & {

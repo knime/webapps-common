@@ -1,8 +1,8 @@
 import { type Ref, nextTick, toRef } from "vue";
 import { type RendererProps, useJsonFormsControl } from "@jsonforms/vue";
 
-import type { Control } from "@/nodeDialog/types/Control";
-import inject from "@/nodeDialog/utils/inject";
+import type { Control } from "./../../types/Control";
+import inject from "./../../utils/inject";
 
 /**
  * Wrapper around the handleChange method of the json forms control object.

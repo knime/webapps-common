@@ -3,11 +3,11 @@ import { computed, watch } from "vue";
 
 import { InputField } from "@knime/components";
 
-import { type FlowSettings } from "@/nodeDialog/api/types";
-import useProvidedState from "@/nodeDialog/composables/components/useProvidedState";
-import type { Control } from "@/nodeDialog/types/Control";
-import LabeledControl from "@/nodeDialog/uiComponents/label/LabeledControl.vue";
-import { mergeDeep } from "@/nodeDialog/utils";
+import { type FlowSettings } from "../../api/types";
+import useProvidedState from "../../composables/components/useProvidedState";
+import type { Control } from "../../types/Control";
+import { mergeDeep } from "../../utils";
+import LabeledControl from "../label/LabeledControl.vue";
 
 import type { Credentials } from "./types/Credentials";
 

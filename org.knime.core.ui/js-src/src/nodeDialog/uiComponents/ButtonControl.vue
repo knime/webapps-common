@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 
 import { FunctionButton, LoadingIcon } from "@knime/components";
 
-import type { Result as ResultOfType } from "@/nodeDialog/api/types/Result";
+import type { Result as ResultOfType } from "../api/types/Result";
 import { type Stringifyable } from "../composables/components/JsonSettingsComparator";
 import useDialogControl from "../composables/components/useDialogControl";
 import type { SettingsData } from "../types/SettingsData";

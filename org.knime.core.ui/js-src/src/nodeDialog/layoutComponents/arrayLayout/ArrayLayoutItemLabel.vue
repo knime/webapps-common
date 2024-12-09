@@ -9,7 +9,7 @@ import { computed } from "vue";
 
 import { Label } from "@knime/components";
 
-import useProvidedState from "@/nodeDialog/composables/components/useProvidedState";
+import useProvidedState from "./../../composables/components/useProvidedState";
 
 const props = defineProps<{
   titleConfig: TitleConfig;

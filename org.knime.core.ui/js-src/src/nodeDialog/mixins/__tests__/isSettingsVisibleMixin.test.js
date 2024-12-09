@@ -2,9 +2,9 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { ref } from "vue";
 import { shallowMount } from "@vue/test-utils";
 
-import { injectionKey as injectionKeyShowAdvancedSettings } from "@/nodeDialog/composables/components/useAdvancedSettings";
 import isSettingsVisibleMixin from "../isSettingsVisibleMixin";
 
+import { injectionKey as injectionKeyShowAdvancedSettings } from "./../../composables/components/useAdvancedSettings";
 import MockComponent from "./mockComponent.vue";
 
 describe("isSettingsVisibleMixin.js", () => {

@@ -3,7 +3,7 @@ import { type Ref, computed, onMounted, ref } from "vue";
 
 import { Dropdown } from "@knime/components";
 
-import type { PossibleFlowVariable } from "@/nodeDialog/api/types";
+import type { PossibleFlowVariable } from "../../../api/types";
 import { injectForFlowVariables } from "../../../utils/inject";
 import useControllingFlowVariable from "../composables/useControllingFlowVariable";
 import type { FlowVariableSelectorProps } from "../types/FlowVariableSelectorProps";

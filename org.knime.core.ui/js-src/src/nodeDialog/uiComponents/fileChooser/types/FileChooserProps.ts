@@ -1,4 +1,4 @@
-import { type FileChooserOptions } from "@/nodeDialog/types/FileChooserUiSchema";
+import { type FileChooserOptions } from "../../../types/FileChooserUiSchema";
 
 export enum FSCategory {
   LOCAL,

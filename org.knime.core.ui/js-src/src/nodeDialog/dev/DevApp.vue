@@ -9,8 +9,7 @@ import {
   type UIExtensionService,
 } from "@knime/ui-extension-service";
 
-import NodeDialog from "@/nodeDialog/NodeDialog.vue";
-
+import NodeDialog from "./../NodeDialog.vue";
 import dataServiceMock from "./dataServiceMock";
 
 export default {

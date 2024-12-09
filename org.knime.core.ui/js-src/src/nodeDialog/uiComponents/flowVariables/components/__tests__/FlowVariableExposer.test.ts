@@ -13,9 +13,9 @@ import flushPromises from "flush-promises";
 
 import { InputField } from "@knime/components";
 
-import { type FlowSettings } from "@/nodeDialog/api/types";
-import { injectionKey as providedByComponentKey } from "@/nodeDialog/composables/components/useFlowVariables";
-import { injectionKey as flowVarMapKey } from "@/nodeDialog/composables/components/useProvidedFlowVariablesMap";
+import { type FlowSettings } from "../../../../api/types";
+import { injectionKey as providedByComponentKey } from "../../../../composables/components/useFlowVariables";
+import { injectionKey as flowVarMapKey } from "../../../../composables/components/useProvidedFlowVariablesMap";
 import ErrorMessage from "../../../ErrorMessage.vue";
 import type { FlowVariableSelectorProps } from "../../types/FlowVariableExposerProps";
 import FlowVariableExposer from "../FlowVariableExposer.vue";

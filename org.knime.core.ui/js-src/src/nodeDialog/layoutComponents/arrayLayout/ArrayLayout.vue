@@ -11,17 +11,16 @@ import {
 import { Button } from "@knime/components";
 import PlusIcon from "@knime/styles/img/icons/plus.svg";
 
-import { useDirtySetting } from "@/nodeDialog/composables/components/useDirtySetting";
-import useProvidedState from "@/nodeDialog/composables/components/useProvidedState";
+import { useDirtySetting } from "./../../composables/components/useDirtySetting";
+import useProvidedState from "./../../composables/components/useProvidedState";
 import {
   createNewId,
   deleteId,
   setIndex,
-} from "@/nodeDialog/composables/nodeDialog/useArrayIds";
-import { editResetButtonFormat } from "@/nodeDialog/renderers/editResetButtonRenderer";
-import DialogComponentWrapper from "@/nodeDialog/uiComponents/DialogComponentWrapper.vue";
-import inject from "@/nodeDialog/utils/inject";
-
+} from "./../../composables/nodeDialog/useArrayIds";
+import { editResetButtonFormat } from "./../../renderers/editResetButtonRenderer";
+import DialogComponentWrapper from "./../../uiComponents/DialogComponentWrapper.vue";
+import inject from "./../../utils/inject";
 import ArrayLayoutItem from "./ArrayLayoutItem.vue";
 import ArrayLayoutItemControls from "./ArrayLayoutItemControls.vue";
 import useIsEdited from "./composables/useIsEdited";

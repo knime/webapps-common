@@ -2,9 +2,9 @@ import { type Ref, onUnmounted, watch } from "vue";
 
 import type { SettingComparator } from "@knime/ui-extension-service";
 
-import inject from "@/nodeDialog/utils/inject";
 import useDirtySettings from "../nodeDialog/useDirtySettings";
 
+import inject from "./../../utils/inject";
 import {
   JsonSettingsComparator,
   type Stringifyable,

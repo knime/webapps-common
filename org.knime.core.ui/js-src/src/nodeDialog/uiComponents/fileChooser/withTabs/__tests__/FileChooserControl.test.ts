@@ -11,9 +11,9 @@ import {
   initializesJsonFormsControl,
   mountJsonFormsComponent,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
-import SettingsSubPanel from "@/nodeDialog/layoutComponents/settingsSubPanel/SettingsSubPanel.vue";
-import DialogLabel from "@/nodeDialog/uiComponents/label/DialogLabel.vue";
-import LabeledControl from "@/nodeDialog/uiComponents/label/LabeledControl.vue";
+import SettingsSubPanel from "../../../../layoutComponents/settingsSubPanel/SettingsSubPanel.vue";
+import DialogLabel from "../../../label/DialogLabel.vue";
+import LabeledControl from "../../../label/LabeledControl.vue";
 import FSLocationTextControl from "../FSLocationTextControl.vue";
 import FileChooserControl from "../FileChooserControl.vue";
 import SideDrawerContent from "../SideDrawerContent.vue";

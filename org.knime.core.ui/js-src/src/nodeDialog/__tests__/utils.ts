@@ -1,4 +1,4 @@
-import Form from "@/nodeDialog/layoutComponents/Form.vue";
+import Form from "./../layoutComponents/Form.vue";
 
 export const getOptions = ({
   stubButtonsBySlot,

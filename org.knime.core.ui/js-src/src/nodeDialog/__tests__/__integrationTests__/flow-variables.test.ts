@@ -18,15 +18,13 @@ import {
   mockRegisterSettings,
   registeredSettingState,
 } from "@@/test-setup/utils/integration/dirtySettingState";
-import type {
-  FlowSettings,
-  PossibleFlowVariable,
-} from "@/nodeDialog/api/types";
-import type { PersistSchema } from "@/nodeDialog/types/Persist";
-import type { UpdateResult } from "@/nodeDialog/types/Update";
-import FlowVariableButton from "@/nodeDialog/uiComponents/flowVariables/components/FlowVariableButton.vue";
 import NodeDialog from "../../NodeDialog.vue";
 import { getOptions } from "../utils";
+
+import type { FlowSettings, PossibleFlowVariable } from "./../../api/types";
+import type { PersistSchema } from "./../../types/Persist";
+import type { UpdateResult } from "./../../types/Update";
+import FlowVariableButton from "./../../uiComponents/flowVariables/components/FlowVariableButton.vue";
 
 describe("flow variables", () => {
   const flowVar1 = {

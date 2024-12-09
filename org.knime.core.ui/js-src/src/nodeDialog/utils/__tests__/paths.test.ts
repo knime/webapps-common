@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import type { PersistSchema } from "@/nodeDialog/types/Persist";
+import type { PersistSchema } from "../../types/Persist";
 import {
   getConfigPaths as getConfigAndDataPaths,
   getLongestCommonPrefix,

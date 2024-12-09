@@ -1,15 +1,4 @@
 <script lang="ts">
-import { useApplyButton } from "@/nodeDialog/layoutComponents/settingsSubPanel";
-import type { Props as SettingsSubPanelProps } from "../SettingsSubPanel.vue";
-
-/* eslint-disable import/order */
-import TestSettingsSubPanelContent from "./TestSettingsSubPanelContent.vue";
-
-export interface Props {
-  settingsSubPanelConfig: SettingsSubPanelProps;
-  onApply: () => Promise<void>;
-}
-
 export const expandButtonId = "expandButton";
 export const contentId = "content";
 </script>
@@ -17,8 +6,16 @@ export const contentId = "content";
 <script setup lang="ts">
 import { ref } from "vue";
 
+import type { Props as SettingsSubPanelProps } from "../SettingsSubPanel.vue";
 import SettingsSubPanel from "../SettingsSubPanel.vue";
-/* eslint-enable import/order */
+
+import { useApplyButton } from "./../../../layoutComponents/settingsSubPanel";
+import TestSettingsSubPanelContent from "./TestSettingsSubPanelContent.vue";
+
+export interface Props {
+  settingsSubPanelConfig: SettingsSubPanelProps;
+  onApply: () => Promise<void>;
+}
 
 defineProps<Props>();
 const content = ref<null | typeof TestSettingsSubPanelContent>(null);

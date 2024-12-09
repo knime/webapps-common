@@ -3,10 +3,9 @@ import { rendererProps } from "@jsonforms/vue";
 
 import type { SettingComparator } from "@knime/ui-extension-service";
 
-import type { FlowSettings } from "@/nodeDialog/api/types";
-import type { Control } from "@/nodeDialog/types/Control";
-import { isModelSettingAndHasNodeView } from "@/nodeDialog/utils";
-
+import type { FlowSettings } from "./../../api/types";
+import type { Control } from "./../../types/Control";
+import { isModelSettingAndHasNodeView } from "./../../utils";
 import type { Stringifyable } from "./JsonSettingsComparator";
 import { useDirtySetting } from "./useDirtySetting";
 import { useFlowSettings } from "./useFlowVariables";

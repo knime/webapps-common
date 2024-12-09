@@ -8,8 +8,8 @@ import BothFlowVariables from "@knime/styles/img/icons/both-flow-variables.svg";
 import ExposeFlowVariable from "@knime/styles/img/icons/expose-flow-variables.svg";
 import OnlyFlowVariable from "@knime/styles/img/icons/only-flow-variables.svg";
 
-import { type FlowSettings } from "@/nodeDialog/api/types";
-import { injectionKey as providedByComponentKey } from "@/nodeDialog/composables/components/useFlowVariables";
+import { type FlowSettings } from "../../../../api/types";
+import { injectionKey as providedByComponentKey } from "../../../../composables/components/useFlowVariables";
 import type { FlowVariableIconProps } from "../../types/FlowVariableIconProps";
 import FlowVariableIcon from "../FlowVariableIcon.vue";
 

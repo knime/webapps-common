@@ -3,7 +3,7 @@ import { rendererProps } from "@jsonforms/vue";
 
 import { Checkbox } from "@knime/components";
 
-import useDialogControl from "@/nodeDialog/composables/components/useDialogControl";
+import useDialogControl from "./../../composables/components/useDialogControl";
 
 const props = defineProps(rendererProps());
 

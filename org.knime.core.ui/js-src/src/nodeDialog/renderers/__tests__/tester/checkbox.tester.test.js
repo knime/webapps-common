@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest";
 
 import { dialogInitialData } from "@@/test-setup/mocks/dialogData";
-import { inputFormats } from "@/nodeDialog/constants/inputFormats";
 import { checkboxTester } from "../../checkboxRenderer";
+
+import { inputFormats } from "./../../../constants/inputFormats";
 
 describe("checkboxTester", () => {
   it("applies for boolean control with checkbox format", () => {

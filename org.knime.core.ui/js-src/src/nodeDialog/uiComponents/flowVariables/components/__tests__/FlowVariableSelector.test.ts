@@ -14,10 +14,10 @@ import flushPromises from "flush-promises";
 
 import { Dropdown } from "@knime/components";
 
-import { type FlowSettings } from "@/nodeDialog/api/types";
-import { injectionKey as providedByComponentKey } from "@/nodeDialog/composables/components/useFlowVariables";
-import { injectionKey as flowVarMapKey } from "@/nodeDialog/composables/components/useProvidedFlowVariablesMap";
-import { type ProvidedForFlowVariables } from "@/nodeDialog/types/provided";
+import { type FlowSettings } from "../../../../api/types";
+import { injectionKey as providedByComponentKey } from "../../../../composables/components/useFlowVariables";
+import { injectionKey as flowVarMapKey } from "../../../../composables/components/useProvidedFlowVariablesMap";
+import { type ProvidedForFlowVariables } from "../../../../types/provided";
 import type { FlowVariableSelectorProps } from "../../types/FlowVariableSelectorProps";
 import FlowVariableSelector from "../FlowVariableSelector.vue";
 

@@ -4,8 +4,9 @@ import {
   initializesJsonFormsLayout,
   mountJsonFormsComponent,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
-import DescriptionPopover from "@/nodeDialog/uiComponents/description/DescriptionPopover.vue";
 import SectionLayout from "../SectionLayout.vue";
+
+import DescriptionPopover from "./../../uiComponents/description/DescriptionPopover.vue";
 
 describe("SectionLayout.vue", () => {
   let defaultProps, wrapper;

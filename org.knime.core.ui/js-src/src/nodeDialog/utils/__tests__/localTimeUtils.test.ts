@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { localTimeUtils } from "@/nodeDialog/utils/localTimeUtils";
+import { localTimeUtils } from "../../utils/localTimeUtils";
 
 describe("localTimeUtils", () => {
   describe("toString", () => {

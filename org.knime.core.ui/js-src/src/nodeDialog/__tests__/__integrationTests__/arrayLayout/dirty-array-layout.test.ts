@@ -10,8 +10,9 @@ import {
   controllingFlowVariableState,
   exposedFlowVariableState,
 } from "@@/test-setup/utils/integration/dirtySettingState";
-import NodeDialog from "@/nodeDialog/NodeDialog.vue";
-import { getOptions } from "@/nodeDialog/__tests__/utils";
+
+import NodeDialog from "./../../../NodeDialog.vue";
+import { getOptions } from "./../../../__tests__/utils";
 
 describe("dirty array layout", () => {
   type Wrapper = VueWrapper<any> & {

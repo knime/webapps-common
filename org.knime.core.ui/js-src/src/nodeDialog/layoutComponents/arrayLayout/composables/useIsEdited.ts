@@ -1,7 +1,8 @@
 import { type Ref, nextTick, ref, watch } from "vue";
 
-import inject from "@/nodeDialog/utils/inject";
 import { ELEMENT_RESET_BUTTON_ID } from "../EditResetButton.vue";
+
+import inject from "./../../../utils/inject";
 
 const MILLISECONDS_UNTIL_LOADING = 200;
 const hash = (ids: string[]) => ids.reduce((x, y) => x + y, "");

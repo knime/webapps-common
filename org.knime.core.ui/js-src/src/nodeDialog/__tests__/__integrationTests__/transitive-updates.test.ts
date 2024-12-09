@@ -8,14 +8,15 @@ import {
 } from "@knime/ui-extension-service";
 
 import { mockRegisterSettings } from "@@/test-setup/utils/integration/dirtySettingState";
-import NodeDialog from "@/nodeDialog/NodeDialog.vue";
-import { getOptions } from "@/nodeDialog/__tests__/utils";
-import type { Result } from "@/nodeDialog/api/types/Result";
+
+import NodeDialog from "./../../NodeDialog.vue";
+import { getOptions } from "./../../__tests__/utils";
+import type { Result } from "./../../api/types/Result";
 import type {
   Update,
   UpdateResult,
   ValueReference,
-} from "@/nodeDialog/types/Update";
+} from "./../../types/Update";
 
 describe("updates in array layouts", () => {
   type Wrapper = VueWrapper<any> & {

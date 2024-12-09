@@ -1,6 +1,6 @@
 import type { Ref } from "vue";
 
-import inject from "@/nodeDialog/utils/inject";
+import inject from "../../../utils/inject";
 import type { BackendType, FolderAndError, PathAndError } from "../types";
 import { FSCategory } from "../types/FileChooserProps";
 

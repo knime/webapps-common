@@ -9,7 +9,7 @@ export type { Props };
 <script setup lang="ts">
 import { computed, onMounted, watch } from "vue";
 
-import { useApplyButton } from "@/nodeDialog/layoutComponents/settingsSubPanel";
+import { useApplyButton } from "../../../../layoutComponents/settingsSubPanel";
 
 import CustomUrlFileChooser from "./CustomUrlFileChooser.vue";
 import { startsWithSchemeRegex } from "./urlUtil";

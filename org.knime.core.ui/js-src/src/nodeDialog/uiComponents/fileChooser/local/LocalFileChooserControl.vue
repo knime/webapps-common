@@ -4,9 +4,9 @@ import { rendererProps } from "@jsonforms/vue";
 
 import { InputField } from "@knime/components";
 
-import useDialogControl from "@/nodeDialog/composables/components/useDialogControl";
-import { type FileChooserOptions } from "@/nodeDialog/types/FileChooserUiSchema";
-import LabeledControl from "@/nodeDialog/uiComponents/label/LabeledControl.vue";
+import useDialogControl from "../../../composables/components/useDialogControl";
+import { type FileChooserOptions } from "../../../types/FileChooserUiSchema";
+import LabeledControl from "../../label/LabeledControl.vue";
 import FileBrowserButton from "../FileBrowserButton.vue";
 import { useFileChooserBrowseOptions } from "../composables/useFileChooserBrowseOptions";
 import useSideDrawerContent from "../composables/useSideDrawerContent";

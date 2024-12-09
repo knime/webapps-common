@@ -1,10 +1,10 @@
 import { type InjectionKey, type Ref, computed, inject, provide } from "vue";
 
-import type { FlowSettings } from "@/nodeDialog/api/types";
-import { injectForFlowVariables } from "@/nodeDialog/utils/inject";
-import { getConfigPaths } from "@/nodeDialog/utils/paths";
 import type { SettingStateWrapper } from "../nodeDialog/useDirtySettings";
 
+import type { FlowSettings } from "./../../api/types";
+import { injectForFlowVariables } from "./../../utils/inject";
+import { getConfigPaths } from "./../../utils/paths";
 import { getFlowVariablesMap } from "./useProvidedFlowVariablesMap";
 
 export interface ConfigPath {

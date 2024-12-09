@@ -7,7 +7,7 @@ import {
   initializesJsonFormsControl,
   mountJsonFormsComponent,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
-import { inputFormats } from "@/nodeDialog/constants";
+import { inputFormats } from "../../../constants";
 import DialogLabel from "../../label/DialogLabel.vue";
 import RichTextControl from "../RichTextControl.vue";
 

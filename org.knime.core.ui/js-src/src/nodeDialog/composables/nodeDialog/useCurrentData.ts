@@ -1,6 +1,6 @@
 import { ref } from "vue";
 
-import type { SettingsData } from "@/nodeDialog/types/SettingsData";
+import type { SettingsData } from "./../../types/SettingsData";
 
 /**
  * A composable for accessing and manipulating the current data of the node dialog.

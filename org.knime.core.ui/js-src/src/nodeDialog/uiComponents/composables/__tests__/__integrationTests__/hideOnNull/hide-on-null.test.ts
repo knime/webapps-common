@@ -6,9 +6,9 @@ import { Checkbox, InputField } from "@knime/components";
 import { JsonDataService } from "@knime/ui-extension-service";
 
 import { mockRegisterSettings } from "@@/test-setup/utils/integration/dirtySettingState";
-import NodeDialog from "@/nodeDialog/NodeDialog.vue";
 import { getOptions } from "@/nodeDialog/__tests__/utils";
-import TextControl from "@/nodeDialog/uiComponents/TextControl.vue";
+import NodeDialog from "../../../../../NodeDialog.vue";
+import TextControl from "../../../../TextControl.vue";
 
 describe("hide on null", () => {
   type Wrapper = VueWrapper<any> & {

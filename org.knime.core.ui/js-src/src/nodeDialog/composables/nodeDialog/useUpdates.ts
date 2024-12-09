@@ -10,7 +10,6 @@ import {
   type UIExtensionService,
 } from "@knime/ui-extension-service";
 
-import type { Result } from "@/nodeDialog/api/types/Result";
 import type {
   IndexIdsValuePairs,
   Pairs,
@@ -19,6 +18,7 @@ import type {
   ValueReference,
 } from "../../types/Update";
 
+import type { Result } from "./../../api/types/Result";
 import { getIndex } from "./useArrayIds";
 import type {
   IndexedIsActive,

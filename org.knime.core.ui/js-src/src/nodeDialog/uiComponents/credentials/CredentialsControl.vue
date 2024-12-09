@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { rendererProps } from "@jsonforms/vue";
 
-import useDialogControl from "@/nodeDialog/composables/components/useDialogControl";
+import useDialogControl from "../../composables/components/useDialogControl";
 
 import CredentialsControlBase from "./CredentialsControlBase.vue";
 import type { Credentials } from "./types/Credentials";

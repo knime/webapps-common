@@ -7,8 +7,8 @@ import {
   initializesJsonFormsControl,
   mountJsonFormsComponent,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
-import DialogLabel from "@/nodeDialog/uiComponents/label/DialogLabel.vue";
-import LabeledControl from "@/nodeDialog/uiComponents/label/LabeledControl.vue";
+import DialogLabel from "../../../label/DialogLabel.vue";
+import LabeledControl from "../../../label/LabeledControl.vue";
 import FileBrowserButton from "../../FileBrowserButton.vue";
 import FileExplorerTab from "../../withTabs/FileExplorerTab.vue";
 import LabeledLocalFileChooserControl from "../LocalFileChooserControl.vue";

@@ -1,10 +1,10 @@
 import { defineAsyncComponent } from "vue";
 import { isObjectArray, rankWith } from "@jsonforms/core";
 
-import { priorityRanks } from "@/nodeDialog/constants";
+import { priorityRanks } from "./../constants";
 
 const ArrayLayout = defineAsyncComponent(() =>
-  import("@/nodeDialog/layoutComponents/arrayLayout/ArrayLayout.vue"),
+  import("./../layoutComponents/arrayLayout/ArrayLayout.vue"),
 );
 
 export const arrayLayoutTester = isObjectArray;

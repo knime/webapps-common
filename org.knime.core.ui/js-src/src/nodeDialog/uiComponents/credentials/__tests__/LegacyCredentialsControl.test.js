@@ -6,7 +6,7 @@ import {
   initializesJsonFormsControl,
   mountJsonFormsComponent,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
-import { inputFormats } from "@/nodeDialog/constants";
+import { inputFormats } from "../../../constants";
 import DialogLabel from "../../label/DialogLabel.vue";
 import LabeledControl from "../../label/LabeledControl.vue";
 import CredentialsControlBase from "../CredentialsControlBase.vue";

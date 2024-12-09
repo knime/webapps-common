@@ -3,8 +3,8 @@ import { computed } from "vue";
 
 import { Label } from "@knime/components";
 
-import { getLongestCommonPrefix } from "@/nodeDialog/utils/paths";
 import { getFlowVariableSettingsProvidedByControl } from "../../../composables/components/useFlowVariables";
+import { getLongestCommonPrefix } from "../../../utils/paths";
 import useDeprecatedConfigPaths from "../composables/useDeprecatedConfigPaths";
 
 import DeprecatedFlowVariables from "./DeprecatedFlowVariables.vue";

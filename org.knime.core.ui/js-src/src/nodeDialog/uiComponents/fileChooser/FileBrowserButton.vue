@@ -2,7 +2,7 @@
 import { FunctionButton } from "@knime/components";
 import FolderLenseIcon from "@knime/styles/img/icons/folder-lense.svg";
 
-import SettingsSubPanel from "@/nodeDialog/layoutComponents/settingsSubPanel/SettingsSubPanel.vue";
+import SettingsSubPanel from "../../layoutComponents/settingsSubPanel/SettingsSubPanel.vue";
 
 interface Props {
   disabled: boolean;

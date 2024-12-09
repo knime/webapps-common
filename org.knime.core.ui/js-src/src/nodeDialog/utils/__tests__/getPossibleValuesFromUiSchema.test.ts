@@ -2,11 +2,11 @@ import { describe, expect, it, vi } from "vitest";
 import { ref } from "vue";
 import flushPromises from "flush-promises";
 
-import type { Result } from "@/nodeDialog/api/types/Result";
+import type { Result } from "../../api/types/Result";
 import type {
   ChoicesUiSchema,
   PossibleValue,
-} from "@/nodeDialog/types/ChoicesUiSchema";
+} from "../../types/ChoicesUiSchema";
 import getPossibleValuesFromUiSchema, {
   withSpecialChoices,
 } from "../getPossibleValuesFromUiSchema";

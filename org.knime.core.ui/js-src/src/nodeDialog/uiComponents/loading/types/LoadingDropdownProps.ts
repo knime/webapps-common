@@ -1,4 +1,4 @@
-import type { IdAndText } from "@/nodeDialog/types/ChoicesUiSchema";
+import type { IdAndText } from "../../../types/ChoicesUiSchema";
 
 export type LoadingDropdownProps = {
   possibleValues: IdAndText[] | null;

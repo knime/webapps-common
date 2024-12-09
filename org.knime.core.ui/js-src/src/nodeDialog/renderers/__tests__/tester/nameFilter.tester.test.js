@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest";
 
 import { dialogInitialData } from "@@/test-setup/mocks/dialogData";
-import { inputFormats } from "@/nodeDialog/constants/inputFormats";
 import { nameFilterTester } from "../../nameFilterRenderer";
+
+import { inputFormats } from "./../../../constants/inputFormats";
 
 describe("NameFilterTester", () => {
   it("applies on anyOf control with nameFilter format", () => {

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { InputField, Label, NumberInput } from "@knime/components";
 
-import ErrorMessage from "@/nodeDialog/uiComponents/ErrorMessage.vue";
+import ErrorMessage from "../../../ErrorMessage.vue";
 
 withDefaults(
   defineProps<{

@@ -4,16 +4,15 @@ import { composePaths } from "@jsonforms/core";
 
 import { AlertType } from "@knime/ui-extension-service";
 
-import { provideForAddedArrayLayoutElements } from "@/nodeDialog/composables/components/useAddedArrayLayoutItem";
+import { provideForAddedArrayLayoutElements } from "./../../composables/components/useAddedArrayLayoutItem";
 import {
   type IdsRecord,
   createArrayAtPath,
   createForArrayItem,
   deleteArrayItem,
-} from "@/nodeDialog/composables/nodeDialog/useArrayIds";
-import { elementCheckboxFormat } from "@/nodeDialog/renderers/elementCheckboxRenderer";
-import inject from "@/nodeDialog/utils/inject";
-
+} from "./../../composables/nodeDialog/useArrayIds";
+import { elementCheckboxFormat } from "./../../renderers/elementCheckboxRenderer";
+import inject from "./../../utils/inject";
 import ArrayLayoutItemLabel, {
   type TitleConfig,
 } from "./ArrayLayoutItemLabel.vue";

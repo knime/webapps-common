@@ -14,7 +14,7 @@ import {
   initializesJsonFormsControl,
   mountJsonFormsComponent,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
-import { mergeDeep } from "@/nodeDialog/utils";
+import { mergeDeep } from "../../../utils";
 import DialogLabel from "../../label/DialogLabel.vue";
 import LabeledControl from "../../label/LabeledControl.vue";
 import TwinlistLoadingInfo from "../../loading/TwinlistLoadingInfo.vue";

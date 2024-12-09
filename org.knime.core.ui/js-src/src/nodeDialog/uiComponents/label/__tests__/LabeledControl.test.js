@@ -5,9 +5,9 @@ import { mount } from "@vue/test-utils";
 import { Label } from "@knime/components";
 import ReexecutionIcon from "@knime/styles/img/icons/reexecution.svg";
 
-import { injectionKey as injectionKeyShowAdvancedSettings } from "@/nodeDialog/composables/components/useAdvancedSettings";
-import { injectionKey as providedByComponentKey } from "@/nodeDialog/composables/components/useFlowVariables";
-import { injectionKey as injectionKeyHasNodeView } from "@/nodeDialog/composables/components/useHasNodeView";
+import { injectionKey as injectionKeyShowAdvancedSettings } from "../../../composables/components/useAdvancedSettings";
+import { injectionKey as providedByComponentKey } from "../../../composables/components/useFlowVariables";
+import { injectionKey as injectionKeyHasNodeView } from "../../../composables/components/useHasNodeView";
 import DialogComponentWrapper from "../../DialogComponentWrapper.vue";
 import ErrorMessage from "../../ErrorMessage.vue";
 import DescriptionPopover from "../../description/DescriptionPopover.vue";

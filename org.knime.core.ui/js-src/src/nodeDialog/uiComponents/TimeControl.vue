@@ -4,8 +4,8 @@ import { rendererProps } from "@jsonforms/vue";
 
 import { DateTimeInput } from "@knime/components/date-time-input";
 
-import { localTimeUtils } from "@/nodeDialog/utils/localTimeUtils";
 import useDialogControl from "../composables/components/useDialogControl";
+import { localTimeUtils } from "../utils/localTimeUtils";
 
 import LabeledControl from "./label/LabeledControl.vue";
 

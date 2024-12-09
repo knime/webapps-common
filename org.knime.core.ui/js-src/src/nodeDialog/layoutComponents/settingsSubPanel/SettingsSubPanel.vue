@@ -1,9 +1,3 @@
-<script lang="ts">
-export interface Props {
-  showBackArrow?: boolean;
-}
-</script>
-
 <script setup lang="ts">
 import { ref, watch } from "vue";
 
@@ -14,6 +8,10 @@ import Form from "../Form.vue";
 
 import { setUpApplyButton } from ".";
 import SidePanelBackArrow from "./SidePanelBackArrow.vue";
+
+export interface Props {
+  showBackArrow?: boolean;
+}
 
 withDefaults(defineProps<Props>(), {
   showBackArrow: false,

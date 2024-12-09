@@ -9,15 +9,16 @@ import ResetIcon from "@knime/styles/img/icons/reset-all.svg";
 import { JsonDataService } from "@knime/ui-extension-service";
 
 import { mockRegisterSettings } from "@@/test-setup/utils/integration/dirtySettingState";
-import NodeDialog from "@/nodeDialog/NodeDialog.vue";
-import { getOptions } from "@/nodeDialog/__tests__/utils";
-import EditResetButton from "@/nodeDialog/layoutComponents/arrayLayout/EditResetButton.vue";
+
+import NodeDialog from "./../../../NodeDialog.vue";
+import { getOptions } from "./../../../__tests__/utils";
+import EditResetButton from "./../../../layoutComponents/arrayLayout/EditResetButton.vue";
 import type {
   IndexIdsValuePairs,
   Update,
   UpdateResult,
-} from "@/nodeDialog/types/Update";
-import TextControl from "@/nodeDialog/uiComponents/TextControl.vue";
+} from "./../../../types/Update";
+import TextControl from "./../../../uiComponents/TextControl.vue";
 
 describe("edit/reset button in array layouts", () => {
   type Wrapper = VueWrapper<any> & {

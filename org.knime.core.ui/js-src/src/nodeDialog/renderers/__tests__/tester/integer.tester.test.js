@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest";
 
 import { dialogInitialData } from "@@/test-setup/mocks/dialogData";
-import { inputFormats } from "@/nodeDialog/constants/inputFormats";
 import { integerTester } from "../../integerRenderer";
+
+import { inputFormats } from "./../../../constants/inputFormats";
 
 describe("integerTester", () => {
   it("applies on number control with integer format", () => {

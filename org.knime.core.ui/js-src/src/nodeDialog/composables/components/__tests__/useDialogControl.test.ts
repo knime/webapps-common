@@ -11,15 +11,15 @@ import { type Ref, ref } from "vue";
 import { mount } from "@vue/test-utils";
 import flushPromises from "flush-promises";
 
-import type { FlowSettings } from "@/nodeDialog/api/types/index";
-import { injectionKey as injectionKeyHasNodeView } from "@/nodeDialog/composables/components/useHasNodeView";
-import { injectionKey as flowVarMapKey } from "@/nodeDialog/composables/components/useProvidedFlowVariablesMap";
-import { injectionKey as injectionKeyFromUseDirtySettings } from "@/nodeDialog/composables/nodeDialog/useDirtySettings";
-import type { Control } from "@/nodeDialog/types/Control";
 import { injectionKey as injectionKeyAddedArrayLayoutElements } from "../useAddedArrayLayoutItem";
 import * as UseFlowVariablesModule from "../useFlowVariables";
 import * as UseJsonFormsControlWithUpdateModule from "../useJsonFormsControlWithUpdate";
 
+import type { FlowSettings } from "./../../../api/types/index";
+import { injectionKey as injectionKeyHasNodeView } from "./../../../composables/components/useHasNodeView";
+import { injectionKey as flowVarMapKey } from "./../../../composables/components/useProvidedFlowVariablesMap";
+import { injectionKey as injectionKeyFromUseDirtySettings } from "./../../../composables/nodeDialog/useDirtySettings";
+import type { Control } from "./../../../types/Control";
 import UseDialogControlTestComponent from "./UseDialogControlTestComponent.vue";
 
 describe("useDialogControl", () => {

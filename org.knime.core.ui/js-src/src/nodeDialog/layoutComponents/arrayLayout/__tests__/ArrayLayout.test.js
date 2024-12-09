@@ -14,11 +14,12 @@ import {
   initializesJsonFormsArrayControl,
   mountJsonFormsComponent,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
-import { editResetButtonFormat } from "@/nodeDialog/renderers/editResetButtonRenderer";
-import { elementCheckboxFormat } from "@/nodeDialog/renderers/elementCheckboxRenderer";
 import ArrayLayout from "../ArrayLayout.vue";
 import ArrayLayoutItem from "../ArrayLayoutItem.vue";
 import ArrayLayoutItemControls from "../ArrayLayoutItemControls.vue";
+
+import { editResetButtonFormat } from "./../../../renderers/editResetButtonRenderer";
+import { elementCheckboxFormat } from "./../../../renderers/elementCheckboxRenderer";
 
 const control = {
   visible: true,

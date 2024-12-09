@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest";
 
 import { dialogInitialData } from "@@/test-setup/mocks/dialogData";
-import { inputFormats } from "@/nodeDialog/constants/inputFormats";
 import { richTextTester } from "../../richTextRenderer";
+
+import { inputFormats } from "./../../../constants/inputFormats";
 
 describe("richTextTester", () => {
   it("applies for string control with richTextInput format", () => {

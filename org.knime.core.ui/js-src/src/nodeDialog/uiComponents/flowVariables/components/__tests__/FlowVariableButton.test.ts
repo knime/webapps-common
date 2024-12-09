@@ -9,8 +9,8 @@ import { FunctionButton } from "@knime/components";
 import {
   type ConfigPath,
   injectionKey as flowVariablesInjectionKey,
-} from "@/nodeDialog/composables/components/useFlowVariables";
-import DialogPopover from "@/nodeDialog/popover/DialogPopover.vue";
+} from "../../../../composables/components/useFlowVariables";
+import DialogPopover from "../../../../popover/DialogPopover.vue";
 import type { FlowVariableButtonProps } from "../../types/FlowVariableButtonProps";
 import FlowVariableButton from "../FlowVariableButton.vue";
 import FlowVariableIcon from "../FlowVariableIcon.vue";

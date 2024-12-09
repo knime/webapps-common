@@ -11,8 +11,8 @@ import { FunctionButton, LoadingIcon } from "@knime/components";
 import EditIcon from "@knime/styles/img/icons/pencil.svg";
 import ResetIcon from "@knime/styles/img/icons/reset-all.svg";
 
-import { useJsonFormsControlWithUpdate } from "@/nodeDialog/composables/components/useJsonFormsControlWithUpdate";
-import inject from "@/nodeDialog/utils/inject";
+import { useJsonFormsControlWithUpdate } from "./../../composables/components/useJsonFormsControlWithUpdate";
+import inject from "./../../utils/inject";
 
 const props = defineProps({
   ...rendererProps(),

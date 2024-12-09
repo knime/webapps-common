@@ -9,16 +9,13 @@ import type { TwinlistModelValue } from "@knime/components";
 import { MultiModeTwinList } from "@knime/components";
 import { DefaultSettingComparator } from "@knime/ui-extension-service";
 
-import useDialogControl from "@/nodeDialog/composables/components/useDialogControl";
-import useProvidedState from "@/nodeDialog/composables/components/useProvidedState";
-import type {
-  IdAndText,
-  PossibleValue,
-} from "@/nodeDialog/types/ChoicesUiSchema";
-import type { Control } from "@/nodeDialog/types/Control";
-import { mergeDeep } from "@/nodeDialog/utils";
-import { withSpecialChoices } from "@/nodeDialog/utils/getPossibleValuesFromUiSchema";
-import inject from "@/nodeDialog/utils/inject";
+import useDialogControl from "../../composables/components/useDialogControl";
+import useProvidedState from "../../composables/components/useProvidedState";
+import type { IdAndText, PossibleValue } from "../../types/ChoicesUiSchema";
+import type { Control } from "../../types/Control";
+import { mergeDeep } from "../../utils";
+import { withSpecialChoices } from "../../utils/getPossibleValuesFromUiSchema";
+import inject from "../../utils/inject";
 import LabeledControl from "../label/LabeledControl.vue";
 import TwinlistLoadingInfo from "../loading/TwinlistLoadingInfo.vue";
 

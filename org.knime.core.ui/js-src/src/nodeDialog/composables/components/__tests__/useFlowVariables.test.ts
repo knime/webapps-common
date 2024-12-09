@@ -3,12 +3,12 @@ import { defineComponent, ref } from "vue";
 import { mount } from "@vue/test-utils";
 
 import { createPersistSchema } from "@@/test-setup/utils/createPersistSchema";
-import type { FlowSettings } from "@/nodeDialog/api/types";
-import { injectionKey as flowVarMapKey } from "@/nodeDialog/composables/components/useProvidedFlowVariablesMap";
-import type { PersistSchema } from "@/nodeDialog/types/Persist";
 import type { SettingStateWrapper } from "../../nodeDialog/useDirtySettings";
 import { getFlowVariableSettingsProvidedByControl } from "../useFlowVariables";
 
+import type { FlowSettings } from "./../../../api/types";
+import { injectionKey as flowVarMapKey } from "./../../../composables/components/useProvidedFlowVariablesMap";
+import type { PersistSchema } from "./../../../types/Persist";
 import UseFlowVariablesTestComponent from "./UseFlowVariablesTestComponent.vue";
 
 let flowVariablesMap: Record<string, FlowSettings>;

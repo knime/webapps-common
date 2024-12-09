@@ -2,8 +2,8 @@
 import { computed, onMounted, watch } from "vue";
 import { rendererProps } from "@jsonforms/vue";
 
-import { type FileChooserOptions } from "@/nodeDialog/types/FileChooserUiSchema";
 import useDialogControl from "../../../composables/components/useDialogControl";
+import { type FileChooserOptions } from "../../../types/FileChooserUiSchema";
 import LabeledControl from "../../label/LabeledControl.vue";
 import FileBrowserButton from "../FileBrowserButton.vue";
 import { useFileChooserFileSystemsOptions } from "../composables/useFileChooserBrowseOptions";

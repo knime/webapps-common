@@ -2,7 +2,7 @@ import type {
   IndexIdsValuePairs,
   IndicesValuePairs,
   Pairs,
-} from "@/nodeDialog/types/Update";
+} from "./../../../types/Update";
 
 /**
  * Converts indexIds back to indices filtering out all indexIds that are not present anymore (i.e. have been removed by the user)

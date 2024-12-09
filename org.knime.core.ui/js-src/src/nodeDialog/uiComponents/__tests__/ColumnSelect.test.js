@@ -9,7 +9,7 @@ import {
   initializesJsonFormsControl,
   mountJsonFormsComponent,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
-import { injectionKey as providedByComponentKey } from "@/nodeDialog/composables/components/useFlowVariables";
+import { injectionKey as providedByComponentKey } from "../../composables/components/useFlowVariables";
 import ColumnSelect from "../ColumnSelect.vue";
 import DropdownControl from "../DropdownControl.vue";
 import DialogLabel from "../label/DialogLabel.vue";

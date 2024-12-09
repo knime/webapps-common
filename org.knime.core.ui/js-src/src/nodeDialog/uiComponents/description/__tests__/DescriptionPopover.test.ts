@@ -6,7 +6,7 @@ import flushPromises from "flush-promises";
 import { Description, FunctionButton } from "@knime/components";
 import DescriptionIcon from "@knime/styles/img/icons/circle-help.svg";
 
-import DialogPopover from "@/nodeDialog/popover/DialogPopover.vue";
+import DialogPopover from "../../../popover/DialogPopover.vue";
 import DescriptionPopover from "../DescriptionPopover.vue";
 import type { DescriptionPopoverProps } from "../types/DescriptionPopoverProps";
 

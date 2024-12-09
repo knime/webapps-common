@@ -15,7 +15,7 @@ import {
   initializesJsonFormsControl,
   mountJsonFormsComponent,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
-import { localTimeUtils } from "@/nodeDialog/utils/localTimeUtils";
+import { localTimeUtils } from "../../utils/localTimeUtils";
 import TimeControl from "../TimeControl.vue";
 import DialogLabel from "../label/DialogLabel.vue";
 import LabeledControl from "../label/LabeledControl.vue";

@@ -1,6 +1,6 @@
 import { type Ref, ref, watch } from "vue";
 
-import { getValuesInSet, getValuesNotInSet } from "@/nodeDialog/utils";
+import { getValuesInSet, getValuesNotInSet } from "../../utils";
 
 import { type TwinlistData } from "./TwinlistControl.vue";
 

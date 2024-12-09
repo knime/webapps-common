@@ -4,10 +4,10 @@ import { rendererProps } from "@jsonforms/vue";
 
 import { Twinlist } from "@knime/components";
 
-import useDialogControl from "@/nodeDialog/composables/components/useDialogControl";
-import useProvidedState from "@/nodeDialog/composables/components/useProvidedState";
-import type { IdAndText } from "@/nodeDialog/types/ChoicesUiSchema";
-import inject from "@/nodeDialog/utils/inject";
+import useDialogControl from "../../composables/components/useDialogControl";
+import useProvidedState from "../../composables/components/useProvidedState";
+import type { IdAndText } from "../../types/ChoicesUiSchema";
+import inject from "../../utils/inject";
 import LabeledControl from "../label/LabeledControl.vue";
 import TwinlistLoadingInfo from "../loading/TwinlistLoadingInfo.vue";
 

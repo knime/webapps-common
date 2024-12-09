@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 
-import { getFlowVariableSettingsProvidedByControl } from "@/nodeDialog/composables/components/useFlowVariables";
-import DialogPopover from "@/nodeDialog/popover/DialogPopover.vue";
+import { getFlowVariableSettingsProvidedByControl } from "../../../composables/components/useFlowVariables";
+import DialogPopover from "../../../popover/DialogPopover.vue";
 import type { FlowVariableButtonProps } from "../types/FlowVariableButtonProps";
 
 import FlowVariableIcon from "./FlowVariableIcon.vue";

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 
-import { useApplyButton } from "@/nodeDialog/layoutComponents/settingsSubPanel";
+import { useApplyButton } from "../../../layoutComponents/settingsSubPanel";
 import DialogFileExplorer, {
   type DialogFileExplorerProps,
 } from "../DialogFileExplorer.vue";

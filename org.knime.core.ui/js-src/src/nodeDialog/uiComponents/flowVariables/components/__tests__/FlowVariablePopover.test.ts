@@ -4,12 +4,12 @@ import { shallowMount } from "@vue/test-utils";
 
 import { Fieldset, Label } from "@knime/components";
 
-import { type FlowSettings } from "@/nodeDialog/api/types";
+import { type FlowSettings } from "../../../../api/types";
 import {
   type ConfigPath,
   injectionKey as providedByComponentKey,
-} from "@/nodeDialog/composables/components/useFlowVariables";
-import { injectionKey as flowVarMapKey } from "@/nodeDialog/composables/components/useProvidedFlowVariablesMap";
+} from "../../../../composables/components/useFlowVariables";
+import { injectionKey as flowVarMapKey } from "../../../../composables/components/useProvidedFlowVariablesMap";
 import DeprecatedFlowVariables from "../DeprecatedFlowVariables.vue";
 import FlowVariableExposer from "../FlowVariableExposer.vue";
 import FlowVariablePopover from "../FlowVariablePopover.vue";

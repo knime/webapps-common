@@ -5,8 +5,8 @@
  */
 import { onMounted } from "vue";
 
-import { getFlowVariableSettingsProvidedByControl } from "@/nodeDialog/composables/components/useFlowVariables";
-import { injectForFlowVariables } from "@/nodeDialog/utils/inject";
+import { getFlowVariableSettingsProvidedByControl } from "../../composables/components/useFlowVariables";
+import { injectForFlowVariables } from "../../utils/inject";
 import useControllingFlowVariable from "../flowVariables/composables/useControllingFlowVariable";
 
 import type { Credentials } from "./types/Credentials";

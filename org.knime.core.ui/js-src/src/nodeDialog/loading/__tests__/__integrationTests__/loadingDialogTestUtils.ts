@@ -4,8 +4,8 @@ import flushPromises from "flush-promises";
 
 import { JsonDataService } from "@knime/ui-extension-service";
 
-import NodeDialog from "@/nodeDialog/NodeDialog.vue";
-import { getOptions } from "@/nodeDialog/__tests__/utils";
+import NodeDialog from "./../../../NodeDialog.vue";
+import { getOptions } from "./../../../__tests__/utils";
 
 export const mockInitialData = (initialDataJson: object) =>
   vi
