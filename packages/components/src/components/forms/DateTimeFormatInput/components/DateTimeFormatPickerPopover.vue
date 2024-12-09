@@ -135,42 +135,50 @@ const selectFormat = (format: string) => {
     behavior: "smooth",
   });
 };
-
 const handleKeyInput = (event: KeyboardEvent) => {
-  if ((event.key === "Enter" || event.key === " ") && selectedFormat.value) {
-    emit("commit", selectedFormat.value);
-    event.preventDefault();
-  } else if (event.key === "ArrowDown") {
-    const currentIndex = applicableFormats.value.findIndex(
-      (format) => format.format === selectedFormat.value,
-    );
-    if (currentIndex === -1) {
-      selectFormat(applicableFormats.value[0].format);
-    } else {
-      selectFormat(
-        applicableFormats.value[
-          (currentIndex + 1) % applicableFormats.value.length
-        ].format,
-      );
+  const currentIndex = applicableFormats.value.findIndex(
+    (format) => format.format === selectedFormat.value,
+  );
+
+  const moveSelection = (step: -1 | 1) => {
+    if (applicableFormats.value.length === 0) {
+      return;
     }
-    event.preventDefault();
-  } else if (event.key === "ArrowUp") {
-    const currentIndex = applicableFormats.value.findIndex(
-      (format) => format.format === selectedFormat.value,
-    );
+
     if (currentIndex === -1) {
-      selectFormat(
-        applicableFormats.value[applicableFormats.value.length - 1].format,
-      );
-    } else {
-      selectFormat(
-        applicableFormats.value[
-          (currentIndex - 1 + applicableFormats.value.length) %
-            applicableFormats.value.length
-        ].format,
-      );
+      const newSelectionIndex =
+        step === 1 ? 0 : applicableFormats.value.length - 1;
+      selectFormat(applicableFormats.value[newSelectionIndex].format);
+      return;
     }
-    event.preventDefault();
+
+    const newIndex =
+      (currentIndex + step + applicableFormats.value.length) %
+      applicableFormats.value.length;
+    selectFormat(applicableFormats.value[newIndex].format);
+  };
+
+  switch (event.key) {
+    case "Enter":
+    case " ":
+      if (selectedFormat.value) {
+        emit("commit", selectedFormat.value);
+        event.preventDefault();
+      }
+      break;
+
+    case "ArrowDown":
+      moveSelection(1);
+      event.preventDefault();
+      break;
+
+    case "ArrowUp":
+      moveSelection(-1);
+      event.preventDefault();
+      break;
+
+    default:
+      break;
   }
 };
 </script>

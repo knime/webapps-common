@@ -1,49 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { nextTick } from "vue";
-import { mount } from "@vue/test-utils";
 
 import ValueSwitch from "../../ValueSwitch/ValueSwitch.vue";
 import DateTimeFormatInput from "../DateTimeFormatInput.vue";
-import type { FormatDateType, FormatWithExample } from "../utils/types";
+import type { FormatCategory, FormatDateType } from "../utils/types";
 
-import { DEFAULT_FORMATS } from "./testData";
-
-type DoMountParamsType = {
-  allDefaultFormats?: FormatWithExample[];
-  disabled?: boolean;
-  compact?: boolean;
-  allowedFormats?: FormatDateType[];
-  formatValidator?: (format: string) => boolean;
-  showPopupInitially?: boolean;
-};
-const doMount = async ({
-  allDefaultFormats = DEFAULT_FORMATS,
-  disabled = false,
-  compact = false,
-  allowedFormats = ["DATE", "TIME", "DATE_TIME", "ZONED_DATE_TIME"],
-  formatValidator = () => true,
-  showPopupInitially = false,
-}: DoMountParamsType = {}) => {
-  const wrapper = mount(DateTimeFormatInput, {
-    props: {
-      allDefaultFormats,
-      disabled,
-      compact,
-      allowedFormats,
-      formatValidator,
-    },
-    attachTo: "body",
-  });
-
-  if (showPopupInitially) {
-    await wrapper.find(".trigger-popover-button").trigger("click");
-    expect(wrapper.find(".popover").exists()).toBeTruthy();
-  }
-
-  return {
-    wrapper,
-  };
-};
+import {
+  doMount,
+  doMountWithPopover,
+  getFirstFormat,
+} from "./DateTimeFormatInputTestUtils";
 
 describe("DateTimeFormatInput", () => {
   it("renders", async () => {
@@ -60,7 +25,7 @@ describe("DateTimeFormatInput", () => {
     });
 
     const input = wrapper.find("input");
-    input.setValue("xyz");
+    await input.setValue("xyz");
     await input.trigger("input");
 
     expect(formatValidator).toHaveBeenCalledWith("xyz");
@@ -70,8 +35,6 @@ describe("DateTimeFormatInput", () => {
     const { wrapper } = await doMount({
       formatValidator: () => false,
     });
-
-    await nextTick();
 
     expect(wrapper.find(".invalid-marker").exists()).toBeTruthy();
   });
@@ -92,36 +55,15 @@ describe("DateTimeFormatInput", () => {
     expect(wrapper.find(".wrapper").classes()).toContain("compact");
   });
 
-  it("displays the popover on button click", async () => {
-    const { wrapper } = await doMount();
-
-    expect(wrapper.find(".popover").exists()).toBeFalsy();
-
-    const button = wrapper.find(".trigger-popover-button");
-    await button.trigger("click");
-
-    expect(wrapper.find(".popover").exists()).toBeTruthy();
-  });
-
-  it("closes the popover on a second button click", async () => {
+  it("has DATE and RECENT as default selected options", async () => {
     const { wrapper } = await doMount({
       showPopupInitially: true,
     });
 
-    const button = wrapper.find(".trigger-popover-button");
-    await button.trigger("click");
+    const valueSwitches = wrapper.findAllComponents(ValueSwitch);
 
-    expect(wrapper.find(".popover").exists()).toBeFalsy();
-  });
-
-  it("closes the popover when clicking away", async () => {
-    const { wrapper } = await doMount({
-      showPopupInitially: true,
-    });
-
-    await wrapper.trigger("click");
-
-    expect(wrapper.find(".popover").exists()).toBeFalsy();
+    expect(valueSwitches[0].vm.$props.modelValue).toBe("DATE");
+    expect(valueSwitches[1].vm.$props.modelValue).toBe("RECENT");
   });
 
   describe("dateTimeFormatPickerPopover", () => {
@@ -129,280 +71,167 @@ describe("DateTimeFormatInput", () => {
       window.HTMLElement.prototype.scrollIntoView = vi.fn(() => {});
     });
 
+    it("closes the popover when clicking away and displays the popover on button click", async () => {
+      const popover = await doMountWithPopover();
+      popover.assert.isOpen();
+
+      await popover.clickAway();
+      popover.assert.isClosed();
+
+      await popover.popoverButton();
+      popover.assert.isOpen();
+    });
+
+    it("closes the popover on a second button click", async () => {
+      const popover = await doMountWithPopover();
+      popover.assert.isOpen();
+
+      await popover.popoverButton();
+
+      popover.assert.isClosed();
+    });
+
     it("respects the allowedFormats prop", async () => {
+      const allowedFormats = ["DATE", "DATE_TIME", "TIME"] as FormatDateType[];
+
       const { wrapper } = await doMount({
-        allowedFormats: ["DATE", "DATE_TIME", "TIME"],
+        allowedFormats,
         showPopupInitially: true,
       });
 
-      const temporalValueSwitch = wrapper.findAllComponents(ValueSwitch)[0];
+      const [temporalValueSwitch] = wrapper.findAllComponents(ValueSwitch);
 
-      expect(temporalValueSwitch.vm.$props.possibleValues?.length).toBe(3);
+      expect(temporalValueSwitch.vm.$props.possibleValues?.length).toBe(
+        allowedFormats.length,
+      );
     });
 
     it("changes what's displayed when changing the temporal type value switch", async () => {
-      const { wrapper } = await doMount({
-        showPopupInitially: true,
-      });
+      const firstOption: FormatDateType = "TIME";
+      const category: FormatCategory = "STANDARD";
+      const popover = await doMountWithPopover(firstOption, category);
 
-      const temporalValueSwitch = wrapper.findAllComponents(ValueSwitch)[0];
+      popover.assert.isFirstFormat(getFirstFormat(firstOption, category));
 
-      temporalValueSwitch.vm.$emit("update:modelValue", "TIME");
-      await nextTick();
+      const secondOption: FormatDateType = "DATE";
+      await popover.updateFormat(secondOption);
 
-      expect(wrapper.findAll(".format-pattern")[0].text()).toBe("HH:mm:ss");
-
-      temporalValueSwitch.vm.$emit("update:modelValue", "DATE");
-      await nextTick();
-
-      expect(wrapper.findAll(".format-pattern")[0].text()).toBe("yyyy-MM-dd");
+      popover.assert.isFirstFormat(getFirstFormat(secondOption, category));
     });
 
     it("changes what's displayed when changing the category value switch", async () => {
-      const { wrapper } = await doMount({
-        showPopupInitially: true,
-      });
+      const popover = await doMountWithPopover("DATE", "EUROPEAN");
 
-      const categoryValueSwitch = wrapper.findAllComponents(ValueSwitch)[1];
+      popover.assert.isFirstFormat(getFirstFormat("DATE", "EUROPEAN"));
 
-      categoryValueSwitch.vm.$emit("update:modelValue", "EUROPEAN");
-      await nextTick();
+      await popover.updateCategory("STANDARD");
 
-      expect(wrapper.findAll(".format-pattern")[0].text()).toBe("dd/MM/yyyy");
-
-      categoryValueSwitch.vm.$emit("update:modelValue", "AMERICAN");
-      await nextTick();
-
-      expect(wrapper.findAll(".format-pattern")[0].text()).toBe("MM/dd/yyyy");
+      popover.assert.isFirstFormat(getFirstFormat("DATE", "STANDARD"));
     });
 
     it("clicking a format marks it as selected", async () => {
-      const { wrapper } = await doMount({
-        showPopupInitially: true,
-      });
+      const popover = await doMountWithPopover();
 
-      const format = wrapper.findAll(".single-format")[0];
-      await format.trigger("click");
+      await popover.selectFormat(0);
 
-      expect(format.classes()).toContain("selected");
-    });
-
-    it("has DATE and RECENT as default selected options", async () => {
-      const { wrapper } = await doMount({
-        showPopupInitially: true,
-      });
-
-      const valueSwitches = wrapper.findAllComponents(ValueSwitch);
-
-      expect(valueSwitches[0].vm.$props.modelValue).toBe("DATE");
-      expect(valueSwitches[1].vm.$props.modelValue).toBe("RECENT");
+      popover.assert.isSelected(0);
     });
 
     it("responds to up/down arrow keys", async () => {
-      const { wrapper } = await doMount({
-        showPopupInitially: true,
-      });
+      const popover = await doMountWithPopover("DATE", "STANDARD");
+      popover.assert.numberOfFormats(2);
+      await popover.selectFormat(0);
+      popover.assert.isSelected(0);
 
-      // select STANDARD and DATE
-      const valueSwitches = wrapper.findAllComponents(ValueSwitch);
-      valueSwitches[0].vm.$emit("update:modelValue", "DATE");
-      valueSwitches[1].vm.$emit("update:modelValue", "STANDARD");
-
-      await nextTick();
-
-      const popover = wrapper.find(".popover");
-      const formatsContainer = popover.find(".formats-container");
-
-      const allFormats = wrapper.findAll(".single-format");
-
-      expect(allFormats.length, "Expected test data to have length 2").toBe(2);
-
-      await allFormats[0].trigger("click"); // select first one
-
-      expect(allFormats[0].classes()).toContain("selected");
-      expect(allFormats[1].classes()).not.toContain("selected");
-
-      await formatsContainer.trigger("keydown", { key: "ArrowDown" });
-      await nextTick();
-
-      expect(allFormats[0].classes()).not.toContain("selected");
-      expect(allFormats[1].classes()).toContain("selected");
+      await popover.arrowDown();
+      popover.assert.isSelected(1);
 
       // should loop so one more should bring us back to the top
-      await formatsContainer.trigger("keydown", { key: "ArrowDown" });
-      await nextTick();
-
-      expect(allFormats[0].classes()).toContain("selected");
-      expect(allFormats[1].classes()).not.toContain("selected");
+      await popover.arrowDown();
+      popover.assert.isSelected(0);
 
       // Should also work with arrow up - this time we start with the loop
-      await formatsContainer.trigger("keydown", { key: "ArrowUp" });
-      await nextTick();
+      await popover.keyUp();
+      popover.assert.isSelected(1);
 
-      expect(allFormats[0].classes()).not.toContain("selected");
-      expect(allFormats[1].classes()).toContain("selected");
-
-      await formatsContainer.trigger("keydown", { key: "ArrowUp" });
-      await nextTick();
-
-      expect(allFormats[0].classes()).toContain("selected");
-      expect(allFormats[1].classes()).not.toContain("selected");
+      await popover.keyUp();
+      popover.assert.isSelected(0);
     });
 
     it("scrolls when using arrow keys to select something", async () => {
-      const { wrapper } = await doMount({
-        showPopupInitially: true,
-      });
-
-      // select STANDARD and DATE
-      const valueSwitches = wrapper.findAllComponents(ValueSwitch);
-      valueSwitches[0].vm.$emit("update:modelValue", "DATE");
-      valueSwitches[1].vm.$emit("update:modelValue", "STANDARD");
-
-      await nextTick();
-
-      const popover = wrapper.find(".popover");
-      const formatsContainer = popover.find(".formats-container");
-
-      const allFormats = wrapper.findAll(".single-format");
-
-      expect(allFormats.length, "Expected test data to have length 2").toBe(2);
-
-      await allFormats[0].trigger("click"); // select first one
+      const popover = await doMountWithPopover("DATE", "STANDARD");
+      popover.assert.numberOfFormats(2);
+      await popover.selectFormat(0);
 
       expect(
         window.HTMLElement.prototype.scrollIntoView,
-      ).toHaveBeenCalledOnce(); // clicking also calls it
+      ).toHaveBeenCalledOnce();
 
-      await formatsContainer.trigger("keydown", { key: "ArrowDown" });
-
+      await popover.arrowDown();
       expect(window.HTMLElement.prototype.scrollIntoView).toHaveBeenCalledTimes(
         2,
       );
 
-      await formatsContainer.trigger("keydown", { key: "ArrowUp" });
-
+      await popover.keyUp();
       expect(window.HTMLElement.prototype.scrollIntoView).toHaveBeenCalledTimes(
         3,
       );
     });
 
     it("commits the selected format when pressing enter", async () => {
-      const { wrapper } = await doMount({
-        showPopupInitially: true,
-      });
+      const popover = await doMountWithPopover("DATE", "STANDARD");
+      popover.assert.numberOfFormats(2);
 
-      const popover = wrapper.find(".popover");
-      const formatsContainer = popover.find(".formats-container");
+      await popover.selectFormat(0);
+      await popover.enter();
 
-      const valueSwitches = wrapper.findAllComponents(ValueSwitch);
-      valueSwitches[0].vm.$emit("update:modelValue", "DATE");
-      valueSwitches[1].vm.$emit("update:modelValue", "STANDARD");
-
-      await nextTick();
-
-      const allFormats = wrapper.findAll(".single-format");
-
-      expect(allFormats.length, "Expected test data to have length 2").toBe(2);
-
-      await allFormats[0].trigger("click"); // select first one
-
-      await formatsContainer.trigger("keydown", { key: "Enter" });
-
-      await nextTick();
-
-      expect(wrapper.find(".popover").exists()).toBeFalsy();
-      expect(wrapper.find("input").element.value).toBe(
-        "yyyy-MM-dd-blahblahblah",
-      );
+      popover.assert.isClosed();
+      popover.assert.isInputValue(getFirstFormat("DATE", "STANDARD"));
     });
 
     it("commits a format on double-click", async () => {
-      const { wrapper } = await doMount({
-        showPopupInitially: true,
-      });
+      const popover = await doMountWithPopover("DATE", "STANDARD");
+      popover.assert.numberOfFormats(2);
 
-      const valueSwitches = wrapper.findAllComponents(ValueSwitch);
-      valueSwitches[0].vm.$emit("update:modelValue", "DATE");
-      valueSwitches[1].vm.$emit("update:modelValue", "STANDARD");
+      await popover.doubleClickFirstFormat();
 
-      await nextTick();
-
-      const allFormats = wrapper.findAll(".single-format");
-
-      expect(allFormats.length, "Expected test data to have length 2").toBe(2);
-
-      await allFormats[0].trigger("dblclick");
-
-      await nextTick();
-
-      expect(wrapper.find(".popover").exists()).toBeFalsy();
-      expect(wrapper.find("input").element.value).toBe(
-        "yyyy-MM-dd-blahblahblah",
-      );
+      popover.assert.isClosed();
+      popover.assert.isInputValue(getFirstFormat("DATE", "STANDARD"));
     });
 
     it("apply button is disabled if nothing is selected", async () => {
-      const { wrapper } = await doMount({
-        showPopupInitially: true,
-      });
+      const popover = await doMountWithPopover();
 
-      const applyButton = wrapper.find(".commit-button");
-
+      const applyButton = popover.element.find(".commit-button");
       expect(applyButton.classes()).toContain("disabled");
 
-      // now select something
-      await wrapper.findAll(".single-format")[0].trigger("click");
-
+      await popover.selectFormat(0);
       expect(applyButton.classes()).not.toContain("disabled");
     });
 
     it("clicking apply should close the popover and set the text field", async () => {
-      const { wrapper } = await doMount({
-        showPopupInitially: true,
-      });
+      const popover = await doMountWithPopover("DATE", "STANDARD");
 
-      // set the value switches to DATE and STANDARD
-      const valueSwitches = wrapper.findAllComponents(ValueSwitch);
-      valueSwitches[0].vm.$emit("update:modelValue", "DATE");
-      valueSwitches[1].vm.$emit("update:modelValue", "STANDARD");
+      await popover.selectFormat(0);
+      await popover.apply();
 
-      await nextTick();
-
-      const applyButton = wrapper.find(".commit-button");
-
-      await wrapper.findAll(".single-format")[0].trigger("click");
-      await applyButton.trigger("click");
-
-      expect(wrapper.find(".popover").exists()).toBeFalsy();
-      expect(wrapper.find("input").element.value).toBe(
-        "yyyy-MM-dd-blahblahblah",
-      );
+      popover.assert.isClosed();
+      popover.assert.isInputValue(getFirstFormat("DATE", "STANDARD"));
     });
 
     it("shows a friendly error if there are no formats to display", async () => {
       // Note: we have no formats under DATE_TIME and RECENT
-      const { wrapper } = await doMount({
-        showPopupInitially: true,
-      });
+      const popover = await doMountWithPopover("DATE_TIME", "RECENT");
 
-      const valueSwitches = wrapper.findAllComponents(ValueSwitch);
-      valueSwitches[0].vm.$emit("update:modelValue", "DATE_TIME");
-      valueSwitches[1].vm.$emit("update:modelValue", "RECENT");
-
-      await nextTick();
-
-      expect(wrapper.find(".single-format").exists()).toBeFalsy();
-      expect(wrapper.find(".no-formats-available").exists()).toBeTruthy();
+      expect(() => getFirstFormat("DATE_TIME", "RECENT")).toThrowError();
+      popover.assert.formatsAvailable(false);
 
       // but if we set the value switches to something else, we shouldn't see this any more
-      valueSwitches[0].vm.$emit("update:modelValue", "TIME");
-      valueSwitches[1].vm.$emit("update:modelValue", "STANDARD");
+      await popover.updateFormat("DATE");
+      await popover.updateCategory("STANDARD");
 
-      await nextTick();
-
-      expect(wrapper.find(".single-format").exists()).toBeTruthy();
-      expect(wrapper.find(".no-formats-available").exists()).toBeFalsy();
+      popover.assert.formatsAvailable(true);
+      await popover.selectFormat(0);
     });
   });
 });
