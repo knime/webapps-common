@@ -5,9 +5,9 @@ import flushPromises from "flush-promises";
 import { Checkbox, InputField } from "@knime/components";
 import { JsonDataService } from "@knime/ui-extension-service";
 
-import { mockRegisterSettings } from "@@/test-setup/utils/integration/dirtySettingState";
-import { getOptions } from "@/nodeDialog/__tests__/utils";
+import { mockRegisterSettings } from "../../../../../../test-setup/utils/integration/dirtySettingState";
 import NodeDialog from "../../../../../NodeDialog.vue";
+import { getOptions } from "../../../../../__tests__/utils";
 import TextControl from "../../../../TextControl.vue";
 
 describe("hide on null", () => {

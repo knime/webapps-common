@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { defineComponent, ref } from "vue";
 import { mount } from "@vue/test-utils";
 
-import { createPersistSchema } from "@@/test-setup/utils/createPersistSchema";
+import { createPersistSchema } from "../../../../test-setup/utils/createPersistSchema";
 import type { SettingStateWrapper } from "../../nodeDialog/useDirtySettings";
 import { getFlowVariableSettingsProvidedByControl } from "../useFlowVariables";
 

@@ -297,8 +297,8 @@ importers:
         specifier: workspace:*
         version: link:../styles
       '@knime/ui-extension-service':
-        specifier: 0.39.0
-        version: 0.39.0
+        specifier: workspace:*
+        version: link:../ui-extension-service
       focus-trap-vue:
         specifier: 4.0.3
         version: 4.0.3(focus-trap@7.5.4)(vue@3.4.27(typescript@5.4.5))
@@ -1356,10 +1356,6 @@ packages:
     peerDependencies:
       '@jsonforms/core': 3.4.0
       vue: ^3.2.26
-
-  '@knime/ui-extension-service@0.39.0':
-    resolution: {integrity: sha512-IiTUTory3OD1uTjyQmGdCV5jbvvo2zxr3CY/0FVvYaJ9q33faTjV9IfRuNmbiADsdedMgPNp7rG8C6K4JXfNQA==}
-    engines: {node: 18.x - 20.x}
 
   '@knime/vue-headless-virtual-scroller@0.1.2':
     resolution: {integrity: sha512-KYAEXoBymbpQrNKZ+IQjCcCeFwPvf1DZTjti63caSM3PEtQRIKeuT2SPdCqt/IeY/QV308cTLXM6eECAOebAug==}
@@ -5914,11 +5910,6 @@ snapshots:
       '@jsonforms/core': 3.4.0
       lodash: 4.17.21
       vue: 3.4.27(typescript@5.4.5)
-
-  '@knime/ui-extension-service@0.39.0':
-    dependencies:
-      color-convert: 2.0.1
-      uuid: 9.0.1
 
   '@knime/vue-headless-virtual-scroller@0.1.2(vue@3.4.27(typescript@5.4.5))':
     dependencies:

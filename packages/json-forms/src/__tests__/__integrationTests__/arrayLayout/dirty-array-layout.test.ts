@@ -9,7 +9,7 @@ import { DialogService, JsonDataService } from "@knime/ui-extension-service";
 import {
   controllingFlowVariableState,
   exposedFlowVariableState,
-} from "@@/test-setup/utils/integration/dirtySettingState";
+} from "../../../../test-setup/utils/integration/dirtySettingState";
 
 import NodeDialog from "./../../../NodeDialog.vue";
 import { getOptions } from "./../../../__tests__/utils";

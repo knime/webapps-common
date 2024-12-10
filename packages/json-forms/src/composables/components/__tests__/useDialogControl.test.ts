@@ -58,6 +58,7 @@ describe("useDialogControl", () => {
       description: "",
       label: "",
       errors: "",
+      i18nKeyPrefix: "",
       uischema: {
         type: "Control",
         scope: "#/properties/model/properties/mySetting",

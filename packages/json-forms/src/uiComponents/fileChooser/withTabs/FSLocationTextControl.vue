@@ -24,7 +24,7 @@ import { computed, onMounted, ref, watch } from "vue";
 
 import { InputField } from "@knime/components";
 
-import getDeepActiveElement from "@/utils/getDeepActiveElement";
+import getDeepActiveElement from "../../../utils/getDeepActiveElement";
 import useFileChooserBackend, {
   getBackendType,
 } from "../composables/useFileChooserBackend";

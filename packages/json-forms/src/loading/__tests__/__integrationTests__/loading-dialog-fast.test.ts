@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { mockRegisterSettings } from "@@/test-setup/utils/integration/dirtySettingState";
+import { mockRegisterSettings } from "../../../../test-setup/utils/integration/dirtySettingState";
 
 import {
   dialogWithTextInputData,

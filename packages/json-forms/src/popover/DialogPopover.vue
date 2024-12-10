@@ -15,7 +15,7 @@ import { tabbable } from "tabbable";
 
 import { FunctionButton, useClickOutside } from "@knime/components";
 
-import getDeepActiveElement from "@/utils/getDeepActiveElement";
+import getDeepActiveElement from "../utils/getDeepActiveElement";
 import inject from "../utils/inject";
 
 import type { DialogPopoverProps } from "./types/DialogPopoverProps";

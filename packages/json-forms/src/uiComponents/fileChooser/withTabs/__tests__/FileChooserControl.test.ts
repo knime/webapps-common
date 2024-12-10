@@ -5,12 +5,12 @@ import flushPromises from "flush-promises";
 import { FunctionButton, SideDrawer } from "@knime/components";
 import FolderLenseIcon from "@knime/styles/img/icons/folder-lense.svg";
 
-import { createPersistSchema } from "@@/test-setup/utils/createPersistSchema";
+import { createPersistSchema } from "../../../../../test-setup/utils/createPersistSchema";
 import {
   getControlBase,
   initializesJsonFormsControl,
   mountJsonFormsComponent,
-} from "@@/test-setup/utils/jsonFormsTestUtils";
+} from "../../../../../test-setup/utils/jsonFormsTestUtils";
 import SettingsSubPanel from "../../../../layoutComponents/settingsSubPanel/SettingsSubPanel.vue";
 import DialogLabel from "../../../label/DialogLabel.vue";
 import LabeledControl from "../../../label/LabeledControl.vue";

@@ -17,7 +17,7 @@ import {
   exposedFlowVariableState,
   mockRegisterSettings,
   registeredSettingState,
-} from "@@/test-setup/utils/integration/dirtySettingState";
+} from "../../../test-setup/utils/integration/dirtySettingState";
 import NodeDialog from "../../NodeDialog.vue";
 import { getOptions } from "../utils";
 

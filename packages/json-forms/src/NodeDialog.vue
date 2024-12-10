@@ -9,11 +9,6 @@ import {
   type UIExtensionService,
 } from "@knime/ui-extension-service";
 
-import {
-  getPossibleValuesFromUiSchema,
-  hasAdvancedOptions,
-} from "../nodeDialog/utils";
-
 import * as flowVariablesApi from "./api/flowVariables";
 import getChoices from "./api/getChoices";
 import type { FlowSettings } from "./api/types";
@@ -42,8 +37,9 @@ import type { PersistSchema } from "./types/Persist";
 import type { SettingsData } from "./types/SettingsData";
 import type { Update, UpdateResult } from "./types/Update";
 import type { Provided, ProvidedForFlowVariables } from "./types/provided";
+import { getPossibleValuesFromUiSchema, hasAdvancedOptions } from "./utils";
 import { getConfigPaths } from "./utils/paths";
-import "../common/main.css";
+import "./assets/main.css";
 
 const renderers = [...fallbackRenderers, ...defaultRenderers];
 

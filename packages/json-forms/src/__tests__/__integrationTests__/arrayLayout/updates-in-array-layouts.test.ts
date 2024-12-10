@@ -9,7 +9,7 @@ import { cloneDeep } from "lodash-es";
 import { Button, Checkbox, Dropdown } from "@knime/components";
 import { JsonDataService } from "@knime/ui-extension-service";
 
-import { mockRegisterSettings } from "@@/test-setup/utils/integration/dirtySettingState";
+import { mockRegisterSettings } from "../../../../test-setup/utils/integration/dirtySettingState";
 
 import NodeDialog from "./../../../NodeDialog.vue";
 import { getOptions } from "./../../../__tests__/utils";
