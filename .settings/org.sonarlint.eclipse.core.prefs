@@ -1,7 +1,0 @@
-autoEnabled=true
-bindingSuggestionsDisabled=false
-eclipse.preferences.version=1
-idePrefixKey=org.knime.core.ui/js-src
-projectKey=KNIME_knime-core-ui
-serverId=SonarCloud
-sqPrefixKey=
