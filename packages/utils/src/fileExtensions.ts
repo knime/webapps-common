@@ -1,12 +1,19 @@
-export const getFileExtension = (nameOrPath: string) => {
-  const basename = nameOrPath.split(/[\\/]/).pop();
-  const position = basename?.lastIndexOf(".") as number;
+/**
+ * Gets the file extension
+ * @param nameOrPath can take a full file name (e.g "file.txt") or a path to a file
+ * (e.g "file://path/to/file.txt" OR "/path/to/file.txt")
+ * @returns just the file extension (e.g "txt")
+ */
+export const getFileExtension = (nameOrPath: string): string => {
+  const basename = nameOrPath.split(/[\\/]/).pop() ?? "";
 
-  if (basename === "" || position < 1) {
+  const parts = basename.split(".");
+
+  if (basename === "" || parts.length === 1) {
     return "";
   }
 
-  return basename?.slice(position + 1);
+  return parts.at(-1) ?? "";
 };
 
 /**
@@ -31,6 +38,18 @@ const KNWF = Object.freeze({
   matches(file: File) {
     const extension = getFileExtension(file.name);
     return extension === this.extension;
+  },
+  /**
+   * Gets the name of a .knwf file without the extension. If the file is not
+   * matched as a .knwf file then this function will return the default value,
+   * which is empty string ("") if param is not provided
+   */
+  getNameOrDefault(file: File, defaultValue = ""): string {
+    if (!this.matches(file)) {
+      return defaultValue;
+    }
+
+    return file.name.replace(`.${this.extension}`, "");
   },
 });
 

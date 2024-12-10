@@ -2,7 +2,7 @@ import { computed, ref } from "vue";
 import { FetchError } from "ofetch";
 
 import { useUploadManager } from "@knime/components";
-import { getFileMimeType, promise } from "@knime/utils";
+import { getFileMimeType, knimeFileFormats, promise } from "@knime/utils";
 
 import { $ofetch } from "../common/ofetchClient";
 import { rfcErrors } from "../rfcErrors";
@@ -107,7 +107,12 @@ export const useFileUpload = (options: UseFileUploadOptions = {}) => {
     files: Array<File>,
   ): Promise<Array<{ uploadId: string; file: File }>> => {
     const fileDictionary = Object.fromEntries(
-      files.map((file) => [file.name, file]),
+      files.map((file) => {
+        // strip extension for workflows
+        const name = knimeFileFormats.KNWF.getNameOrDefault(file, file.name);
+
+        return [name, file];
+      }),
     );
 
     // map file dictionary to body payload of the prepare upload request

@@ -7,21 +7,21 @@ import {
 } from "../fileExtensions";
 
 describe("fileExtensions", () => {
-  const textFile = new File(["mock file"], "mock-file.txt", {
+  const textFile = new File(["mock file"], "mock-text.txt", {
     type: "text/plain",
   });
 
-  const csvFile = new File(["mock file"], "mock-file.csv", {
+  const csvFile = new File(["mock file"], "mock-csv.csv", {
     type: "text/csv",
   });
 
-  const fileWithoutExtension = new File(["mock file"], "mock-file", {
+  const fileWithoutExtension = new File(["mock file"], "mock-unknown-file", {
     type: "",
   });
 
-  const fileWithSomeRandomExtension = new File(
+  const fileWithSomeCustomExtension = new File(
     ["mock file"],
-    "mock-file.random",
+    "mock-custom-file.custom",
     {
       type: "",
     },
@@ -31,7 +31,7 @@ describe("fileExtensions", () => {
     type: "",
   });
 
-  const knarFile = new File(["mock file"], "workflow.knar", {
+  const knarFile = new File(["mock file"], "workflow-group.knar", {
     type: "",
   });
 
@@ -40,7 +40,7 @@ describe("fileExtensions", () => {
       expect(getFileExtension(textFile.name)).toBe("txt");
       expect(getFileExtension(csvFile.name)).toBe("csv");
       expect(getFileExtension(fileWithoutExtension.name)).toBe("");
-      expect(getFileExtension(fileWithSomeRandomExtension.name)).toBe("random");
+      expect(getFileExtension(fileWithSomeCustomExtension.name)).toBe("custom");
       expect(getFileExtension(knwfFile.name)).toBe("knwf");
       expect(getFileExtension(knarFile.name)).toBe("knar");
     });
@@ -54,6 +54,18 @@ describe("fileExtensions", () => {
         getFileExtension(`/some/path/to/file/${fileWithoutExtension.name}`),
       ).toBe("");
     });
+
+    it("should get extension from file path with file protocol", () => {
+      expect(
+        getFileExtension(`file://some/path/to/file/${textFile.name}`),
+      ).toBe("txt");
+
+      expect(
+        getFileExtension(
+          `file://some/path/to/file/${fileWithoutExtension.name}`,
+        ),
+      ).toBe("");
+    });
   });
 
   describe("getFileMimeType", () => {
@@ -63,7 +75,7 @@ describe("fileExtensions", () => {
       expect(getFileMimeType(fileWithoutExtension)).toBe(
         "application/octet-stream",
       );
-      expect(getFileMimeType(fileWithSomeRandomExtension)).toBe(
+      expect(getFileMimeType(fileWithSomeCustomExtension)).toBe(
         "application/octet-stream",
       );
       expect(getFileMimeType(knwfFile)).toBe(
@@ -80,7 +92,7 @@ describe("fileExtensions", () => {
       expect(knimeFileFormats.KNWF.matches(textFile)).toBe(false);
       expect(knimeFileFormats.KNWF.matches(csvFile)).toBe(false);
       expect(knimeFileFormats.KNWF.matches(fileWithoutExtension)).toBe(false);
-      expect(knimeFileFormats.KNWF.matches(fileWithSomeRandomExtension)).toBe(
+      expect(knimeFileFormats.KNWF.matches(fileWithSomeCustomExtension)).toBe(
         false,
       );
       expect(knimeFileFormats.KNWF.matches(knwfFile)).toBe(true);
@@ -91,11 +103,27 @@ describe("fileExtensions", () => {
       expect(knimeFileFormats.KNAR.matches(textFile)).toBe(false);
       expect(knimeFileFormats.KNAR.matches(csvFile)).toBe(false);
       expect(knimeFileFormats.KNAR.matches(fileWithoutExtension)).toBe(false);
-      expect(knimeFileFormats.KNAR.matches(fileWithSomeRandomExtension)).toBe(
+      expect(knimeFileFormats.KNAR.matches(fileWithSomeCustomExtension)).toBe(
         false,
       );
       expect(knimeFileFormats.KNAR.matches(knwfFile)).toBe(false);
       expect(knimeFileFormats.KNAR.matches(knarFile)).toBe(true);
+    });
+
+    it("should handle KNWF.getNameOrDefault", () => {
+      expect(
+        knimeFileFormats.KNWF.getNameOrDefault(textFile, textFile.name),
+      ).toBe(textFile.name);
+
+      expect(
+        knimeFileFormats.KNWF.getNameOrDefault(textFile, "some-default"),
+      ).toBe("some-default");
+
+      expect(knimeFileFormats.KNWF.getNameOrDefault(textFile)).toBe("");
+
+      expect(
+        knimeFileFormats.KNWF.getNameOrDefault(knwfFile, "some-default"),
+      ).toBe("workflow");
     });
   });
 });
