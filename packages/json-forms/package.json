@@ -9,8 +9,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc && vite build",
-    "type-check": "vue-tsc --noEmit -p tsconfig.app.json --composite false",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:unit": "vitest",
+    "coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@floating-ui/vue": "1.1.5",
