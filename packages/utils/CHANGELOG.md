@@ -1,5 +1,11 @@
 # @knime/utils
 
+## 1.2.2
+
+### Patch Changes
+
+- 96ce3a3: Add util to get file name without extension
+
 ## 1.2.1
 
 ### Patch Changes

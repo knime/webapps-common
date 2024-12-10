@@ -1,5 +1,14 @@
 # @knime/hub-features
 
+## 1.1.3
+
+### Patch Changes
+
+- 96ce3a3: Remove file extension for .knwf files when calling the manifest endpoint to prepare an upload
+- Updated dependencies [96ce3a3]
+  - @knime/utils@1.2.2
+  - @knime/components@1.12.3
+
 ## 1.1.2
 
 ### Patch Changes
