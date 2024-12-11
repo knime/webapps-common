@@ -7,7 +7,7 @@ import {
   getControlBase,
   initializesJsonFormsControl,
   mountJsonFormsComponent,
-} from "@@/test-setup/utils/jsonFormsTestUtils";
+} from "../../../test-setup/utils/jsonFormsTestUtils";
 import ButtonControl from "../ButtonControl.vue";
 import DialogComponentWrapper from "../DialogComponentWrapper.vue";
 import DialogLabel from "../label/DialogLabel.vue";

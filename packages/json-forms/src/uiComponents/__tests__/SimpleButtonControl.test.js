@@ -6,7 +6,7 @@ import ReloadIcon from "@knime/styles/img/icons/reload.svg";
 import {
   getControlBase,
   mountJsonFormsComponent,
-} from "@@/test-setup/utils/jsonFormsTestUtils";
+} from "../../../test-setup/utils/jsonFormsTestUtils";
 import SimpleButtonControl from "../SimpleButtonControl.vue";
 
 describe("SimpleButtonControl.vue", () => {

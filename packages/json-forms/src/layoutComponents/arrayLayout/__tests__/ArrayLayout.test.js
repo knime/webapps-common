@@ -13,7 +13,7 @@ import TrashIcon from "@knime/styles/img/icons/trash.svg";
 import {
   initializesJsonFormsArrayControl,
   mountJsonFormsComponent,
-} from "@@/test-setup/utils/jsonFormsTestUtils";
+} from "../../../../test-setup/utils/jsonFormsTestUtils";
 import ArrayLayout from "../ArrayLayout.vue";
 import ArrayLayoutItem from "../ArrayLayoutItem.vue";
 import ArrayLayoutItemControls from "../ArrayLayoutItemControls.vue";

@@ -4,7 +4,7 @@ import { DispatchRenderer } from "@jsonforms/vue";
 import {
   getControlBase,
   mountJsonFormsComponent,
-} from "@@/test-setup/utils/jsonFormsTestUtils";
+} from "../../../../test-setup/utils/jsonFormsTestUtils";
 import Inner from "../Inner.vue";
 import Left from "../Left.vue";
 import Right from "../Right.vue";

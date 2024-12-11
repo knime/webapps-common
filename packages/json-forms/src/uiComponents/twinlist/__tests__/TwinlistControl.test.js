@@ -8,12 +8,12 @@ import {
   Twinlist,
 } from "@knime/components";
 
-import { createPersistSchema } from "@@/test-setup/utils/createPersistSchema";
+import { createPersistSchema } from "../../../../test-setup/utils/createPersistSchema";
 import {
   getControlBase,
   initializesJsonFormsControl,
   mountJsonFormsComponent,
-} from "@@/test-setup/utils/jsonFormsTestUtils";
+} from "../../../../test-setup/utils/jsonFormsTestUtils";
 import { mergeDeep } from "../../../utils";
 import DialogLabel from "../../label/DialogLabel.vue";
 import LabeledControl from "../../label/LabeledControl.vue";

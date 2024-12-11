@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   initializesJsonFormsLayout,
   mountJsonFormsComponent,
-} from "@@/test-setup/utils/jsonFormsTestUtils";
+} from "../../../test-setup/utils/jsonFormsTestUtils";
 import SectionLayout from "../SectionLayout.vue";
 
 import DescriptionPopover from "./../../uiComponents/description/DescriptionPopover.vue";

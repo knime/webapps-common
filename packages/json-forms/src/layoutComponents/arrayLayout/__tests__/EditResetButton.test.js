@@ -9,7 +9,7 @@ import {
   getControlBase,
   initializesJsonFormsControl,
   mountJsonFormsComponent,
-} from "@@/test-setup/utils/jsonFormsTestUtils";
+} from "../../../../test-setup/utils/jsonFormsTestUtils";
 import EditResetButton from "../EditResetButton.vue";
 
 describe("EditResetButton.vue", () => {

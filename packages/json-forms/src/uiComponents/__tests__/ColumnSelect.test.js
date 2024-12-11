@@ -3,12 +3,12 @@ import { inject } from "vue";
 
 import { Dropdown } from "@knime/components";
 
-import { createPersistSchema } from "@@/test-setup/utils/createPersistSchema";
+import { createPersistSchema } from "../../../test-setup/utils/createPersistSchema";
 import {
   getControlBase,
   initializesJsonFormsControl,
   mountJsonFormsComponent,
-} from "@@/test-setup/utils/jsonFormsTestUtils";
+} from "../../../test-setup/utils/jsonFormsTestUtils";
 import { injectionKey as providedByComponentKey } from "../../composables/components/useFlowVariables";
 import ColumnSelect from "../ColumnSelect.vue";
 import DropdownControl from "../DropdownControl.vue";

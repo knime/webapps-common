@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { dialogInitialData } from "@@/test-setup/mocks/dialogData";
+import { dialogInitialData } from "../../../../test-setup/mocks/dialogData";
 import { textTester } from "../../textRenderer";
 
 describe("textTester", () => {

@@ -7,7 +7,7 @@ import {
   getControlBase,
   initializesJsonFormsControl,
   mountJsonFormsComponent,
-} from "@@/test-setup/utils/jsonFormsTestUtils";
+} from "../../../test-setup/utils/jsonFormsTestUtils";
 import SortListControl, {
   DEFAULT_ANY_UNKNOWN_VALUES_ID,
 } from "../SortListControl.vue";

@@ -4,7 +4,7 @@ import {
   getControlBase,
   initializesJsonFormsControl,
   mountJsonFormsComponent,
-} from "@@/test-setup/utils/jsonFormsTestUtils";
+} from "../../../../test-setup/utils/jsonFormsTestUtils";
 import ColumnFilter from "../ColumnFilter.vue";
 import TwinlistControl from "../TwinlistControl.vue";
 

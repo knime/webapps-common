@@ -4,7 +4,7 @@ import {
   getControlBase,
   initializesJsonFormsControl,
   mountJsonFormsComponent,
-} from "@@/test-setup/utils/jsonFormsTestUtils";
+} from "../../../test-setup/utils/jsonFormsTestUtils";
 import DropdownControl from "../DropdownControl.vue";
 import OneOfDropdown from "../OneOfDropdown.vue";
 

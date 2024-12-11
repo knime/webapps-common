@@ -4,7 +4,7 @@ import {
   getControlBase,
   initializesJsonFormsControl,
   mountJsonFormsComponent,
-} from "@@/test-setup/utils/jsonFormsTestUtils";
+} from "../../../test-setup/utils/jsonFormsTestUtils";
 import ErrorMessage from "../ErrorMessage.vue";
 import IntegerControl from "../IntegerControl.vue";
 import NumberControlBase from "../NumberControlBase.vue";

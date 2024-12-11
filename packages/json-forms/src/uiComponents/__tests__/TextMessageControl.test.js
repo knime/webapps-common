@@ -3,7 +3,7 @@ import flushPromises from "flush-promises";
 
 import { InlineMessage } from "@knime/components";
 
-import { mountJsonFormsComponent } from "@@/test-setup/utils/jsonFormsTestUtils";
+import { mountJsonFormsComponent } from "../../../test-setup/utils/jsonFormsTestUtils";
 import TextMessageControl from "../TextMessageControl.vue";
 
 describe("TextMessageControl.vue", () => {

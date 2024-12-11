@@ -14,7 +14,7 @@ import {
   getControlBase,
   initializesJsonFormsControl,
   mountJsonFormsComponent,
-} from "@@/test-setup/utils/jsonFormsTestUtils";
+} from "../../../test-setup/utils/jsonFormsTestUtils";
 import DateControl from "../DateControl.vue";
 import DateTimeControl from "../DateTimeControl.vue";
 import DialogLabel from "../label/DialogLabel.vue";

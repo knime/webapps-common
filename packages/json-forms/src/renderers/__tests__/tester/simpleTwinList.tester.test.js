@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { dialogInitialData } from "@@/test-setup/mocks/dialogData";
+import { dialogInitialData } from "../../../../test-setup/mocks/dialogData";
 import { simpleTwinlistTester } from "../../twinlistRenderer";
 
 import { inputFormats } from "./../../../constants/inputFormats";

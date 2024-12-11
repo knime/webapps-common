@@ -5,7 +5,7 @@ import { ValueSwitch } from "@knime/components";
 import {
   getControlBase,
   mountJsonFormsComponent,
-} from "@@/test-setup/utils/jsonFormsTestUtils";
+} from "../../../test-setup/utils/jsonFormsTestUtils";
 import RadioControlBase from "../RadioControlBase.vue";
 import ValueSwitchControl from "../ValueSwitchControl.vue";
 import LabeledControl from "../label/LabeledControl.vue";
