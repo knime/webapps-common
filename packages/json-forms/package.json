@@ -24,7 +24,8 @@
     "@knime/ui-extension-service": "workspace:*",
     "focus-trap-vue": "4.0.3",
     "tabbable": "6.2.0",
-    "uuid": "10.0.0"
+    "uuid": "10.0.0",
+    "date-fns": "2.30.0"
   },
   "peerDependencies": {
     "vue": "3.x"

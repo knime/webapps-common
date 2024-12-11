@@ -1,4 +1,4 @@
-import * as datefns from "date-fns";
+import { format, parse, parseISO } from "date-fns";
 
 /**
  * Try to parse the string as a full ISO date, but if that doesn't work then
@@ -11,7 +11,7 @@ import * as datefns from "date-fns";
  * unless the input was an ISO date time string.
  */
 export const fromString = (value: string): Date => {
-  const isoDate = datefns.parseISO(value);
+  const isoDate = parseISO(value);
   if (isNaN(isoDate.getTime())) {
     // As far as I can tell from the date-fns docs, this really is the only way
     // to parse a time string with an unknown number of subsecond digits. Our
@@ -33,7 +33,7 @@ export const fromString = (value: string): Date => {
     ];
 
     for (const format of otherFormats) {
-      const parsed = datefns.parse(value, format, new Date(1970, 0, 1));
+      const parsed = parse(value, format, new Date(1970, 0, 1));
       if (!isNaN(parsed.getTime())) {
         return parsed;
       }
@@ -45,8 +45,7 @@ export const fromString = (value: string): Date => {
   }
 };
 
-export const toString = (value: Date): string =>
-  datefns.format(value, "HH:mm:ss.SSS");
+export const toString = (value: Date): string => format(value, "HH:mm:ss.SSS");
 
 export const localTimeUtils = {
   toString,

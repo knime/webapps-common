@@ -68,11 +68,13 @@ describe("FlowVariableExposer", () => {
     const wrapper = mountFlowVariableExposer({ props });
     expect(wrapper.findComponent(InputField).exists()).toBeTruthy();
     await flushPromises();
-    expect(
-      wrapper
-        .findComponent(InputField)
-        .element.attributes.getNamedItem("arialabel")?.textContent,
-    ).toBe("outputted-flow-variable-persist.path.to.setting");
+
+    const ariaLabel = wrapper
+      .findComponent(InputField)
+      .element.getAttribute("aria-label");
+
+    expect(ariaLabel).toBe("outputted-flow-variable-persist.path.to.setting");
+
     expect(wrapper.findComponent(InputField).props()).toMatchObject({
       modelValue: "",
     });

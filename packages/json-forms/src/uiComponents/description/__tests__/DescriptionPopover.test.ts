@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { nextTick } from "vue";
 import { mount } from "@vue/test-utils";
-import flushPromises from "flush-promises";
 
 import { Description, FunctionButton } from "@knime/components";
 import DescriptionIcon from "@knime/styles/img/icons/circle-help.svg";
@@ -30,8 +30,8 @@ describe("DescriptionPopover.vue", () => {
   const mountDescriptionPopover = ({
     props,
   }: {
-    props: DescriptionPopoverProps;
-  }) => {
+    props?: DescriptionPopoverProps;
+  } = {}) => {
     return mount(DescriptionPopover as any, {
       props,
       global: {
@@ -78,13 +78,20 @@ describe("DescriptionPopover.vue", () => {
     });
 
     it("shows icon on focusin and hides on focusout", async () => {
-      const wrapper = mountDescriptionPopover({ props });
-      wrapper.findComponent(FunctionButton).vm.$emit("focus");
-      await flushPromises();
-      expect(wrapper.findComponent(DescriptionIcon).isVisible()).toBeTruthy();
-      wrapper.findComponent(FunctionButton).vm.$emit("blur");
-      await flushPromises();
-      expect(wrapper.findComponent(DescriptionIcon).isVisible()).toBeFalsy();
+      const wrapper = mountDescriptionPopover();
+
+      await wrapper.findComponent(FunctionButton).vm.$emit("focus");
+      await nextTick();
+      expect(
+        wrapper.findComponent(DescriptionIcon).attributes("style"),
+      ).not.toContain("display: none");
+
+      await wrapper.findComponent(FunctionButton).vm.$emit("blur");
+      await nextTick();
+
+      expect(
+        wrapper.findComponent(DescriptionIcon).attributes("style"),
+      ).toContain("display: none");
     });
 
     it("shows icon when expanded", async () => {
