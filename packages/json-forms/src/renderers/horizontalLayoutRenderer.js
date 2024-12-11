@@ -3,8 +3,8 @@ import { rankWith, uiTypeIs } from "@jsonforms/core";
 
 import { priorityRanks } from "../constants";
 
-const HorizontalLayout = defineAsyncComponent(() =>
-  import("../layoutComponents/HorizontalLayout.vue"),
+const HorizontalLayout = defineAsyncComponent(
+  () => import("../layoutComponents/HorizontalLayout.vue"),
 );
 
 export const horizontalLayoutTester = uiTypeIs("HorizontalLayout");

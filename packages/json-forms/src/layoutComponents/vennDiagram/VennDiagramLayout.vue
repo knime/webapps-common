@@ -6,15 +6,16 @@ import VerticalLayoutBase from "../VerticalLayoutBase.vue";
 
 import VennDiagram from "./VennDiagram.vue";
 
-const props = defineProps(
-  rendererProps<{
-    elements: [
-      left: ControlElement,
-      middle: ControlElement,
-      right: ControlElement,
-    ];
-  }>(),
-);
+const props =
+  defineProps(
+    rendererProps<{
+      elements: [
+        left: ControlElement,
+        middle: ControlElement,
+        right: ControlElement,
+      ];
+    }>(),
+  );
 const [middle, left, right] = props.uischema.elements;
 </script>
 

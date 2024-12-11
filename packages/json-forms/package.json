@@ -11,6 +11,7 @@
     "build": "vue-tsc && vite build",
     "preview": "vite preview",
     "test:unit": "vitest",
+    "test:integration": "vitest --mode integration",
     "coverage": "vitest run --coverage"
   },
   "dependencies": {

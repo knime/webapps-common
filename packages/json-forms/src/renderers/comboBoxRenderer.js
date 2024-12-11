@@ -3,8 +3,8 @@ import { and, hasType, rankWith, schemaMatches } from "@jsonforms/core";
 
 import { inputFormats, priorityRanks } from "./../constants";
 
-const ComboBoxControl = defineAsyncComponent(() =>
-  import("../uiComponents/ComboBoxControl.vue"),
+const ComboBoxControl = defineAsyncComponent(
+  () => import("../uiComponents/ComboBoxControl.vue"),
 );
 
 const isArray = schemaMatches((s) => hasType(s, "array"));

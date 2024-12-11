@@ -3,8 +3,8 @@ import { rankWith, uiTypeIs } from "@jsonforms/core";
 
 import { priorityRanks } from "../constants";
 
-const VennDiagramLayout = defineAsyncComponent(() =>
-  import("../layoutComponents/vennDiagram/VennDiagramLayout.vue"),
+const VennDiagramLayout = defineAsyncComponent(
+  () => import("../layoutComponents/vennDiagram/VennDiagramLayout.vue"),
 );
 
 export const vennDiagramLayoutTester = uiTypeIs("VennDiagram");

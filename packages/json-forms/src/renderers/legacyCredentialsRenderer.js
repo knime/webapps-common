@@ -3,8 +3,8 @@ import { rankWith } from "@jsonforms/core";
 
 import { inputFormats, priorityRanks } from "../constants";
 
-const LegacyCredentialsControl = defineAsyncComponent(() =>
-  import("../uiComponents/credentials/LegacyCredentialsControl.vue"),
+const LegacyCredentialsControl = defineAsyncComponent(
+  () => import("../uiComponents/credentials/LegacyCredentialsControl.vue"),
 );
 
 export const legacyCredentialsTester = (uischema, _schema) => {

@@ -3,8 +3,8 @@ import { isObjectArray, rankWith } from "@jsonforms/core";
 
 import { priorityRanks } from "./../constants";
 
-const ArrayLayout = defineAsyncComponent(() =>
-  import("./../layoutComponents/arrayLayout/ArrayLayout.vue"),
+const ArrayLayout = defineAsyncComponent(
+  () => import("./../layoutComponents/arrayLayout/ArrayLayout.vue"),
 );
 
 export const arrayLayoutTester = isObjectArray;

@@ -3,8 +3,8 @@ import { isIntegerControl, rankWith } from "@jsonforms/core";
 
 import { inputFormats, priorityRanks } from "../constants";
 
-const IntegerControl = defineAsyncComponent(() =>
-  import("../uiComponents/IntegerControl.vue"),
+const IntegerControl = defineAsyncComponent(
+  () => import("../uiComponents/IntegerControl.vue"),
 );
 
 export const integerTester = (uischema, schema) => {

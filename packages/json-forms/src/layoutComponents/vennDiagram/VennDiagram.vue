@@ -6,15 +6,16 @@ import Inner from "./Inner.vue";
 import Left from "./Left.vue";
 import Right from "./Right.vue";
 
-const props = defineProps(
-  rendererProps<{
-    elements: [
-      left: ControlElement,
-      middle: ControlElement,
-      right: ControlElement,
-    ];
-  }>(),
-);
+const props =
+  defineProps(
+    rendererProps<{
+      elements: [
+        left: ControlElement,
+        middle: ControlElement,
+        right: ControlElement,
+      ];
+    }>(),
+  );
 const [middle, left, right] = props.uischema.elements;
 </script>
 

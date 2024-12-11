@@ -3,8 +3,8 @@ import { isControl, rankWith } from "@jsonforms/core";
 
 import { inputFormats, priorityRanks } from "../constants";
 
-const SortListControl = defineAsyncComponent(() =>
-  import("../uiComponents/SortListControl.vue"),
+const SortListControl = defineAsyncComponent(
+  () => import("../uiComponents/SortListControl.vue"),
 );
 
 export const sortListTester = (uischema, _schema) =>

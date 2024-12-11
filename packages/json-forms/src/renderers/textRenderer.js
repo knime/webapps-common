@@ -3,8 +3,8 @@ import { isStringControl, rankWith } from "@jsonforms/core";
 
 import { priorityRanks } from "../constants";
 
-const TextControl = defineAsyncComponent(() =>
-  import("../uiComponents/TextControl.vue"),
+const TextControl = defineAsyncComponent(
+  () => import("../uiComponents/TextControl.vue"),
 );
 
 export const textTester = isStringControl;

@@ -60,6 +60,7 @@ describe("flow variables", () => {
     flowVariablesMap: FlowVariablesMap,
     flowVarButton: VueWrapper<any>,
     dropdownButton: DOMWrapper<HTMLButtonElement>,
+    listBox: DOMWrapper<HTMLLIElement>,
     listItems: DOMWrapper<HTMLLIElement>[],
     exposedVariableInput: DOMWrapper<HTMLInputElement>;
 
@@ -79,7 +80,8 @@ describe("flow variables", () => {
       .findComponent(InputField)
       .find("input");
     dropdownButton = dropdown.find("[role=button]");
-    listItems = dropdown.findAll("li");
+    listBox = dropdown.find("[role=listbox]");
+    listItems = listBox.findAll("li");
   };
 
   beforeEach(async () => {
@@ -157,11 +159,11 @@ describe("flow variables", () => {
 
     expect(dropdownButton.text()).toBe("No flow variable selected");
     expect(flowVariablesMap).toStrictEqual({});
-    listItems.forEach((li) => expect(li.isVisible()).toBeFalsy());
+    expect(listBox.attributes("style")).toContain("display: none");
 
     await dropdownButton.trigger("click");
 
-    listItems.forEach((li) => expect(li.isVisible()).toBeTruthy());
+    expect(listBox.attributes("style")).not.toContain("display: none");
     expect(listItems.map((li) => li.text())).toStrictEqual([
       "None",
       flowVar1.name,

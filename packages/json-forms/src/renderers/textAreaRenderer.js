@@ -3,8 +3,8 @@ import { isStringControl, rankWith } from "@jsonforms/core";
 
 import { inputFormats, priorityRanks } from "../constants";
 
-const TextAreaControl = defineAsyncComponent(() =>
-  import("../uiComponents/TextAreaControl.vue"),
+const TextAreaControl = defineAsyncComponent(
+  () => import("../uiComponents/TextAreaControl.vue"),
 );
 
 export const textAreaTester = (uischema) =>

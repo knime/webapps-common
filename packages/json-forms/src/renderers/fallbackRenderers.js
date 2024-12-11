@@ -20,11 +20,11 @@ import { numberRenderer } from "./numberRenderer";
 import { textRenderer } from "./textRenderer";
 import { verticalLayoutRenderer } from "./verticalLayoutRenderer";
 
-const OneOfDropdown = defineAsyncComponent(() =>
-  import("../uiComponents/OneOfDropdown.vue"),
+const OneOfDropdown = defineAsyncComponent(
+  () => import("../uiComponents/OneOfDropdown.vue"),
 );
-const AnyOfTwinlist = defineAsyncComponent(() =>
-  import("../uiComponents/twinlist/AnyOfTwinlist.vue"),
+const AnyOfTwinlist = defineAsyncComponent(
+  () => import("../uiComponents/twinlist/AnyOfTwinlist.vue"),
 );
 
 export const fallbackRenderers = [

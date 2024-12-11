@@ -3,8 +3,8 @@ import { rankWith, uiTypeIs } from "@jsonforms/core";
 
 import { priorityRanks } from "../constants";
 
-const SectionLayout = defineAsyncComponent(() =>
-  import("../layoutComponents/SectionLayout.vue"),
+const SectionLayout = defineAsyncComponent(
+  () => import("../layoutComponents/SectionLayout.vue"),
 );
 
 export const sectionLayoutTester = uiTypeIs("Section");

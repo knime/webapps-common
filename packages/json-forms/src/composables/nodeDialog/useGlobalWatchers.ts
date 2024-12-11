@@ -108,9 +108,8 @@ export default () => {
       indexIds,
       isToBeApplied,
     } of withIsToBeAppliedTester) {
-      const transformation = await registeredWatcher.transformSettings(
-        indexIds,
-      )(currentData);
+      const transformation =
+        await registeredWatcher.transformSettings(indexIds)(currentData);
       if (isToBeApplied()) {
         transformations.push(transformation);
       }

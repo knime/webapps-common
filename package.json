@@ -26,6 +26,7 @@
     "test:unit-components": "pnpm --filter @knime/components test:unit",
     "test:unit-ui-extensions-renderer": "pnpm --filter @knime/ui-extension-renderer test:unit",
     "test:unit-json-forms": "pnpm --filter @knime/json-forms test:unit",
+    "test:integration-json-forms": "pnpm --filter @knime/json-forms test:integration",
     "changeset": "pnpm exec changeset",
     "changeset:version": "pnpm exec changeset version",
     "changeset:publish": "pnpm exec changeset publish",

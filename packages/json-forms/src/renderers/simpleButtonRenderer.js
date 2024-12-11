@@ -3,8 +3,8 @@ import { rankWith } from "@jsonforms/core";
 
 import { inputFormats, priorityRanks } from "../constants";
 
-const SimpleButtonControl = defineAsyncComponent(() =>
-  import("../uiComponents/SimpleButtonControl.vue"),
+const SimpleButtonControl = defineAsyncComponent(
+  () => import("../uiComponents/SimpleButtonControl.vue"),
 );
 
 export const simpleButtonTester = (uischema, _schema) =>

@@ -3,8 +3,8 @@ import { isStringControl, rankWith } from "@jsonforms/core";
 
 import { inputFormats, priorityRanks } from "../constants";
 
-const RichTextControl = defineAsyncComponent(() =>
-  import("../uiComponents/richTextControl/RichTextControl.vue"),
+const RichTextControl = defineAsyncComponent(
+  () => import("../uiComponents/richTextControl/RichTextControl.vue"),
 );
 
 export const richTextTester = (uischema, _schema) => {

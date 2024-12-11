@@ -3,8 +3,8 @@ import { and, isStringControl, rankWith } from "@jsonforms/core";
 
 import { inputFormats, priorityRanks } from "../constants";
 
-const LocalFileChooserControl = defineAsyncComponent(() =>
-  import("../uiComponents/fileChooser/local/LocalFileChooserControl.vue"),
+const LocalFileChooserControl = defineAsyncComponent(
+  () => import("../uiComponents/fileChooser/local/LocalFileChooserControl.vue"),
 );
 
 export const localFileChooserTester = and(

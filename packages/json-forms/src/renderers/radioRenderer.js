@@ -3,8 +3,8 @@ import { isOneOfControl, rankWith } from "@jsonforms/core";
 
 import { inputFormats, priorityRanks } from "../constants";
 
-const RadioControl = defineAsyncComponent(() =>
-  import("../uiComponents/RadioControl.vue"),
+const RadioControl = defineAsyncComponent(
+  () => import("../uiComponents/RadioControl.vue"),
 );
 
 export const radioTester = (uischema, schema) => {

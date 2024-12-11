@@ -3,8 +3,8 @@ import { isControl, rankWith } from "@jsonforms/core";
 
 import { inputFormats, priorityRanks } from "../constants";
 
-const ColumnSelect = defineAsyncComponent(() =>
-  import("../uiComponents/ColumnSelect.vue"),
+const ColumnSelect = defineAsyncComponent(
+  () => import("../uiComponents/ColumnSelect.vue"),
 );
 
 export const columnSelectTester = (uischema, _schema) =>
