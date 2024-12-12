@@ -32,6 +32,14 @@ const getTestSetupFile = (mode: "integration" | "unit") => {
   }
 };
 
+const getReportDirectory = (mode: "integration" | "unit") => {
+  if (mode === "unit") {
+    return "coverage/unit";
+  } else {
+    return "../../coverage/integration";
+  }
+};
+
 // @ts-ignore
 export default defineConfig(({ mode }) => {
   const testMode = mode === "integration" ? "integration" : "unit";
@@ -59,6 +67,7 @@ export default defineConfig(({ mode }) => {
           "**/types/**",
         ],
         reporter: ["html", "text", "lcov"],
+        reportsDirectory: getReportDirectory(testMode),
       },
     },
   };

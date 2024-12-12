@@ -7,6 +7,7 @@ export default defineConfig({
       all: true,
       exclude: [
         "**/.DS_Store",
+        "coverage/",
         "demo/",
         "packages/lint/",
         "packages/licenses/",
@@ -23,6 +24,7 @@ export default defineConfig({
         "**/.{eslint,prettier,stylelint}rc.{js,cjs,yml}",
       ],
       reporter: ["html", "text", "lcov"],
+      reportsDirectory: "coverage/unit",
     },
     outputFile: {
       // needed for Bitbucket Pipeline

@@ -12,7 +12,8 @@
     "preview": "vite preview",
     "test:unit": "vitest",
     "test:integration": "vitest --mode integration",
-    "coverage": "vitest run --coverage"
+    "coverage:unit": "vitest run --coverage",
+    "coverage:integration": "vitest run --coverage --mode integration"
   },
   "dependencies": {
     "@floating-ui/vue": "1.1.5",
