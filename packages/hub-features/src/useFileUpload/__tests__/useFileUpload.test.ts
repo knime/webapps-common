@@ -10,7 +10,7 @@ import { nextTick } from "vue";
 import { flushPromises } from "@vue/test-utils";
 
 import type { useUploadManager } from "@knime/components";
-import { promise } from "@knime/utils";
+import { knimeFileFormats, promise } from "@knime/utils";
 
 import { useFileUpload } from "../useFileUpload";
 
@@ -65,6 +65,11 @@ describe("useFileUpload", () => {
 
   const file1 = new File(fileSize, "mock-file1.txt", { type: "text/plain" });
   const file2 = new File(fileSize, "mock-file2.txt", { type: "text/plain" });
+  const wfFile = new File(
+    fileSize,
+    `mock-workflow.${knimeFileFormats.KNWF.extension}`,
+    { type: knimeFileFormats.KNWF.mimeType },
+  );
 
   const mockAPIUrl = "http://myapi.com";
 
@@ -133,54 +138,84 @@ describe("useFileUpload", () => {
     );
   });
 
-  it("should handle prepare state", async () => {
-    $ofetchMock
-      .mockResolvedValueOnce({
-        items: {
-          "mock-file1.txt": { uploadId: "upload1" },
-          "mock-file2.txt": { uploadId: "upload2" },
+  describe("prepare upload", () => {
+    it("should handle prepare state", async () => {
+      $ofetchMock
+        .mockResolvedValueOnce({
+          items: {
+            "mock-file1.txt": { uploadId: "upload1" },
+            "mock-file2.txt": { uploadId: "upload2" },
+          },
+        })
+        .mockResolvedValueOnce({
+          items: {
+            "mock-file1.txt": { uploadId: "upload3" },
+            "mock-file2.txt": { uploadId: "upload4" },
+          },
+        });
+
+      const { start, isPreparingUpload, totalFilesBeingPrepared } =
+        useFileUpload({ apiBaseUrl: mockAPIUrl });
+
+      start(parentId, [file1, file2]);
+
+      expect(isPreparingUpload.value).toBe(true);
+      expect(totalFilesBeingPrepared.value).toBe(2);
+
+      start(parentId, [file1, file2]);
+
+      await nextTick();
+
+      expect(isPreparingUpload.value).toBe(true);
+      expect(totalFilesBeingPrepared.value).toBe(4);
+
+      await flushPromises();
+
+      expect(isPreparingUpload.value).toBe(false);
+      expect(totalFilesBeingPrepared.value).toBe(0);
+    });
+
+    it("should remove extension for .knwf files", async () => {
+      const { start } = useFileUpload({ apiBaseUrl: mockAPIUrl });
+
+      start(parentId, [file1, wfFile]);
+      await flushPromises();
+
+      expect($ofetchMock).toHaveBeenCalledWith(
+        `${mockAPIUrl}/repository/${parentId}/manifest`,
+        {
+          method: "POST",
+          body: {
+            items: {
+              "mock-file1.txt": {
+                itemContentType: "text/plain",
+                itemContentSize: file1.size,
+              },
+              "mock-workflow": {
+                itemContentType: knimeFileFormats.KNWF.mimeType,
+                itemContentSize: wfFile.size,
+              },
+            },
+          },
         },
-      })
-      .mockResolvedValueOnce({
-        items: {
-          "mock-file1.txt": { uploadId: "upload3" },
-          "mock-file2.txt": { uploadId: "upload4" },
-        },
-      });
+      );
+    });
 
-    const { start, isPreparingUpload, totalFilesBeingPrepared } = useFileUpload(
-      { apiBaseUrl: mockAPIUrl },
-    );
+    it("should handle prepare state on prepare failure", async () => {
+      (promise.retryPromise as any).mockRejectedValueOnce(
+        new Error("Whoopsie"),
+      );
 
-    start(parentId, [file1, file2]);
+      const { start, isPreparingUpload, totalFilesBeingPrepared } =
+        useFileUpload({ apiBaseUrl: mockAPIUrl });
 
-    expect(isPreparingUpload.value).toBe(true);
-    expect(totalFilesBeingPrepared.value).toBe(2);
+      await expect(() =>
+        start(parentId, [file1, file2]),
+      ).rejects.toThrowError();
 
-    start(parentId, [file1, file2]);
-
-    await nextTick();
-
-    expect(isPreparingUpload.value).toBe(true);
-    expect(totalFilesBeingPrepared.value).toBe(4);
-
-    await flushPromises();
-
-    expect(isPreparingUpload.value).toBe(false);
-    expect(totalFilesBeingPrepared.value).toBe(0);
-  });
-
-  it("should handle prepare state on prepare failure", async () => {
-    (promise.retryPromise as any).mockRejectedValueOnce(new Error("Whoopsie"));
-
-    const { start, isPreparingUpload, totalFilesBeingPrepared } = useFileUpload(
-      { apiBaseUrl: mockAPIUrl },
-    );
-
-    await expect(() => start(parentId, [file1, file2])).rejects.toThrowError();
-
-    expect(isPreparingUpload.value).toBe(false);
-    expect(totalFilesBeingPrepared.value).toBe(0);
+      expect(isPreparingUpload.value).toBe(false);
+      expect(totalFilesBeingPrepared.value).toBe(0);
+    });
   });
 
   it("should return properties for pending state", async () => {
