@@ -30,7 +30,7 @@
     "changeset": "pnpm exec changeset",
     "changeset:version": "pnpm exec changeset version",
     "changeset:publish": "pnpm exec changeset publish",
-    "coverage": "pnpm coverage:unit && pnpm coverage:integration",
+    "coverage": "run-p coverage:unit coverage:integration",
     "coverage:unit": "TZ='Europe/Berlin' vitest run --coverage",
     "coverage:integration": "TZ='Europe/Berlin' pnpm --filter @knime/json-forms coverage:integration && pnpm postprocess-integration-coverage",
     "postprocess-integration-coverage": "node postprocess-lcov-report.js coverage/integration/lcov.info packages/json-forms/",

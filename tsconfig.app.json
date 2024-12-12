@@ -1,7 +1,7 @@
 {
   "extends": "@vue/tsconfig/tsconfig.dom.json",
   "include": ["vite-env.d.ts", "**/*", "**/*.vue"],
-  "exclude": ["**/__tests__/*"],
+  "exclude": ["node_modules", "**/__tests__/*"],
   "compilerOptions": {
     "composite": true,
     "lib": ["ES2022", "ES2023.Array", "DOM"],

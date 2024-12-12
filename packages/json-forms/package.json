@@ -51,6 +51,22 @@
     "vitest": "2.1.1",
     "vue-tsc": "^2.1.6"
   },
+  "main": "dist/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./renderers": {
+      "import": "./dist/renderers/index.js",
+      "types": "./dist/renderers/index.d.ts"
+    }
+  },
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "CHANGELOG.md"
+  ],
   "engines": {
     "node": "20.x"
   },
