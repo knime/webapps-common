@@ -17,7 +17,7 @@ definitions:
           - pnpm
           - sonar
           - docker # used by sonar pipes
-        size: 2x # needed for additional memory requirements
+        size: 4x # needed for additional memory requirements
         clone:
           depth: full # SonarCloud scanner needs the full history to assign issues properly
         script:

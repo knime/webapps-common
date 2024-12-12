@@ -7,7 +7,7 @@ import { resolve } from "path";
 const args = process.argv.slice(2);
 
 if (args.length < 2) {
-  console.error("Usage: node postprocess-lcov.mjs <lcovFilePath> <prefix>");
+  console.error("Usage: node postprocess-lcov.js <lcovFilePath> <prefix>");
   process.exit(1);
 }
 

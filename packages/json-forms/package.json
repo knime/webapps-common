@@ -8,8 +8,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc && vite build",
-    "preview": "vite preview",
+    "build": "vite build",
     "test:unit": "vitest",
     "test:integration": "vitest --mode integration",
     "coverage:unit": "vitest run --coverage",
@@ -44,22 +43,21 @@
     "consola": "3.2.3",
     "flush-promises": "1.0.2",
     "lodash-es": "4.17.21",
+    "modern-normalize": "3.0.1",
     "type-fest": "4.26.1",
     "typescript": "^5.4.5",
     "vite": "^5.4.8",
+    "vite-plugin-css-injected-by-js": "3.5.2",
+    "vite-plugin-dts": "4.3.0",
     "vite-svg-loader": "5.1.0",
     "vitest": "2.1.1",
     "vue-tsc": "^2.1.6"
   },
-  "main": "dist/index.js",
+  "main": "dist/knime-json-forms.js",
   "exports": {
     ".": {
-      "import": "./dist/index.js",
+      "import": "./dist/knime-json-forms.js",
       "types": "./dist/index.d.ts"
-    },
-    "./renderers": {
-      "import": "./dist/renderers/index.js",
-      "types": "./dist/renderers/index.d.ts"
     }
   },
   "types": "dist/index.d.ts",
