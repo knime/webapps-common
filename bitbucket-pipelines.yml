@@ -1,7 +1,7 @@
 image: node:20.15.1
 
 options:
-  max-time: 10
+  max-time: 15
 
 definitions:
   services:
