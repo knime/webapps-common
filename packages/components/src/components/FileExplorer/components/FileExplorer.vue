@@ -226,8 +226,11 @@ const selectItems = (itemIds: string[]) => {
     .map((id) => props.items.findIndex((item) => item.id === id))
     .filter((index) => index !== -1);
 
-  // all items are already selected
-  if (itemIndices.every(isSelected)) {
+  // exactly the 'itemIds'-items are already selected
+  if (
+    itemIndices.every(isSelected) &&
+    itemIndices.length === selectedIndexes.value.length
+  ) {
     return;
   }
 
