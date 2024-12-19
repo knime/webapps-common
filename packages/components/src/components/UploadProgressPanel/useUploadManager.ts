@@ -91,7 +91,7 @@ export const useUploadManager = (options: UseUploadManagerOptions) => {
   );
 
   return {
-    uploadItems,
+    uploadState,
     hasPendingUploads,
     totalPendingUploads,
     start,

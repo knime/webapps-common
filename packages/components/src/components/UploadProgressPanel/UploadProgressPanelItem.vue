@@ -50,6 +50,7 @@ const statusMapper = {
   failed: ["Failed", "error", CircleClose],
   complete: ["Uploaded", "success", CircleCheck],
   cancelled: ["Cancelled", "error", CircleClose],
+  processing: ["Processing", "info", LoadingIcon],
 } satisfies Record<UploadItemStatus, [string, PillVariant, Component]>;
 
 type StatusPill =

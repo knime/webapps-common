@@ -176,6 +176,15 @@ describe("useFileUpload", () => {
     });
 
     it("should remove extension for .knwf files", async () => {
+      $ofetchMock
+        .mockReset()
+        .mockResolvedValueOnce({
+          items: {
+            "mock-file1.txt": { uploadId: "upload1" },
+            "mock-workflow": { uploadId: "upload2" },
+          },
+        })
+        .mockResolvedValue(JSON.stringify({ method: "", url: "" }));
       const { start } = useFileUpload({ apiBaseUrl: mockAPIUrl });
 
       start(parentId, [file1, wfFile]);
@@ -235,6 +244,98 @@ describe("useFileUpload", () => {
 
     expect(hasPendingUploads.value).toBe(true);
     expect(totalPendingUploads.value).toBe(2);
+  });
+
+  describe("uploads with processing state", () => {
+    beforeEach(() => {
+      $ofetchMock.mockReset();
+      $ofetchMock
+        .mockResolvedValueOnce({
+          items: { "mock-workflow": { uploadId: "upload1" } },
+        })
+        .mockResolvedValueOnce(JSON.stringify({ method: "", url: "" }))
+        .mockResolvedValueOnce(null);
+    });
+
+    it("should add uploadId to unprocessedUploads when starting upload for file with processing step", async () => {
+      const { start, unprocessedUploads } = useFileUpload({
+        apiBaseUrl: mockAPIUrl,
+      });
+
+      expect(unprocessedUploads.size).toBe(0);
+
+      start(parentId, [wfFile]);
+      await flushPromises();
+
+      expect(unprocessedUploads.size).toBe(1);
+    });
+
+    it("does not add uploadId to unprocessedUploads when starting upload for file without processing step", async () => {
+      $ofetchMock.mockReset();
+      $ofetchMock
+        .mockResolvedValueOnce({
+          items: { "mock-file1.txt": { uploadId: "upload1" } },
+        })
+        .mockResolvedValueOnce(JSON.stringify({ method: "", url: "" }))
+        .mockResolvedValueOnce(null);
+      const { start, unprocessedUploads } = useFileUpload({
+        apiBaseUrl: mockAPIUrl,
+      });
+
+      expect(unprocessedUploads.size).toBe(0);
+
+      start(parentId, [file1]);
+      await flushPromises();
+
+      expect(unprocessedUploads.size).toBe(0);
+    });
+
+    it("setProcessingCompleted should update item state accordingly", async () => {
+      const { start, unprocessedUploads, setProcessingCompleted } =
+        useFileUpload({
+          apiBaseUrl: mockAPIUrl,
+        });
+
+      expect(unprocessedUploads.size).toBe(0);
+
+      start(parentId, [wfFile]);
+      await flushPromises();
+
+      expect(unprocessedUploads.size).toBe(1);
+
+      mockUseUploadManagerCallbacks.onFileUploadComplete({
+        uploadId: "upload1",
+        filePartIds: { 1: "part1" },
+      });
+
+      await flushPromises();
+      setProcessingCompleted({ uploadId: "upload1" });
+      await nextTick();
+      expect(unprocessedUploads.size).toBe(0);
+    });
+
+    it("setProcessingFailed should update item state accordingly", async () => {
+      const { start, unprocessedUploads, setProcessingFailed } = useFileUpload({
+        apiBaseUrl: mockAPIUrl,
+      });
+
+      expect(unprocessedUploads.size).toBe(0);
+
+      start(parentId, [wfFile]);
+      await flushPromises();
+
+      expect(unprocessedUploads.size).toBe(1);
+
+      mockUseUploadManagerCallbacks.onFileUploadComplete({
+        uploadId: "upload1",
+        filePartIds: { 1: "part1" },
+      });
+
+      await flushPromises();
+      setProcessingFailed({ uploadId: "upload1" });
+      await nextTick();
+      expect(unprocessedUploads.size).toBe(0);
+    });
   });
 
   describe("completing upload", () => {

@@ -53,8 +53,9 @@ const title = computed(
 
 const hasSomeItemInProgress = computed(
   () =>
-    props.items.some(({ status }) => status === "inprogress") ||
-    props.placeholderItems > 0,
+    props.items.some(
+      ({ status }) => status === "inprogress" || status === "processing",
+    ) || props.placeholderItems > 0,
 );
 
 watch(toRef(props, "items"), (newItems, prevItems) => {

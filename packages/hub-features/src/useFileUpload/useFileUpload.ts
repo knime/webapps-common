@@ -1,4 +1,4 @@
-import { computed, ref } from "vue";
+import { computed, reactive, readonly, ref } from "vue";
 import { FetchError } from "ofetch";
 
 import { useUploadManager } from "@knime/components";
@@ -172,7 +172,32 @@ export const useFileUpload = (options: UseFileUploadOptions = {}) => {
     });
   };
 
-  const useUploadManagerResult = useUploadManager({
+  // contains upload ids for files that have a processing step which was not finished yet
+  const unprocessedUploads = reactive<Set<string>>(new Set());
+  const isFileWithProcessing = (file: File) =>
+    knimeFileFormats.KNWF.matches(file);
+
+  let useUploadManagerResult: ReturnType<typeof useUploadManager> | null = null;
+
+  const setProcessingCompleted = ({ uploadId }: { uploadId: string }) => {
+    unprocessedUploads.delete(uploadId);
+  };
+
+  const setProcessingFailed = ({
+    uploadId,
+    error,
+  }: {
+    uploadId: string;
+    error?: Error;
+  }) => {
+    unprocessedUploads.delete(uploadId);
+    useUploadManagerResult?.setFailed(
+      uploadId,
+      error ?? new Error("An error occurred when processing the file"),
+    );
+  };
+
+  useUploadManagerResult = useUploadManager({
     resolveFilePartUploadURL,
 
     onFileUploadComplete: ({ uploadId, filePartIds }) => {
@@ -183,7 +208,7 @@ export const useFileUpload = (options: UseFileUploadOptions = {}) => {
         })
         .catch((error) => {
           consola.error("Error attempting to complete upload", { error });
-          useUploadManagerResult.setFailed(uploadId, error as Error);
+          setProcessingFailed({ uploadId, error });
         });
     },
 
@@ -205,10 +230,27 @@ export const useFileUpload = (options: UseFileUploadOptions = {}) => {
     return files.slice(0, maxUploadQueueSize - totalPendingUploads.value);
   };
 
+  const { uploadState, ...uploadMangerResultRest } = useUploadManagerResult;
+
+  const uploadItems = computed(() => {
+    return Object.values(uploadState.value).map((uploadItem) => ({
+      ...uploadItem,
+      status:
+        uploadItem.status === "complete" &&
+        unprocessedUploads.has(uploadItem.id)
+          ? "processing"
+          : uploadItem.status,
+    }));
+  });
+
   const prepareQueueSize = ref(0);
 
   return {
-    ...useUploadManagerResult,
+    ...uploadMangerResultRest,
+    uploadItems,
+    unprocessedUploads: readonly(unprocessedUploads),
+    setProcessingCompleted,
+    setProcessingFailed,
 
     isPreparingUpload: computed(() => prepareQueueSize.value > 0),
     totalFilesBeingPrepared: computed(() => prepareQueueSize.value),
@@ -228,6 +270,12 @@ export const useFileUpload = (options: UseFileUploadOptions = {}) => {
             // eslint-disable-next-line no-magic-numbers
             Boolean(error.statusCode && error.statusCode < 500),
           retryDelayMS: DEFAULT_RETRY_DELAY_MS,
+        });
+
+        uploadPayload.forEach(({ uploadId, file }) => {
+          if (isFileWithProcessing(file)) {
+            unprocessedUploads.add(uploadId);
+          }
         });
 
         useUploadManagerResult.start(parentId, uploadPayload);
