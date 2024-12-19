@@ -65,10 +65,10 @@ describe("useUploadManager", () => {
   };
 
   it("should start an upload", async () => {
-    const { uploadItems } = await setup();
+    const { uploadState } = await setup();
 
-    expect(uploadItems.value).toEqual([
-      {
+    expect(uploadState.value).toEqual({
+      "1": {
         id: "1",
         name: "mock-file1.txt",
         size: 10,
@@ -76,7 +76,7 @@ describe("useUploadManager", () => {
         status: "inprogress",
         parentId,
       },
-      {
+      "2": {
         id: "2",
         name: "mock-file2.txt",
         size: 10,
@@ -84,7 +84,7 @@ describe("useUploadManager", () => {
         status: "inprogress",
         parentId,
       },
-    ]);
+    });
     expect(uploadManagerMock.uploadFiles).toHaveBeenCalledWith([
       { uploadId: "1", file: file1 },
       { uploadId: "2", file: file2 },
@@ -95,77 +95,77 @@ describe("useUploadManager", () => {
   });
 
   it("should update progress of an upload", async () => {
-    const { uploadItems } = await setup();
+    const { uploadState } = await setup();
 
-    expect(uploadItems.value).toEqual([
-      expect.objectContaining({ id: "1", progress: 0 }),
-      expect.objectContaining({ id: "2", progress: 0 }),
-    ]);
+    expect(uploadState.value).toEqual({
+      "1": expect.objectContaining({ id: "1", progress: 0 }),
+      "2": expect.objectContaining({ id: "2", progress: 0 }),
+    });
 
     uploadManagerConfig.onProgress?.("1", 30);
 
-    expect(uploadItems.value).toEqual([
-      expect.objectContaining({ id: "1", progress: 30 }),
-      expect.objectContaining({ id: "2", progress: 0 }),
-    ]);
+    expect(uploadState.value).toEqual({
+      "1": expect.objectContaining({ id: "1", progress: 30 }),
+      "2": expect.objectContaining({ id: "2", progress: 0 }),
+    });
 
     uploadManagerConfig.onProgress?.("2", 90);
 
-    expect(uploadItems.value).toEqual([
-      expect.objectContaining({ id: "1", progress: 30 }),
-      expect.objectContaining({ id: "2", progress: 90 }),
-    ]);
+    expect(uploadState.value).toEqual({
+      "1": expect.objectContaining({ id: "1", progress: 30 }),
+      "2": expect.objectContaining({ id: "2", progress: 90 }),
+    });
   });
 
   it("should update cancellation state", async () => {
-    const { uploadItems, cancel } = await setup();
+    const { uploadState, cancel } = await setup();
 
-    expect(uploadItems.value).toEqual([
-      expect.objectContaining({ id: "1", status: "inprogress" }),
-      expect.objectContaining({ id: "2", status: "inprogress" }),
-    ]);
+    expect(uploadState.value).toEqual({
+      "1": expect.objectContaining({ id: "1", status: "inprogress" }),
+      "2": expect.objectContaining({ id: "2", status: "inprogress" }),
+    });
 
     cancel("1");
     expect(uploadManagerMock.cancel).toHaveBeenCalledWith("1");
 
-    expect(uploadItems.value).toEqual([
-      expect.objectContaining({ id: "1", status: "cancelled" }),
-      expect.objectContaining({ id: "2", status: "inprogress" }),
-    ]);
+    expect(uploadState.value).toEqual({
+      "1": expect.objectContaining({ id: "1", status: "cancelled" }),
+      "2": expect.objectContaining({ id: "2", status: "inprogress" }),
+    });
   });
 
   it("should handle `setFailed`", async () => {
-    const { uploadItems, setFailed } = await setup();
+    const { uploadState, setFailed } = await setup();
 
-    expect(uploadItems.value).toEqual([
-      expect.objectContaining({ id: "1", status: "inprogress" }),
-      expect.objectContaining({ id: "2", status: "inprogress" }),
-    ]);
+    expect(uploadState.value).toEqual({
+      "1": expect.objectContaining({ id: "1", status: "inprogress" }),
+      "2": expect.objectContaining({ id: "2", status: "inprogress" }),
+    });
 
     const error = new Error("this is an error");
     setFailed("1", error);
     expect(uploadManagerMock.setFailed).toHaveBeenCalledWith("1", error);
 
-    expect(uploadItems.value).toEqual([
-      expect.objectContaining({
+    expect(uploadState.value).toEqual({
+      "1": expect.objectContaining({
         id: "1",
         status: "failed",
         failureDetails: "this is an error",
       }),
-      expect.objectContaining({ id: "2", status: "inprogress" }),
-    ]);
+      "2": expect.objectContaining({ id: "2", status: "inprogress" }),
+    });
   });
 
   it("should update completion state", async () => {
     const onComplete = vi.fn();
-    const { uploadItems } = await setup({
+    const { uploadState } = await setup({
       onFileUploadComplete: onComplete,
     });
 
-    expect(uploadItems.value).toEqual([
-      expect.objectContaining({ id: "1", status: "inprogress" }),
-      expect.objectContaining({ id: "2", status: "inprogress" }),
-    ]);
+    expect(uploadState.value).toEqual({
+      "1": expect.objectContaining({ id: "1", status: "inprogress" }),
+      "2": expect.objectContaining({ id: "2", status: "inprogress" }),
+    });
 
     uploadManagerConfig.onFileUploadComplete?.({
       uploadId: "1",
@@ -177,54 +177,54 @@ describe("useUploadManager", () => {
       filePartIds: ["part1", "part2"],
     });
 
-    expect(uploadItems.value).toEqual([
-      expect.objectContaining({ id: "1", status: "complete" }),
-      expect.objectContaining({ id: "2", status: "inprogress" }),
-    ]);
+    expect(uploadState.value).toEqual({
+      "1": expect.objectContaining({ id: "1", status: "complete" }),
+      "2": expect.objectContaining({ id: "2", status: "inprogress" }),
+    });
   });
 
   it("should update failed state", async () => {
     const onFailed = vi.fn();
-    const { uploadItems } = await setup({
+    const { uploadState } = await setup({
       onFileUploadFailed: onFailed,
     });
 
-    expect(uploadItems.value).toEqual([
-      expect.objectContaining({ id: "1", status: "inprogress" }),
-      expect.objectContaining({ id: "2", status: "inprogress" }),
-    ]);
+    expect(uploadState.value).toEqual({
+      "1": expect.objectContaining({ id: "1", status: "inprogress" }),
+      "2": expect.objectContaining({ id: "2", status: "inprogress" }),
+    });
 
     const error = new Error("this is an error");
     uploadManagerConfig.onFileUploadFailed?.("1", error);
 
     expect(onFailed).toHaveBeenCalledWith("1", error);
 
-    expect(uploadItems.value).toEqual([
-      expect.objectContaining({
+    expect(uploadState.value).toEqual({
+      "1": expect.objectContaining({
         id: "1",
         status: "failed",
         failureDetails: "this is an error",
       }),
-      expect.objectContaining({ id: "2", status: "inprogress" }),
-    ]);
+      "2": expect.objectContaining({ id: "2", status: "inprogress" }),
+    });
   });
 
   it("should allow resetting state", async () => {
-    const { uploadItems, resetState } = await setup();
+    const { uploadState, resetState } = await setup();
 
-    expect(uploadItems.value.length).toBe(2);
+    expect(Object.keys(uploadState.value).length).toBe(2);
     resetState();
-    expect(uploadItems.value.length).toBe(0);
+    expect(Object.keys(uploadState.value).length).toBe(0);
   });
 
   it("should remove an upload item", async () => {
-    const { uploadItems, removeItem, cancel } = await setup();
+    const { uploadState, removeItem, cancel } = await setup();
 
     cancel("1");
-    expect(uploadItems.value).toEqual([
-      expect.objectContaining({ id: "1", status: "cancelled" }),
-      expect.objectContaining({ id: "2", status: "inprogress" }),
-    ]);
+    expect(uploadState.value).toEqual({
+      "1": expect.objectContaining({ id: "1", status: "cancelled" }),
+      "2": expect.objectContaining({ id: "2", status: "inprogress" }),
+    });
 
     // item 1 has already been cancelled
     removeItem("1");
@@ -232,15 +232,15 @@ describe("useUploadManager", () => {
     expect(uploadManagerMock.cancel).toHaveBeenLastCalledWith("1");
 
     // item 1 is removed
-    expect(uploadItems.value).toEqual([
-      expect.objectContaining({ id: "2", status: "inprogress" }),
-    ]);
+    expect(uploadState.value).toEqual({
+      "2": expect.objectContaining({ id: "2", status: "inprogress" }),
+    });
 
     // remove item 2 which is in progress
     removeItem("2");
     expect(uploadManagerMock.cancel).toHaveBeenCalledTimes(2);
     expect(uploadManagerMock.cancel).toHaveBeenLastCalledWith("2");
 
-    expect(uploadItems.value).toEqual([]);
+    expect(uploadState.value).toEqual({});
   });
 });

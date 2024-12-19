@@ -103,7 +103,6 @@ export type UploaderManagerConfig = {
      * Ids of all the uploaded file parts
      */
     filePartIds: Record<number, string>;
-    file: File;
   }) => void;
 
   /**
@@ -330,7 +329,7 @@ export const createUploadManager = (config: UploaderManagerConfig) => {
       state: "complete",
     });
     completedUploads.add(uploadId);
-    onFileUploadComplete?.({ uploadId, filePartIds: completedPartIds, file });
+    onFileUploadComplete?.({ uploadId, filePartIds: completedPartIds });
   };
 
   const uploadFiles = (files: Array<{ uploadId: string; file: File }>) => {
