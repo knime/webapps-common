@@ -1,4 +1,4 @@
-import { computed, ref } from "vue";
+import { computed, reactive, ref } from "vue";
 import { FetchError } from "ofetch";
 
 import { useUploadManager } from "@knime/components";
@@ -172,18 +172,43 @@ export const useFileUpload = (options: UseFileUploadOptions = {}) => {
     });
   };
 
-  const useUploadManagerResult = useUploadManager({
+  // contains upload ids for files that have a processing step which was not finished yet
+  const unprocessedUploads = reactive<Set<string>>(new Set());
+  const isFileWithProcessing = (filename: string) =>
+    knimeFileFormats.KNWF.matches({ name: filename });
+
+  let useUploadManagerResult: ReturnType<typeof useUploadManager> | null = null;
+
+  const setProcessingCompleted = ({ uploadId }: { uploadId: string }) => {
+    unprocessedUploads.delete(uploadId);
+  };
+
+  const setProcessingFailed = ({ uploadId }: { uploadId: string }) => {
+    unprocessedUploads.delete(uploadId);
+    useUploadManagerResult?.setFailed(
+      uploadId,
+      new Error("Processing the file failed"),
+    );
+  };
+
+  useUploadManagerResult = useUploadManager({
     resolveFilePartUploadURL,
 
-    onFileUploadComplete: ({ uploadId, filePartIds }) => {
+    onFileUploadComplete: ({ uploadId, filePartIds, file }) => {
       promise
         .retryPromise({ fn: () => completeUpload(uploadId, filePartIds) })
         .then(() => {
           options.onFileUploadComplete?.(uploadId, filePartIds);
+          if (isFileWithProcessing(file.name)) {
+            setProcessingCompleted({ uploadId });
+          }
         })
         .catch((error) => {
           consola.error("Error attempting to complete upload", { error });
-          useUploadManagerResult.setFailed(uploadId, error as Error);
+          if (isFileWithProcessing(file.name)) {
+            setProcessingFailed({ uploadId });
+          }
+          useUploadManagerResult?.setFailed(uploadId, error as Error);
         });
     },
 
@@ -205,10 +230,26 @@ export const useFileUpload = (options: UseFileUploadOptions = {}) => {
     return files.slice(0, maxUploadQueueSize - totalPendingUploads.value);
   };
 
+  const { uploadState, ...uploadMangerResultRest } = useUploadManagerResult;
+
+  const uploadItems = computed(() => {
+    return Object.values(uploadState.value).map((uploadItem) => ({
+      ...uploadItem,
+      status: unprocessedUploads.has(uploadItem.id)
+        ? "processing"
+        : uploadItem.status,
+      hasProcessingStep: isFileWithProcessing(uploadItem.name),
+    }));
+  });
+
   const prepareQueueSize = ref(0);
 
   return {
-    ...useUploadManagerResult,
+    ...uploadMangerResultRest,
+    uploadItems,
+    unprocessedUploads,
+    setProcessingCompleted,
+    setProcessingFailed,
 
     isPreparingUpload: computed(() => prepareQueueSize.value > 0),
     totalFilesBeingPrepared: computed(() => prepareQueueSize.value),

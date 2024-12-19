@@ -23,8 +23,8 @@ export const getFileExtension = (nameOrPath: string): string => {
 const KNAR = Object.freeze({
   extension: "knar",
   mimeType: "application/vnd.knime.workflow-group+zip",
-  matches(file: File) {
-    const extension = getFileExtension(file.name);
+  matches({ name }: { name: string }) {
+    const extension = getFileExtension(name);
     return extension === this.extension;
   },
 });
@@ -35,8 +35,8 @@ const KNAR = Object.freeze({
 const KNWF = Object.freeze({
   extension: "knwf",
   mimeType: "application/vnd.knime.workflow+zip",
-  matches(file: File) {
-    const extension = getFileExtension(file.name);
+  matches({ name }: { name: string }) {
+    const extension = getFileExtension(name);
     return extension === this.extension;
   },
   /**
