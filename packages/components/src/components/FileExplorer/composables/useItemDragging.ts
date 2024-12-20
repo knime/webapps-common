@@ -109,7 +109,7 @@ export const useItemDragging = (options: UseItemDraggingOptions) => {
       .concat(toGhostTarget(index))
       .concat(otherSelectedIndexes.map(toGhostTarget))
       .filter((t) => t !== null) as Array<
-      Exclude<ReturnType<typeof toGhostTarget>, null>
+      NonNullable<ReturnType<typeof toGhostTarget>>
     >;
 
     const dragGhostHelpers = createDragGhosts({

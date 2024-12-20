@@ -1,5 +1,5 @@
-<!-- eslint-disable max-lines -->
 <script setup lang="ts">
+/* eslint-disable max-lines */
 import { computed, nextTick, ref, toRef, toRefs, watch } from "vue";
 import { useResizeObserver } from "@vueuse/core";
 
@@ -45,10 +45,6 @@ interface Props {
    * for large lists by reducing the number of DOM elements. Default: `false`
    */
   virtual?: boolean;
-  /**
-   * Height of each item row in px.
-   */
-  itemHeight?: number;
   /**
    * Determines whether the "back" item should be rendered or not
    */
@@ -99,10 +95,11 @@ interface Props {
   selectedItemIds?: string[];
 }
 
+const itemHeight = 38;
+
 const props = withDefaults(defineProps<Props>(), {
   mode: "normal",
   fullPath: "",
-  itemHeight: 38,
   isRootFolder: true,
   activeRenamedItemId: null,
   disableContextMenu: false,
@@ -153,7 +150,7 @@ const itemBack = ref<{ $el: HTMLElement } | null>(null);
 const table = ref<null | HTMLElement>(null);
 
 /** Virtualization */
-const heightPerRow = computed(() => props.itemHeight + 2 /* item margin */);
+const heightPerRow = computed(() => itemHeight + 2 /* item margin */);
 const VIRTUAL_ITEM_BUFFER = 16;
 const virtualSizeManager = new SameSizeManager(
   computed(() => props.items.length),
@@ -181,13 +178,16 @@ const renderedItems = computed(() =>
   renderedIndices.value.map((i) => props.items[i]),
 );
 
-const scrollIntoView = (index: number) => {
+const scrollIntoView = (
+  index: number,
+  behavior: "smooth" | "instant" = "smooth",
+) => {
   if (index === -1) {
     return;
   }
   containerProps.ref.value?.scrollTo({
     top: virtualSizeManager.toOffset(index),
-    behavior: "smooth",
+    behavior,
   });
 };
 
@@ -351,7 +351,17 @@ const focusIndex = (index: number, updateState = true) => {
     return;
   }
 
-  getItemElement(index)?.focus();
+  const item = getItemElement(index);
+  if (item) {
+    item.focus();
+  } else if (props.virtual) {
+    // scroll into view as we can only focus if the element is in the DOM
+    scrollIntoView(index, "instant");
+    setTimeout(() => {
+      getItemElement(index)?.focus();
+    }, 100);
+  }
+
   if (updateState) {
     focusedIndex.value = index;
   }
@@ -512,7 +522,7 @@ useResizeObserver(containerProps.ref, containerProps.onScroll);
   <div class="file-explorer" :class="{ 'virtual-scrolling': props.virtual }">
     <table
       tabindex="0"
-      class="virtual-scrollcontainer"
+      class="scroll-container"
       :class="{ 'keyboard-focus': keyPressedUntilMouseClick }"
       aria-label="list of files in the current folder"
       v-bind="containerProps"
@@ -653,15 +663,17 @@ useResizeObserver(containerProps.ref, containerProps.onScroll);
 
   &.virtual-scrolling {
     min-height: 0;
+
+    & .scroll-container {
+      overflow: hidden auto;
+
+      /* 'block' to use the virtual height set on its child */
+      display: block;
+      flex-direction: column;
+      scrollbar-gutter: stable;
+      padding-right: var(--space-4);
+    }
   }
-}
-
-.virtual-scrollcontainer {
-  overflow: hidden auto;
-
-  /* 'block' to use the virtual height set on its child */
-  display: block;
-  flex-direction: column;
 }
 
 .file-explorer-item {
