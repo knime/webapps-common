@@ -1,5 +1,11 @@
 # @knime/utils
 
+## 1.2.3
+
+### Patch Changes
+
+- 4f06376: Add hub-specific processing state for for uploads
+
 ## 1.2.2
 
 ### Patch Changes

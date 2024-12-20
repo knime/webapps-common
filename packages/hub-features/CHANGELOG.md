@@ -1,5 +1,17 @@
 # @knime/hub-features
 
+## 1.2.0
+
+### Minor Changes
+
+- 4f06376: Add hub-specific processing state for for uploads
+
+### Patch Changes
+
+- Updated dependencies [4f06376]
+  - @knime/components@1.13.1
+  - @knime/utils@1.2.3
+
 ## 1.1.4
 
 ### Patch Changes
