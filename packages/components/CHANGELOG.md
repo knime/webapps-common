@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.14.0
+
+### Minor Changes
+
+- eabff98: FileExplorer: Add "virtual" prop to enable virtual scrolling for enhanced performance with large amounts of items.
+
 ## 1.13.1
 
 ### Patch Changes
