@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.13.0
+
+### Minor Changes
+
+- 1787fe5: allow dynamic height for tags to prevent overlap in TagList
+
 ## 1.12.3
 
 ### Patch Changes
