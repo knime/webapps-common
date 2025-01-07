@@ -1,6 +1,5 @@
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
-import cssInjectedByJsPlugin from "vite-plugin-css-injected-by-js";
 import dts from "vite-plugin-dts";
 import svgLoader from "vite-svg-loader";
 
@@ -10,7 +9,6 @@ export default defineConfig({
   plugins: [
     vue(),
     svgLoader({ svgoConfig }),
-    cssInjectedByJsPlugin(),
     dts({
       insertTypesEntry: true,
     }),

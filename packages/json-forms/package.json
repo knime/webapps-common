@@ -53,14 +53,16 @@
     "vitest": "2.1.1",
     "vue-tsc": "^2.1.6"
   },
-  "main": "dist/knime-json-forms.js",
   "exports": {
     ".": {
       "import": "./dist/knime-json-forms.js",
       "types": "./dist/index.d.ts"
+    },
+    "./styles": {
+      "import": "./dist/styles.css",
+      "require": "./dist/styles.css"
     }
   },
-  "types": "dist/index.d.ts",
   "files": [
     "dist",
     "CHANGELOG.md"
