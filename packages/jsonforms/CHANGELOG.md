@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 0.1.5
+
+### Patch Changes
+
+- Don't inline styles, export created css file from build
+
 ## 0.1.4
 
 ### Patch Changes

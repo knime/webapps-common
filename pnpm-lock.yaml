@@ -363,9 +363,6 @@ importers:
       vite:
         specifier: ^5.4.8
         version: 5.4.8(@types/node@20.11.26)(sugarss@4.0.1(postcss@8.4.47))(terser@5.36.0)
-      vite-plugin-css-injected-by-js:
-        specifier: 3.5.2
-        version: 3.5.2(vite@5.4.8(@types/node@20.11.26)(sugarss@4.0.1(postcss@8.4.47))(terser@5.36.0))
       vite-plugin-dts:
         specifier: 4.3.0
         version: 4.3.0(@types/node@20.11.26)(rollup@4.22.4)(typescript@5.4.5)(vite@5.4.8(@types/node@20.11.26)(sugarss@4.0.1(postcss@8.4.47))(terser@5.36.0))
@@ -4978,11 +4975,6 @@ packages:
 
   vite-plugin-css-injected-by-js@3.5.1:
     resolution: {integrity: sha512-9ioqwDuEBxW55gNoWFEDhfLTrVKXEEZgl5adhWmmqa88EQGKfTmexy4v1Rh0pAS6RhKQs2bUYQArprB32JpUZQ==}
-    peerDependencies:
-      vite: '>=5.2.14'
-
-  vite-plugin-css-injected-by-js@3.5.2:
-    resolution: {integrity: sha512-2MpU/Y+SCZyWUB6ua3HbJCrgnF0KACAsmzOQt1UvRVJCGF6S8xdA3ZUhWcWdM9ivG4I5az8PnQmwwrkC2CAQrQ==}
     peerDependencies:
       vite: '>=5.2.14'
 
@@ -10288,10 +10280,6 @@ snapshots:
   vite-plugin-css-injected-by-js@3.5.1(vite@5.4.8(@types/node@20.16.7)(sugarss@4.0.1(postcss@8.4.47))(terser@5.36.0)):
     dependencies:
       vite: 5.4.8(@types/node@20.16.7)(sugarss@4.0.1(postcss@8.4.47))(terser@5.36.0)
-
-  vite-plugin-css-injected-by-js@3.5.2(vite@5.4.8(@types/node@20.11.26)(sugarss@4.0.1(postcss@8.4.47))(terser@5.36.0)):
-    dependencies:
-      vite: 5.4.8(@types/node@20.11.26)(sugarss@4.0.1(postcss@8.4.47))(terser@5.36.0)
 
   vite-plugin-dts@3.9.1(@types/node@20.16.7)(rollup@4.22.4)(typescript@5.3.3)(vite@5.4.8(@types/node@20.16.7)(sugarss@4.0.1(postcss@8.4.47))(terser@5.36.0)):
     dependencies:

@@ -26,6 +26,12 @@ export default defineConfig({
         globals: {
           vue: "Vue",
         },
+        assetFileNames: (assetInfo) => {
+          if (assetInfo.name === "style.css") {
+            return "knime-jsonforms.css";
+          }
+          return assetInfo.name;
+        },
       },
     },
   },

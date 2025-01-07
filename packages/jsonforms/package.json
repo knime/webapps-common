@@ -1,6 +1,6 @@
 {
   "name": "@knime/jsonforms",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Internal JSON Forms integration for frontend KNIME projects",
   "homepage": "https://knime.github.io/webapps-common/",
   "license": "GPL 3 and Additional Permissions according to Sec. 7 (SEE the file LICENSE)",
@@ -47,7 +47,6 @@
     "type-fest": "4.26.1",
     "typescript": "^5.4.5",
     "vite": "^5.4.8",
-    "vite-plugin-css-injected-by-js": "3.5.2",
     "vite-plugin-dts": "4.3.0",
     "vite-svg-loader": "5.1.0",
     "vitest": "2.1.1",
@@ -58,7 +57,8 @@
     ".": {
       "import": "./dist/knime-jsonforms.js",
       "types": "./dist/index.d.ts"
-    }
+    },
+    "./styles": "./dist/knime-jsonforms.css"
   },
   "types": "dist/index.d.ts",
   "files": [
