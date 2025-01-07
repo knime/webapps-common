@@ -12,9 +12,9 @@ import {
 } from "@jsonforms/core";
 
 import { priorityRanks } from "../constants";
-import DateTimeControl from "../uiComponents/DateTimeControl.vue";
 
 import { checkboxRenderer } from "./checkboxRenderer";
+import { dateTimeRenderer } from "./dateTimeRenderer";
 import { integerRenderer } from "./integerRenderer";
 import { numberRenderer } from "./numberRenderer";
 import { textRenderer } from "./textRenderer";
@@ -51,8 +51,7 @@ export const fallbackRenderers = [
     tester: rankWith(priorityRanks.fallback, isIntegerControl),
   },
   {
-    name: "DateTimeControl",
-    renderer: DateTimeControl,
+    ...dateTimeRenderer,
     tester: rankWith(priorityRanks.fallback, isDateTimeControl),
   },
   {
