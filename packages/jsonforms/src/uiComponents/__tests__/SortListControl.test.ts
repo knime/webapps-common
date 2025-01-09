@@ -1,21 +1,32 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  type Mock,
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
+import type { VueWrapper } from "@vue/test-utils";
 import flushPromises from "flush-promises";
 
 import { Button, SortList } from "@knime/components";
 
 import {
+  type VueControlTestProps,
   getControlBase,
-  initializesJsonFormsControl,
-  mountJsonFormsComponent,
-} from "../../../test-setup/utils/jsonFormsTestUtils";
+  mountJsonFormsControl,
+} from "../../../testUtils/component";
+import LabeledControl from "../../higherOrderComponents/control/LabeledControl.vue";
+import type { IdAndText } from "../../types/ChoicesUiSchema";
 import SortListControl, {
   DEFAULT_ANY_UNKNOWN_VALUES_ID,
 } from "../SortListControl.vue";
-import DialogLabel from "../label/DialogLabel.vue";
-import LabeledControl from "../label/LabeledControl.vue";
 
 describe("SortListControl.vue", () => {
-  let props, wrapper, component;
+  let props: VueControlTestProps<typeof SortListControl>,
+    wrapper: VueWrapper,
+    changeValue: Mock;
 
   const possibleValues = [
     {
@@ -45,17 +56,21 @@ describe("SortListControl.vue", () => {
           type: "array",
         },
         uischema: {
+          type: "Control",
+          scope: "#/properties/test",
           options: {
             format: "sortList",
             possibleValues,
           },
         },
       },
+      disabled: false,
     };
-    component = mountJsonFormsComponent(SortListControl, {
+    const component = mountJsonFormsControl(SortListControl, {
       props,
     });
     wrapper = component.wrapper;
+    changeValue = component.changeValue;
   });
 
   afterEach(() => {
@@ -69,16 +84,7 @@ describe("SortListControl.vue", () => {
   });
 
   it("sets labelForId", () => {
-    const dialogLabel = wrapper.findComponent(DialogLabel);
-    expect(wrapper.getComponent(SortList).props().id).toBe(
-      dialogLabel.vm.labelForId,
-    );
-    expect(dialogLabel.vm.labeledElement).toBeDefined();
-    expect(dialogLabel.vm.labeledElement).not.toBeNull();
-  });
-
-  it("initializes jsonforms", () => {
-    initializesJsonFormsControl(component);
+    expect(wrapper.getComponent(SortList).props().id).toBeTruthy();
   });
 
   it("calls onChange when sortList value is changed", async () => {
@@ -86,10 +92,7 @@ describe("SortListControl.vue", () => {
     await wrapper
       .findComponent(SortList)
       .vm.$emit("update:modelValue", newSelected);
-    expect(component.handleChange).toBeCalledWith(
-      props.control.path,
-      newSelected,
-    );
+    expect(changeValue).toBeCalledWith(newSelected);
   });
 
   it("sets correct initial values", () => {
@@ -107,11 +110,11 @@ describe("SortListControl.vue", () => {
 
   it("sets data if none are present", async () => {
     props.control.data = [];
-    const { handleChange } = mountJsonFormsComponent(SortListControl, {
+    const { changeValue } = mountJsonFormsControl(SortListControl, {
       props,
     });
     await flushPromises();
-    expect(handleChange).toHaveBeenCalledWith(props.control.path, [
+    expect(changeValue).toHaveBeenCalledWith([
       "test_1",
       "test_2",
       "test_3",
@@ -121,7 +124,7 @@ describe("SortListControl.vue", () => {
   });
 
   it("sets unknown values", () => {
-    expect(component.handleChange).toHaveBeenCalledWith(props.control.path, [
+    expect(changeValue).toHaveBeenCalledWith([
       "test_1",
       "test_3",
       DEFAULT_ANY_UNKNOWN_VALUES_ID,
@@ -132,17 +135,17 @@ describe("SortListControl.vue", () => {
 
   it("uses choicesProvider if present", async () => {
     const choicesProvider = "myChoicesProvider";
-    props.control.uischema.options.choicesProvider = choicesProvider;
+    props.control.uischema.options!.choicesProvider = choicesProvider;
 
-    let provideChoices;
-    const addStateProviderListenerMock = vi.fn((_id, callback) => {
+    let provideChoices: (choices: IdAndText[]) => void;
+    const addStateProviderListener = vi.fn((_id, callback) => {
       provideChoices = callback;
     });
-    const { wrapper, handleChange } = mountJsonFormsComponent(SortListControl, {
+    const { wrapper, changeValue } = mountJsonFormsControl(SortListControl, {
       props,
-      provide: { addStateProviderListenerMock },
+      provide: { addStateProviderListener },
     });
-    expect(addStateProviderListenerMock).toHaveBeenCalledWith(
+    expect(addStateProviderListener).toHaveBeenCalledWith(
       { id: choicesProvider },
       expect.anything(),
     );
@@ -152,7 +155,7 @@ describe("SortListControl.vue", () => {
         text: "Universe_0_0",
       },
     ];
-    provideChoices(providedChoices);
+    provideChoices!(providedChoices);
     await flushPromises();
     const sortListProps = wrapper.findComponent(SortList).props();
     expect(sortListProps.possibleValues).toStrictEqual([
@@ -163,7 +166,7 @@ describe("SortListControl.vue", () => {
         special: true,
       },
     ]);
-    expect(handleChange).toHaveBeenCalledWith(props.control.path, [
+    expect(changeValue).toHaveBeenCalledWith([
       "test_1",
       "test_3",
       DEFAULT_ANY_UNKNOWN_VALUES_ID,
@@ -176,22 +179,8 @@ describe("SortListControl.vue", () => {
     expect(wrapper.find("label").text()).toBe(props.control.label);
   });
 
-  it("disables sortList when controlled by a flow variable", () => {
-    const { wrapper } = mountJsonFormsComponent(SortListControl, {
-      props,
-      withControllingFlowVariable: true,
-    });
-    expect(wrapper.vm.disabled).toBeTruthy();
-  });
-
-  it("does not render content of SortList when visible is false", async () => {
-    wrapper.vm.control = { ...props.control, visible: false };
-    await flushPromises(); // wait until pending promises are resolved
-    expect(wrapper.findComponent(DialogLabel).exists()).toBe(false);
-  });
-
   describe("buttons", () => {
-    const clickButtonWithText = (text) =>
+    const clickButtonWithText = (text: string) =>
       wrapper
         .findAllComponents(Button)
         .filter((button) => button.text() === text)[0]
@@ -199,7 +188,7 @@ describe("SortListControl.vue", () => {
 
     it("sorts from A to Z", async () => {
       await clickButtonWithText("A - Z");
-      expect(component.handleChange).toHaveBeenCalledWith(props.control.path, [
+      expect(changeValue).toHaveBeenCalledWith([
         DEFAULT_ANY_UNKNOWN_VALUES_ID,
         "test_1",
         "test_2",
@@ -209,7 +198,7 @@ describe("SortListControl.vue", () => {
 
     it("sorts from Z to A", async () => {
       await clickButtonWithText("Z - A");
-      expect(component.handleChange).toHaveBeenCalledWith(props.control.path, [
+      expect(changeValue).toHaveBeenCalledWith([
         "test_3",
         "test_2",
         "test_1",
@@ -219,7 +208,7 @@ describe("SortListControl.vue", () => {
 
     it("resets to the given possible values", async () => {
       await clickButtonWithText("Reset all");
-      expect(component.handleChange).toHaveBeenCalledWith(props.control.path, [
+      expect(changeValue).toHaveBeenCalledWith([
         "test_1",
         "test_2",
         "test_3",

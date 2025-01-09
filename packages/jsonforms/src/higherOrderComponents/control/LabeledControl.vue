@@ -1,65 +1,75 @@
 <script setup lang="ts">
-import { toRefs } from "vue";
+import { type Ref, ref } from "vue";
 
-import { useTriggersReexecution } from "../../composables/components/useDialogControl";
-import type { Control } from "../../types/Control";
-import DialogComponentWrapper from "../DialogComponentWrapper.vue";
+import { Label } from "@knime/components";
 
-import DialogLabel from "./DialogLabel.vue";
-
-const props = withDefaults(
-  defineProps<{
-    control: Control;
-    marginBottom?: number;
-    show?: boolean;
-    fill?: boolean;
-  }>(),
-  {
-    marginBottom: 0,
-    show: true,
-    fill: false,
-  },
-);
-const { control } = toRefs(props);
-
-defineEmits<{
-  controllingFlowVariableSet: [value: any];
+defineProps<{
+  label: string;
+  fill?: boolean;
 }>();
-
-const triggersReexecution = useTriggersReexecution(control);
+const hover = ref(false);
+const labelForId: Ref<null | string> = ref(null);
 </script>
 
 <template>
-  <DialogComponentWrapper
-    :control="control"
-    :class="{ fill }"
-    :style="{ marginBottom: `${marginBottom}px` }"
+  <div
+    :class="['dialog-label', { fill }]"
+    @mouseover="hover = true"
+    @mouseleave="hover = false"
   >
-    <DialogLabel
-      :class="{ fill }"
-      :title="control.label"
-      :show-reexecution-icon="triggersReexecution"
-      :description="control.description"
-      :errors="[control.errors]"
-      :show="show"
-      @controlling-flow-variable-set="
-        (event) => $emit('controllingFlowVariableSet', event)
-      "
-    >
-      <template #default="{ labelForId }">
-        <slot :label-for-id="labelForId" />
-      </template>
-      <template #before-label>
+    <div class="control-header">
+      <div class="left">
         <slot name="before-label" />
-      </template>
-    </DialogLabel>
-  </DialogComponentWrapper>
+        <Label
+          :text="label"
+          class="label"
+          compact
+          @label-for-id="labelForId = $event"
+        />
+        <slot name="icon" />
+      </div>
+      <slot name="buttons" :hover="hover" />
+    </div>
+    <slot :label-for-id="labelForId" />
+  </div>
 </template>
 
-<style scoped>
-.fill {
-  flex-grow: 1;
+<script setup lang="ts"></script>
+
+<style scoped></style>
+
+<style lang="postcss" scoped>
+.dialog-label {
+  /**
+  * This is necessary to fixate the dialog popovers
+  */
+  position: relative;
   display: flex;
   flex-direction: column;
+
+  &.fill {
+    flex-grow: 1;
+  }
+
+  & .control-header {
+    display: flex;
+    max-width: 100%;
+
+    & .left {
+      min-width: 0;
+      flex: 1;
+      justify-content: flex-start;
+      display: flex;
+
+      & .label {
+        min-width: 0;
+        flex-shrink: 1;
+      }
+    }
+  }
+
+  & :deep(.label-text) {
+    display: inline-block;
+  }
 }
 </style>

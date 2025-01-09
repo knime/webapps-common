@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { rendererProps } from "@jsonforms/vue";
+import type { VueControlPropsForLabelContent } from "../higherOrderComponents/control/addLabel";
 
 import RadioControlBase from "./RadioControlBase.vue";
 
-defineProps(rendererProps());
+defineProps<VueControlPropsForLabelContent<string>>();
 </script>
 
 <template>

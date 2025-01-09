@@ -3,42 +3,41 @@ export const DEFAULT_ANY_UNKNOWN_VALUES_ID = "<any unknown new column>";
 </script>
 
 <script setup lang="ts">
-import { computed, onMounted, watch } from "vue";
-import { rendererProps } from "@jsonforms/vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { indexOf } from "lodash-es";
 
 import { Button, SortList } from "@knime/components";
 
-import useDialogControl from "../composables/components/useDialogControl";
-import useProvidedState from "../composables/components/useProvidedState";
+import LabeledControl from "../higherOrderComponents/control/LabeledControl.vue";
+import type { VueControlProps } from "../higherOrderComponents/control/types";
 import { withSpecialChoices } from "../utils/getPossibleValuesFromUiSchema";
 import inject from "../utils/inject";
 
-import LabeledControl from "./label/LabeledControl.vue";
+import useProvidedState from "./composables/useProvidedState";
 
-const props = defineProps({
-  ...rendererProps(),
-  anyUnknownValuesId: {
-    type: String,
-    default: DEFAULT_ANY_UNKNOWN_VALUES_ID,
+const props = withDefaults(
+  defineProps<
+    VueControlProps<string[]> & {
+      anyUnknownValuesId: string;
+      anyUnknownValuesText: string;
+    }
+  >(),
+  {
+    anyUnknownValuesId: DEFAULT_ANY_UNKNOWN_VALUES_ID,
+    anyUnknownValuesText: "Any unknown column",
   },
-  anyUnknownValuesText: {
-    type: String,
-    default: "Any unknown column",
-  },
-});
-const { onChange, control, disabled } = useDialogControl<string[]>({ props });
+);
 
-const data = computed<string[]>(() => control.value.data);
+const data = computed(() => props.control.data);
 const choicesProvider = computed(
-  () => control.value.uischema.options!.choicesProvider,
+  () => props.control.uischema.options!.choicesProvider,
 );
 const possibleValues = withSpecialChoices(
   useProvidedState<{ id: string; text: string; special?: true }[]>(
     choicesProvider,
     [],
   ),
-  control.value,
+  props.control,
 );
 
 const possibleValuesWithUnknownValues = computed(() =>
@@ -70,31 +69,32 @@ const addUnknownValuesToData = (currentPossibleValues: { id: string }[]) => {
     .map(({ id }) => id)
     .filter((id) => !dataSet.has(id));
   if (unknownValues.length > 0) {
-    onChange(before.concat(unknownValues, after));
+    props.changeValue(before.concat(unknownValues, after));
   }
 };
 const getPossibleValuesFromUiSchema = inject("getPossibleValuesFromUiSchema");
 
 onMounted(async () => {
-  const staticPossibleValues = control.value.uischema.options!.possibleValues;
+  const staticPossibleValues = props.control.uischema.options!.possibleValues;
   if (staticPossibleValues) {
     possibleValues.value = staticPossibleValues;
   } else if (!choicesProvider.value) {
-    possibleValues.value = await getPossibleValuesFromUiSchema(control.value);
+    possibleValues.value = await getPossibleValuesFromUiSchema(props.control);
   }
 });
 
 watch(() => possibleValues.value, addUnknownValuesToData);
 
 const sortAToZ = () => {
-  onChange(data.value.toSorted((a, b) => a.localeCompare(b)));
+  props.changeValue(data.value.toSorted((a, b) => a.localeCompare(b)));
 };
 const sortZToA = () => {
-  onChange(data.value.toSorted((a, b) => b.localeCompare(a)));
+  props.changeValue(data.value.toSorted((a, b) => b.localeCompare(a)));
 };
 const resetAll = () => {
-  onChange(possibleValuesWithUnknownValues.value.map(({ id }) => id));
+  props.changeValue(possibleValuesWithUnknownValues.value.map(({ id }) => id));
 };
+const controlElement = ref<typeof SortList | null>(null);
 </script>
 
 <template>
@@ -106,20 +106,32 @@ const resetAll = () => {
     <Button with-border compact @click="resetAll">Reset all</Button>
   </div>
   <LabeledControl
-    #default="{ labelForId }"
-    :control="control"
-    @controlling-flow-variable-set="onChange"
+    :label="control.label"
+    @controlling-flow-variable-set="changeValue"
   >
-    <!--  eslint-disable vue/attribute-hyphenation ariaLabel needs to be given like this for typescript to not complain -->
-    <SortList
-      :id="labelForId ?? undefined"
-      :possible-values="possibleValuesWithUnknownValues"
-      :model-value="data"
-      :ariaLabel="control.label"
-      :disabled="disabled"
-      compact
-      @update:model-value="onChange"
-    />
+    <template #default="{ labelForId }">
+      <!--  eslint-disable vue/attribute-hyphenation ariaLabel needs to be given like this for typescript to not complain -->
+      <SortList
+        :id="labelForId ?? undefined"
+        ref="controlElement"
+        :possible-values="possibleValuesWithUnknownValues"
+        :model-value="data"
+        :ariaLabel="control.label"
+        :disabled="disabled"
+        compact
+        @update:model-value="changeValue"
+      />
+    </template>
+    <template #icon>
+      <slot name="icon" />
+    </template>
+    <template #buttons="{ hover }">
+      <slot
+        name="buttons"
+        :hover="hover"
+        :control-h-t-m-l-element="controlElement"
+      />
+    </template>
   </LabeledControl>
 </template>
 

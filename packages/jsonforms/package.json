@@ -22,6 +22,7 @@
     "@knime/components": "workspace:*",
     "@knime/rich-text-editor": "workspace:*",
     "@knime/styles": "workspace:*",
+    "@knime/utils": "workspace:*",
     "@knime/ui-extension-service": "workspace:*",
     "focus-trap-vue": "4.0.3",
     "tabbable": "6.2.0",
@@ -29,9 +30,10 @@
     "date-fns": "2.30.0"
   },
   "peerDependencies": {
-    "vue": "3.x"
+    "vue": "~3.4.27"
   },
   "devDependencies": {
+    "vue": "~3.4.27",
     "@tsconfig/node20": "20.1.4",
     "@types/jsdom": "21.1.7",
     "@types/lodash-es": "^4.17.12",
@@ -53,15 +55,17 @@
     "vitest": "2.1.1",
     "vue-tsc": "^2.1.6"
   },
-  "main": "dist/knime-jsonforms.js",
   "exports": {
     ".": {
       "import": "./dist/knime-jsonforms.js",
-      "types": "./dist/index.d.ts"
+      "types": "./dist/knime-jsonforms.d.ts"
+    },
+    "./testing": {
+      "import": "./dist/testing.js",
+      "types": "./dist/testing.d.ts"
     },
     "./styles": "./dist/knime-jsonforms.css"
   },
-  "types": "dist/index.d.ts",
   "files": [
     "dist",
     "CHANGELOG.md"

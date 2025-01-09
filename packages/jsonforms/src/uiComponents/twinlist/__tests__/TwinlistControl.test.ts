@@ -1,5 +1,14 @@
 /* eslint-disable max-lines */
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  type Mock,
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
+import type { VueWrapper } from "@vue/test-utils";
 import flushPromises from "flush-promises";
 
 import {
@@ -8,23 +17,26 @@ import {
   Twinlist,
 } from "@knime/components";
 
-import { createPersistSchema } from "../../../../test-setup/utils/createPersistSchema";
 import {
+  type ProvidedMethods,
+  type VueControlTestProps,
   getControlBase,
-  initializesJsonFormsControl,
-  mountJsonFormsComponent,
-} from "../../../../test-setup/utils/jsonFormsTestUtils";
-import { mergeDeep } from "../../../utils";
-import DialogLabel from "../../label/DialogLabel.vue";
-import LabeledControl from "../../label/LabeledControl.vue";
+  mountJsonFormsControlLabelContent,
+} from "../../../../testUtils/component";
+import type { Control } from "../../../types/Control";
+import { getPossibleValuesFromUiSchema, mergeDeep } from "../../../utils";
 import TwinlistLoadingInfo from "../../loading/TwinlistLoadingInfo.vue";
 import TwinlistControl from "../TwinlistControl.vue";
 
 describe("TwinlistControl.vue", () => {
-  let props;
+  let props: VueControlTestProps<typeof TwinlistControl>;
+
+  const labelForId = "myLabelForId";
 
   beforeEach(() => {
     props = {
+      labelForId,
+      disabled: false,
       control: {
         ...getControlBase("test"),
         data: {
@@ -72,7 +84,7 @@ describe("TwinlistControl.vue", () => {
                   type: "array",
                 },
                 manuallyDeselected: {
-                  item: {
+                  items: {
                     type: "string",
                   },
                   type: "array",
@@ -133,6 +145,8 @@ describe("TwinlistControl.vue", () => {
           },
         },
         uischema: {
+          type: "Control",
+          scope: "#/properties/test",
           options: {
             possibleValues: [
               {
@@ -166,12 +180,34 @@ describe("TwinlistControl.vue", () => {
     };
   });
 
-  let wrapper, component, handleChange;
+  let wrapper: VueWrapper, changeValue: Mock;
+
+  const mountTwinlistControl = ({
+    asyncChoicesProviderMock,
+    provide,
+  }: {
+    asyncChoicesProviderMock?: Mock;
+    provide?: Partial<ProvidedMethods>;
+  } = {}) => {
+    return mountJsonFormsControlLabelContent(TwinlistControl, {
+      props,
+      provide: {
+        // @ts-expect-error
+        getPossibleValuesFromUiSchema: (control: Control) =>
+          getPossibleValuesFromUiSchema(
+            control,
+            asyncChoicesProviderMock ?? vi.fn(),
+            vi.fn(),
+          ),
+        ...provide,
+      },
+    });
+  };
 
   beforeEach(() => {
-    component = mountJsonFormsComponent(TwinlistControl, { props });
+    const component = mountTwinlistControl();
     wrapper = component.wrapper;
-    handleChange = component.handleChange;
+    changeValue = component.changeValue;
   });
 
   afterEach(() => {
@@ -179,27 +215,16 @@ describe("TwinlistControl.vue", () => {
   });
 
   it("renders", () => {
-    expect(wrapper.findComponent(TwinlistControl).exists()).toBe(true);
-    expect(wrapper.findComponent(LabeledControl).exists()).toBe(true);
     expect(wrapper.findComponent(MultiModeTwinList).exists()).toBe(true);
   });
 
   it("sets labelForId", () => {
-    const dialogLabel = wrapper.findComponent(DialogLabel);
-    expect(wrapper.getComponent(Twinlist).attributes().id).toBe(
-      dialogLabel.vm.labelForId,
-    );
-    expect(dialogLabel.vm.labeledElement).toBeDefined();
-    expect(dialogLabel.vm.labeledElement).not.toBeNull();
-  });
-
-  it("initializes jsonforms", () => {
-    initializesJsonFormsControl(component);
+    expect(wrapper.getComponent(Twinlist).attributes().id).toBe(labelForId);
   });
 
   it("renders TwinlistLoadingInfo when the possible values are being loaded", async () => {
-    delete props.control.uischema.options.possibleValues;
-    props.control.uischema.options.choicesProviderClass =
+    delete props.control.uischema.options!.possibleValues;
+    props.control.uischema.options!.choicesProviderClass =
       "dummyChoicesProvider";
     const asyncChoicesResult = [{ id: "id", text: "text" }];
     let resolveChoices;
@@ -208,35 +233,33 @@ describe("TwinlistControl.vue", () => {
         resolveChoices = resolve;
       }),
     );
-    const { wrapper } = mountJsonFormsComponent(TwinlistControl, {
-      props,
-      provide: { asyncChoicesProviderMock },
+    const { wrapper } = mountTwinlistControl({
+      asyncChoicesProviderMock,
     });
     expect(wrapper.findComponent(TwinlistLoadingInfo).exists()).toBeTruthy();
     expect(
       wrapper.findComponent(Twinlist).props().possibleValues,
     ).toStrictEqual([]);
     expect(
-      wrapper.findAllComponents(MultiselectListBox).at(1).find("li").exists(),
+      wrapper.findAllComponents(MultiselectListBox).at(1)!.find("li").exists(),
     ).toBeFalsy();
-    resolveChoices({ result: asyncChoicesResult, state: "SUCCESS" });
+    resolveChoices!({ result: asyncChoicesResult, state: "SUCCESS" });
     await flushPromises();
     expect(wrapper.findComponent(TwinlistLoadingInfo).exists()).toBeFalsy();
-    expect(wrapper.findComponent(Twinlist).props().hideOptions).toBeFalsy();
     expect(
       wrapper.findComponent(Twinlist).props().possibleValues,
     ).toStrictEqual(asyncChoicesResult);
     expect(
-      wrapper.findAllComponents(MultiselectListBox).at(1).find("li").exists(),
+      wrapper.findAllComponents(MultiselectListBox).at(1)!.find("li").exists(),
     ).toBeTruthy();
   });
 
-  it("calls handleChange when twinlist input is changed", async () => {
+  it("calls changeValue when twinlist input is changed", async () => {
     await wrapper
       .findComponent(Twinlist)
       .find({ ref: "moveAllRight" })
       .trigger("click");
-    expect(handleChange).toHaveBeenCalled();
+    expect(changeValue).toHaveBeenCalled();
   });
 
   describe("handles changes", () => {
@@ -245,8 +268,7 @@ describe("TwinlistControl.vue", () => {
       await wrapper
         .findComponent(MultiModeTwinList)
         .vm.$emit("update:selected", selected);
-      expect(handleChange).toHaveBeenCalledWith(
-        props.control.path,
+      expect(changeValue).toHaveBeenCalledWith(
         expect.objectContaining({ selected }),
       );
     });
@@ -256,8 +278,7 @@ describe("TwinlistControl.vue", () => {
       wrapper
         .findComponent(MultiModeTwinList)
         .vm.$emit("update:manualSelection", selected);
-      expect(handleChange).toHaveBeenCalledWith(
-        props.control.path,
+      expect(changeValue).toHaveBeenCalledWith(
         expect.objectContaining({
           manualFilter: expect.objectContaining({
             manuallySelected: selected,
@@ -277,8 +298,7 @@ describe("TwinlistControl.vue", () => {
           excludedValues: deselected,
           includeUnknownValues,
         });
-      expect(handleChange).toHaveBeenCalledWith(
-        props.control.path,
+      expect(changeValue).toHaveBeenCalledWith(
         expect.objectContaining({
           manualFilter: {
             manuallySelected: selected,
@@ -294,9 +314,8 @@ describe("TwinlistControl.vue", () => {
       wrapper
         .findComponent(MultiModeTwinList)
         .vm.$emit("update:pattern", pattern);
-      expect(handleChange).toHaveBeenNthCalledWith(
+      expect(changeValue).toHaveBeenNthCalledWith(
         1,
-        props.control.path,
         expect.objectContaining({
           patternFilter: expect.objectContaining({ pattern }),
         }),
@@ -308,9 +327,8 @@ describe("TwinlistControl.vue", () => {
       wrapper
         .findComponent(MultiModeTwinList)
         .vm.$emit("update:inversePattern", isInverted);
-      expect(handleChange).toHaveBeenNthCalledWith(
+      expect(changeValue).toHaveBeenNthCalledWith(
         1,
-        props.control.path,
         expect.objectContaining({
           patternFilter: expect.objectContaining({ isInverted }),
         }),
@@ -322,9 +340,8 @@ describe("TwinlistControl.vue", () => {
       wrapper
         .findComponent(MultiModeTwinList)
         .vm.$emit("update:caseSensitivePattern", isCaseSensitive);
-      expect(handleChange).toHaveBeenNthCalledWith(
+      expect(changeValue).toHaveBeenNthCalledWith(
         1,
-        props.control.path,
         expect.objectContaining({
           patternFilter: expect.objectContaining({ isCaseSensitive }),
         }),
@@ -341,9 +358,8 @@ describe("TwinlistControl.vue", () => {
       wrapper
         .findComponent(MultiModeTwinList)
         .vm.$emit("update:selected-types", selectedTypes, typeDisplays);
-      expect(handleChange).toHaveBeenNthCalledWith(
+      expect(changeValue).toHaveBeenNthCalledWith(
         1,
-        props.control.path,
         expect.objectContaining({
           typeFilter: expect.objectContaining({ selectedTypes, typeDisplays }),
         }),
@@ -399,7 +415,7 @@ describe("TwinlistControl.vue", () => {
 
   describe("unknown columns", () => {
     it("excludes unknown columns without emitting an update", async () => {
-      const localProps = mergeDeep(props, {
+      props = mergeDeep(props, {
         showUnknownValues: true,
         control: {
           data: {
@@ -421,15 +437,10 @@ describe("TwinlistControl.vue", () => {
         },
       });
 
-      const { wrapper, handleChange } = mountJsonFormsComponent(
-        TwinlistControl,
-        {
-          props: localProps,
-        },
-      );
+      const { wrapper, changeValue } = mountTwinlistControl();
       await flushPromises();
       const manuallySelected = ["A", "B"];
-      expect(handleChange).not.toHaveBeenCalled();
+      expect(changeValue).not.toHaveBeenCalled();
       expect(
         wrapper.findComponent(MultiModeTwinList).props().manualSelection,
       ).toStrictEqual({
@@ -440,7 +451,7 @@ describe("TwinlistControl.vue", () => {
     });
 
     it("includes unknown columns without emitting an update", async () => {
-      const localProps = mergeDeep(props, {
+      props = mergeDeep(props, {
         control: {
           data: {
             manualFilter: {
@@ -460,15 +471,10 @@ describe("TwinlistControl.vue", () => {
           },
         },
       });
-      const { wrapper, handleChange } = mountJsonFormsComponent(
-        TwinlistControl,
-        {
-          props: localProps,
-        },
-      );
+      const { wrapper, changeValue } = mountTwinlistControl();
       await flushPromises();
       const manuallySelected = ["A", "B", "E"];
-      expect(handleChange).not.toHaveBeenCalled();
+      expect(changeValue).not.toHaveBeenCalled();
       expect(
         wrapper.findComponent(MultiModeTwinList).props().manualSelection,
       ).toStrictEqual(manuallySelected);
@@ -481,7 +487,7 @@ describe("TwinlistControl.vue", () => {
     );
     expect(
       wrapper.findComponent(MultiModeTwinList).props().selectedTypes,
-    ).toStrictEqual(props.control.data.typeFilter.selectedTypes);
+    ).toStrictEqual(props.control.data.typeFilter?.selectedTypes);
     expect(
       wrapper.findComponent(MultiModeTwinList).props().manualSelection,
     ).toStrictEqual(props.control.data.manualFilter.manuallySelected);
@@ -490,46 +496,22 @@ describe("TwinlistControl.vue", () => {
     );
   });
 
-  it("sets correct label", () => {
-    expect(wrapper.find("label").text()).toBe(props.control.label);
-  });
-
-  it("disables twinlist when controlled by a flow variable", () => {
-    const oneOfTheSubKeys = "manualFilter.manuallySelected";
-    const { wrapper } = mountJsonFormsComponent(TwinlistControl, {
-      props,
-      provide: {
-        persistSchemaMock: createPersistSchema({
-          path: props.control.path,
-          leaf: props.control.schema,
-        }),
-      },
-      withControllingFlowVariable: `${props.control.path}.${oneOfTheSubKeys}`,
-    });
-    expect(
-      wrapper.findComponent(MultiModeTwinList).props().disabled,
-    ).toBeTruthy();
-  });
-
   it("moves missing values correctly", async () => {
     props.control.data.manualFilter = {
       manuallySelected: ["missing"],
       manuallyDeselected: ["test_1", "test_2", "test_3"],
       includeUnknownColumns: false,
     };
-    const { wrapper, handleChange } = mountJsonFormsComponent(TwinlistControl, {
-      props,
-    });
+    const { wrapper, changeValue } = mountTwinlistControl();
     await flushPromises();
-    expect(wrapper.props().control.data.manualFilter).toMatchObject({
+    expect(wrapper.vm.control.data.manualFilter).toMatchObject({
       manuallySelected: ["missing"],
     });
     await wrapper
       .findComponent(Twinlist)
       .find({ ref: "moveAllLeft" })
       .trigger("click");
-    expect(handleChange).toBeCalledWith(
-      props.control.path,
+    expect(changeValue).toBeCalledWith(
       expect.objectContaining({
         manualFilter: {
           manuallySelected: [],
@@ -540,44 +522,39 @@ describe("TwinlistControl.vue", () => {
     );
   });
 
-  it("does not render content of TwinlistControl when visible is false", async () => {
-    wrapper.vm.control = { ...props.control, visible: false };
-    await wrapper.vm.$nextTick(); // wait until pending promises are resolved
-    expect(wrapper.findComponent(DialogLabel).exists()).toBe(false);
-  });
-
   describe("left and right label", () => {
     it("passes the labels given by the uischema options to the twinlist if available", async () => {
       const includedLabel = "includedLabelLeft";
       const excludedLabel = "excludedLabelRight";
-      props.control.uischema.options.includedLabel = includedLabel;
-      props.control.uischema.options.excludedLabel = excludedLabel;
-      const { wrapper } = await mountJsonFormsComponent(TwinlistControl, {
-        props,
-      });
+      props.control.uischema.options!.includedLabel = includedLabel;
+      props.control.uischema.options!.excludedLabel = excludedLabel;
+      const { wrapper } = await mountTwinlistControl();
+      // @ts-expect-error
       expect(wrapper.vm.leftLabel).toBe(excludedLabel);
+      // @ts-expect-error
       expect(wrapper.vm.rightLabel).toBe(includedLabel);
     });
 
     it("passes the labels given by the props if uischema options are not available", () => {
+      // @ts-expect-error
       expect(wrapper.vm.leftLabel).toBe("Excludes");
+      // @ts-expect-error
       expect(wrapper.vm.rightLabel).toBe("Includes");
     });
   });
 
   it("uses choicesProvider if present", async () => {
     const choicesProvider = "myChoicesProvider";
-    props.control.uischema.options.choicesProvider = choicesProvider;
+    props.control.uischema.options!.choicesProvider = choicesProvider;
 
-    let provideChoices;
-    const addStateProviderListenerMock = vi.fn((_id, callback) => {
+    let provideChoices: (choices: unknown) => void;
+    const addStateProviderListener = vi.fn((_id, callback) => {
       provideChoices = callback;
     });
-    const { wrapper } = mountJsonFormsComponent(TwinlistControl, {
-      props,
-      provide: { addStateProviderListenerMock },
+    const { wrapper } = mountTwinlistControl({
+      provide: { addStateProviderListener },
     });
-    expect(addStateProviderListenerMock).toHaveBeenCalledWith(
+    expect(addStateProviderListener).toHaveBeenCalledWith(
       { id: choicesProvider },
       expect.anything(),
     );
@@ -587,7 +564,7 @@ describe("TwinlistControl.vue", () => {
         text: "Universe_0_0",
       },
     ];
-    provideChoices(providedChoices);
+    provideChoices!(providedChoices);
     await flushPromises();
     expect(
       wrapper.findComponent(Twinlist).props().possibleValues,

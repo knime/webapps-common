@@ -1,52 +1,38 @@
 <script setup lang="ts">
-import { type PropType, computed, onBeforeUnmount, onMounted, ref } from "vue";
-import { rendererProps } from "@jsonforms/vue";
+import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import { set } from "lodash-es";
 import { v4 as uuidv4 } from "uuid";
 
 import { Checkbox } from "@knime/components";
 import { AlertType } from "@knime/ui-extension-service";
 
-import useDialogControl, {
-  type DialogControl,
-} from "../composables/components/useDialogControl";
-import useProvidedState from "../composables/components/useProvidedState";
+import LabeledControl from "../higherOrderComponents/control/LabeledControl.vue";
+import type { VueControlProps } from "../higherOrderComponents/control/types";
 import type { IdAndText } from "../types/ChoicesUiSchema";
-import type { SettingsData } from "../types/SettingsData";
+import type { SettingsData } from "../types/provided";
 import getFlattenedSettings from "../utils/getFlattenedSettings";
 import { withSpecialChoices } from "../utils/getPossibleValuesFromUiSchema";
 import inject from "../utils/inject";
 
 import useHideOnNull from "./composables/useHideOnNull";
-import LabeledControl from "./label/LabeledControl.vue";
+import useProvidedState from "./composables/useProvidedState";
 import LoadingDropdown from "./loading/LoadingDropdown.vue";
 
-const props = defineProps({
-  ...rendererProps(),
-  asyncInitialOptions: {
-    type: Object as PropType<Promise<IdAndText[]>>,
-    required: false,
-    default: null,
+const props = withDefaults(
+  defineProps<
+    VueControlProps<any> & {
+      asyncInitialOptions?: Promise<IdAndText[]> | null;
+      controlDataToDropdownValue?: (data: any) => string;
+      dropdownValueToControlData?: (value: string | null) => any;
+    }
+  >(),
+  {
+    asyncInitialOptions: null,
+    controlDataToDropdownValue: (data: string) => data,
+    dropdownValueToControlData: (value: string | null) => value,
   },
-  jsonFormsControl: {
-    type: Object as PropType<null | DialogControl>,
-    required: false,
-    default: null,
-  },
-  controlDataToDropdownValue: {
-    type: Function as PropType<(data: any) => string>,
-    required: false,
-    default: (data: string) => data,
-  },
-  dropdownValueToControlData: {
-    type: Function as PropType<(value: string | null) => any>,
-    required: false,
-    default: (value: string | null) => value,
-  },
-});
-const { control, onChange, disabled } =
-  props.jsonFormsControl ??
-  useDialogControl<string | null | undefined>({ props });
+);
+
 const getPossibleValuesFromUiSchema = inject("getPossibleValuesFromUiSchema");
 const registerWatcher = inject("registerWatcher");
 const getData = inject("getData");
@@ -55,14 +41,14 @@ const sendAlert = inject("sendAlert");
 const controlElement = ref(null);
 
 const choicesProvider = computed(
-  () => control.value.uischema.options?.choicesProvider,
+  () => props.control.uischema.options?.choicesProvider,
 );
 const options = withSpecialChoices(
   useProvidedState<null | IdAndText[]>(choicesProvider.value, null),
-  control.value,
+  props.control,
 );
 
-const previousControlData = ref(control.value.data);
+const previousControlData = ref(props.control.data);
 
 const getFirstValueFromDropdownOrNull = (result: IdAndText[]) => {
   return props.dropdownValueToControlData(
@@ -72,30 +58,30 @@ const getFirstValueFromDropdownOrNull = (result: IdAndText[]) => {
 
 const { showCheckbox, showControl, checkboxProps } = useHideOnNull(
   {
-    control,
-    disabled,
+    control: computed(() => props.control),
+    disabled: computed(() => props.disabled),
     controlElement,
   },
   {
     setDefault: () => {
       if (!previousControlData.value && options.value) {
-        onChange(getFirstValueFromDropdownOrNull(options.value));
+        props.changeValue(getFirstValueFromDropdownOrNull(options.value));
       } else {
-        onChange(previousControlData.value);
+        props.changeValue(previousControlData.value);
       }
     },
     setNull: () => {
-      onChange(null);
+      props.changeValue(null);
     },
   },
 );
 
 const dropdownValue = computed(() =>
-  props.controlDataToDropdownValue(control.value.data),
+  props.controlDataToDropdownValue(props.control.data),
 );
 
 const choicesUpdateHandler = computed(
-  () => control.value.uischema.options?.choicesUpdateHandler,
+  () => props.control.uischema.options?.choicesUpdateHandler,
 );
 const widgetId = uuidv4();
 const getUpdateOptionsMethod = async (
@@ -117,10 +103,10 @@ const getUpdateOptionsMethod = async (
       if (setNewValue || !dropdownValue.value) {
         set(
           newSettings,
-          control.value.path,
+          props.control.path,
           getFirstValueFromDropdownOrNull(result),
         );
-        onChange(getFirstValueFromDropdownOrNull(result));
+        props.changeValue(getFirstValueFromDropdownOrNull(result));
       }
     };
 
@@ -149,7 +135,7 @@ const setInitialOptions = async () => {
   if (props.asyncInitialOptions !== null) {
     options.value = await props.asyncInitialOptions;
   } else if (!choicesProvider.value) {
-    getPossibleValuesFromUiSchema(control.value).then((result) => {
+    getPossibleValuesFromUiSchema(props.control).then((result) => {
       options.value = result;
     });
   }
@@ -159,9 +145,9 @@ let unregisterWatcher = () => {};
 
 onMounted(async () => {
   if (choicesUpdateHandler.value) {
-    const dependencies = control.value.uischema.options?.dependencies || [];
+    const dependencies = props.control.uischema.options?.dependencies || [];
     const setFirstValueOnUpdate = Boolean(
-      control.value.uischema.options?.setFirstValueOnUpdate,
+      props.control.uischema.options?.setFirstValueOnUpdate,
     );
     unregisterWatcher = await registerWatcher({
       transformSettings: (dependencySettings) =>
@@ -180,15 +166,12 @@ onBeforeUnmount(() => {
 
 const onChangeDropDown = (value: string) => {
   previousControlData.value = props.dropdownValueToControlData(value);
-  onChange(previousControlData.value);
+  props.changeValue(previousControlData.value);
 };
 </script>
 
 <template>
-  <LabeledControl
-    :control="control"
-    @controlling-flow-variable-set="onChangeDropDown"
-  >
+  <LabeledControl :label="control.label">
     <template #before-label>
       <Checkbox v-if="showCheckbox" v-bind="checkboxProps" />
     </template>
@@ -205,6 +188,16 @@ const onChangeDropDown = (value: string) => {
         :possible-values="options"
         compact
         @update:model-value="onChangeDropDown"
+      />
+    </template>
+    <template #icon>
+      <slot name="icon" />
+    </template>
+    <template #buttons="{ hover }">
+      <slot
+        name="buttons"
+        :hover="hover"
+        :control-h-t-m-l-element="controlElement"
       />
     </template>
   </LabeledControl>

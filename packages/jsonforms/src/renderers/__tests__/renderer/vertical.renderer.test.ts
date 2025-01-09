@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { determineRenderer } from "../rendererTestUtils";
+import { determineRenderer } from "../../../../testUtils";
 
 describe("VerticalLayout", () => {
   const schema = {};
@@ -10,6 +10,7 @@ describe("VerticalLayout", () => {
       scope: "#/properties/test",
     };
 
+    // @ts-expect-error
     expect(determineRenderer(uiSchema, schema)).toBe("VerticalLayout");
   });
 

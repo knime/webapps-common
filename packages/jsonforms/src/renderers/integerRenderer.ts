@@ -1,19 +1,19 @@
 import { defineAsyncComponent } from "vue";
-import { isIntegerControl, rankWith } from "@jsonforms/core";
+import { and, isIntegerControl, rankWith } from "@jsonforms/core";
 
 import { inputFormats, priorityRanks } from "../constants";
+import { hasFormat } from "../constants/inputFormats";
+import { addLabel } from "../higherOrderComponents/control/addLabel";
 
 const IntegerControl = defineAsyncComponent(
   () => import("../uiComponents/IntegerControl.vue"),
 );
 
-export const integerTester = (uischema, schema) => {
-  const isInteger = isIntegerControl(uischema, schema);
-  return isInteger && uischema.options?.format === inputFormats.integer;
-};
-
 export const integerRenderer = {
   name: "IntegerControl",
-  renderer: IntegerControl,
-  tester: rankWith(priorityRanks.default, integerTester),
+  control: addLabel(IntegerControl),
+  tester: rankWith(
+    priorityRanks.default,
+    and(isIntegerControl, hasFormat(inputFormats.integer)),
+  ),
 };

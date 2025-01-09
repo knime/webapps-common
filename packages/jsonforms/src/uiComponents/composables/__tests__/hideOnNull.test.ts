@@ -24,7 +24,7 @@ describe("hideOnNull", () => {
             : {},
           data,
         } as any,
-        disabled,
+        disabled: ref(disabled),
         controlElement: ref(null),
       },
       {

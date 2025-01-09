@@ -1,19 +1,32 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  type Mock,
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
+import type { VueWrapper } from "@vue/test-utils";
 
 import { RadioButtons } from "@knime/components";
 
 import {
+  type VueControlTestProps,
   getControlBase,
-  mountJsonFormsComponent,
-} from "../../../test-setup/utils/jsonFormsTestUtils";
+  mountJsonFormsControlLabelContent,
+} from "../../../testUtils/component";
 import RadioControl from "../RadioControl.vue";
 import RadioControlBase from "../RadioControlBase.vue";
-import LabeledControl from "../label/LabeledControl.vue";
 
 describe("RadioControl.vue", () => {
-  let props;
+  let props: VueControlTestProps<typeof RadioControl>,
+    wrapper: VueWrapper,
+    changeValue: Mock;
 
-  beforeEach(() => {
+  const labelForId = "radioControlLabel";
+
+  beforeEach(async () => {
     props = {
       control: {
         ...getControlBase("test"),
@@ -39,31 +52,71 @@ describe("RadioControl.vue", () => {
           },
         },
       },
+      labelForId,
+      disabled: false,
     };
+
+    const component = await mountJsonFormsControlLabelContent(RadioControl, {
+      props,
+    });
+    wrapper = component.wrapper;
+    changeValue = component.changeValue;
   });
 
   afterEach(() => {
     vi.clearAllMocks();
   });
 
-  it("renders", async () => {
-    const { wrapper } = await mountJsonFormsComponent(RadioControl, { props });
-    expect(wrapper.getComponent(RadioControl).exists()).toBe(true);
-    expect(wrapper.getComponent(RadioControlBase).exists()).toBe(true);
-    expect(wrapper.findComponent(LabeledControl).exists()).toBe(true);
+  it("renders", () => {
     expect(wrapper.findComponent(RadioButtons).exists()).toBe(true);
   });
 
-  it("sets correct type prop", async () => {
-    const { wrapper } = await mountJsonFormsComponent(RadioControl, { props });
-    expect(wrapper.findComponent(RadioControlBase).props().type).toBe("radio");
+  it("sets labelForId", () => {
+    expect(wrapper.getComponent(RadioButtons).props().id).toBe(labelForId);
+  });
+
+  it("sets correct initial value", () => {
+    expect(wrapper.findComponent(RadioButtons).props().modelValue).toBe("LOG");
   });
 
   it("tests that component is set correctly to render vertical", async () => {
-    props.control.uischema.options.radioLayout = "vertical";
-    const { wrapper } = await mountJsonFormsComponent(RadioControl, { props });
-    expect(wrapper.findComponent(RadioControlBase).vm.alignment).toBe(
+    props.control.uischema.options!.radioLayout = "vertical";
+    const { wrapper: newWrapper } = await mountJsonFormsControlLabelContent(
+      RadioControl,
+      { props },
+    );
+    expect(newWrapper.findComponent(RadioButtons).props().alignment).toBe(
       "vertical",
     );
+  });
+
+  it("calls changeValue when radio button is changed", () => {
+    wrapper.findComponent(RadioButtons).vm.$emit("update:modelValue", "VALUE");
+    expect(changeValue).toHaveBeenCalledWith("VALUE");
+  });
+
+  it("sets correct possible values", () => {
+    expect(
+      wrapper.findComponent(RadioButtons).props().possibleValues,
+    ).toStrictEqual([
+      { id: "LOG", text: "Logarithmic" },
+      { id: "VALUE", text: "Linear" },
+    ]);
+  });
+
+  it("disables individual possible values if desired", async () => {
+    props.control.uischema.options!.disabledOptions = "LOG";
+    const { wrapper } = await mountJsonFormsControlLabelContent(
+      RadioControlBase,
+      {
+        props,
+      },
+    );
+    expect(
+      wrapper.findComponent(RadioButtons).props().possibleValues,
+    ).toStrictEqual([
+      { id: "LOG", text: "Logarithmic", disabled: true },
+      { id: "VALUE", text: "Linear" },
+    ]);
   });
 });

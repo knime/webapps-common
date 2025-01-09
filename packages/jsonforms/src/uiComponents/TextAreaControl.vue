@@ -1,31 +1,20 @@
 <script setup lang="ts">
-import { rendererProps } from "@jsonforms/vue";
-
 import { TextArea } from "@knime/components";
 
-import useDialogControl from "../composables/components/useDialogControl";
+import type { VueControlPropsForLabelContent } from "../higherOrderComponents/control/addLabel";
 
-import LabeledControl from "./label/LabeledControl.vue";
-
-const props = defineProps(rendererProps());
-const { control, onChange, disabled } = useDialogControl<string>({ props });
+defineProps<VueControlPropsForLabelContent<string>>();
 </script>
 
 <template>
-  <LabeledControl
-    #default="{ labelForId }"
-    :control="control"
-    @controlling-flow-variable-set="onChange"
-  >
-    <TextArea
-      :id="labelForId"
-      class="text-area-input"
-      :model-value="control.data"
-      :disabled="disabled"
-      :rows="control.uischema.options?.rows"
-      @update:model-value="onChange"
-    />
-  </LabeledControl>
+  <TextArea
+    :id="labelForId"
+    class="text-area-input"
+    :model-value="control.data"
+    :disabled="disabled"
+    :rows="control.uischema.options?.rows"
+    @update:model-value="changeValue"
+  />
 </template>
 
 <style lang="postcss" scoped>

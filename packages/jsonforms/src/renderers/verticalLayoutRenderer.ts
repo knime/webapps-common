@@ -1,5 +1,5 @@
 import { defineAsyncComponent } from "vue";
-import { or, rankWith, uiTypeIs } from "@jsonforms/core";
+import { rankWith, uiTypeIs } from "@jsonforms/core";
 
 import { priorityRanks } from "../constants";
 
@@ -7,10 +7,19 @@ const VerticalLayout = defineAsyncComponent(
   () => import("../layoutComponents/VerticalLayout.vue"),
 );
 
-export const verticalLayoutTester = or(uiTypeIs("VerticalLayout"));
-
 export const verticalLayoutRenderer = {
   name: "VerticalLayout",
-  renderer: VerticalLayout,
-  tester: rankWith(priorityRanks.default, verticalLayoutTester),
+  layout: VerticalLayout,
+  tester: rankWith(priorityRanks.default, uiTypeIs("VerticalLayout")),
+};
+
+export const verticalLayoutFallbackRenderer = {
+  name: "VerticalLayout",
+  layout: VerticalLayout,
+  tester: rankWith(
+    priorityRanks.fallback,
+    // @ts-expect-error
+    // eslint-disable-next-line no-undefined
+    uiTypeIs(undefined),
+  ),
 };

@@ -1,17 +1,19 @@
 import { defineAsyncComponent } from "vue";
-import { isControl, rankWith } from "@jsonforms/core";
+import { and, isControl, rankWith } from "@jsonforms/core";
 
 import { inputFormats, priorityRanks } from "../constants";
+import { hasFormat } from "../constants/inputFormats";
+import { addLabel } from "../higherOrderComponents/control/addLabel";
 
 const NameFilter = defineAsyncComponent(
   () => import("../uiComponents/twinlist/NameFilter.vue"),
 );
 
-export const nameFilterTester = (uischema, _schema) =>
-  isControl(uischema) && uischema.options?.format === inputFormats.nameFilter;
-
 export const nameFilterRenderer = {
   name: "NameFilter",
-  renderer: NameFilter,
-  tester: rankWith(priorityRanks.default, nameFilterTester),
+  control: addLabel(NameFilter),
+  tester: rankWith(
+    priorityRanks.default,
+    and(isControl, hasFormat(inputFormats.nameFilter)),
+  ),
 };

@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { rendererProps } from "@jsonforms/vue";
+import type { VueControlPropsForLabelContent } from "../../higherOrderComponents/control/addLabel";
 
-import TwinlistControl from "./TwinlistControl.vue";
+import TwinlistControl, { type TwinlistData } from "./TwinlistControl.vue";
 
-defineProps(rendererProps());
+defineProps<VueControlPropsForLabelContent<TwinlistData>>();
 </script>
 
 <template>

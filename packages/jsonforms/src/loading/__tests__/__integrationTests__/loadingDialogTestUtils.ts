@@ -1,33 +1,9 @@
-import { vi } from "vitest";
 import { mount } from "@vue/test-utils";
-import flushPromises from "flush-promises";
 
-import { JsonDataService } from "@knime/ui-extension-service";
+import JsonFormsDialog from "../../../JsonFormsDialog.vue";
+import { controls, layouts, toRenderers } from "../../../renderers";
 
-import NodeDialog from "../../../NodeDialog.vue";
-import { getOptions } from "../../../__tests__/utils";
-
-export const mockInitialData = (initialDataJson: object) =>
-  vi
-    .spyOn(JsonDataService.prototype, "initialData")
-    .mockResolvedValue(initialDataJson);
-
-let initialData: object;
-
-export const mountNodeDialog = async () => {
-  mockInitialData(initialData);
-  const wrapper = mount(NodeDialog as any, getOptions());
-  await flushPromises();
-  return wrapper;
-};
-
-export const setInitialData = (data: object) => {
-  initialData = data;
-};
-
-export const uiSchemaKey = "ui_schema";
-
-export const dialogWithTextInputData = {
+const jsonFormsDialogPropsWithTextControl = {
   data: {
     text: "Hello World",
   },
@@ -39,7 +15,8 @@ export const dialogWithTextInputData = {
       },
     },
   },
-  [uiSchemaKey]: {
+  uischema: {
+    type: "VerticalLayout",
     elements: [
       {
         type: "Control",
@@ -53,5 +30,14 @@ export const dialogWithTextInputData = {
       },
     },
   },
-  flowVariableSettings: {},
+  renderers: toRenderers(
+    [],
+    [controls.textRenderer],
+    [layouts.verticalLayoutRenderer],
+  ),
 };
+
+export const mountJsonFormsDialog = () =>
+  mount(JsonFormsDialog, {
+    props: jsonFormsDialogPropsWithTextControl,
+  });

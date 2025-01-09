@@ -2,7 +2,6 @@ import { type Ref, ref, watch } from "vue";
 
 import { type AlertParams, AlertType } from "@knime/ui-extension-service";
 
-import type { Result } from "../api/types/Result";
 import type {
   ChoicesUiSchema,
   ChoicesUiSchemaOptions,
@@ -18,7 +17,7 @@ const extractFromUiSchemaOptions = <Key extends keyof ChoicesUiSchemaOptions>(
 };
 
 const extractPossibleValues = (
-  asyncResult: Result<PossibleValue[]>,
+  asyncResult: any,
   sendAlert: (params: AlertParams) => void,
   choicesProviderClass: string,
 ) => {
@@ -114,9 +113,7 @@ export const withSpecialChoices = <T extends PossibleValue[] | null>(
 
 export default async (
   control: { uischema: ChoicesUiSchema },
-  getAsyncPossibleValues: (
-    choicesProviderClass: string,
-  ) => Promise<Result<PossibleValue[]> | undefined>,
+  getAsyncPossibleValues: (choicesProviderClass: string) => Promise<any>,
   sendAlert: (params: AlertParams) => void,
 ) => {
   let normalPossibleValues = extractFromUiSchemaOptions(
@@ -137,5 +134,6 @@ export default async (
       normalPossibleValues = [];
     }
   }
+  // @ts-expect-error
   return addSpecialColumns(normalPossibleValues, control);
 };

@@ -4,8 +4,7 @@ import {
   dialogInitialData,
   expectedRenderers,
 } from "../../../test-setup/mocks/dialogData";
-
-import { determineRenderer } from "./rendererTestUtils";
+import { determineRenderer } from "../../../testUtils";
 
 const getElementsToTest = (elements) =>
   elements

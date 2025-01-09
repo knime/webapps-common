@@ -1,27 +1,11 @@
-<script>
-import { defineComponent } from "vue";
-import {
-  DispatchRenderer,
-  rendererProps,
-  useJsonFormsLayout,
-} from "@jsonforms/vue";
+<script setup lang="ts">
+import { DispatchRenderer } from "@jsonforms/vue";
+
+import type { VueLayoutProps } from "../higherOrderComponents/layout/types";
 
 import VerticalLayoutBase from "./VerticalLayoutBase.vue";
 
-const VerticalLayout = defineComponent({
-  name: "VerticalLayout",
-  components: {
-    DispatchRenderer,
-    VerticalLayoutBase,
-  },
-  props: {
-    ...rendererProps(),
-  },
-  setup(props) {
-    return useJsonFormsLayout(props);
-  },
-});
-export default VerticalLayout;
+defineProps<VueLayoutProps>();
 </script>
 
 <template>

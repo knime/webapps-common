@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { rendererProps } from "@jsonforms/vue";
-
 import { InlineMessage, type InlineMessageVariant } from "@knime/components";
 
-import useProvidedState from "../composables/components/useProvidedState";
+import type { VueControlProps } from "../higherOrderComponents/control/types";
+
+import useProvidedState from "./composables/useProvidedState";
 
 interface Message {
   title: string;
@@ -11,9 +11,9 @@ interface Message {
   type: string;
 }
 
-const props = defineProps(rendererProps());
+const props = defineProps<VueControlProps<undefined>>();
 const message = useProvidedState<Message | undefined | null>(
-  props.uischema.options?.messageProvider,
+  props.control.uischema.options?.messageProvider,
   null,
 );
 </script>

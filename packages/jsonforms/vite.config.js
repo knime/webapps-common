@@ -12,14 +12,17 @@ export default defineConfig({
     svgLoader({ svgoConfig }),
     dts({
       insertTypesEntry: true,
+      tsconfigPath: "tsconfig.app.json",
     }),
   ],
   css: { postcss },
   build: {
     lib: {
-      entry: "src/index.ts",
+      entry: {
+        "knime-jsonforms": "src/index.ts",
+        testing: "testUtils/index.ts",
+      },
       name: "KNIME JSON Forms integration",
-      fileName: "knime-jsonforms",
       formats: ["es"],
     },
     rollupOptions: {

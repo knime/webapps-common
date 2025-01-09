@@ -11,6 +11,6 @@ export const sectionLayoutTester = uiTypeIs("Section");
 
 export const sectionLayoutRenderer = {
   name: "SectionLayout",
-  renderer: SectionLayout,
+  layout: SectionLayout,
   tester: rankWith(priorityRanks.default, sectionLayoutTester),
 };

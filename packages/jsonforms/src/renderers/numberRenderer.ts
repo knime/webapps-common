@@ -1,19 +1,20 @@
 import { defineAsyncComponent } from "vue";
-import { isNumberControl, rankWith } from "@jsonforms/core";
+import { and, rankWith } from "@jsonforms/core";
+import { isNumber } from "lodash-es";
 
 import { inputFormats, priorityRanks } from "../constants";
+import { hasFormat } from "../constants/inputFormats";
+import { addLabel } from "../higherOrderComponents/control/addLabel";
 
 const NumberControl = defineAsyncComponent(
   () => import("../uiComponents/NumberControl.vue"),
 );
 
-export const numberTester = (uischema, schema) => {
-  const isNumber = isNumberControl(uischema, schema);
-  return isNumber && uischema.options?.format === inputFormats.number;
-};
-
 export const numberRenderer = {
   name: "NumberControl",
-  renderer: NumberControl,
-  tester: rankWith(priorityRanks.default, numberTester),
+  control: addLabel(NumberControl),
+  tester: rankWith(
+    priorityRanks.default,
+    and(isNumber, hasFormat(inputFormats.number)),
+  ),
 };

@@ -1,51 +1,28 @@
 <!-- eslint-disable class-methods-use-this -->
 <script setup lang="ts">
 import { computed, onMounted, watch, watchEffect } from "vue";
-import { rendererProps } from "@jsonforms/vue";
 import { isEqual } from "lodash-es";
 
-import { DefaultSettingComparator } from "@knime/ui-extension-service";
-
-import useDialogControl from "../composables/components/useDialogControl";
-import useProvidedState from "../composables/components/useProvidedState";
+import type { VueControlProps } from "../higherOrderComponents/control/types";
 import type { PossibleValue } from "../types/ChoicesUiSchema";
 import { withSpecialChoices } from "../utils/getPossibleValuesFromUiSchema";
 import inject from "../utils/inject";
 
 import DropdownControl from "./DropdownControl.vue";
+import useProvidedState from "./composables/useProvidedState";
 
-class ColumnSelectValueComparator extends DefaultSettingComparator<
-  { selected: string | null } | undefined,
-  string | null | undefined
-> {
-  toInternalState(
-    cleanSettings: { selected: string | null } | undefined,
-  ): string | null | undefined {
-    return cleanSettings?.selected;
-  }
+type ColumnSelectValue = { selected: string | null } | undefined;
 
-  equals(
-    newState: string | null | undefined,
-    cleanState: string | null | undefined,
-  ): boolean {
-    return newState === cleanState;
-  }
-}
-
-const props = defineProps(rendererProps());
-const jsonFormsControl = useDialogControl({
-  props,
-  valueComparator: new ColumnSelectValueComparator(),
-});
+const props = defineProps<VueControlProps<ColumnSelectValue>>();
 
 const choicesProvider = computed<string | undefined>(
-  () => jsonFormsControl.control.value.uischema.options?.choicesProvider,
+  () => props.control.uischema.options?.choicesProvider,
 );
 
 const getPossibleValuesFromUiSchema = inject("getPossibleValuesFromUiSchema");
 const possibleValues = withSpecialChoices(
   useProvidedState<null | PossibleValue[]>(choicesProvider, null),
-  jsonFormsControl.control.value,
+  props.control,
 );
 
 const asyncInitialOptions = new Promise<PossibleValue[]>((resolve) => {
@@ -69,10 +46,10 @@ const toData = (value: string | null) => {
 const toValue = ({ selected }: any) => selected;
 
 const updateData = () => {
-  const initialData = jsonFormsControl.control.value.data;
+  const initialData = props.control.data;
   const updatedInitialData = toData(toValue(initialData));
   if (!isEqual(initialData, updatedInitialData)) {
-    jsonFormsControl.onChange(updatedInitialData);
+    props.changeValue(updatedInitialData);
   }
 };
 
@@ -80,9 +57,7 @@ watch(() => possibleValues.value, updateData);
 
 onMounted(async () => {
   if (!choicesProvider.value) {
-    possibleValues.value = await getPossibleValuesFromUiSchema(
-      jsonFormsControl.control.value,
-    );
+    possibleValues.value = await getPossibleValuesFromUiSchema(props.control);
   }
 });
 </script>
@@ -91,9 +66,19 @@ onMounted(async () => {
   <DropdownControl
     v-bind="{ ...$attrs, ...$props }"
     :async-initial-options="asyncInitialOptions"
-    :json-forms-control="jsonFormsControl"
     :control-data-to-dropdown-value="toValue"
     compact
     :dropdown-value-to-control-data="toData"
-  />
+  >
+    <template #icon>
+      <slot name="icon" />
+    </template>
+    <template #buttons="{ hover, controlHTMLElement }">
+      <slot
+        name="buttons"
+        :hover="hover"
+        :control-h-t-m-l-element="controlHTMLElement"
+      />
+    </template>
+  </DropdownControl>
 </template>

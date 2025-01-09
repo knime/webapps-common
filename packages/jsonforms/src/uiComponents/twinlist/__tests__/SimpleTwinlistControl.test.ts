@@ -1,23 +1,39 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  type Mock,
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
+import type { VueWrapper } from "@vue/test-utils";
 import flushPromises from "flush-promises";
 
 import { MultiselectListBox, Twinlist } from "@knime/components";
 
 import {
+  type ProvidedMethods,
+  type VueControlTestProps,
   getControlBase,
-  initializesJsonFormsControl,
-  mountJsonFormsComponent,
-} from "../../../../test-setup/utils/jsonFormsTestUtils";
-import DialogLabel from "../../label/DialogLabel.vue";
-import LabeledControl from "../../label/LabeledControl.vue";
+  mountJsonFormsControlLabelContent,
+} from "../../../../testUtils/component";
+import type { IdAndText } from "../../../types/ChoicesUiSchema";
+import { getPossibleValuesFromUiSchema } from "../../../utils";
 import TwinlistLoadingInfo from "../../loading/TwinlistLoadingInfo.vue";
 import SimpleTwinlistControl from "../SimpleTwinlistControl.vue";
 
 describe("SimpleTwinlistControl.vue", () => {
-  let props, wrapper, component;
+  let props: VueControlTestProps<typeof SimpleTwinlistControl>,
+    wrapper: VueWrapper,
+    changeValue: Mock;
+
+  const labelForId = "myLabelForId";
 
   beforeEach(() => {
     props = {
+      labelForId,
+      disabled: false,
       control: {
         ...getControlBase("test"),
         data: ["test_1"],
@@ -25,6 +41,8 @@ describe("SimpleTwinlistControl.vue", () => {
           type: "array",
         },
         uischema: {
+          type: "Control",
+          scope: "#/properties/test",
           options: {
             possibleValues: [
               {
@@ -44,10 +62,34 @@ describe("SimpleTwinlistControl.vue", () => {
         },
       },
     };
-    component = mountJsonFormsComponent(SimpleTwinlistControl, {
+  });
+
+  const mountSimpleTwinlistControl = ({
+    asyncChoicesProviderMock,
+    provide,
+  }: {
+    asyncChoicesProviderMock?: Mock;
+    provide?: Partial<ProvidedMethods>;
+  } = {}) => {
+    return mountJsonFormsControlLabelContent(SimpleTwinlistControl, {
       props,
+      provide: {
+        // @ts-expect-error
+        getPossibleValuesFromUiSchema: (control: Control) =>
+          getPossibleValuesFromUiSchema(
+            control,
+            asyncChoicesProviderMock ?? vi.fn(),
+            vi.fn(),
+          ),
+        ...provide,
+      },
     });
+  };
+
+  beforeEach(() => {
+    const component = mountSimpleTwinlistControl();
     wrapper = component.wrapper;
+    changeValue = component.changeValue;
   });
 
   afterEach(() => {
@@ -55,39 +97,19 @@ describe("SimpleTwinlistControl.vue", () => {
   });
 
   it("renders", () => {
-    expect(wrapper.getComponent(SimpleTwinlistControl).exists()).toBe(true);
-    expect(wrapper.findComponent(LabeledControl).exists()).toBe(true);
     expect(wrapper.findComponent(Twinlist).exists()).toBe(true);
   });
 
   it("sets labelForId", () => {
-    const dialogLabel = wrapper.findComponent(DialogLabel);
-    expect(wrapper.getComponent(Twinlist).attributes().id).toBe(
-      dialogLabel.vm.labelForId,
-    );
-    expect(dialogLabel.vm.labeledElement).toBeDefined();
-    expect(dialogLabel.vm.labeledElement).not.toBeNull();
+    expect(wrapper.getComponent(Twinlist).attributes().id).toBe(labelForId);
   });
 
-  it("initializes jsonforms", () => {
-    initializesJsonFormsControl(component);
-  });
-
-  it("calls onChange when twinlist input is changed", async () => {
-    const setDirtyModelSettingsMock = vi.fn();
-    const { wrapper, updateData } = await mountJsonFormsComponent(
-      SimpleTwinlistControl,
-      {
-        props,
-        provide: { setDirtyModelSettingsMock },
-      },
-    );
+  it("calls changeValue when twinlist input is changed", async () => {
     await wrapper
       .findComponent(Twinlist)
       .find({ ref: "moveAllRight" })
       .trigger("click");
-    expect(updateData).toBeCalled();
-    expect(setDirtyModelSettingsMock).not.toHaveBeenCalled();
+    expect(changeValue).toHaveBeenCalled();
   });
 
   it("correctly transforms the data into possible values", () => {
@@ -108,36 +130,34 @@ describe("SimpleTwinlistControl.vue", () => {
   });
 
   it("renders TwinlistLoadingInfo when the possible values are being loaded", async () => {
-    delete props.control.uischema.options.possibleValues;
-    props.control.uischema.options.choicesProviderClass =
+    delete props.control.uischema.options!.possibleValues;
+    props.control.uischema.options!.choicesProviderClass =
       "dummyChoicesProvider";
     const asyncChoicesResult = [{ id: "id", text: "text" }];
-    let resolveChoices;
+    let resolveChoices: (choices: any) => void;
     const asyncChoicesProviderMock = vi.fn().mockReturnValue(
       new Promise((resolve) => {
         resolveChoices = resolve;
       }),
     );
-    const { wrapper } = mountJsonFormsComponent(SimpleTwinlistControl, {
-      props,
-      provide: { asyncChoicesProviderMock },
+    const { wrapper } = mountSimpleTwinlistControl({
+      asyncChoicesProviderMock,
     });
     expect(wrapper.findComponent(TwinlistLoadingInfo).exists()).toBeTruthy();
     expect(
       wrapper.findComponent(Twinlist).props().possibleValues,
     ).toStrictEqual([]);
     expect(
-      wrapper.findAllComponents(MultiselectListBox).at(1).find("li").exists(),
+      wrapper.findAllComponents(MultiselectListBox).at(1)!.find("li").exists(),
     ).toBeFalsy();
-    resolveChoices({ result: asyncChoicesResult, state: "SUCCESS" });
+    resolveChoices!({ result: asyncChoicesResult, state: "SUCCESS" });
     await flushPromises();
     expect(wrapper.findComponent(TwinlistLoadingInfo).exists()).toBeFalsy();
-    expect(wrapper.findComponent(Twinlist).props().hideOptions).toBeFalsy();
     expect(
       wrapper.findComponent(Twinlist).props().possibleValues,
     ).toStrictEqual(asyncChoicesResult);
     expect(
-      wrapper.findAllComponents(MultiselectListBox).at(1).find("li").exists(),
+      wrapper.findAllComponents(MultiselectListBox).at(1)!.find("li").exists(),
     ).toBeTruthy();
   });
 
@@ -147,56 +167,30 @@ describe("SimpleTwinlistControl.vue", () => {
     );
   });
 
-  it("sets correct label", () => {
-    expect(wrapper.find("label").text()).toBe(props.control.label);
-  });
-
-  it("disables twinlist when controlled by a flow variable", () => {
-    const { wrapper } = mountJsonFormsComponent(SimpleTwinlistControl, {
-      props,
-      withControllingFlowVariable: true,
-    });
-    expect(wrapper.vm.disabled).toBeTruthy();
-  });
-
   it("moves missing values correctly", async () => {
-    const setDirtyModelSettingsMock = vi.fn();
     props.control.data = ["missing"];
-    const { wrapper, handleChange } = await mountJsonFormsComponent(
-      SimpleTwinlistControl,
-      {
-        props,
-        provide: { setDirtyModelSettingsMock },
-      },
-    );
-    expect(wrapper.props().control.data).toStrictEqual(["missing"]);
+    const { wrapper, changeValue } = await mountSimpleTwinlistControl();
+    expect(wrapper.vm.control.data).toStrictEqual(["missing"]);
     await wrapper
       .findComponent(Twinlist)
       .find({ ref: "moveAllLeft" })
       .trigger("click");
     await wrapper.vm.$nextTick();
-    expect(handleChange).toBeCalledWith(props.control.path, []);
-  });
-
-  it("does not render content of SimpleTwinlistControl when visible is false", async () => {
-    wrapper.vm.control = { ...props.control, visible: false };
-    await flushPromises(); // wait until pending promises are resolved
-    expect(wrapper.findComponent(DialogLabel).exists()).toBe(false);
+    expect(changeValue).toBeCalledWith([]);
   });
 
   it("uses choicesProvider if present", async () => {
     const choicesProvider = "myChoicesProvider";
-    props.control.uischema.options.choicesProvider = choicesProvider;
+    props.control.uischema.options!.choicesProvider = choicesProvider;
 
-    let provideChoices;
-    const addStateProviderListenerMock = vi.fn((_id, callback) => {
+    let provideChoices: (choices: IdAndText[]) => void;
+    const addStateProviderListener = vi.fn((_id, callback) => {
       provideChoices = callback;
     });
-    const { wrapper } = mountJsonFormsComponent(SimpleTwinlistControl, {
-      props,
-      provide: { addStateProviderListenerMock },
+    const { wrapper } = mountSimpleTwinlistControl({
+      provide: { addStateProviderListener },
     });
-    expect(addStateProviderListenerMock).toHaveBeenCalledWith(
+    expect(addStateProviderListener).toHaveBeenCalledWith(
       { id: choicesProvider },
       expect.anything(),
     );
@@ -206,7 +200,7 @@ describe("SimpleTwinlistControl.vue", () => {
         text: "Universe_0_0",
       },
     ];
-    provideChoices(providedChoices);
+    provideChoices!(providedChoices);
     await flushPromises();
     expect(
       wrapper.findComponent(Twinlist).props().possibleValues,

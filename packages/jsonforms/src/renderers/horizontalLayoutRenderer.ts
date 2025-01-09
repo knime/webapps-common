@@ -11,6 +11,6 @@ export const horizontalLayoutTester = uiTypeIs("HorizontalLayout");
 
 export const horizontalLayoutRenderer = {
   name: "HorizontalLayout",
-  renderer: HorizontalLayout,
+  layout: HorizontalLayout,
   tester: rankWith(priorityRanks.default, horizontalLayoutTester),
 };

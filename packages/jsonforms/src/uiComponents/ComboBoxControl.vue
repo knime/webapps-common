@@ -1,37 +1,30 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
-import { rendererProps } from "@jsonforms/vue";
 
 import { ComboBox } from "@knime/components";
 
-import useDialogControl from "../composables/components/useDialogControl";
-import useProvidedState from "../composables/components/useProvidedState";
+import type { VueControlPropsForLabelContent } from "../higherOrderComponents/control/addLabel";
 import type { PossibleValue } from "../types/ChoicesUiSchema";
 import { withSpecialChoices } from "../utils/getPossibleValuesFromUiSchema";
 
-import LabeledControl from "./label/LabeledControl.vue";
+import useProvidedState from "./composables/useProvidedState";
 
-const props = defineProps(rendererProps());
-const {
-  control,
-  onChange,
-  disabled: disabledByDefault,
-} = useDialogControl<string[]>({ props });
+const props = defineProps<VueControlPropsForLabelContent<string[]>>();
 
 const choicesProvider = computed<string | undefined>(
-  () => control.value.uischema?.options?.choicesProvider,
+  () => props.control.uischema?.options?.choicesProvider,
 );
 const options = withSpecialChoices(
   useProvidedState<PossibleValue[]>(choicesProvider, []),
-  control.value,
+  props.control,
 );
 const selectedIds = ref([] as string[]);
 const loaded = ref(false);
 
 onMounted(() => {
-  selectedIds.value = control.value.data;
+  selectedIds.value = props.control.data;
   if (!choicesProvider.value) {
-    options.value = control.value.uischema?.options?.possibleValues;
+    options.value = props.control.uischema?.options?.possibleValues;
   }
   loaded.value = true;
 });
@@ -39,36 +32,30 @@ onMounted(() => {
 const noPossibleValuesPresent = computed(
   () => typeof options.value === "undefined",
 );
-const disabled = computed(
+const isDisabled = computed(
   () =>
-    disabledByDefault.value ||
+    props.disabled ||
     noPossibleValuesPresent.value ||
     options.value?.length === 0,
 );
 </script>
 
 <template>
-  <LabeledControl
-    #default="{ labelForId }"
-    :control="control"
-    @controlling-flow-variable-set="onChange"
-  >
-    <!--
+  <!--
         TODO Enable unsing :allow-new-values="noPossibleValuesPresent"
         (see https://github.com/vuejs/vue/issues/2169)
       -->
-    <ComboBox
-      v-if="loaded"
-      :id="labelForId"
-      :allow-new-values="noPossibleValuesPresent ? ('' as any) : false"
-      :aria-label="control.label"
-      :disabled="disabled"
-      :possible-values="noPossibleValuesPresent ? [] : options"
-      :model-value="selectedIds"
-      compact
-      @update:model-value="(newValue: any[]) => onChange(newValue)"
-    />
-  </LabeledControl>
+  <ComboBox
+    v-if="loaded"
+    :id="labelForId"
+    :allow-new-values="noPossibleValuesPresent ? ('' as any) : false"
+    :aria-label="control.label"
+    :disabled="isDisabled"
+    :possible-values="noPossibleValuesPresent ? [] : options"
+    :model-value="selectedIds"
+    compact
+    @update:model-value="(newValue: any[]) => changeValue(newValue)"
+  />
 </template>
 
 <style scoped>

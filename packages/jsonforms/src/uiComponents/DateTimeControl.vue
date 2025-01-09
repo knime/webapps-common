@@ -1,17 +1,13 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { rendererProps } from "@jsonforms/vue";
 
 import { DateTimeInput } from "@knime/components/date-time-input";
 
-import useDialogControl from "../composables/components/useDialogControl";
+import type { VueControlPropsForLabelContent } from "../higherOrderComponents/control/addLabel";
 
-import LabeledControl from "./label/LabeledControl.vue";
+const props = defineProps<VueControlPropsForLabelContent<string>>();
 
-const props = defineProps(rendererProps());
-const { control, disabled, onChange } = useDialogControl<string>({ props });
-
-const options = computed(() => control.value.uischema.options);
+const options = computed(() => props.control.uischema.options);
 const minimum = computed(() =>
   options.value?.minimum ? new Date(options.value.minimum) : null,
 );
@@ -21,26 +17,20 @@ const maximum = computed(() =>
 </script>
 
 <template>
-  <LabeledControl
-    #default="{ labelForId }"
-    :control="control"
-    @controlling-flow-variable-set="onChange"
-  >
-    <DateTimeInput
-      :id="labelForId"
-      two-lines
-      :model-value="new Date(control.data)"
-      :required="true"
-      :show-time="options?.showTime"
-      :show-seconds="options?.showSeconds"
-      :show-milliseconds="options?.showMilliseconds"
-      :timezone="options?.timezone"
-      :date-format="options?.dateFormat"
-      :min="minimum"
-      :max="maximum"
-      compact
-      :disabled="disabled"
-      @update:model-value="onChange"
-    />
-  </LabeledControl>
+  <DateTimeInput
+    :id="labelForId"
+    two-lines
+    :model-value="new Date(control.data)"
+    :required="true"
+    :show-time="options?.showTime"
+    :show-seconds="options?.showSeconds"
+    :show-milliseconds="options?.showMilliseconds"
+    :timezone="options?.timezone"
+    :date-format="options?.dateFormat"
+    :min="minimum"
+    :max="maximum"
+    compact
+    :disabled="disabled"
+    @update:model-value="changeValue"
+  />
 </template>

@@ -2,19 +2,18 @@ import { defineAsyncComponent } from "vue";
 import { and, isDateTimeControl, rankWith } from "@jsonforms/core";
 
 import { inputFormats, priorityRanks } from "../constants";
+import { hasFormat } from "../constants/inputFormats";
+import { addLabel } from "../higherOrderComponents/control/addLabel";
 
 const TimeControl = defineAsyncComponent({
   loader: () => import("../uiComponents/TimeControl.vue"),
 });
 
-export const hasLocalTimeFormat = (uischema, _schema) =>
-  uischema.options?.format === inputFormats.localTime;
-
 export const localTimeRenderer = {
   name: "TimeControl",
-  renderer: TimeControl,
+  control: addLabel(TimeControl),
   tester: rankWith(
     priorityRanks.default,
-    and(isDateTimeControl, hasLocalTimeFormat),
+    and(isDateTimeControl, hasFormat(inputFormats.localTime)),
   ),
 };

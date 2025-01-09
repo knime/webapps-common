@@ -17,15 +17,6 @@ export const dialogInitialData = {
         "Universe_1_0",
         "Universe_1_1",
       ],
-      referenceLines: [
-        {
-          borderStyle: null,
-          color: "",
-          label: "",
-          size: 0,
-          value: 0,
-        },
-      ],
     },
   },
   schema: {
@@ -210,49 +201,6 @@ export const dialogInitialData = {
               },
             ],
             title: "Frequency column selection",
-          },
-          referenceLines: {
-            type: "array",
-            items: {
-              type: "object",
-              properties: {
-                borderStyle: {
-                  oneOf: [
-                    {
-                      const: "DASHED",
-                      title: "Dashed",
-                    },
-                    {
-                      const: "DOTTED",
-                      title: "Dotted",
-                    },
-                    {
-                      const: "SOLID",
-                      title: "Solid",
-                    },
-                  ],
-                  title: "Borderstyle",
-                },
-                color: {
-                  type: "string",
-                  title: "Color",
-                },
-                label: {
-                  type: "string",
-                  title: "Label",
-                },
-                size: {
-                  type: "integer",
-                  title: "Size",
-                  minimum: 0,
-                  maximum: 10,
-                },
-                value: {
-                  type: "string",
-                  title: "Value",
-                },
-              },
-            },
           },
           comboBox: {
             type: "array",
@@ -570,9 +518,5 @@ export const expectedRenderers = [
   {
     scope: "#/properties/view/properties/simpleTwinlist",
     component: "SimpleTwinlistControl",
-  },
-  {
-    scope: "#/properties/view/properties/referenceLines",
-    component: "ArrayLayout",
   },
 ];

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
+import { determineRenderer } from "../../../../testUtils";
 import { inputFormats } from "../../../constants";
-import { determineRenderer } from "../rendererTestUtils";
 
 describe("RichTextControl", () => {
   const schema = {

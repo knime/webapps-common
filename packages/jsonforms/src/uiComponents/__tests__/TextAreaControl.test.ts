@@ -1,18 +1,29 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  type Mock,
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
+import type { VueWrapper } from "@vue/test-utils";
 
 import { TextArea } from "@knime/components";
 
 import {
+  type VueControlTestProps,
   getControlBase,
-  initializesJsonFormsControl,
-  mountJsonFormsComponent,
-} from "../../../test-setup/utils/jsonFormsTestUtils";
+  mountJsonFormsControlLabelContent,
+} from "../../../testUtils/component";
 import TextAreaControl from "../TextAreaControl.vue";
-import DialogLabel from "../label/DialogLabel.vue";
-import LabeledControl from "../label/LabeledControl.vue";
 
-describe("TextControl.vue", () => {
-  let defaultProps, wrapper, component;
+describe("TextAreaControl.vue", () => {
+  let defaultProps: VueControlTestProps<typeof TextAreaControl>,
+    wrapper: VueWrapper,
+    changeValue: Mock;
+
+  const labelForId = "myLabelForId";
 
   beforeEach(async () => {
     defaultProps = {
@@ -30,18 +41,21 @@ describe("TextControl.vue", () => {
         },
         uischema: {
           type: "Control",
-          scope: "#/properties/view/properties/xAxisLabel",
+          scope: "#/properties/test",
           options: {
             isAdvanced: false,
           },
         },
       },
+      labelForId,
+      disabled: false,
     };
 
-    component = await mountJsonFormsComponent(TextAreaControl, {
+    const component = await mountJsonFormsControlLabelContent(TextAreaControl, {
       props: defaultProps,
     });
     wrapper = component.wrapper;
+    changeValue = component.changeValue;
   });
 
   const changedTextInput = "Shaken not stirred";
@@ -51,56 +65,23 @@ describe("TextControl.vue", () => {
   });
 
   it("renders", () => {
-    expect(wrapper.getComponent(TextAreaControl).exists()).toBe(true);
-    expect(wrapper.findComponent(LabeledControl).exists()).toBe(true);
     expect(wrapper.findComponent(TextArea).exists()).toBe(true);
   });
 
   it("sets labelForId", () => {
-    const dialogLabel = wrapper.findComponent(DialogLabel);
-    expect(wrapper.getComponent(TextArea).props().id).toBe(
-      dialogLabel.vm.labelForId,
-    );
-    expect(dialogLabel.vm.labeledElement).toBeDefined();
-    expect(dialogLabel.vm.labeledElement).not.toBeNull();
+    expect(wrapper.getComponent(TextArea).props().id).toBe(labelForId);
   });
 
-  it("initializes jsonforms", () => {
-    initializesJsonFormsControl(component);
-  });
-
-  it("calls handleChange when text area is changed", () => {
-    const setDirtyModelSettingsMock = vi.fn();
-    const { wrapper, handleChange } = mountJsonFormsComponent(TextAreaControl, {
-      props: defaultProps,
-      provide: { setDirtyModelSettingsMock },
-    });
-    const changedTextArea = "Shaken not stirred";
+  it("calls changeValue when text area is changed", () => {
     wrapper
       .findComponent(TextArea)
       .vm.$emit("update:modelValue", changedTextInput);
-    expect(handleChange).toHaveBeenCalledWith(
-      defaultProps.control.path,
-      changedTextArea,
-    );
-    expect(setDirtyModelSettingsMock).not.toHaveBeenCalled();
+    expect(changeValue).toHaveBeenCalledWith(changedTextInput);
   });
 
   it("sets correct initial value", () => {
     expect(wrapper.findComponent(TextArea).vm.modelValue).toBe(
       defaultProps.control.data,
     );
-  });
-
-  it("sets correct label", () => {
-    expect(wrapper.find("label").text()).toBe(defaultProps.control.label);
-  });
-
-  it("disables input when controlled by a flow variable", () => {
-    const { wrapper } = mountJsonFormsComponent(TextAreaControl, {
-      props: defaultProps,
-      withControllingFlowVariable: true,
-    });
-    expect(wrapper.vm.disabled).toBeTruthy();
   });
 });

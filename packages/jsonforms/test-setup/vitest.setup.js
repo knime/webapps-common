@@ -45,7 +45,6 @@ vi.mock(
     return {
       ...original,
       createDefaultValue: vi.fn(),
-      composePaths: vi.fn((a, b) => `composedPath(${a}, ${b})`),
     };
   },
   { virtual: false },

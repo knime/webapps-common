@@ -1,23 +1,15 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { rendererProps } from "@jsonforms/vue";
 
 import { IntervalInput } from "@knime/components";
 
-import useDialogControl from "../composables/components/useDialogControl";
-import useProvidedState from "../composables/components/useProvidedState";
+import type { VueControlPropsForLabelContent } from "../higherOrderComponents/control/addLabel";
 
-import LabeledControl from "./label/LabeledControl.vue";
+import useProvidedState from "./composables/useProvidedState";
 
-const props = defineProps(rendererProps());
+const props = defineProps<VueControlPropsForLabelContent<string>>();
 
-const { control, disabled, onChange } = useDialogControl<string>({
-  props,
-});
-
-const options = computed(() => {
-  return control.value.uischema.options;
-});
+const options = computed(() => props.control.uischema.options);
 const format = useProvidedState<"DATE" | "TIME" | "DATE_OR_TIME">(
   computed(() => options.value?.intervalTypeProvider),
   options.value?.intervalType ?? "DATE_OR_TIME",
@@ -25,18 +17,12 @@ const format = useProvidedState<"DATE" | "TIME" | "DATE_OR_TIME">(
 </script>
 
 <template>
-  <LabeledControl
-    #default="{ labelForId }"
-    :control="control"
-    @controlling-flow-variable-set="onChange"
-  >
-    <IntervalInput
-      :id="labelForId"
-      compact
-      :disabled="disabled"
-      :model-value="control.data"
-      :format="format"
-      @update:model-value="onChange"
-    />
-  </LabeledControl>
+  <IntervalInput
+    :id="labelForId"
+    compact
+    :disabled="disabled"
+    :model-value="control.data"
+    :format="format"
+    @update:model-value="changeValue"
+  />
 </template>

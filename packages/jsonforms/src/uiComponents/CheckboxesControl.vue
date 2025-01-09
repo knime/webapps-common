@@ -1,43 +1,39 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
-import { rendererProps } from "@jsonforms/vue";
 
 import { Checkboxes } from "@knime/components";
 
-import useDialogControl from "../composables/components/useDialogControl";
-import { type IdAndText } from "../types/ChoicesUiSchema";
+import type { VueControlPropsForLabelContent } from "../higherOrderComponents/control/addLabel";
+import type { IdAndText } from "../types/ChoicesUiSchema";
 import { optionsMapper } from "../utils";
 
-import LabeledControl from "./label/LabeledControl.vue";
-
-const props = defineProps(rendererProps());
-const { control, disabled, onChange } = useDialogControl({ props });
+const props = defineProps<VueControlPropsForLabelContent<string[]>>();
 
 const alignment = computed(
-  () => control.value.uischema.options?.checkboxLayout,
+  () => props.control.uischema.options?.checkboxLayout,
 );
 
 const options = ref(null as null | IdAndText[]);
 onMounted(() => {
-  options.value = control.value.schema.anyOf?.map(optionsMapper)!;
+  options.value = props.control.schema.anyOf?.map(optionsMapper)!;
 });
 </script>
 
 <template>
-  <LabeledControl
-    #default="{ labelForId }"
-    :control="control"
-    :margin-bottom="-10"
-    @controlling-flow-variable-set="onChange"
-  >
-    <Checkboxes
-      v-if="options"
-      :id="labelForId"
-      :possible-values="options"
-      :alignment="alignment"
-      :disabled="disabled"
-      :model-value="control.data"
-      @update:model-value="onChange"
-    />
-  </LabeledControl>
+  <Checkboxes
+    v-if="options"
+    :id="labelForId"
+    class="checkboxes"
+    :possible-values="options"
+    :alignment="alignment"
+    :disabled="disabled"
+    :model-value="control.data"
+    @update:model-value="changeValue"
+  />
 </template>
+
+<style lang="postcss" scoped>
+.checkboxes {
+  margin-bottom: -10px;
+}
+</style>

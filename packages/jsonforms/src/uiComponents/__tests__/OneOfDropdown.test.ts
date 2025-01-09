@@ -1,21 +1,24 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import type { VueWrapper } from "@vue/test-utils";
+
+import { Dropdown } from "@knime/components";
 
 import {
+  type VueControlTestProps,
   getControlBase,
-  initializesJsonFormsControl,
-  mountJsonFormsComponent,
-} from "../../../test-setup/utils/jsonFormsTestUtils";
+  mountJsonFormsControl,
+} from "../../../testUtils/component";
 import DropdownControl from "../DropdownControl.vue";
 import OneOfDropdown from "../OneOfDropdown.vue";
 
 describe("OneOfDropdown.vue", () => {
-  let wrapper, props, component;
+  let wrapper: VueWrapper, props: VueControlTestProps<typeof OneOfDropdown>;
 
   beforeEach(() => {
     props = {
-      path: "",
       control: {
         ...getControlBase("path"),
+        data: "Universe_0_0",
         schema: {
           oneOf: [
             {
@@ -42,9 +45,10 @@ describe("OneOfDropdown.vue", () => {
           scope: "#/properties/view/properties/yAxisColumn",
         },
       },
+      disabled: false,
     };
 
-    component = mountJsonFormsComponent(OneOfDropdown, { props });
+    const component = mountJsonFormsControl(OneOfDropdown, { props });
     wrapper = component.wrapper;
   });
 
@@ -53,20 +57,8 @@ describe("OneOfDropdown.vue", () => {
   });
 
   it("renders", () => {
-    expect(wrapper.getComponent(OneOfDropdown).exists()).toBe(true);
-    expect(wrapper.getComponent(DropdownControl).exists()).toBe(true);
-  });
-
-  it("passes default props", () => {
-    const dropdownProps = wrapper.getComponent(DropdownControl).props();
-    expect(dropdownProps.optionsGenerator).toBe(wrapper.vm.optionsGenerator);
-  });
-
-  it("initializes jsonforms on pass-through component", () => {
-    initializesJsonFormsControl({
-      wrapper: wrapper.getComponent(DropdownControl),
-      useJsonFormsControlSpy: component.useJsonFormsControlSpy,
-    });
+    // @ts-ignore
+    expect(wrapper.getComponent(Dropdown).exists()).toBe(true);
   });
 
   it("computed dropdown options from oneof options", async () => {

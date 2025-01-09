@@ -1,25 +1,37 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  type Mock,
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
+import type { VueWrapper } from "@vue/test-utils";
+import flushPromises from "flush-promises";
 
 import { NumberInput } from "@knime/components";
 
 import {
+  type VueControlTestProps,
   getControlBase,
-  initializesJsonFormsControl,
-  mountJsonFormsComponent,
-} from "../../../test-setup/utils/jsonFormsTestUtils";
-import ErrorMessage from "../ErrorMessage.vue";
+  mountJsonFormsControlLabelContent,
+} from "../../../testUtils/component";
 import NumberControl from "../NumberControl.vue";
 import NumberControlBase from "../NumberControlBase.vue";
-import DialogLabel from "../label/DialogLabel.vue";
-import LabeledControl from "../label/LabeledControl.vue";
 
-describe("NumberInput.vue", () => {
-  let props, wrapper, component;
+describe("NumberControl.vue", () => {
+  let props: VueControlTestProps<typeof NumberControl>,
+    wrapper: VueWrapper,
+    changeValue: Mock;
+
+  const labelForId = "numberControlLabel";
 
   beforeEach(() => {
     props = {
       control: {
         ...getControlBase("test"),
+        data: 0.5,
         schema: {
           properties: {
             maxRows: {
@@ -36,10 +48,15 @@ describe("NumberInput.vue", () => {
           },
         },
       },
+      labelForId,
+      disabled: false,
     };
 
-    component = mountJsonFormsComponent(NumberControl, { props });
+    const component = mountJsonFormsControlLabelContent(NumberControl, {
+      props,
+    });
     wrapper = component.wrapper;
+    changeValue = component.changeValue;
   });
 
   afterEach(() => {
@@ -47,81 +64,79 @@ describe("NumberInput.vue", () => {
   });
 
   it("renders", () => {
-    expect(wrapper.getComponent(NumberControl).exists()).toBe(true);
-    expect(wrapper.getComponent(NumberControlBase).exists()).toBe(true);
-    expect(wrapper.findComponent(LabeledControl).exists()).toBe(true);
-    expect(
-      wrapper.getComponent(NumberControl).getComponent(ErrorMessage).exists(),
-    ).toBe(true);
+    // @ts-ignore
+    expect(wrapper.getComponent(NumberInput).exists()).toBe(true);
   });
 
   it("sets labelForId", () => {
-    const dialogLabel = wrapper.findComponent(DialogLabel);
-    expect(wrapper.getComponent(NumberInput).props().id).toBe(
-      dialogLabel.vm.labelForId,
-    );
-    expect(dialogLabel.vm.labeledElement).toBeDefined();
-    expect(dialogLabel.vm.labeledElement).not.toBeNull();
+    expect(wrapper.getComponent(NumberInput).props().id).toBe(labelForId);
   });
 
-  it("passes default props", () => {
-    const numberInputProps = wrapper.getComponent(NumberControlBase).props();
-    expect(numberInputProps.type).toBe("double");
+  it("sets initial value", () => {
+    expect(wrapper.getComponent(NumberInput).props().modelValue).toBe(0.5);
+    expect(wrapper.getComponent(NumberInput).props().disabled).toBe(false);
+    expect(wrapper.getComponent(NumberInput).props().type).toBe("double");
   });
 
-  it("initializes jsonforms on pass-through component", () => {
-    initializesJsonFormsControl({
-      wrapper: wrapper.getComponent(NumberControlBase),
-      useJsonFormsControlSpy: component.useJsonFormsControlSpy,
-    });
-  });
-
-  it("calls onChange of NumberControlBase when number input is changed", () => {
-    const setDirtyModelSettingsMock = vi.fn();
-    const { wrapper, handleChange } = mountJsonFormsComponent(NumberControl, {
-      props,
-      provide: { setDirtyModelSettingsMock },
-    });
-    wrapper.findComponent(NumberControlBase).find("input").trigger("input");
-    expect(handleChange).toBeCalled();
-    expect(setDirtyModelSettingsMock).not.toHaveBeenCalled();
-  });
-
-  it("sets correct label", () => {
-    expect(wrapper.find("label").text()).toBe(props.control.label);
-  });
-
-  it("disables numberInputBase when controlled by a flow variable", () => {
-    const { wrapper } = mountJsonFormsComponent(NumberControl, {
-      props,
-      withControllingFlowVariable: true,
-    });
-    expect(wrapper.findComponent(NumberControlBase).vm.disabled).toBeTruthy();
+  it("calls changeValue when value is changed", () => {
+    wrapper.getComponent(NumberInput).vm.$emit("update:modelValue", 42.0);
+    expect(changeValue).toHaveBeenCalledWith(42.0);
   });
 
   it("rounds to minimum on focusout", () => {
     const minimum = 100;
-    props.control.schema.minimum = minimum;
+    props.control.uischema.options!.min = minimum;
     props.control.data = minimum - 1;
-    const component = mountJsonFormsComponent(NumberControl, { props });
-    const wrapper = component.wrapper;
-    wrapper.findComponent(NumberInput).vm.$emit("focusout");
-    expect(component.handleChange).toHaveBeenCalledWith(
-      props.control.path,
-      minimum,
+    const { wrapper, changeValue } = mountJsonFormsControlLabelContent(
+      NumberControl,
+      {
+        props,
+      },
     );
+    wrapper.findComponent(NumberInput).vm.$emit("focusout");
+    expect(changeValue).toHaveBeenCalledWith(minimum);
   });
 
   it("rounds to maximum on focusout", () => {
     const maximum = 100;
-    props.control.schema.maximum = maximum;
+    props.control.uischema.options!.max = maximum;
     props.control.data = maximum + 1;
-    const component = mountJsonFormsComponent(NumberControl, { props });
-    const wrapper = component.wrapper;
-    wrapper.findComponent(NumberInput).vm.$emit("focusout");
-    expect(component.handleChange).toHaveBeenCalledWith(
-      props.control.path,
-      maximum,
+    const { wrapper, changeValue } = mountJsonFormsControlLabelContent(
+      NumberControl,
+      {
+        props,
+      },
     );
+    wrapper.findComponent(NumberInput).vm.$emit("focusout");
+    expect(changeValue).toHaveBeenCalledWith(maximum);
   });
+
+  it.each([
+    ["min" as const, 73, 37, "minProvider"],
+    ["max" as const, 24, 42, "maxProvider"],
+  ])(
+    "overwrites the %s in case a new one is provided",
+    async (key, initialValue, providedValue, providerKey) => {
+      props.control.uischema.options![providerKey] = "someMinProviderID";
+      props.control.uischema.options![key] = initialValue;
+
+      let provideMin: (value: number) => void;
+      const addStateProviderListener = vi.fn((_id, callback) => {
+        provideMin = callback;
+      });
+
+      const { wrapper } = mountJsonFormsControlLabelContent(NumberControlBase, {
+        props,
+        provide: { addStateProviderListener },
+      });
+      expect(wrapper.findComponent(NumberInput).props()[key]).toBe(
+        initialValue,
+      );
+      provideMin!(providedValue);
+      await flushPromises();
+      expect(wrapper.findComponent(NumberInput).props()[key]).toBe(
+        providedValue,
+      );
+    },
+  );
 });

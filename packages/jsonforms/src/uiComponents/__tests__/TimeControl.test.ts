@@ -1,65 +1,62 @@
 import {
+  type Mock,
   afterEach,
-  beforeAll,
   beforeEach,
   describe,
   expect,
   it,
   vi,
 } from "vitest";
+import type { VueWrapper } from "@vue/test-utils";
 
 import { DateTimeInput } from "@knime/components/date-time-input";
 
 import {
+  type VueControlTestProps,
   getControlBase,
-  initializesJsonFormsControl,
-  mountJsonFormsComponent,
-} from "../../../test-setup/utils/jsonFormsTestUtils";
+  mountJsonFormsControlLabelContent,
+} from "../../../testUtils/component";
 import { localTimeUtils } from "../../utils/localTimeUtils";
 import TimeControl from "../TimeControl.vue";
-import DialogLabel from "../label/DialogLabel.vue";
-import LabeledControl from "../label/LabeledControl.vue";
 
 describe("TimeControl", () => {
-  let wrapper, component;
+  let props: VueControlTestProps<typeof TimeControl>,
+    wrapper: VueWrapper,
+    changeValue: Mock;
 
-  const defaultProps = {
-    control: {
-      ...getControlBase("test"),
-      data: "2022-12-12T20:22:22.000Z",
-      schema: {
-        properties: {
-          dateTime: {
-            type: "string",
-            format: "date-time",
-            title: "Time",
-          },
-        },
-        default: "default value",
-      },
-      uischema: {
-        type: "Control",
-        scope: "#/properties/view/properties/timeParts",
-        options: {
-          isAdvanced: false,
-        },
-      },
-    },
-  };
-
-  beforeAll(() => {
-    global.ResizeObserver = vi.fn().mockImplementation(() => ({
-      observe: vi.fn(),
-      unobserve: vi.fn(),
-      disconnect: vi.fn(),
-    }));
-  });
+  const labelForId = "myLabelForId";
 
   beforeEach(() => {
-    component = mountJsonFormsComponent(TimeControl, {
-      props: defaultProps,
+    props = {
+      control: {
+        ...getControlBase("test"),
+        data: "2022-12-12T20:22:22.000Z",
+        schema: {
+          properties: {
+            dateTime: {
+              type: "string",
+              format: "date-time",
+              title: "Time",
+            },
+          },
+          default: "default value",
+        },
+        uischema: {
+          type: "Control",
+          scope: "#/properties/view/properties/timeParts",
+          options: {
+            isAdvanced: false,
+          },
+        },
+      },
+      labelForId,
+      disabled: false,
+    };
+    const component = mountJsonFormsControlLabelContent(TimeControl, {
+      props,
     });
     wrapper = component.wrapper;
+    changeValue = component.changeValue;
   });
 
   afterEach(() => {
@@ -67,60 +64,27 @@ describe("TimeControl", () => {
   });
 
   it("renders", () => {
-    expect(wrapper.getComponent(TimeControl).exists()).toBe(true);
-    expect(wrapper.findComponent(LabeledControl).exists()).toBe(true);
     expect(wrapper.findComponent(DateTimeInput).exists()).toBe(true);
   });
 
   it("sets labelForId", () => {
-    const dialogLabel = wrapper.findComponent(DialogLabel);
-
-    expect(wrapper.getComponent(DateTimeInput).props().id).toBe(
-      dialogLabel.vm.labelForId,
-    );
-
-    expect(dialogLabel.vm.labeledElement).toBeDefined();
+    expect(wrapper.getComponent(DateTimeInput).props().id).toBe(labelForId);
     // TODO(UIEXT-2259): The id is set on the Date part that is not used here
-    // expect(dialogLabel.vm.labeledElement).not.toBeNull();
   });
 
-  it("initializes jsonforms", () => {
-    initializesJsonFormsControl(component);
-  });
-
-  it("calls handleChange when text input is changed", () => {
-    const setDirtyModelSettingsMock = vi.fn();
-    const { wrapper, handleChange } = mountJsonFormsComponent(TimeControl, {
-      props: defaultProps,
-      provide: { setDirtyModelSettingsMock },
-    });
+  it("calls changeValue when time input is changed", () => {
     const changedDateTimeInput = new Date("2022-12-12T20:22:22.000Z");
     wrapper
       .findComponent(DateTimeInput)
       .vm.$emit("update:modelValue", changedDateTimeInput);
-    expect(handleChange).toHaveBeenCalledWith(
-      defaultProps.control.path,
+    expect(changeValue).toHaveBeenCalledWith(
       localTimeUtils.toString(changedDateTimeInput),
     );
-    expect(setDirtyModelSettingsMock).not.toHaveBeenCalled();
   });
 
-  it("sets correct initial value", async () => {
-    await wrapper.vm.$nextTick();
+  it("sets correct initial value", () => {
     expect(wrapper.findComponent(DateTimeInput).vm.modelValue).toStrictEqual(
-      localTimeUtils.fromString(defaultProps.control.data),
+      localTimeUtils.fromString(props.control.data),
     );
-  });
-
-  it("sets correct label", () => {
-    expect(wrapper.find("label").text()).toBe(defaultProps.control.label);
-  });
-
-  it("disables input when controlled by a flow variable", () => {
-    const { wrapper } = mountJsonFormsComponent(TimeControl, {
-      props: defaultProps,
-      withControllingFlowVariable: true,
-    });
-    expect(wrapper.vm.disabled).toBeTruthy();
   });
 });

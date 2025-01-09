@@ -7,10 +7,8 @@ const TextControl = defineAsyncComponent(
   () => import("../uiComponents/TextControl.vue"),
 );
 
-export const textTester = isStringControl;
-
 export const textRenderer = {
   name: "TextControl",
-  renderer: TextControl,
-  tester: rankWith(priorityRanks.default, textTester),
+  control: TextControl,
+  tester: rankWith(priorityRanks.fallback, isStringControl),
 };

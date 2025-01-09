@@ -1,23 +1,25 @@
-import { arrayLayoutRenderer } from "./arrayLayoutRenderer";
-import { buttonRenderer } from "./buttonRenderer";
-import { checkboxRenderer } from "./checkboxRenderer";
+import { controlToRenderer } from "../higherOrderComponents/control/controlToRenderer";
+import { handleControlVisibility } from "../higherOrderComponents/control/handleVisibility";
+import type { VueControlRenderer } from "../higherOrderComponents/control/types";
+import { handleLayoutVisibility } from "../higherOrderComponents/layout/handleVisibility";
+import { layoutToRenderer } from "../higherOrderComponents/layout/layoutToRenderer";
+import type { VueLayoutRenderer } from "../higherOrderComponents/layout/types";
+import type { NamedRenderer } from "../higherOrderComponents/types";
+
 import { checkboxesRenderer } from "./checkboxesRenderer";
 import { columnFilterRenderer } from "./columnFilterRenderer";
 import { columnSelectRenderer } from "./columnSelectRenderer";
 import { comboBoxRenderer } from "./comboBoxRenderer";
-import { credentialsRenderer } from "./credentialsRenderer";
 import { dateTimeRenderer } from "./dateTimeRenderer";
 import { dropdownRenderer } from "./dropdownRenderer";
-import { dynamicValueRenderer } from "./dynamicValueRenderer";
-import { editResetButtonRenderer } from "./editResetButtonRenderer";
-import { elementCheckboxRenderer } from "./elementCheckboxRenderer";
-import { fileChooserRenderer } from "./fileChooserRenderer";
+import {
+  fallbackControlRenderers,
+  fallbackLayoutRenderers,
+} from "./fallbackRenderers";
 import { horizontalLayoutRenderer } from "./horizontalLayoutRenderer";
 import { integerRenderer } from "./integerRenderer";
 import { intervalRenderer } from "./intervalRenderer";
-import { legacyCredentialsRenderer } from "./legacyCredentialsRenderer";
 import { localDateRenderer } from "./localDateRenderer";
-import { localFileChooserRenderer } from "./localFileChooserRenderer";
 import { localTimeRenderer } from "./localTimeRenderer";
 import { nameFilterRenderer } from "./nameFilterRenderer";
 import { numberRenderer } from "./numberRenderer";
@@ -30,49 +32,64 @@ import { textAreaRenderer } from "./textAreaRenderer";
 import { textMessageRenderer } from "./textMessageRenderer";
 import { simpleTwinlistRenderer, twinlistRenderer } from "./twinlistRenderer";
 import { valueSwitchRenderer } from "./valueSwitchRenderer";
-import { vennDiagramLayoutRenderer } from "./vennDiagramRenderer";
 import { verticalLayoutRenderer } from "./verticalLayoutRenderer";
 
-export const defaultRenderers = [
-  /* layout renderers */
-  arrayLayoutRenderer,
-  horizontalLayoutRenderer,
-  verticalLayoutRenderer,
-  sectionLayoutRenderer,
-  vennDiagramLayoutRenderer,
-
-  /* component renderers */
-  buttonRenderer,
-  simpleButtonRenderer,
-  checkboxRenderer,
+export const controls = {
   checkboxesRenderer,
   columnFilterRenderer,
-  nameFilterRenderer,
-  columnSelectRenderer,
   comboBoxRenderer,
-  localDateRenderer,
-  localTimeRenderer,
   dateTimeRenderer,
-  dropdownRenderer,
   integerRenderer,
   intervalRenderer,
+  localDateRenderer,
+  localTimeRenderer,
+  nameFilterRenderer,
   numberRenderer,
   radioRenderer,
   richTextRenderer,
   simpleTwinlistRenderer,
-  twinlistRenderer,
   sortListRenderer,
-  valueSwitchRenderer,
   textAreaRenderer,
-  credentialsRenderer,
-  legacyCredentialsRenderer,
-  localFileChooserRenderer,
-  fileChooserRenderer,
-  dynamicValueRenderer,
+  twinlistRenderer,
+  valueSwitchRenderer,
+  // without label:
+  simpleButtonRenderer,
   textMessageRenderer,
   /**
-   * Internal synchronous renderers
+   * Containing an optional checkbox. Keep Label in control until we have a framework for that.
    */
-  editResetButtonRenderer,
-  elementCheckboxRenderer,
+  dropdownRenderer,
+  columnSelectRenderer,
+  ...fallbackControlRenderers,
+} satisfies Record<string, VueControlRenderer>;
+
+export const layouts = {
+  horizontalLayoutRenderer,
+  verticalLayoutRenderer,
+  sectionLayoutRenderer,
+  ...fallbackLayoutRenderers,
+} satisfies Record<string, VueLayoutRenderer>;
+
+export const toRenderers = (
+  renderers: NamedRenderer[],
+  controls: VueControlRenderer[],
+  layouts: VueLayoutRenderer[],
+): NamedRenderer[] => [
+  ...renderers,
+  ...controls.map(({ name, tester, control }) => ({
+    name,
+    tester,
+    renderer: controlToRenderer(handleControlVisibility(control)),
+  })),
+  ...layouts.map(({ name, tester, layout }) => ({
+    name,
+    tester,
+    renderer: layoutToRenderer(handleLayoutVisibility(layout)),
+  })),
 ];
+
+export const defaultRenderers: NamedRenderer[] = toRenderers(
+  [],
+  Object.values(controls),
+  Object.values(layouts),
+);

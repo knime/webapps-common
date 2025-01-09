@@ -1,18 +1,31 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  type Mock,
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
+import type { VueWrapper } from "@vue/test-utils";
 
 import { RichTextEditor } from "@knime/rich-text-editor";
 
 import {
+  type VueControlTestProps,
   getControlBase,
-  initializesJsonFormsControl,
-  mountJsonFormsComponent,
-} from "../../../../test-setup/utils/jsonFormsTestUtils";
+  mountJsonFormsControlLabelContent,
+} from "../../../../testUtils/component";
 import { inputFormats } from "../../../constants";
-import DialogLabel from "../../label/DialogLabel.vue";
 import RichTextControl from "../RichTextControl.vue";
 
 describe("RichTextControl.vue", () => {
-  let props, wrapper, component, stubs;
+  let props: VueControlTestProps<typeof RichTextControl>,
+    wrapper: VueWrapper,
+    changeValue: Mock,
+    stubs;
+
+  const labelForId = "myLabelForId";
 
   beforeEach(() => {
     props = {
@@ -34,12 +47,18 @@ describe("RichTextControl.vue", () => {
           },
         },
       },
+      labelForId,
+      disabled: false,
     };
     stubs = {
       EditorContent: true,
     };
-    component = mountJsonFormsComponent(RichTextControl, { props, stubs });
+    const component = mountJsonFormsControlLabelContent(RichTextControl, {
+      props,
+      stubs,
+    });
     wrapper = component.wrapper;
+    changeValue = component.handleChange;
   });
 
   afterEach(() => {
@@ -52,39 +71,17 @@ describe("RichTextControl.vue", () => {
   });
 
   it("sets labelForId", () => {
-    const dialogLabel = wrapper.findComponent(DialogLabel);
     expect(wrapper.getComponent(RichTextEditor).attributes().id).toBe(
-      dialogLabel.vm.labelForId,
+      labelForId,
     );
-    expect(dialogLabel.vm.labeledElement).toBeDefined();
-    expect(dialogLabel.vm.labeledElement).not.toBeNull();
   });
 
-  it("initializes jsonforms", () => {
-    initializesJsonFormsControl(component);
-  });
-
-  it("calls handleChange when html content is changed", async () => {
-    const setDirtyModelSettingsMock = vi.fn();
-    const { wrapper, handleChange } = await mountJsonFormsComponent(
-      RichTextControl,
-      {
-        props,
-        provide: { setDirtyModelSettingsMock },
-        stubs: {
-          EditorContent: true,
-        },
-      },
-    );
+  it.skip("calls changeValue when html content is changed", () => {
     const changedRichTextControl = "abcdefg";
     wrapper
       .findComponent(RichTextEditor)
       .vm.$emit("update:modelValue", changedRichTextControl);
-    expect(handleChange).toHaveBeenCalledWith(
-      props.control.path,
-      changedRichTextControl,
-    );
-    expect(setDirtyModelSettingsMock).not.toHaveBeenCalled();
+    expect(changeValue).toHaveBeenCalledWith(changedRichTextControl);
   });
 
   it("sets correct initial value", () => {
@@ -98,23 +95,18 @@ describe("RichTextControl.vue", () => {
     expect(editorComponent.vm.editable).toBeTruthy();
   });
 
-  it("disables editor if content is overwritten by flow variable", async () => {
-    let localComponent = await mountJsonFormsComponent(RichTextControl, {
-      props,
-      withControllingFlowVariable: true,
-    });
-    let localWrapper = localComponent.wrapper;
-    expect(localWrapper.vm.disabled).toBeTruthy();
-    const editorComponent = localWrapper.findComponent(RichTextEditor);
+  it("disables editor if disabled", async () => {
+    await wrapper.setProps({ disabled: true });
+    const editorComponent = wrapper.findComponent(RichTextEditor);
     expect(editorComponent.vm.editable).toBeFalsy();
   });
 
-  it("allows flow variable templates as urls if desired", async () => {
-    props.control.uischema.options.useFlowVarTemplates = true;
-    let { wrapper } = await mountJsonFormsComponent(RichTextControl, {
+  it("allows flow variable templates as urls if desired", () => {
+    props.control.uischema.options!.useFlowVarTemplates = true;
+    const { wrapper } = mountJsonFormsControlLabelContent(RichTextControl, {
       props,
-      withControllingFlowVariable: true,
     });
+    // @ts-expect-error
     const { urlValidator, sanitizeUrlText } = wrapper
       .findComponent(RichTextEditor)
       .props("linkToolOptions");

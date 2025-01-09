@@ -1,21 +1,24 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import type { VueWrapper } from "@vue/test-utils";
 
 import {
+  type VueControlTestProps,
   getControlBase,
-  initializesJsonFormsControl,
-  mountJsonFormsComponent,
-} from "../../../../test-setup/utils/jsonFormsTestUtils";
+  mountJsonFormsControlLabelContent,
+} from "../../../../testUtils/component";
 import AnyOfTwinlist from "../AnyOfTwinlist.vue";
 import SimpleTwinlistControl from "../SimpleTwinlistControl.vue";
 
 describe("AnyOfTwinlist.vue", () => {
-  let wrapper, props, component;
+  let wrapper: VueWrapper, props: VueControlTestProps<typeof AnyOfTwinlist>;
+
+  const labelForId = "myLabelForId";
 
   beforeEach(async () => {
     props = {
-      path: "",
       control: {
         ...getControlBase("path"),
+        data: ["Universe_0_0"],
         schema: {
           anyOf: [
             {
@@ -42,9 +45,16 @@ describe("AnyOfTwinlist.vue", () => {
           scope: "#/properties/view/properties/frequencies",
         },
       },
+      labelForId,
+      disabled: true,
     };
 
-    component = await mountJsonFormsComponent(AnyOfTwinlist, { props });
+    const component = await mountJsonFormsControlLabelContent(AnyOfTwinlist, {
+      props,
+      stubs: {
+        SimpleTwinlistControl: false,
+      },
+    });
     wrapper = component.wrapper;
   });
 
@@ -53,27 +63,16 @@ describe("AnyOfTwinlist.vue", () => {
   });
 
   it("renders", () => {
-    expect(wrapper.getComponent(AnyOfTwinlist).exists()).toBe(true);
-    expect(wrapper.getComponent(SimpleTwinlistControl).exists()).toBe(true);
-  });
-
-  it("passes default props", () => {
-    const dropdownProps = wrapper.getComponent(SimpleTwinlistControl).props();
-    expect(dropdownProps.optionsGenerator).toBe(wrapper.vm.optionsGenerator);
-  });
-
-  it("initializes jsonforms on pass-through component", () => {
-    initializesJsonFormsControl({
-      wrapper: wrapper.getComponent(SimpleTwinlistControl),
-      useJsonFormsControlSpy: component.useJsonFormsControlSpy,
-    });
+    expect(wrapper.findComponent(SimpleTwinlistControl).exists()).toBe(true);
   });
 
   it("optionsGenerator correctly transforms the data", async () => {
     await wrapper.vm.$nextTick();
 
     expect(
-      wrapper.getComponent(AnyOfTwinlist).vm.optionsGenerator(props.control),
+      wrapper.getComponent(SimpleTwinlistControl).props().optionsGenerator!(
+        props.control,
+      ),
     ).toEqual([
       {
         id: "Universe_0_0",

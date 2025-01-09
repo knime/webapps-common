@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { rendererProps } from "@jsonforms/vue";
 
 import {
   RichTextEditor,
@@ -8,13 +7,11 @@ import {
   defaultLinkToolOptions,
 } from "@knime/rich-text-editor";
 
-import useDialogControl from "../../composables/components/useDialogControl";
-import LabeledControl from "../label/LabeledControl.vue";
+import type { VueControlPropsForLabelContent } from "../../higherOrderComponents/control/addLabel";
 
 import DialogLinkModal from "./DialogLinkModal.vue";
 
-const props = defineProps(rendererProps());
-const { control, onChange, disabled } = useDialogControl<string>({ props });
+const props = defineProps<VueControlPropsForLabelContent<string>>();
 
 const richTextEditorElement = ref<{ $el: HTMLElement } | null>(null);
 /**
@@ -29,7 +26,7 @@ const isFlowVarTemplate = (url: string) =>
   url.startsWith('$$["') && url.endsWith('"]');
 
 const linkToolOptions = computed<typeof defaultLinkToolOptions>(() =>
-  control.value.uischema.options?.useFlowVarTemplates
+  props.control.uischema.options?.useFlowVarTemplates
     ? {
         urlValidator: (url: string) => {
           if (isFlowVarTemplate(url)) {
@@ -49,58 +46,49 @@ const linkToolOptions = computed<typeof defaultLinkToolOptions>(() =>
 </script>
 
 <template>
-  <LabeledControl
-    #default="{ labelForId }"
-    fill
-    :control="control"
-    @controlling-flow-variable-set="onChange"
+  <RichTextEditor
+    :id="labelForId"
+    ref="richTextEditorElement"
+    :tabindex="-1"
+    class="editor"
+    :class="{ 'editor-editable': !disabled }"
+    :min-height="400"
+    :model-value="control.data"
+    :editable="!disabled"
+    :disabled="disabled"
+    :base-extensions="{
+      bold: true,
+      italic: true,
+      underline: true,
+      textAlign: true,
+      bulletList: true,
+      orderedList: true,
+      heading: true,
+      blockquote: true,
+      code: true,
+      codeBlock: true,
+      horizontalRule: true,
+      strike: true,
+      paragraphTextStyle: true,
+      link: true,
+    }"
+    :link-tool-options="linkToolOptions"
+    :custom-extensions="[CloseDialogOnEscape]"
+    @update:model-value="changeValue"
   >
-    <RichTextEditor
-      :id="labelForId"
-      ref="richTextEditorElement"
-      :tabindex="-1"
-      class="editor"
-      :class="{ 'editor-editable': !disabled }"
-      :min-height="400"
-      :model-value="control.data"
-      :editable="!disabled"
-      :disabled="disabled"
-      :base-extensions="{
-        bold: true,
-        italic: true,
-        underline: true,
-        textAlign: true,
-        bulletList: true,
-        orderedList: true,
-        heading: true,
-        blockquote: true,
-        code: true,
-        codeBlock: true,
-        horizontalRule: true,
-        strike: true,
-        paragraphTextStyle: true,
-        link: true,
-      }"
-      :link-tool-options="linkToolOptions"
-      :custom-extensions="[CloseDialogOnEscape]"
-      @update:model-value="onChange"
-    >
-      <template #linkModal="{ linkTool }">
-        <DialogLinkModal
-          v-if="linkTool"
-          :link-tool="linkTool"
-          :use-flow-var-templates="
-            control.uischema.options?.useFlowVarTemplates
-          "
-        />
-      </template>
-    </RichTextEditor>
-  </LabeledControl>
+    <template #linkModal="{ linkTool }">
+      <DialogLinkModal
+        v-if="linkTool"
+        :link-tool="linkTool"
+        :use-flow-var-templates="control.uischema.options?.useFlowVarTemplates"
+      />
+    </template>
+  </RichTextEditor>
 </template>
 
 <style lang="postcss" scoped>
 .editor {
-  height: calc(100% - 20px);
+  height: 100%;
 
   &:deep(.tools) {
     --item-size: 30;

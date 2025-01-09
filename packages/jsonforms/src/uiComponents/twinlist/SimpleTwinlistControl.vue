@@ -1,44 +1,36 @@
 <script setup lang="ts">
 import { computed, markRaw } from "vue";
-import { rendererProps } from "@jsonforms/vue";
 
 import { Twinlist } from "@knime/components";
 
-import useDialogControl from "../../composables/components/useDialogControl";
-import useProvidedState from "../../composables/components/useProvidedState";
+import type { VueControlPropsForLabelContent } from "../../higherOrderComponents/control/addLabel";
 import type { IdAndText } from "../../types/ChoicesUiSchema";
+import type { Control } from "../../types/Control";
 import inject from "../../utils/inject";
-import LabeledControl from "../label/LabeledControl.vue";
+import useProvidedState from "../composables/useProvidedState";
 import TwinlistLoadingInfo from "../loading/TwinlistLoadingInfo.vue";
 
-const props = defineProps({
-  ...rendererProps(),
-  twinlistSize: {
-    type: Number,
-    required: false,
-    default: 10,
+const props = withDefaults(
+  defineProps<
+    VueControlPropsForLabelContent<string[]> & {
+      twinlistSize?: number;
+      twinlistLeftLabel?: string;
+      twinlistRightLabel?: string;
+      optionsGenerator?: null | ((control: Control) => IdAndText[]);
+    }
+  >(),
+  {
+    twinlistSize: 10,
+    twinlistLeftLabel: "Excludes",
+    twinlistRightLabel: "Includes",
+    optionsGenerator: null,
   },
-  twinlistLeftLabel: {
-    type: String,
-    required: false,
-    default: "Excludes",
-  },
-  twinlistRightLabel: {
-    type: String,
-    required: false,
-    default: "Includes",
-  },
-  optionsGenerator: {
-    type: Function,
-    required: false,
-    default: null,
-  },
-});
+);
 
-const { control, onChange, disabled } = useDialogControl<string[]>({ props });
 const getPossibleValuesFromUiSchema = inject("getPossibleValuesFromUiSchema");
+
 const choicesProvider = computed(
-  () => control.value.uischema.options?.choicesProvider,
+  () => props.control.uischema.options?.choicesProvider,
 );
 const possibleValues = useProvidedState<null | IdAndText[]>(
   choicesProvider,
@@ -48,39 +40,33 @@ const TwinlistLoadingInfoRaw = markRaw(TwinlistLoadingInfo) as any;
 
 if (!choicesProvider.value) {
   if (props.optionsGenerator === null) {
-    getPossibleValuesFromUiSchema(control.value).then((result) => {
+    getPossibleValuesFromUiSchema(props.control).then((result) => {
       possibleValues.value = result;
     });
   } else {
-    possibleValues.value = props.optionsGenerator(control.value);
+    possibleValues.value = props.optionsGenerator(props.control);
   }
 }
 </script>
 
 <template>
-  <LabeledControl
-    #default="{ labelForId }"
-    :control="control"
-    @controlling-flow-variable-set="onChange"
-  >
-    <Twinlist
-      :id="labelForId"
-      :disabled="disabled"
-      :model-value="control.data"
-      :possible-values="possibleValues ?? []"
-      :empty-state-component="
-        possibleValues === null ? TwinlistLoadingInfoRaw : null
-      "
-      :hide-options="possibleValues === null"
-      :size="twinlistSize"
-      :left-label="twinlistLeftLabel"
-      :right-label="twinlistRightLabel"
-      compact
-      show-resize-handle
-      :filter-chosen-values-on-possible-values-change="false"
-      @update:model-value="onChange"
-    />
-  </LabeledControl>
+  <Twinlist
+    :id="labelForId"
+    :disabled="disabled"
+    :model-value="control.data"
+    :possible-values="possibleValues ?? []"
+    :empty-state-component="
+      possibleValues === null ? TwinlistLoadingInfoRaw : null
+    "
+    :hide-options="possibleValues === null"
+    :size="twinlistSize"
+    :left-label="twinlistLeftLabel"
+    :right-label="twinlistRightLabel"
+    compact
+    show-resize-handle
+    :filter-chosen-values-on-possible-values-change="false"
+    @update:model-value="changeValue"
+  />
 </template>
 
 <style lang="postcss" scoped>

@@ -1,22 +1,18 @@
 <!-- eslint-disable no-undefined -->
 <!-- eslint-disable class-methods-use-this -->
 <script setup lang="ts">
-import { type Ref, computed, markRaw, ref } from "vue";
-import { rendererProps } from "@jsonforms/vue";
+import { computed, markRaw, ref } from "vue";
 import type { PartialDeep } from "type-fest";
 
 import type { TwinlistModelValue } from "@knime/components";
 import { MultiModeTwinList } from "@knime/components";
-import { DefaultSettingComparator } from "@knime/ui-extension-service";
 
-import useDialogControl from "../../composables/components/useDialogControl";
-import useProvidedState from "../../composables/components/useProvidedState";
+import type { VueControlPropsForLabelContent } from "../../higherOrderComponents/control/addLabel";
 import type { IdAndText, PossibleValue } from "../../types/ChoicesUiSchema";
-import type { Control } from "../../types/Control";
 import { mergeDeep } from "../../utils";
 import { withSpecialChoices } from "../../utils/getPossibleValuesFromUiSchema";
 import inject from "../../utils/inject";
-import LabeledControl from "../label/LabeledControl.vue";
+import useProvidedState from "../composables/useProvidedState";
 import TwinlistLoadingInfo from "../loading/TwinlistLoadingInfo.vue";
 
 import useUnknownValuesInTwinlist from "./useUnknownValuesInTwinlist";
@@ -40,67 +36,32 @@ export type TwinlistData = {
   selected: string[] | null | undefined;
 };
 
-type ControlWithTwinlistData = {
-  [P in keyof Control]: P extends "data" ? TwinlistData : Control[P];
-};
-
-const props = defineProps({
-  ...rendererProps(),
-  twinlistSize: {
-    type: Number,
-    required: false,
-    default: 10,
+const props = withDefaults(
+  defineProps<
+    VueControlPropsForLabelContent<TwinlistData> & {
+      twinlistSize?: number;
+      twinlistLeftLabel?: string;
+      showUnknownValues?: boolean;
+      twinlistRightLabel?: string;
+    }
+  >(),
+  {
+    twinlistSize: 10,
+    twinlistLeftLabel: "Excludes",
+    showUnknownValues: false,
+    twinlistRightLabel: "Includes",
   },
-  twinlistLeftLabel: {
-    type: String,
-    required: false,
-    default: "Excludes",
-  },
-  showUnknownValues: {
-    type: Boolean,
-    default: false,
-  },
-  twinlistRightLabel: {
-    type: String,
-    required: false,
-    default: "Includes",
-  },
-});
-
-class TwinlistValueComparator extends DefaultSettingComparator<
-  TwinlistData | undefined,
-  string
-> {
-  toInternalState(cleanSettings: TwinlistData | undefined): string {
-    return JSON.stringify(cleanSettings, (key, value) =>
-      key === "selected" ? undefined : value,
-    );
-  }
-
-  equals(newState: string, cleanState: string): boolean {
-    return newState === cleanState;
-  }
-}
-
-const {
-  control: untypedControl,
-  disabled,
-  onChange: onChangeControl,
-} = useDialogControl<TwinlistData | undefined>({
-  props,
-  valueComparator: new TwinlistValueComparator(),
-});
-const control = untypedControl as Ref<ControlWithTwinlistData>;
+);
 
 let setManualFilterOnChange: (newData: TwinlistData["manualFilter"]) => void;
 
-const onChange = (obj: PartialDeep<TwinlistData>) => {
-  const newData = mergeDeep(control.value.data, obj) as TwinlistData;
-  onChangeControl(newData);
+const onChangeTwinlist = (obj: PartialDeep<TwinlistData>) => {
+  const newData = mergeDeep(props.control.data, obj) as TwinlistData;
+  props.changeValue(newData);
   setManualFilterOnChange?.(newData.manualFilter);
 };
 const onSelectedChange = (selected: string[]) => {
-  onChange({ selected });
+  onChangeTwinlist({ selected });
 };
 
 type ManualSelection = TwinlistModelValue<string>;
@@ -115,7 +76,7 @@ const onManualSelectionChange = (manualSelection: ManualSelection) => {
     if (!includedValues || !excludedValues) {
       return;
     }
-    onChange({
+    onChangeTwinlist({
       manualFilter: {
         manuallySelected: includedValues,
         manuallyDeselected: excludedValues,
@@ -123,43 +84,43 @@ const onManualSelectionChange = (manualSelection: ManualSelection) => {
       },
     });
   } else {
-    onChange({ manualFilter: { manuallySelected: manualSelection } });
+    onChangeTwinlist({ manualFilter: { manuallySelected: manualSelection } });
   }
 };
 
 const onPatternChange = (pattern: string) => {
-  onChange({ patternFilter: { pattern } });
+  onChangeTwinlist({ patternFilter: { pattern } });
 };
 const onModeChange = (mode: string) => {
-  onChange({ mode: mode.toUpperCase() });
+  onChangeTwinlist({ mode: mode.toUpperCase() });
 };
 const onSelectedTypesChange = (
   selectedTypes: string[],
   typeDisplays: IdAndText[],
 ) => {
-  onChange({ typeFilter: { selectedTypes, typeDisplays } });
+  onChangeTwinlist({ typeFilter: { selectedTypes, typeDisplays } });
 };
 const onInversePatternChange = (isInverted: boolean) => {
-  onChange({ patternFilter: { isInverted } });
+  onChangeTwinlist({ patternFilter: { isInverted } });
 };
 const onCaseSensitiveChange = (isCaseSensitive: boolean) => {
-  onChange({ patternFilter: { isCaseSensitive } });
+  onChangeTwinlist({ patternFilter: { isCaseSensitive } });
 };
 
 // Initial updates
 
 const choicesProvider = computed<string | undefined>(
-  () => control.value.uischema.options?.choicesProvider,
+  () => props.control.uischema.options?.choicesProvider,
 );
 const possibleValues = withSpecialChoices(
   useProvidedState<PossibleValue[] | null>(choicesProvider, null),
-  control.value,
+  props.control,
 );
 const previouslySelectedTypes = ref<IdAndText[]>([]);
 
 const { selectedAndDeselected, setCurrentManualFilter } =
   useUnknownValuesInTwinlist({
-    data: computed(() => control.value.data),
+    data: computed(() => props.control.data),
     possibleValueIds: computed(
       () => possibleValues.value?.map(({ id }) => id) ?? null,
     ),
@@ -173,7 +134,7 @@ const manualSelection = computed<ManualSelection>(() => {
       includedValues: selected,
       excludedValues: deselected,
       includeUnknownValues:
-        control.value.data.manualFilter.includeUnknownColumns,
+        props.control.data.manualFilter.includeUnknownColumns,
     };
   }
   return selected;
@@ -196,7 +157,7 @@ const typeDisplaysToMap = (keyValuePairs: IdAndText[] | undefined) => {
 };
 
 const getPreviouslySelectedTypes = () => {
-  const typeFilter = control.value.data.typeFilter;
+  const typeFilter = props.control.data.typeFilter;
   if (!typeFilter) {
     return [];
   }
@@ -213,7 +174,7 @@ const getPreviouslySelectedTypes = () => {
 previouslySelectedTypes.value = getPreviouslySelectedTypes();
 
 if (!choicesProvider.value) {
-  inject("getPossibleValuesFromUiSchema")(control.value).then((result) => {
+  inject("getPossibleValuesFromUiSchema")(props.control).then((result) => {
     possibleValues.value = result;
   });
 }
@@ -224,61 +185,55 @@ const withTypes = computed(() =>
   Boolean(possibleValues.value?.[0]?.hasOwnProperty("type")),
 );
 const showMode = computed(
-  () => control.value.uischema.options?.showMode ?? true,
+  () => props.control.uischema.options?.showMode ?? true,
 );
 const showSearch = computed(
-  () => control.value.uischema.options?.showSearch ?? true,
+  () => props.control.uischema.options?.showSearch ?? true,
 );
 
 const leftLabel = computed(
   () =>
-    control.value.uischema.options?.excludedLabel ?? props.twinlistLeftLabel,
+    props.control.uischema.options?.excludedLabel ?? props.twinlistLeftLabel,
 );
 const rightLabel = computed(
   () =>
-    control.value.uischema.options?.includedLabel ?? props.twinlistRightLabel,
+    props.control.uischema.options?.includedLabel ?? props.twinlistRightLabel,
 );
 </script>
 
 <template>
-  <LabeledControl
-    #default="{ labelForId }"
-    :control="control"
-    @controlling-flow-variable-set="onChange"
-  >
-    <MultiModeTwinList
-      v-bind="$attrs"
-      :id="labelForId"
-      :show-mode="showMode"
-      :show-search="showSearch"
-      :disabled="disabled"
-      :with-types="withTypes"
-      :selected-types="control.data.typeFilter?.selectedTypes"
-      :additional-possible-types="previouslySelectedTypes"
-      :pattern="control.data.patternFilter.pattern"
-      :mode="control.data.mode.toLowerCase()"
-      :case-sensitive-pattern="control.data.patternFilter.isCaseSensitive"
-      :empty-state-component="loadingInfo"
-      :inverse-pattern="control.data.patternFilter.isInverted"
-      :manual-selection="manualSelection"
-      :include-unknown-values="control.data.manualFilter.includeUnknownColumns"
-      :filter-chosen-values-on-possible-values-change="false"
-      mode-label="Selection mode"
-      :possible-values="possibleValues ?? []"
-      :size="twinlistSize"
-      :left-label="leftLabel"
-      :right-label="rightLabel"
-      compact
-      show-resize-handle
-      @update:selected="onSelectedChange"
-      @update:manual-selection="onManualSelectionChange"
-      @update:pattern="onPatternChange"
-      @update:mode="onModeChange"
-      @update:selected-types="onSelectedTypesChange"
-      @update:inverse-pattern="onInversePatternChange"
-      @update:case-sensitive-pattern="onCaseSensitiveChange"
-    />
-  </LabeledControl>
+  <MultiModeTwinList
+    v-bind="$attrs"
+    :id="labelForId"
+    :show-mode="showMode"
+    :show-search="showSearch"
+    :disabled="disabled"
+    :with-types="withTypes"
+    :selected-types="control.data.typeFilter?.selectedTypes"
+    :additional-possible-types="previouslySelectedTypes"
+    :pattern="control.data.patternFilter.pattern"
+    :mode="control.data.mode.toLowerCase()"
+    :case-sensitive-pattern="control.data.patternFilter.isCaseSensitive"
+    :empty-state-component="loadingInfo"
+    :inverse-pattern="control.data.patternFilter.isInverted"
+    :manual-selection="manualSelection"
+    :include-unknown-values="control.data.manualFilter.includeUnknownColumns"
+    :filter-chosen-values-on-possible-values-change="false"
+    mode-label="Selection mode"
+    :possible-values="possibleValues ?? []"
+    :size="twinlistSize"
+    :left-label="leftLabel"
+    :right-label="rightLabel"
+    compact
+    show-resize-handle
+    @update:selected="onSelectedChange"
+    @update:manual-selection="onManualSelectionChange"
+    @update:pattern="onPatternChange"
+    @update:mode="onModeChange"
+    @update:selected-types="onSelectedTypesChange"
+    @update:inverse-pattern="onInversePatternChange"
+    @update:case-sensitive-pattern="onCaseSensitiveChange"
+  />
 </template>
 
 <style lang="postcss" scoped>

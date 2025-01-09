@@ -1,4 +1,5 @@
 import {
+  type Mock,
   afterEach,
   beforeAll,
   beforeEach,
@@ -7,21 +8,23 @@ import {
   it,
   vi,
 } from "vitest";
+import type { VueWrapper } from "@vue/test-utils";
 
 import { DateTimeInput } from "@knime/components/date-time-input";
 
 import {
+  type VueControlTestProps,
   getControlBase,
-  initializesJsonFormsControl,
-  mountJsonFormsComponent,
-} from "../../../test-setup/utils/jsonFormsTestUtils";
+  mountJsonFormsControlLabelContent,
+} from "../../../testUtils/component";
 import DateControl from "../DateControl.vue";
-import DateTimeControl from "../DateTimeControl.vue";
-import DialogLabel from "../label/DialogLabel.vue";
-import LabeledControl from "../label/LabeledControl.vue";
 
 describe("DateControl.vue", () => {
-  let defaultProps, wrapper, component;
+  let props: VueControlTestProps<typeof DateControl>,
+    wrapper: VueWrapper,
+    changeValue: Mock;
+
+  const labelForId = "dateControlLabel";
 
   beforeAll(() => {
     global.ResizeObserver = vi.fn().mockImplementation(() => ({
@@ -31,8 +34,8 @@ describe("DateControl.vue", () => {
     }));
   });
 
-  beforeEach(() => {
-    defaultProps = {
+  beforeEach(async () => {
+    props = {
       control: {
         ...getControlBase("test"),
         data: "2022-12-12T20:22:22.000Z",
@@ -54,12 +57,15 @@ describe("DateControl.vue", () => {
           },
         },
       },
+      labelForId,
+      disabled: false,
     };
 
-    component = mountJsonFormsComponent(DateControl, {
-      props: defaultProps,
+    const component = await mountJsonFormsControlLabelContent(DateControl, {
+      props,
     });
     wrapper = component.wrapper;
+    changeValue = component.changeValue;
   });
 
   afterEach(() => {
@@ -67,57 +73,24 @@ describe("DateControl.vue", () => {
   });
 
   it("renders", () => {
-    expect(wrapper.getComponent(DateControl).exists()).toBe(true);
-    expect(wrapper.findComponent(LabeledControl).exists()).toBe(true);
     expect(wrapper.findComponent(DateTimeInput).exists()).toBe(true);
   });
 
-  it("sets labelForId", async () => {
-    await wrapper.vm.$nextTick();
-    const dialogLabel = wrapper.findComponent(DialogLabel);
-    expect(wrapper.getComponent(DateTimeInput).props().id).toBe(
-      dialogLabel.vm.labelForId,
-    );
-    expect(dialogLabel.vm.labeledElement).toBeDefined();
-    expect(dialogLabel.vm.labeledElement).not.toBeNull();
+  it("sets labelForId", () => {
+    expect(wrapper.findComponent(DateTimeInput).props().id).toBe(labelForId);
   });
 
-  it("initializes jsonforms", () => {
-    initializesJsonFormsControl(component);
-  });
-
-  it("calls handleChange when text input is changed", () => {
-    const setDirtyModelSettingsMock = vi.fn();
-    const { wrapper, handleChange } = mountJsonFormsComponent(DateControl, {
-      props: defaultProps,
-      provide: { setDirtyModelSettingsMock },
-    });
-    const changedDateTimeInput = new Date("2022-12-12T20:22:22.000Z");
+  it("calls changeValue when date input is changed", () => {
+    const newDateValue = new Date("2022-12-12T20:22:22.000Z");
     wrapper
       .findComponent(DateTimeInput)
-      .vm.$emit("update:modelValue", changedDateTimeInput);
-    expect(handleChange).toHaveBeenCalledWith(
-      defaultProps.control.path,
-      changedDateTimeInput,
-    );
-    expect(setDirtyModelSettingsMock).not.toHaveBeenCalled();
+      .vm.$emit("update:modelValue", newDateValue);
+    expect(changeValue).toHaveBeenCalledWith(newDateValue);
   });
 
   it("sets correct initial value", () => {
     expect(wrapper.findComponent(DateTimeInput).vm.modelValue).toStrictEqual(
-      new Date(defaultProps.control.data),
+      new Date(props.control.data),
     );
-  });
-
-  it("sets correct label", () => {
-    expect(wrapper.find("label").text()).toBe(defaultProps.control.label);
-  });
-
-  it("disables input when controlled by a flow variable", () => {
-    const { wrapper } = mountJsonFormsComponent(DateTimeControl, {
-      props: defaultProps,
-      withControllingFlowVariable: true,
-    });
-    expect(wrapper.vm.disabled).toBeTruthy();
   });
 });

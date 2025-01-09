@@ -1,4 +1,4 @@
-import { type MaybeRef, type Ref, computed, nextTick, unref, watch } from "vue";
+import { type Ref, computed, nextTick, unref, watch } from "vue";
 
 import { type Control } from "../../types/Control";
 
@@ -8,8 +8,8 @@ export default (
     disabled,
     controlElement,
   }: {
-    control: MaybeRef<Control>;
-    disabled: MaybeRef<boolean>;
+    control: Ref<Control>;
+    disabled: Ref<boolean>;
     controlElement: Ref<{ focus?: () => void } | null>;
   },
   setters: {

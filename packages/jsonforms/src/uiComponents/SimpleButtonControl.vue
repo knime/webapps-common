@@ -1,24 +1,20 @@
 <script setup lang="ts" generic="SettingValue">
 import { computed, ref } from "vue";
-import { rendererProps } from "@jsonforms/vue";
 
 import { Button } from "@knime/components";
 
-import { useJsonFormsControlWithUpdate } from "../composables/components/useJsonFormsControlWithUpdate";
+import type { VueControlProps } from "../higherOrderComponents/control/types";
 import inject from "../utils/inject";
 
-import DialogComponentWrapper from "./DialogComponentWrapper.vue";
 import DynamicIcon, { type Icon } from "./DynamicIcon.vue";
-import DescriptionPopover from "./description/DescriptionPopover.vue";
 
-const props = defineProps(rendererProps());
-const { control } = useJsonFormsControlWithUpdate(props);
-const disabled = computed(() => !control.value.enabled);
+const props = defineProps<VueControlProps<undefined>>();
+const disabled = computed(() => !props.control.enabled);
 
-const triggerId = computed(() => control.value.uischema.options!.triggerId);
+const triggerId = computed(() => props.control.uischema.options!.triggerId);
 
 const icon = computed<Icon | undefined>(
-  () => control.value.uischema.options!.icon,
+  () => props.control.uischema.options!.icon,
 );
 
 const trigger = inject("trigger");
@@ -30,28 +26,22 @@ const hover = ref(false);
 </script>
 
 <template>
-  <DialogComponentWrapper :control="control">
-    <div
-      class="simple-button-input"
-      @mouseover="hover = true"
-      @mouseleave="hover = false"
+  <div
+    class="simple-button-input"
+    @mouseover="hover = true"
+    @mouseleave="hover = false"
+  >
+    <Button
+      compact
+      with-border
+      :disabled="disabled"
+      class="button-input"
+      @click="onClick"
     >
-      <Button
-        compact
-        with-border
-        :disabled="disabled"
-        class="button-input"
-        @click="onClick"
-      >
-        <DynamicIcon v-if="icon" :icon="icon" />{{ control.label }}
-      </Button>
-      <DescriptionPopover
-        v-if="control.description"
-        :html="control.description"
-        :hover="hover"
-      />
-    </div>
-  </DialogComponentWrapper>
+      <DynamicIcon v-if="icon" :icon="icon" />{{ control.label }}
+    </Button>
+    <slot name="buttons" :hover="hover" />
+  </div>
 </template>
 
 <style scoped>

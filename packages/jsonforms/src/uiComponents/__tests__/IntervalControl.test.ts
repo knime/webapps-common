@@ -1,21 +1,33 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  type Mock,
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
+import type { VueWrapper } from "@vue/test-utils";
 import flushPromises from "flush-promises";
 
 import { IntervalInput } from "@knime/components";
 
 import {
+  type VueControlTestProps,
   getControlBase,
-  initializesJsonFormsControl,
-  mountJsonFormsComponent,
-} from "../../../test-setup/utils/jsonFormsTestUtils";
+  mountJsonFormsControlLabelContent,
+} from "../../../testUtils/component";
 import IntervalControl from "../IntervalControl.vue";
-import DialogLabel from "../label/DialogLabel.vue";
 
 describe("IntervalControl.vue", () => {
-  let defaultProps, wrapper, component;
+  let props: VueControlTestProps<typeof IntervalControl>,
+    wrapper: VueWrapper,
+    changeValue: Mock;
+
+  const labelForId = "myLabelForId";
 
   beforeEach(async () => {
-    defaultProps = {
+    props = {
       control: {
         ...getControlBase("path"),
         data: "P1Y",
@@ -35,11 +47,14 @@ describe("IntervalControl.vue", () => {
           },
         },
       },
+      labelForId,
+      disabled: false,
     };
-    component = await mountJsonFormsComponent(IntervalControl, {
-      props: defaultProps,
+    const component = await mountJsonFormsControlLabelContent(IntervalControl, {
+      props,
     });
     wrapper = component.wrapper;
+    changeValue = component.changeValue;
   });
 
   afterEach(() => {
@@ -50,57 +65,30 @@ describe("IntervalControl.vue", () => {
     expect(wrapper.getComponent(IntervalInput).props()).toMatchObject({
       compact: true,
       disabled: false,
-      modelValue: defaultProps.control.data,
+      modelValue: props.control.data,
       format: "DATE_OR_TIME",
     });
   });
 
-  it("initializes jsonforms", () => {
-    initializesJsonFormsControl(component);
-  });
-
-  it("sets labelForId", async () => {
-    await wrapper.vm.$nextTick();
-    const dialogLabel = wrapper.findComponent(DialogLabel);
+  it("sets labelForId", () => {
     expect(wrapper.getComponent(IntervalInput).attributes().id).toBe(
-      dialogLabel.vm.labelForId,
+      labelForId,
     );
-    expect(dialogLabel.vm.labeledElement).toBeDefined();
-    expect(dialogLabel.vm.labeledElement).not.toBeNull();
   });
 
-  it("calls handleChange when interval input is changed", () => {
-    const { wrapper, handleChange } = mountJsonFormsComponent(IntervalControl, {
-      props: defaultProps,
-    });
+  it("calls changeValue when interval input is changed", () => {
     const changedInterval = "P2Y";
     wrapper
       .findComponent(IntervalInput)
       .vm.$emit("update:modelValue", changedInterval);
-    expect(handleChange).toHaveBeenCalledWith(
-      defaultProps.control.path,
-      changedInterval,
-    );
-  });
-
-  it("sets correct label", () => {
-    expect(wrapper.find("label").text()).toBe(defaultProps.control.label);
-  });
-
-  it("disables input when controlled by a flow variable", () => {
-    const { wrapper } = mountJsonFormsComponent(IntervalControl, {
-      props: defaultProps,
-      withControllingFlowVariable: true,
-    });
-    expect(wrapper.vm.disabled).toBeTruthy();
+    expect(changeValue).toHaveBeenCalledWith(changedInterval);
   });
 
   it("uses format from options", () => {
-    defaultProps.control.uischema.options.intervalType = "DATE";
-    component = mountJsonFormsComponent(IntervalControl, {
-      props: defaultProps,
+    props.control.uischema.options!.intervalType = "DATE";
+    const { wrapper } = mountJsonFormsControlLabelContent(IntervalControl, {
+      props,
     });
-    wrapper = component.wrapper;
     expect(wrapper.getComponent(IntervalInput).props()).toMatchObject({
       format: "DATE",
     });
@@ -108,18 +96,16 @@ describe("IntervalControl.vue", () => {
 
   it("uses format from provider in options", async () => {
     const intervalTypeProvider = "myProvider";
-    defaultProps.control.uischema.options.intervalTypeProvider =
-      intervalTypeProvider;
-    let provideIntervalType;
-    const addStateProviderListenerMock = vi.fn((_id, callback) => {
+    props.control.uischema.options!.intervalTypeProvider = intervalTypeProvider;
+    let provideIntervalType: (intervalType: string) => void;
+    const addStateProviderListener = vi.fn((_id, callback) => {
       provideIntervalType = callback;
     });
-    component = mountJsonFormsComponent(IntervalControl, {
-      props: defaultProps,
-      provide: { addStateProviderListenerMock },
+    const { wrapper } = mountJsonFormsControlLabelContent(IntervalControl, {
+      props,
+      provide: { addStateProviderListener },
     });
-    wrapper = component.wrapper;
-    expect(addStateProviderListenerMock).toHaveBeenCalledWith(
+    expect(addStateProviderListener).toHaveBeenCalledWith(
       { id: intervalTypeProvider },
       expect.anything(),
     );
@@ -128,7 +114,7 @@ describe("IntervalControl.vue", () => {
     });
     const providedIntervalType = "DATE";
 
-    provideIntervalType(providedIntervalType);
+    provideIntervalType!(providedIntervalType);
     await flushPromises();
     expect(wrapper.getComponent(IntervalInput).props()).toMatchObject({
       format: "DATE",

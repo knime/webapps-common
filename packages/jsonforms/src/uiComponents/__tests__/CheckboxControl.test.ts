@@ -1,23 +1,30 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import flushPromises from "flush-promises";
+import {
+  type Mock,
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
+import type { VueWrapper } from "@vue/test-utils";
 
 import { Checkbox } from "@knime/components";
-import ReexecutionIcon from "@knime/styles/img/icons/reexecution.svg";
 
 import {
+  type VueControlTestProps,
   getControlBase,
-  initializesJsonFormsControl,
-  mountJsonFormsComponent,
-} from "../../../test-setup/utils/jsonFormsTestUtils";
+  mountJsonFormsControl,
+} from "../../../testUtils/component";
 import CheckboxControl from "../CheckboxControl.vue";
-import ErrorMessage from "../ErrorMessage.vue";
-import DescriptionPopover from "../description/DescriptionPopover.vue";
 
 describe("CheckboxControl.vue", () => {
-  let wrapper, defaultProps, component;
+  let wrapper: VueWrapper,
+    props: VueControlTestProps<typeof CheckboxControl>,
+    changeValue: Mock;
 
   beforeEach(async () => {
-    defaultProps = {
+    props = {
       control: {
         ...getControlBase("test"),
         data: true,
@@ -37,11 +44,13 @@ describe("CheckboxControl.vue", () => {
           },
         },
       },
+      disabled: false,
     };
-    component = await mountJsonFormsComponent(CheckboxControl, {
-      props: defaultProps,
+    const component = await mountJsonFormsControl(CheckboxControl, {
+      props,
     });
     wrapper = component.wrapper;
+    changeValue = component.changeValue;
   });
 
   afterEach(() => {
@@ -49,65 +58,21 @@ describe("CheckboxControl.vue", () => {
   });
 
   it("renders", () => {
-    expect(wrapper.getComponent(CheckboxControl).exists()).toBe(true);
-    expect(wrapper.getComponent(Checkbox).exists()).toBe(true);
-    expect(wrapper.getComponent(ErrorMessage).exists()).toBe(true);
-    expect(wrapper.findComponent(ReexecutionIcon).exists()).toBe(false);
+    expect(wrapper.findComponent(Checkbox).exists()).toBe(true);
   });
 
-  it("renders the description popover", async () => {
-    expect(wrapper.findComponent(DescriptionPopover).exists()).toBe(false);
-    wrapper.vm.control.description = "foo";
-    await flushPromises(); // wait until pending promises are resolved
-    expect(wrapper.findComponent(DescriptionPopover).exists()).toBe(true);
-  });
-
-  it("initializes jsonforms", () => {
-    initializesJsonFormsControl(component);
-  });
-
-  it("calls handleChange when checkbox is changed", async () => {
-    const setDirtyModelSettingsMock = vi.fn();
-    const { wrapper, handleChange } = mountJsonFormsComponent(CheckboxControl, {
-      props: defaultProps,
-      provide: { setDirtyModelSettingsMock },
-    });
+  it("calls changeValue when checkbox is changed", async () => {
     await wrapper.findComponent(Checkbox).vm.$emit("update:modelValue", true);
-    expect(handleChange).toHaveBeenCalledWith(defaultProps.control.path, true);
-    expect(setDirtyModelSettingsMock).not.toHaveBeenCalled();
-  });
-
-  it("checks that re-execution icon is present if it is a model setting", async () => {
-    const { wrapper } = await mountJsonFormsComponent(CheckboxControl, {
-      props: {
-        ...defaultProps,
-        control: {
-          ...defaultProps.control,
-          uischema: {
-            ...defaultProps.control.schema,
-            scope: "#/properties/model/filterMissingValues",
-          },
-        },
-      },
-    });
-    expect(wrapper.findComponent(ReexecutionIcon).exists()).toBe(true);
+    expect(changeValue).toHaveBeenCalledWith(true);
   });
 
   it("sets correct initial value", () => {
     expect(wrapper.findComponent(Checkbox).vm.modelValue).toBe(
-      defaultProps.control.data,
+      props.control.data,
     );
   });
 
   it("sets correct label", () => {
-    expect(wrapper.find("label").text()).toBe(defaultProps.control.label);
-  });
-
-  it("disables input when controlled by a flow variable", () => {
-    const { wrapper } = mountJsonFormsComponent(CheckboxControl, {
-      props: defaultProps,
-      withControllingFlowVariable: true,
-    });
-    expect(wrapper.findComponent(Checkbox).props().disabled).toBeTruthy();
+    expect(wrapper.find("label").text()).toBe(props.control.label);
   });
 });

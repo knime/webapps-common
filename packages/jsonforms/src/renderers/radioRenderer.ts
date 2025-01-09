@@ -1,19 +1,19 @@
 import { defineAsyncComponent } from "vue";
-import { isOneOfControl, rankWith } from "@jsonforms/core";
+import { and, isOneOfControl, rankWith } from "@jsonforms/core";
 
 import { inputFormats, priorityRanks } from "../constants";
+import { hasFormat } from "../constants/inputFormats";
+import { addLabel } from "../higherOrderComponents/control/addLabel";
 
 const RadioControl = defineAsyncComponent(
   () => import("../uiComponents/RadioControl.vue"),
 );
 
-export const radioTester = (uischema, schema) => {
-  const isOneOf = isOneOfControl(uischema, schema);
-  return isOneOf && uischema.options?.format === inputFormats.radio;
-};
-
 export const radioRenderer = {
   name: "RadioControl",
-  renderer: RadioControl,
-  tester: rankWith(priorityRanks.default, radioTester),
+  control: addLabel(RadioControl),
+  tester: rankWith(
+    priorityRanks.default,
+    and(isOneOfControl, hasFormat(inputFormats.radio)),
+  ),
 };

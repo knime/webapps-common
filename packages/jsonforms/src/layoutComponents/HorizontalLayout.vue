@@ -1,44 +1,30 @@
-<script>
-import { defineComponent } from "vue";
-import {
-  DispatchRenderer,
-  rendererProps,
-  useJsonFormsLayout,
-} from "@jsonforms/vue";
+<script setup lang="ts">
+import { DispatchRenderer } from "@jsonforms/vue";
 
-import LayoutComponentWrapper from "./LayoutComponentWrapper.vue";
+import type { VueLayoutProps } from "../higherOrderComponents/layout/types";
 
-const HorizontalLayout = defineComponent({
-  name: "HorizontalLayout",
-  components: {
-    DispatchRenderer,
-    LayoutComponentWrapper,
-  },
-  props: {
-    ...rendererProps(),
-  },
-  setup(props) {
-    return useJsonFormsLayout(props);
-  },
-});
-export default HorizontalLayout;
+defineProps<VueLayoutProps>();
 </script>
 
 <template>
-  <LayoutComponentWrapper :layout="layout">
-    <div class="horizontal">
-      <DispatchRenderer
-        v-for="(element, index) in layout.uischema.elements"
-        :key="`${layout.path}-${index}`"
-        :schema="layout.schema"
-        :uischema="element"
-        :path="layout.path"
-        :enabled="layout.enabled"
-        :renderers="layout.renderers"
-        :cells="layout.cells"
-      />
+  <div class="horizontal">
+    <div
+      v-for="(element, index) in layout.uischema.elements"
+      :key="`${layout.path}-${index}`"
+      class="horizontal-element"
+    >
+      <div>
+        <DispatchRenderer
+          :schema="layout.schema"
+          :uischema="element"
+          :path="layout.path"
+          :enabled="layout.enabled"
+          :renderers="layout.renderers"
+          :cells="layout.cells"
+        />
+      </div>
     </div>
-  </LayoutComponentWrapper>
+  </div>
 </template>
 
 <style lang="postcss" scoped>
@@ -46,14 +32,11 @@ export default HorizontalLayout;
   width: 100%;
   display: inline-flex;
   justify-content: space-between;
+  gap: 5px;
 }
 
-.horizontal > * {
+.horizontal-element {
   flex: 1;
-  margin-left: 5px;
-}
-
-.horizontal > *:first-child {
-  margin-left: 0;
+  width: 0;
 }
 </style>

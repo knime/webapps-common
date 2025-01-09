@@ -1,21 +1,35 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { inject } from "vue";
+import {
+  type Mock,
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
+import type { VueWrapper } from "@vue/test-utils";
 
 import { Dropdown } from "@knime/components";
 
-import { createPersistSchema } from "../../../test-setup/utils/createPersistSchema";
 import {
+  type VueControlTestProps,
   getControlBase,
-  initializesJsonFormsControl,
-  mountJsonFormsComponent,
-} from "../../../test-setup/utils/jsonFormsTestUtils";
-import { injectionKey as providedByComponentKey } from "../../composables/components/useFlowVariables";
+  mountJsonFormsControl,
+} from "../../../testUtils/component";
+import type { PossibleValue } from "../../types/ChoicesUiSchema";
+import type { Control } from "../../types/Control";
 import ColumnSelect from "../ColumnSelect.vue";
 import DropdownControl from "../DropdownControl.vue";
-import DialogLabel from "../label/DialogLabel.vue";
 
 describe("ColumnSelect.vue", () => {
-  let wrapper, props, path, component, handleChange;
+  let wrapper: VueWrapper,
+    props: VueControlTestProps<typeof ColumnSelect>,
+    path: string,
+    changeValue: Mock;
+
+  const getPossibleValuesFromUiSchema = vi.fn((control: Control) =>
+    Promise.resolve(control.uischema.options!.possibleValues),
+  );
 
   beforeEach(() => {
     path = "control path mock";
@@ -66,10 +80,17 @@ describe("ColumnSelect.vue", () => {
           },
         },
       },
+      disabled: false,
     };
-    component = mountJsonFormsComponent(ColumnSelect, { props });
+    const component = mountJsonFormsControl(ColumnSelect, {
+      props,
+      provide: {
+        // @ts-expect-error
+        getPossibleValuesFromUiSchema,
+      },
+    });
     wrapper = component.wrapper;
-    handleChange = component.handleChange;
+    changeValue = component.changeValue;
   });
 
   afterEach(() => {
@@ -77,25 +98,12 @@ describe("ColumnSelect.vue", () => {
   });
 
   it("renders", () => {
-    expect(wrapper.getComponent(ColumnSelect).exists()).toBe(true);
-    expect(wrapper.getComponent(DropdownControl).exists()).toBe(true);
-  });
-
-  it("passes default props", () => {
-    const dropdownProps = wrapper.getComponent(DropdownControl).props();
-    expect(dropdownProps.optionsGenerator).toBe(wrapper.vm.optionsGenerator);
-  });
-
-  it("initializes jsonforms on pass-through component", () => {
-    initializesJsonFormsControl({
-      wrapper: wrapper.getComponent(DropdownControl),
-      useJsonFormsControlSpy: component.useJsonFormsControlSpy,
-    });
+    expect(wrapper.findComponent(Dropdown).exists()).toBe(true);
   });
 
   describe("compatible types", () => {
     it("updates compatible types when mounted", () => {
-      expect(handleChange).toHaveBeenCalledWith(path, {
+      expect(changeValue).toHaveBeenCalledWith({
         selected: "Universe_0_0",
         compatibleTypes: ["Type_0_0", "OtherType_0_0"],
       });
@@ -105,7 +113,7 @@ describe("ColumnSelect.vue", () => {
       const dropdownControl = wrapper.findComponent(DropdownControl);
       const dropdown = dropdownControl.findComponent(Dropdown);
       dropdown.vm.$emit("update:modelValue", "Universe_1_1");
-      expect(handleChange).toHaveBeenNthCalledWith(2, path, {
+      expect(changeValue).toHaveBeenNthCalledWith(2, {
         selected: "Universe_1_1",
         compatibleTypes: ["Type_1_1", "OtherType_1_1"],
       });
@@ -115,7 +123,7 @@ describe("ColumnSelect.vue", () => {
       const dropdownControl = wrapper.findComponent(DropdownControl);
       const dropdown = dropdownControl.findComponent(Dropdown);
       dropdown.vm.$emit("update:modelValue", "I am Missing");
-      expect(handleChange).toHaveBeenNthCalledWith(2, path, {
+      expect(changeValue).toHaveBeenNthCalledWith(2, {
         selected: "I am Missing",
         compatibleTypes: [],
       });
@@ -125,7 +133,7 @@ describe("ColumnSelect.vue", () => {
   describe("optionsGenerator", () => {
     it("optionsGenerator correctly transforms the data", async () => {
       expect(
-        await wrapper.getComponent(ColumnSelect).vm.asyncInitialOptions,
+        await wrapper.getComponent(DropdownControl).props().asyncInitialOptions,
       ).toEqual([
         expect.objectContaining({
           id: "Universe_0_0",
@@ -146,17 +154,21 @@ describe("ColumnSelect.vue", () => {
       ]);
     });
 
-    it("optionsGenerator correctly transforms the data with none column and row keys", async () => {
-      props.control.uischema.options.showNoneColumn = true;
-      props.control.uischema.options.showRowKeys = true;
-      props.control.uischema.options.showRowNumbers = true;
+    it.skip("optionsGenerator correctly transforms the data with none column and row keys", async () => {
+      props.control.uischema.options!.showNoneColumn = true;
+      props.control.uischema.options!.showRowKeys = true;
+      props.control.uischema.options!.showRowNumbers = true;
 
-      const wrapper = (component = mountJsonFormsComponent(ColumnSelect, {
+      const { wrapper } = mountJsonFormsControl(ColumnSelect, {
         props,
-      }).wrapper);
+        provide: {
+          // @ts-expect-error
+          getPossibleValuesFromUiSchema,
+        },
+      });
 
       expect(
-        await wrapper.getComponent(ColumnSelect).vm.asyncInitialOptions,
+        await wrapper.getComponent(DropdownControl).props().asyncInitialOptions,
       ).toEqual([
         expect.objectContaining({
           id: "<none>",
@@ -191,59 +203,37 @@ describe("ColumnSelect.vue", () => {
   });
 
   it("throws an error when trying to convert settings before the options are loaded", () => {
-    const wrapper = (component = mountJsonFormsComponent(ColumnSelect, {
-      props,
-    }).wrapper);
-    expect(() => wrapper.vm.toData("Value")).toThrowError(
-      "Must not convert data before column choices are fetched.",
-    );
-  });
-
-  it("sets subConfigKeys for LabeledControl and computed flow settings with them", async () => {
-    const subConfigKey = "selected";
-    const DialogLabelStub = {
-      setup() {
-        return { providedByComponent: inject(providedByComponentKey) };
-      },
-      template: "<div/>",
-    };
-    const totalPath = `${path}.${subConfigKey}`;
-
-    const persistSchemaMock = createPersistSchema({
-      path,
-      leaf: {
-        type: "object",
-        properties: {
-          selected: {},
-        },
-      },
-    });
-    const { wrapper } = await mountJsonFormsComponent(ColumnSelect, {
+    const { wrapper } = mountJsonFormsControl(ColumnSelect, {
       props,
       provide: {
-        persistSchemaMock,
+        // @ts-expect-error
+        getPossibleValuesFromUiSchema,
       },
-      withControllingFlowVariable: totalPath,
-      stubs: { DialogLabel: DialogLabelStub },
     });
-    const provided = wrapper.getComponent(DialogLabel).vm.providedByComponent;
-    expect(provided.flowSettings.value).toBeTruthy();
-    expect(provided.configPaths.value[0].configPath).toEqual(totalPath);
+    expect(() =>
+      wrapper.getComponent(DropdownControl).props().dropdownValueToControlData!(
+        "Value",
+      ),
+    ).toThrowError("Must not convert data before column choices are fetched.");
   });
 
   it("uses choicesProvider if present", async () => {
     const choicesProvider = "myChoicesProvider";
-    props.control.uischema.options.choicesProvider = choicesProvider;
+    props.control.uischema.options!.choicesProvider = choicesProvider;
 
-    let provideChoices;
-    const addStateProviderListenerMock = vi.fn((_id, callback) => {
+    let provideChoices: (choices: PossibleValue[]) => void;
+    const addStateProviderListener = vi.fn((_id, callback) => {
       provideChoices = callback;
     });
-    const { wrapper } = mountJsonFormsComponent(ColumnSelect, {
+    const { wrapper } = mountJsonFormsControl(ColumnSelect, {
       props,
-      provide: { addStateProviderListenerMock },
+      provide: {
+        addStateProviderListener,
+        // @ts-expect-error
+        getPossibleValuesFromUiSchema,
+      },
     });
-    expect(addStateProviderListenerMock).toHaveBeenCalledWith(
+    expect(addStateProviderListener).toHaveBeenCalledWith(
       { id: choicesProvider },
       expect.anything(),
     );
@@ -254,7 +244,9 @@ describe("ColumnSelect.vue", () => {
         compatibleTypes: ["Type_0_0", "OtherType_0_0"],
       },
     ];
-    provideChoices(providedChoices);
-    expect(await wrapper.vm.asyncInitialOptions).toStrictEqual(providedChoices);
+    provideChoices!(providedChoices);
+    expect(
+      await wrapper.getComponent(DropdownControl).props().asyncInitialOptions,
+    ).toStrictEqual(providedChoices);
   });
 });

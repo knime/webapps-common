@@ -1,53 +1,47 @@
 <script setup lang="ts">
-import { type PropType, computed } from "vue";
-import { rendererProps } from "@jsonforms/vue";
-
 import { NumberInput } from "@knime/components";
 
-import useDialogControl from "../composables/components/useDialogControl";
+import type { VueControlPropsForLabelContent } from "../higherOrderComponents/control/addLabel";
 
-import LabeledControl from "./label/LabeledControl.vue";
+import useProvidedState from "./composables/useProvidedState";
 
-const props = defineProps({
-  ...rendererProps(),
-  type: {
-    type: String as PropType<"integer" | "double">,
-    required: false,
-    default: "double",
-  },
-});
-const { control, onChange, disabled } = useDialogControl<number>({ props });
+const props = defineProps<
+  VueControlPropsForLabelContent<number> & {
+    type: "integer" | "double";
+  }
+>();
 
-const min = computed(() => control.value.schema.minimum);
-const max = computed(() => control.value.schema.maximum);
+const min = useProvidedState(
+  props.control.uischema.options?.minProvider,
+  props.control.uischema.options?.min,
+);
+
+const max = useProvidedState(
+  props.control.uischema.options?.maxProvider,
+  props.control.uischema.options?.max,
+);
 
 const onFocusOut = () => {
-  const num = control.value.data;
+  const num = props.control.data;
   if (typeof min.value === "number" && num < min.value) {
-    onChange(min.value);
+    props.changeValue(min.value);
   } else if (typeof max.value === "number" && num > max.value) {
-    onChange(max.value);
+    props.changeValue(max.value);
   }
 };
 </script>
 
 <template>
-  <LabeledControl
-    #default="{ labelForId }"
-    :control="control"
-    @controlling-flow-variable-set="onChange"
-  >
-    <NumberInput
-      :id="labelForId ?? undefined"
-      class="number-input"
-      :disabled="disabled"
-      :model-value="control.data"
-      :type="type"
-      :min="control.schema.minimum"
-      :max="control.schema.maximum"
-      compact
-      @update:model-value="onChange"
-      @focusout="onFocusOut"
-    />
-  </LabeledControl>
+  <NumberInput
+    :id="labelForId"
+    class="number-input"
+    :disabled="disabled"
+    :model-value="control.data"
+    :type="type"
+    :min="min"
+    :max="max"
+    compact
+    @update:model-value="changeValue"
+    @focusout="onFocusOut"
+  />
 </template>

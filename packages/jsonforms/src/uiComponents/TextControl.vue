@@ -1,41 +1,37 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import { rendererProps } from "@jsonforms/vue";
+import { computed, ref } from "vue";
 
 import { Checkbox, InputField } from "@knime/components";
 
-import useDialogControl from "../composables/components/useDialogControl";
-import useProvidedState from "../composables/components/useProvidedState";
+import LabeledControl from "../higherOrderComponents/control/LabeledControl.vue";
+import type { VueControlProps } from "../higherOrderComponents/control/types";
 
 import useHideOnNull from "./composables/useHideOnNull";
-import LabeledControl from "./label/LabeledControl.vue";
+import useProvidedState from "./composables/useProvidedState";
 
-const props = defineProps(rendererProps());
-const { onChange, control, disabled } = useDialogControl<
-  string | null | undefined
->({ props });
+const props = defineProps<VueControlProps<string | null>>();
 
 const placeholder = useProvidedState(
-  control.value.uischema.options?.placeholderProvider,
-  control.value.uischema.options?.placeholder ?? "",
+  props.control.uischema.options?.placeholderProvider,
+  props.control.uischema.options?.placeholder ?? "",
 );
 
-const controlElement = ref(null);
+const controlElement = ref<null | HTMLElement>(null);
 const { showCheckbox, showControl, checkboxProps } = useHideOnNull(
   {
-    control,
-    disabled,
+    control: computed(() => props.control),
+    disabled: computed(() => props.disabled),
     controlElement,
   },
   {
-    setDefault: () => onChange(""),
-    setNull: () => onChange(null),
+    setDefault: () => props.changeValue(""),
+    setNull: () => props.changeValue(null),
   },
 );
 </script>
 
 <template>
-  <LabeledControl :control="control" @controlling-flow-variable-set="onChange">
+  <LabeledControl :label="control.label">
     <template #before-label>
       <Checkbox v-if="showCheckbox" v-bind="checkboxProps" />
     </template>
@@ -48,7 +44,17 @@ const { showCheckbox, showControl, checkboxProps } = useHideOnNull(
         :model-value="control.data"
         :disabled="disabled"
         compact
-        @update:model-value="onChange"
+        @update:model-value="changeValue"
+      />
+    </template>
+    <template #icon>
+      <slot name="icon" />
+    </template>
+    <template #buttons="{ hover }">
+      <slot
+        name="buttons"
+        :hover="hover"
+        :control-h-t-m-l-element="controlElement"
       />
     </template>
   </LabeledControl>

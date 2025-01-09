@@ -2,7 +2,6 @@ import { describe, expect, it, vi } from "vitest";
 import { ref } from "vue";
 import flushPromises from "flush-promises";
 
-import type { Result } from "../../api/types/Result";
 import type {
   ChoicesUiSchema,
   PossibleValue,
@@ -105,9 +104,7 @@ describe("generatePossibleValues", () => {
   describe("async choices", () => {
     it("fetches async choices if no possible values are provided", async () => {
       const successResultChoices = [{ id: "foo", text: "bar" }];
-      const successfulAsyncChoicesProvider: () => Promise<
-        Result<PossibleValue[]>
-      > = vi.fn(() =>
+      const successfulAsyncChoicesProvider: () => Promise<any> = vi.fn(() =>
         Promise.resolve({
           state: "SUCCESS" as const,
           result: successResultChoices,
@@ -147,9 +144,9 @@ describe("generatePossibleValues", () => {
      * Due to the autohandling of errors which are not handled in the backend, the result of an async choices request can be undefined.
      */
     it("returns empty possible values if asnychronous result is undefined", async () => {
-      const undefinedAsyncChoicesProvider: () => Promise<
-        Result<PossibleValue[]> | undefined
-      > = vi.fn(() => Promise.resolve(undefined));
+      const undefinedAsyncChoicesProvider: () => Promise<any> = vi.fn(() =>
+        Promise.resolve(undefined),
+      );
       const choicesProviderClass = "myChoicesProviderClass";
 
       expect(

@@ -1,28 +1,39 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  type Mock,
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
+import type { VueWrapper } from "@vue/test-utils";
 
 import { Button } from "@knime/components";
 import ReloadIcon from "@knime/styles/img/icons/reload.svg";
 
 import {
   getControlBase,
-  mountJsonFormsComponent,
-} from "../../../test-setup/utils/jsonFormsTestUtils";
+  mountJsonFormsControl,
+} from "../../../testUtils/component";
+import type { VueControlProps } from "../../higherOrderComponents/control/types";
 import SimpleButtonControl from "../SimpleButtonControl.vue";
 
 describe("SimpleButtonControl.vue", () => {
-  let props, wrapper, component;
+  let props: Omit<VueControlProps<undefined>, "handleChange" | "changeValue">,
+    wrapper: VueWrapper,
+    trigger: Mock;
 
   const triggerId = "myTriggerId";
   const buttonText = "myText";
 
-  let triggerMock;
-
   beforeEach(async () => {
-    triggerMock = vi.fn();
+    trigger = vi.fn();
     props = {
       control: {
         ...getControlBase("path"),
         label: buttonText,
+        data: undefined,
         schema: {
           properties: {
             button: {
@@ -40,10 +51,11 @@ describe("SimpleButtonControl.vue", () => {
           },
         },
       },
+      disabled: false,
     };
-    component = await mountJsonFormsComponent(SimpleButtonControl, {
+    const component = await mountJsonFormsControl(SimpleButtonControl, {
       props,
-      provide: { triggerMock },
+      provide: { trigger },
     });
     wrapper = component.wrapper;
   });
@@ -58,12 +70,12 @@ describe("SimpleButtonControl.vue", () => {
 
   it("calls provided trigger method when the button is clicked", async () => {
     await wrapper.findComponent(Button).trigger("click");
-    expect(triggerMock).toHaveBeenCalledWith({ id: triggerId });
+    expect(trigger).toHaveBeenCalledWith({ id: triggerId });
   });
 
   it("shows icon defined by the options if desired", async () => {
-    props.control.uischema.options.icon = "reload";
-    const { wrapper } = await mountJsonFormsComponent(SimpleButtonControl, {
+    props.control.uischema.options!.icon = "reload";
+    const { wrapper } = await mountJsonFormsControl(SimpleButtonControl, {
       props,
     });
     expect(

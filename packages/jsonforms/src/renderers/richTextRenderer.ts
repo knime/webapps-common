@@ -1,19 +1,19 @@
 import { defineAsyncComponent } from "vue";
-import { isStringControl, rankWith } from "@jsonforms/core";
+import { and, isStringControl, rankWith } from "@jsonforms/core";
 
 import { inputFormats, priorityRanks } from "../constants";
+import { hasFormat } from "../constants/inputFormats";
+import { addLabel } from "../higherOrderComponents/control/addLabel";
 
 const RichTextControl = defineAsyncComponent(
   () => import("../uiComponents/richTextControl/RichTextControl.vue"),
 );
 
-export const richTextTester = (uischema, _schema) => {
-  const isString = isStringControl(uischema, _schema);
-  return isString && uischema.options?.format === inputFormats.richTextInput;
-};
-
 export const richTextRenderer = {
   name: "RichTextControl",
-  renderer: RichTextControl,
-  tester: rankWith(priorityRanks.default, richTextTester),
+  control: addLabel(RichTextControl, true),
+  tester: rankWith(
+    priorityRanks.default,
+    and(isStringControl, hasFormat(inputFormats.richTextInput)),
+  ),
 };

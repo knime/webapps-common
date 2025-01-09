@@ -1,24 +1,24 @@
 import { defineAsyncComponent } from "vue";
 import {
   isAnyOfControl,
-  isBooleanControl,
   isDateTimeControl,
   isIntegerControl,
   isNumberControl,
   isOneOfControl,
-  isStringControl,
   rankWith,
-  uiTypeIs,
 } from "@jsonforms/core";
 
 import { priorityRanks } from "../constants";
-import DateTimeControl from "../uiComponents/DateTimeControl.vue";
+import { addLabel } from "../higherOrderComponents/control/addLabel";
+import type { VueControlRenderer } from "../higherOrderComponents/control/types";
+import type { VueLayoutRenderer } from "../higherOrderComponents/layout/types";
 
 import { checkboxRenderer } from "./checkboxRenderer";
+import { dateTimeRenderer } from "./dateTimeRenderer";
 import { integerRenderer } from "./integerRenderer";
 import { numberRenderer } from "./numberRenderer";
 import { textRenderer } from "./textRenderer";
-import { verticalLayoutRenderer } from "./verticalLayoutRenderer";
+import { verticalLayoutFallbackRenderer } from "./verticalLayoutRenderer";
 
 const OneOfDropdown = defineAsyncComponent(
   () => import("../uiComponents/OneOfDropdown.vue"),
@@ -27,41 +27,33 @@ const AnyOfTwinlist = defineAsyncComponent(
   () => import("../uiComponents/twinlist/AnyOfTwinlist.vue"),
 );
 
-export const fallbackRenderers = [
-  {
+export const fallbackControlRenderers = {
+  oneOfDropdownRenderer: {
     name: "OneOfDropdown",
-    renderer: OneOfDropdown,
+    control: OneOfDropdown,
     tester: rankWith(priorityRanks.fallback, isOneOfControl),
   },
-  {
+  dateTimeFallbackRenderer: {
+    ...dateTimeRenderer,
+    tester: rankWith(priorityRanks.fallback, isDateTimeControl),
+  },
+  textRenderer,
+  checkboxRenderer,
+  anyOfTwinlistRenderer: {
     name: "AnyOfTwinlist",
-    renderer: AnyOfTwinlist,
+    control: addLabel(AnyOfTwinlist),
     tester: rankWith(priorityRanks.fallback, isAnyOfControl),
   },
-  {
+  numberFallbackRenderer: {
     ...numberRenderer,
     tester: rankWith(priorityRanks.fallback, isNumberControl),
   },
-  {
-    ...checkboxRenderer,
-    tester: rankWith(priorityRanks.fallback, isBooleanControl),
-  },
-  {
+  integerFallbackRenderer: {
     ...integerRenderer,
     tester: rankWith(priorityRanks.fallback, isIntegerControl),
   },
-  {
-    name: "DateTimeControl",
-    renderer: DateTimeControl,
-    tester: rankWith(priorityRanks.fallback, isDateTimeControl),
-  },
-  {
-    ...textRenderer,
-    tester: rankWith(priorityRanks.fallback, isStringControl),
-  },
-  {
-    ...verticalLayoutRenderer,
-    // eslint-disable-next-line no-undefined
-    tester: rankWith(priorityRanks.fallback, uiTypeIs(undefined)),
-  },
-];
+} satisfies Record<string, VueControlRenderer>;
+
+export const fallbackLayoutRenderers = {
+  verticalLayoutFallbackRenderer,
+} satisfies Record<string, VueLayoutRenderer>;

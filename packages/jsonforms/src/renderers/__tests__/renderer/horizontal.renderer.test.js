@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { determineRenderer } from "../rendererTestUtils";
+import { determineRenderer } from "../../../../testUtils";
 
 describe("HorizontalLayout", () => {
   const schema = {};
