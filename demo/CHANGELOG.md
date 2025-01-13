@@ -1,5 +1,21 @@
 # demo
 
+## 1.2.0
+
+### Minor Changes
+
+- ea2bc0b: Add DateTimeFormatInput component.
+
+### Patch Changes
+
+- Updated dependencies [ea2bc0b]
+  - @knime/components@1.15.0
+  - @knime/styles@1.2.0
+  - @knime/hub-features@1.2.2
+  - @knime/rich-text-editor@1.3.7
+  - @knime/virtual-tree@1.3.7
+  - @knime/utils@1.2.4
+
 ## 1.1.6
 
 ### Patch Changes

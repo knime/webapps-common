@@ -1,5 +1,17 @@
 # @knime/components
 
+## 1.15.0
+
+### Minor Changes
+
+- ea2bc0b: Add DateTimeFormatInput component.
+
+### Patch Changes
+
+- Updated dependencies [ea2bc0b]
+  - @knime/styles@1.2.0
+  - @knime/utils@1.2.4
+
 ## 1.14.0
 
 ### Minor Changes
