@@ -44,6 +44,7 @@
     "flush-promises": "1.0.2",
     "lodash-es": "4.17.21",
     "modern-normalize": "3.0.1",
+    "postcss": "8.4.5",
     "type-fest": "4.26.1",
     "typescript": "^5.4.5",
     "vite": "^5.4.8",
