@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 0.1.7
+
+### Patch Changes
+
+- bedf0a3: Add postcss config
+
 ## 0.1.6
 
 ### Patch Changes
