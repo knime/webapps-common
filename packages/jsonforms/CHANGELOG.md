@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.0.0
+
+### Major Changes
+
+- ff330d9: Export JsonFormsDialog and associated renderers with minimal capabilities. Renderers come in two ways: Controls and layouts. This package also exposes the utilities and types to write, adjust and test controls and layouts.
+
 ## 0.1.7
 
 ### Patch Changes
