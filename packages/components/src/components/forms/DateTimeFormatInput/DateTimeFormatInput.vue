@@ -113,7 +113,6 @@ const { floatingStyles: popoverFloatingStyles } = useFloating(
         </button>
       </span>
     </div>
-
     <div
       v-if="showPopOver"
       ref="floatingPopoverRef"
@@ -133,9 +132,6 @@ const { floatingStyles: popoverFloatingStyles } = useFloating(
 
 <style lang="postcss" scoped>
 .popover {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-8);
   position: absolute;
   top: 0;
   left: 0;

@@ -37,6 +37,11 @@ export type DropdownNavigationOptions = {
    * disables use of Space key to click on item
    */
   disableSpaceToClick?: boolean;
+  /**
+   * Per default, the dropdown will trigger close when tabbing out of it.
+   * Set this to true to keep the dropdown open when tabbing
+   */
+  keepOpenedOnTab?: boolean;
 };
 
 type DropdownNavigationOutput = {
@@ -60,6 +65,7 @@ export default ({
   getLastElement,
   close,
   disableSpaceToClick,
+  keepOpenedOnTab,
 }: DropdownNavigationOptions): DropdownNavigationOutput => {
   const currentIndex: Ref<number | null> = ref(null);
 
@@ -127,7 +133,9 @@ export default ({
         resetAndClose();
         break;
       case "Tab":
-        resetAndClose();
+        if (!keepOpenedOnTab) {
+          resetAndClose();
+        }
         break;
     }
   };

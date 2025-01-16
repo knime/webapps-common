@@ -8,6 +8,7 @@ import {
   ref,
   watch,
 } from "vue";
+import type { KeydownEvent } from "packages/virtual-tree/src";
 
 import { useDropdownNavigation } from "../../../../composables";
 import FunctionButton from "../../../Buttons/FunctionButton.vue";
@@ -110,6 +111,7 @@ const createFormatListItemRef = (format: FormatWithExample) => {
 };
 
 const { currentIndex, onKeydown, resetNavigation } = useDropdownNavigation({
+  keepOpenedOnTab: true,
   getFirstElement: () => {
     const index = 0;
     return {
@@ -154,6 +156,24 @@ const { currentIndex, onKeydown, resetNavigation } = useDropdownNavigation({
     emit("cancel");
   },
 });
+const BORDER_WIDTH = 1;
+const scrollIntoView = (element: HTMLElement) => {
+  const parentNode = element.parentElement;
+  if (parentNode && parentNode.scrollHeight > parentNode.clientHeight) {
+    const parentOffsetTopPlusBorder = parentNode.offsetTop + BORDER_WIDTH;
+    const scrollBottom = parentNode.clientHeight + parentNode.scrollTop;
+    const elementBottom =
+      element.offsetTop + element.offsetHeight - parentOffsetTopPlusBorder;
+    if (elementBottom > scrollBottom) {
+      parentNode.scrollTop = elementBottom - parentNode.clientHeight;
+    } else if (
+      element.offsetTop - parentNode.scrollTop <
+      parentOffsetTopPlusBorder
+    ) {
+      parentNode.scrollTop = element.offsetTop - parentOffsetTopPlusBorder;
+    }
+  }
+};
 
 /**
  * Select the given format, highlighting it in the menu. If the temporalType or category
@@ -172,12 +192,13 @@ const selectFormat = async (
 
   // scroll to the selected format
   selectedFormat.value = format;
-  allFormatListItemRefs[
-    `${format}-${selectedFormatStandard.value}-${selectedFormatType.value}`
-  ]?.scrollIntoView({
-    block: "nearest",
-    behavior: "smooth",
-  });
+  const element =
+    allFormatListItemRefs[
+      `${format}-${selectedFormatStandard.value}-${selectedFormatType.value}`
+    ];
+  if (element) {
+    scrollIntoView(element);
+  }
 
   // also need to select the format in the list
   const index = applicableFormats.value!.findIndex(
@@ -208,6 +229,7 @@ watch([selectedFormatType, selectedFormatStandard], () => {
   resetNavigation();
 });
 
+const isMounted = ref(false);
 onMounted(() => {
   if (!props.allFormats) {
     return;
@@ -239,90 +261,106 @@ onMounted(() => {
   }
 
   focusFormatContainer();
+  setTimeout(() => {
+    isMounted.value = true;
+  }, 0);
 });
 </script>
 
 <template>
-  <h2 class="title">Date & Time Formats</h2>
-  <div class="switch-with-title">
-    <Label class="control-title" text="Type" for="selectedFormatType">
-      <ValueSwitch
-        id="selectedFormatType"
-        v-model="selectedFormatType"
-        compact
-        :possible-values="typesToDisplayInValueSwitch"
-      />
-    </Label>
-  </div>
-  <div class="switch-with-title">
-    <Label class="control-title" text="Standard" for="selectedFormatStandard">
-      <ValueSwitch
-        id="selectedFormatStandard"
-        v-model="selectedFormatStandard"
-        compact
-        :possible-values="categoriesToDisplayInValueSwitch"
-      />
-    </Label>
-  </div>
-  <div class="date-format-input">
-    <Label class="control-title" text="Date formats" for="dateFormats">
-      <div
-        id="dateFormats"
-        ref="formatContainerRef"
-        class="formats-container"
-        tabindex="0"
-        role="menu"
-        @keydown="onKeydown"
-      >
-        <div v-if="applicableFormats === null" class="no-formats-available">
-          <LoadingIcon class="loading-spinner" />
-        </div>
+  <div class="popover">
+    <h2 class="title">Date & Time Formats</h2>
+    <div class="switch-with-title">
+      <Label class="control-title" text="Type" for="selectedFormatType">
+        <ValueSwitch
+          id="selectedFormatType"
+          v-model="selectedFormatType"
+          compact
+          :possible-values="typesToDisplayInValueSwitch"
+          @keydown.tab.shift="emit('cancel')"
+        />
+      </Label>
+    </div>
+    <div class="switch-with-title">
+      <Label class="control-title" text="Standard" for="selectedFormatStandard">
+        <ValueSwitch
+          id="selectedFormatStandard"
+          v-model="selectedFormatStandard"
+          compact
+          :possible-values="categoriesToDisplayInValueSwitch"
+        />
+      </Label>
+    </div>
+    <div class="date-format-input">
+      <Label class="control-title" text="Date formats" for="dateFormats">
         <div
-          v-else-if="applicableFormats.length === 0"
-          class="no-formats-available"
+          id="dateFormats"
+          ref="formatContainerRef"
+          class="formats-container"
+          :style="{ '--formats-container-border-width': BORDER_WIDTH + 'px' }"
+          tabindex="0"
+          role="menu"
+          @keydown="onKeydown"
         >
-          No formats available
-        </div>
-        <template v-else>
-          <div
-            v-for="(format, index) in applicableFormats"
-            :key="createFormatListItemKey(format)"
-            :ref="createFormatListItemRef(format)"
-            :class="{ selected: index === currentIndex }"
-            class="single-format"
-            role="menuitem"
-            @click="currentIndex = index"
-            @dblclick="() => emit('commit', format.format)"
-          >
-            <span class="format-pattern">
-              {{ format.format }}
-            </span>
-            <span class="format-preview">
-              {{ format.example }}
-            </span>
+          <div v-if="applicableFormats === null" class="no-formats-available">
+            <LoadingIcon class="loading-spinner" />
           </div>
-        </template>
-      </div>
-    </Label>
-  </div>
-  <div class="commit-button-container">
-    <Tooltip :text="commitButtonDisabledErrorReason">
-      <FunctionButton
-        primary
-        class="commit-button"
-        :disabled="!selectedFormat"
-        @click="
-          () => {
-            emit('commit', selectedFormat!);
-          }
-        "
-        >Set format</FunctionButton
-      >
-    </Tooltip>
+          <div
+            v-else-if="applicableFormats.length === 0"
+            class="no-formats-available"
+          >
+            No formats available
+          </div>
+          <template v-else>
+            <div
+              v-for="(format, index) in applicableFormats"
+              :key="createFormatListItemKey(format)"
+              :ref="createFormatListItemRef(format)"
+              :class="{ selected: index === currentIndex }"
+              class="single-format"
+              role="menuitem"
+              @click="currentIndex = index"
+              @dblclick="() => emit('commit', format.format)"
+            >
+              <span class="format-pattern">
+                {{ format.format }}
+              </span>
+              <span class="format-preview">
+                {{ format.example }}
+              </span>
+            </div>
+          </template>
+        </div>
+      </Label>
+    </div>
+    <div class="commit-button-container">
+      <Tooltip :text="commitButtonDisabledErrorReason">
+        <FunctionButton
+          primary
+          class="commit-button"
+          :disabled="!selectedFormat"
+          @keydown.tab="
+            (e: KeydownEvent['event']) => e.shiftKey || emit('cancel')
+          "
+          @click="
+            () => {
+              emit('commit', selectedFormat!);
+            }
+          "
+          >Set format</FunctionButton
+        >
+      </Tooltip>
+    </div>
   </div>
 </template>
 
 <style lang="postcss" scoped>
+.popover {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
 .control-title {
   font-size: 14px;
   margin-bottom: var(--space-4);
@@ -344,7 +382,7 @@ onMounted(() => {
   width: 100%;
 
   & .formats-container {
-    border: 1px solid var(--knime-silver-sand);
+    border: var(--formats-container-border-width) solid var(--knime-silver-sand);
     height: 200px;
     overflow-y: auto;
     display: flex;
