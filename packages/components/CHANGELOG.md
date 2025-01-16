@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.15.1
+
+### Patch Changes
+
+- 03f69d0: Limit scrollIntoView behavior to vertical scrolling.
+
 ## 1.15.0
 
 ### Minor Changes
