@@ -8,7 +8,6 @@ import {
   ref,
   watch,
 } from "vue";
-import type { KeydownEvent } from "packages/virtual-tree/src";
 
 import { useDropdownNavigation } from "../../../../composables";
 import FunctionButton from "../../../Buttons/FunctionButton.vue";
@@ -339,9 +338,7 @@ onMounted(() => {
           primary
           class="commit-button"
           :disabled="!selectedFormat"
-          @keydown.tab="
-            (e: KeydownEvent['event']) => e.shiftKey || emit('cancel')
-          "
+          @keydown.tab="(e: KeyboardEvent) => e.shiftKey || emit('cancel')"
           @click="
             () => {
               emit('commit', selectedFormat!);
