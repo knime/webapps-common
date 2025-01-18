@@ -6,6 +6,8 @@ import {
   defineComponent,
 } from "vue";
 
+import { getAsyncSetupMethod } from "../utils";
+
 import {
   type ControlSlots,
   type VueControl,
@@ -45,12 +47,16 @@ export const defineControl = <D>(
 export const mapControls =
   (mapper: (control: VueControl<any>, key: string) => VueControl<any>) =>
   <T extends Record<string, VueControlRenderer>>(cs: T): T =>
-    Object.entries(cs).reduce((acc, [key, { control, name, tester }]) => {
-      // @ts-expect-error
-      acc[key] = {
-        control: mapper(control, key),
-        name,
-        tester,
-      };
-      return acc;
-    }, {} as T);
+    Object.entries(cs).reduce(
+      (acc, [key, { control, name, tester, __asyncSetup }]) => {
+        // @ts-expect-error
+        acc[key] = {
+          control: mapper(control, key),
+          name,
+          tester,
+          __asyncSetup: __asyncSetup || getAsyncSetupMethod(control),
+        };
+        return acc;
+      },
+      {} as T,
+    );

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { nextTick, provide, ref } from "vue";
+import { nextTick, provide, ref, watchEffect } from "vue";
 import {
   Actions,
   type CoreActions,
@@ -63,16 +63,31 @@ const provided: Provided = {
 Object.entries(provided).forEach(([key, value]) => provide(key, value));
 
 const jsonforms = ref<InstanceType<typeof JsonForms> | null>(null);
+const toBeUpdatedBeforeJsonforms: { path: string; value: any }[] = [];
+
+const dispatchUpdate = (path: string, value: any) => {
+  jsonforms.value!.dispatch(
+    Actions.update(path, () => value, {
+      source: exposedMethodSource,
+    }),
+  );
+};
+
+watchEffect(() => {
+  if (jsonforms.value) {
+    toBeUpdatedBeforeJsonforms.forEach(({ path, value }) =>
+      dispatchUpdate(path, value),
+    );
+  }
+});
 defineExpose({
-  updateData: (path: string, value: any) =>
-    jsonforms.value?.dispatch?.(
-      Actions.update(path, () => value, {
-        /**
-         * Make the action identifiable in order to prevent emitting an updateData event
-         */
-        source: exposedMethodSource,
-      }),
-    ),
+  updateData: (path: string, value: any) => {
+    if (jsonforms.value) {
+      dispatchUpdate(path, value);
+    } else {
+      toBeUpdatedBeforeJsonforms.push({ path, value });
+    }
+  },
 });
 </script>
 

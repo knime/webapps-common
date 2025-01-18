@@ -28,4 +28,5 @@ export type VueLayout = ParameterizedComponent<{
 
 export type VueLayoutRenderer = NamedTester & {
   layout: VueLayout;
+  __asyncSetup?: () => Promise<void>;
 };

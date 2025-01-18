@@ -39,6 +39,7 @@ export type VueControl<D> = PropsToComponent<VueControlProps<D>>;
 
 export type VueControlRenderer = NamedTester & {
   control: VueControl<any>;
+  __asyncSetup?: () => Promise<void>;
 };
 
 export type ExtractVueControlData<T extends VueControl<any>> =

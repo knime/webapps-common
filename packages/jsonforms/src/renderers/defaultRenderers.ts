@@ -1,7 +1,5 @@
 import { controlToRenderer } from "../higherOrderComponents/control/controlToRenderer";
-import { handleControlVisibility } from "../higherOrderComponents/control/handleVisibility";
 import type { VueControlRenderer } from "../higherOrderComponents/control/types";
-import { handleLayoutVisibility } from "../higherOrderComponents/layout/handleVisibility";
 import { layoutToRenderer } from "../higherOrderComponents/layout/layoutToRenderer";
 import type { VueLayoutRenderer } from "../higherOrderComponents/layout/types";
 import type { NamedRenderer } from "../higherOrderComponents/types";
@@ -76,15 +74,15 @@ export const toRenderers = (
   layouts: VueLayoutRenderer[],
 ): NamedRenderer[] => [
   ...renderers,
-  ...controls.map(({ name, tester, control }) => ({
+  ...controls.map(({ name, tester, control, __asyncSetup }) => ({
     name,
     tester,
-    renderer: controlToRenderer(handleControlVisibility(control)),
+    renderer: controlToRenderer(control, __asyncSetup),
   })),
-  ...layouts.map(({ name, tester, layout }) => ({
+  ...layouts.map(({ name, tester, layout, __asyncSetup }) => ({
     name,
     tester,
-    renderer: layoutToRenderer(handleLayoutVisibility(layout)),
+    renderer: layoutToRenderer(layout, __asyncSetup),
   })),
 ];
 
