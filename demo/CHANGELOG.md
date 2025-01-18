@@ -1,5 +1,16 @@
 # demo
 
+## 1.2.2
+
+### Patch Changes
+
+- f94dddb: Handle async components to allow reactivity while wrapping in higher order components
+- Updated dependencies [f94dddb]
+  - @knime/hub-features@1.2.4
+  - @knime/virtual-tree@1.3.9
+  - @knime/components@1.15.2
+  - @knime/rich-text-editor@1.3.9
+
 ## 1.2.1
 
 ### Patch Changes

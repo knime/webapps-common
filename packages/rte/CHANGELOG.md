@@ -1,5 +1,13 @@
 # @knime/rich-text-editor
 
+## 1.3.9
+
+### Patch Changes
+
+- f94dddb: Handle async components to allow reactivity while wrapping in higher order components
+- Updated dependencies [f94dddb]
+  - @knime/components@1.15.2
+
 ## 1.3.8
 
 ### Patch Changes

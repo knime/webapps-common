@@ -1,5 +1,17 @@
 # @knime/json-forms
 
+## 1.1.0
+
+### Minor Changes
+
+- f94dddb: Handle async components to allow reactivity while wrapping in higher order components
+
+### Patch Changes
+
+- Updated dependencies [f94dddb]
+  - @knime/components@1.15.2
+  - @knime/rich-text-editor@1.3.9
+
 ## 1.0.1
 
 ### Patch Changes

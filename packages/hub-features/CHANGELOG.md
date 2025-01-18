@@ -1,5 +1,13 @@
 # @knime/hub-features
 
+## 1.2.4
+
+### Patch Changes
+
+- f94dddb: Handle async components to allow reactivity while wrapping in higher order components
+- Updated dependencies [f94dddb]
+  - @knime/components@1.15.2
+
 ## 1.2.3
 
 ### Patch Changes

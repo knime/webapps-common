@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.15.2
+
+### Patch Changes
+
+- f94dddb: Handle async components to allow reactivity while wrapping in higher order components
+
 ## 1.15.1
 
 ### Patch Changes
