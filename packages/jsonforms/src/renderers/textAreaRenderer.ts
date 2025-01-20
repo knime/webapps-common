@@ -9,11 +9,11 @@ const TextAreaControl = defineAsyncComponent(
   () => import("../uiComponents/TextAreaControl.vue"),
 );
 
-export const textAreaRenderer = {
+export const textAreaRenderer = addLabel({
   name: "TextAreaControl",
-  control: addLabel(TextAreaControl),
+  control: TextAreaControl,
   tester: rankWith(
     priorityRanks.default,
     and(isStringControl, hasFormat(inputFormats.textArea)),
   ),
-};
+});

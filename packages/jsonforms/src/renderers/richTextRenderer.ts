@@ -9,11 +9,14 @@ const RichTextControl = defineAsyncComponent(
   () => import("../uiComponents/richTextControl/RichTextControl.vue"),
 );
 
-export const richTextRenderer = {
-  name: "RichTextControl",
-  control: addLabel(RichTextControl, true),
-  tester: rankWith(
-    priorityRanks.default,
-    and(isStringControl, hasFormat(inputFormats.richTextInput)),
-  ),
-};
+export const richTextRenderer = addLabel(
+  {
+    name: "RichTextControl",
+    control: RichTextControl,
+    tester: rankWith(
+      priorityRanks.default,
+      and(isStringControl, hasFormat(inputFormats.richTextInput)),
+    ),
+  },
+  { fill: true },
+);

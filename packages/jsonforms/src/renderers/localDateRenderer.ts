@@ -9,8 +9,8 @@ const DateControl = defineAsyncComponent({
   loader: () => import("../uiComponents/DateControl.vue"),
 });
 
-export const localDateRenderer = {
+export const localDateRenderer = addLabel({
   name: "DateControl",
-  control: addLabel(DateControl),
+  control: DateControl,
   tester: rankWith(priorityRanks.default, hasFormat(inputFormats.localDate)),
-};
+});

@@ -14,8 +14,8 @@ const hasComboBoxFormat = hasFormat(inputFormats.comboBox);
 
 export const comboBoxTester = and(isArray, hasComboBoxFormat);
 
-export const comboBoxRenderer = {
+export const comboBoxRenderer = addLabel({
   name: "ComboBoxControl",
-  control: addLabel(ComboBoxControl),
+  control: ComboBoxControl,
   tester: rankWith(priorityRanks.default, comboBoxTester),
-};
+});

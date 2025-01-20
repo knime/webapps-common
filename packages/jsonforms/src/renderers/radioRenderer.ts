@@ -9,11 +9,11 @@ const RadioControl = defineAsyncComponent(
   () => import("../uiComponents/RadioControl.vue"),
 );
 
-export const radioRenderer = {
+export const radioRenderer = addLabel({
   name: "RadioControl",
-  control: addLabel(RadioControl),
+  control: RadioControl,
   tester: rankWith(
     priorityRanks.default,
     and(isOneOfControl, hasFormat(inputFormats.radio)),
   ),
-};
+});

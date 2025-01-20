@@ -9,11 +9,11 @@ const TimeControl = defineAsyncComponent({
   loader: () => import("../uiComponents/TimeControl.vue"),
 });
 
-export const localTimeRenderer = {
+export const localTimeRenderer = addLabel({
   name: "TimeControl",
-  control: addLabel(TimeControl),
+  control: TimeControl,
   tester: rankWith(
     priorityRanks.default,
     and(isDateTimeControl, hasFormat(inputFormats.localTime)),
   ),
-};
+});

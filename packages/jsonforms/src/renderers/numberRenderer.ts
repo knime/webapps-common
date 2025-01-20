@@ -10,11 +10,11 @@ const NumberControl = defineAsyncComponent(
   () => import("../uiComponents/NumberControl.vue"),
 );
 
-export const numberRenderer = {
+export const numberRenderer = addLabel({
   name: "NumberControl",
-  control: addLabel(NumberControl),
+  control: NumberControl,
   tester: rankWith(
     priorityRanks.default,
     and(isNumber, hasFormat(inputFormats.number)),
   ),
-};
+});

@@ -9,11 +9,11 @@ const ColumnFilter = defineAsyncComponent(
   () => import("../uiComponents/twinlist/ColumnFilter.vue"),
 );
 
-export const columnFilterRenderer = {
+export const columnFilterRenderer = addLabel({
   name: "ColumnFilter",
-  control: addLabel(ColumnFilter),
+  control: ColumnFilter,
   tester: rankWith(
     priorityRanks.default,
     and(isControl, hasFormat(inputFormats.columnFilter)),
   ),
-};
+});

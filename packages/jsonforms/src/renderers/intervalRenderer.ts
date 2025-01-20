@@ -9,11 +9,11 @@ const IntervalControl = defineAsyncComponent(
   () => import("../uiComponents/IntervalControl.vue"),
 );
 
-export const intervalRenderer = {
+export const intervalRenderer = addLabel({
   name: "IntervalControl",
-  control: addLabel(IntervalControl),
+  control: IntervalControl,
   tester: rankWith(
     priorityRanks.default,
     and(isControl, hasFormat(inputFormats.interval)),
   ),
-};
+});

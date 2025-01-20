@@ -1,8 +1,15 @@
 import type { RendererNode, VNode } from "vue";
 import { h, ref } from "vue";
 
+import { getAsyncSetupMethod } from "../utils";
+
 import LabeledControl from "./LabeledControl.vue";
-import type { PropsToComponent, VueControl, VueControlProps } from "./types";
+import type {
+  PropsToComponent,
+  VueControl,
+  VueControlProps,
+  VueControlRenderer,
+} from "./types";
 import { defineControl } from "./util";
 
 export type VueControlPropsForLabelContent<D> = Omit<
@@ -15,12 +22,21 @@ export type VueControlPropsForLabelContent<D> = Omit<
 export type VueControlThatRequiresLabelWrapper<D> = PropsToComponent<
   VueControlPropsForLabelContent<D>
 >;
-
 export const addLabel = <D>(
-  component: VueControlThatRequiresLabelWrapper<D>,
-  fill = false,
-): VueControl<D> =>
-  defineControl((props, { slots }) => {
+  {
+    control,
+    tester,
+    name,
+    __asyncSetup,
+  }: Omit<VueControlRenderer, "control"> & {
+    control: VueControlThatRequiresLabelWrapper<D>;
+  },
+  { fill }: { fill: boolean } = { fill: false },
+): Omit<VueControlRenderer, "control"> & { control: VueControl<D> } => ({
+  name,
+  tester,
+  __asyncSetup: __asyncSetup || getAsyncSetupMethod(control),
+  control: defineControl((props, { slots }) => {
     const controlRef = ref<RendererNode | null>(null);
     const setControlElement = (vnode: VNode) => {
       if (!controlRef.value) {
@@ -33,7 +49,7 @@ export const addLabel = <D>(
         { label: props.control.label, fill },
         {
           default: ({ labelForId }: { labelForId: string }) => {
-            const vnode = h(component, {
+            const vnode = h(control, {
               ...props,
               labelForId,
             });
@@ -53,4 +69,5 @@ export const addLabel = <D>(
         },
       );
     };
-  });
+  }),
+});

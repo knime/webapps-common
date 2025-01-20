@@ -39,11 +39,11 @@ export const fallbackControlRenderers = {
   },
   textRenderer,
   checkboxRenderer,
-  anyOfTwinlistRenderer: {
+  anyOfTwinlistRenderer: addLabel({
     name: "AnyOfTwinlist",
-    control: addLabel(AnyOfTwinlist),
+    control: AnyOfTwinlist,
     tester: rankWith(priorityRanks.fallback, isAnyOfControl),
-  },
+  }),
   numberFallbackRenderer: {
     ...numberRenderer,
     tester: rankWith(priorityRanks.fallback, isNumberControl),

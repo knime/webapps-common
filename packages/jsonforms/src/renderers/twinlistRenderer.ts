@@ -29,16 +29,16 @@ const isTwinlist: Tester = (uischema) =>
 
 export const twinlistTester = and(isTwinlist, isSelection);
 
-export const twinlistRenderer = {
+export const twinlistRenderer = addLabel({
   name: "TwinlistControl",
-  control: addLabel(TwinlistControl),
+  control: TwinlistControl,
   tester: rankWith(priorityRanks.default, twinlistTester),
-};
+});
 
 export const simpleTwinlistTester = and(isTwinlist, not(isSelection));
 
-export const simpleTwinlistRenderer = {
+export const simpleTwinlistRenderer = addLabel({
   name: "SimpleTwinlistControl",
-  control: addLabel(SimpleTwinlistControl),
+  control: SimpleTwinlistControl,
   tester: rankWith(priorityRanks.default, simpleTwinlistTester),
-};
+});
