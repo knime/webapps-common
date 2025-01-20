@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.1.1
+
+### Patch Changes
+
+- 4ea5008: Determine asyncSetup when wrapping async controls with addLabel
+
 ## 1.1.0
 
 ### Minor Changes

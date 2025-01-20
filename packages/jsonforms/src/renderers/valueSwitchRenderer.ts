@@ -9,11 +9,11 @@ const ValueSwitchControl = defineAsyncComponent(
   () => import("../uiComponents/ValueSwitchControl.vue"),
 );
 
-export const valueSwitchRenderer = {
+export const valueSwitchRenderer = addLabel({
   name: "ValueSwitchControl",
-  control: addLabel(ValueSwitchControl),
+  control: ValueSwitchControl,
   tester: rankWith(
     priorityRanks.default,
     and(isOneOfControl, hasFormat(inputFormats.valueSwitch)),
   ),
-};
+});
