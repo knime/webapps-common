@@ -21,6 +21,7 @@ export const inputFormats = {
   localDate: "localDate",
   dateTime: "dateTime",
   interval: "interval",
+  dateTimeFormat: "dateTimeFormat",
 } as const;
 
 // union type of the values of the inputFormats object:

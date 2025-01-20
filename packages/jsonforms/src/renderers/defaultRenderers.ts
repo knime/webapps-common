@@ -8,6 +8,7 @@ import { checkboxesRenderer } from "./checkboxesRenderer";
 import { columnFilterRenderer } from "./columnFilterRenderer";
 import { columnSelectRenderer } from "./columnSelectRenderer";
 import { comboBoxRenderer } from "./comboBoxRenderer";
+import { dateTimeFormatPickerRenderer } from "./dateTimeFormatPickerRenderer";
 import { dateTimeRenderer } from "./dateTimeRenderer";
 import { dropdownRenderer } from "./dropdownRenderer";
 import {
@@ -37,6 +38,7 @@ export const controls = {
   columnFilterRenderer,
   comboBoxRenderer,
   dateTimeRenderer,
+  dateTimeFormatPickerRenderer,
   integerRenderer,
   intervalRenderer,
   localDateRenderer,
