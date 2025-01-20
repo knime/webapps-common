@@ -1,18 +1,26 @@
 <script setup lang="ts">
-import { type Ref, ref } from "vue";
+import { type Ref, computed, ref } from "vue";
 
 import { Label } from "@knime/components";
 
-defineProps<{
+const props = defineProps<{
   label: string;
+  hideControlHeader?: boolean;
   fill?: boolean;
 }>();
 const hover = ref(false);
 const labelForId: Ref<null | string> = ref(null);
+
+// An empty string will change the layout. In order to keep the layout we add
+// a space here that will lead to the correct height of the control header.
+// Hiding the whole header can be done by setting the hideControlHeader option
+const title = computed(() => (props.label === "" ? " " : props.label));
 </script>
 
 <template>
+  <slot v-if="hideControlHeader" label-for-id="" />
   <div
+    v-else
     :class="['dialog-label', { fill }]"
     @mouseover="hover = true"
     @mouseleave="hover = false"
@@ -21,7 +29,7 @@ const labelForId: Ref<null | string> = ref(null);
       <div class="left">
         <slot name="before-label" />
         <Label
-          :text="label"
+          :text="title"
           class="label"
           compact
           @label-for-id="labelForId = $event"
@@ -46,6 +54,7 @@ const labelForId: Ref<null | string> = ref(null);
   position: relative;
   display: flex;
   flex-direction: column;
+  white-space: pre;
 
   &.fill {
     flex-grow: 1;

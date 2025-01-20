@@ -171,7 +171,10 @@ const onChangeDropDown = (value: string) => {
 </script>
 
 <template>
-  <LabeledControl :label="control.label">
+  <LabeledControl
+    :label="control.label"
+    :hide-control-header="control.uischema.options?.hideControlHeader"
+  >
     <template #before-label>
       <Checkbox v-if="showCheckbox" v-bind="checkboxProps" />
     </template>

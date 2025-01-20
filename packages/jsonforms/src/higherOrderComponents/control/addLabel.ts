@@ -1,5 +1,5 @@
 import type { RendererNode, VNode } from "vue";
-import { h, ref } from "vue";
+import { computed, h, ref } from "vue";
 
 import { getAsyncSetupMethod } from "../utils";
 
@@ -43,10 +43,20 @@ export const addLabel = <D>(
         controlRef.value = vnode.el;
       }
     };
+    const hideControlHeader = computed(
+      () => props.control.uischema.options?.hideControlHeader,
+    );
     return () => {
+      if (hideControlHeader.value) {
+        return h(control, { ...props, labelForId: "" });
+      }
       return h(
         LabeledControl,
-        { label: props.control.label, fill },
+        {
+          label: props.control.label,
+          fill,
+          hideControlHeader: props.control.uischema.options?.hideControlHeader,
+        },
         {
           default: ({ labelForId }: { labelForId: string }) => {
             const vnode = h(control, {
