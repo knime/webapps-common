@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.2.0
+
+### Minor Changes
+
+- b9fbc0d: Add dateTimeFormat renderer.
+
 ## 1.1.1
 
 ### Patch Changes
