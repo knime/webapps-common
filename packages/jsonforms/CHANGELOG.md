@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.2.1
+
+### Patch Changes
+
+- be23d17: Allow hiding and removing labels from jsonforms control renderers
+
 ## 1.2.0
 
 ### Minor Changes
