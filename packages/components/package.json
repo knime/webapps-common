@@ -47,7 +47,7 @@
     "gsap": "^3.12.5",
     "lodash-es": "4.17.21",
     "typescript": "^5.4.5",
-    "v-calendar": "3.0.3"
+    "v-calendar": "git+https://bitbucket.org/KNIME/v-calendar.git"
   },
   "peerDependencies": {
     "vue": "3.x"

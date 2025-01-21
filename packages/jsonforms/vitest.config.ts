@@ -1,4 +1,5 @@
 import { fileURLToPath } from "node:url";
+import path from "path";
 
 import vue from "@vitejs/plugin-vue";
 import { defineConfig } from "vitest/config";
@@ -69,6 +70,21 @@ export default defineConfig(({ mode }) => {
         reporter: ["html", "text", "lcov"],
         reportsDirectory: getReportDirectory(testMode),
       },
+      alias: [
+        {
+          find: "v-calendar",
+          replacement: "v-calendar",
+          customResolver: {
+            resolveId: (source) =>
+              source === "v-calendar"
+                ? path.resolve(
+                    __dirname,
+                    "node_modules/v-calendar/dist/es/index.js",
+                  )
+                : null,
+          },
+        },
+      ],
     },
   };
 });

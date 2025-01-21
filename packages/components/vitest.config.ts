@@ -1,3 +1,4 @@
+import path from "path";
 import { fileURLToPath } from "url";
 
 import vue from "@vitejs/plugin-vue";
@@ -12,5 +13,20 @@ export default defineProject({
   test: {
     environment: "jsdom",
     setupFiles: [fileURLToPath(new URL("vitest.setup.ts", import.meta.url))],
+    alias: [
+      {
+        find: "v-calendar",
+        replacement: "v-calendar",
+        customResolver: {
+          resolveId: (source) =>
+            source === "v-calendar"
+              ? path.resolve(
+                  __dirname,
+                  "node_modules/v-calendar/dist/es/index.js",
+                )
+              : null,
+        },
+      },
+    ],
   },
 });
