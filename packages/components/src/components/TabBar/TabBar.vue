@@ -1,6 +1,7 @@
 <script>
-import Carousel from "../Carousel/Carousel.vue";
+import { ref } from "vue";
 
+import Carousel from "../Carousel/Carousel.vue";
 /**
  * A radio button group that looks like a tab bar
  */
@@ -67,6 +68,18 @@ export default {
     },
   },
   emits: ["update:modelValue"],
+  setup(props) {
+    // copy needed to be able to use v-model instead of :checked attribute due to SSR hydration issues
+    const localModelValue = ref(props.modelValue);
+    return {
+      localModelValue,
+    };
+  },
+  watch: {
+    modelValue(newValue) {
+      this.localModelValue = newValue;
+    },
+  },
   created() {
     const availableTabs = this.possibleValues.filter((tab) => !tab.disabled);
     let initialTab = availableTabs.find((tab) => tab.value === this.modelValue);
@@ -105,11 +118,11 @@ export default {
           :title="item.title"
         >
           <input
+            v-model="localModelValue"
             :name="name"
             :value="item.value"
             :disabled="disabled || item.disabled"
             type="radio"
-            :checked="item.value === modelValue"
             @change="onChange(item.value)"
           />
           <span>
