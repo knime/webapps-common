@@ -19,6 +19,7 @@ export const inputFormats = {
   textMessage: "textMessage",
   localTime: "localTime",
   localDate: "localDate",
+  zonedDateTime: "zonedDateTime",
   dateTime: "dateTime",
   interval: "interval",
   dateTimeFormat: "dateTimeFormat",

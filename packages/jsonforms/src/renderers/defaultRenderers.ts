@@ -32,6 +32,7 @@ import { textMessageRenderer } from "./textMessageRenderer";
 import { simpleTwinlistRenderer, twinlistRenderer } from "./twinlistRenderer";
 import { valueSwitchRenderer } from "./valueSwitchRenderer";
 import { verticalLayoutRenderer } from "./verticalLayoutRenderer";
+import { zonedDateTimeRenderer } from "./zonedDateTimeRenderer";
 
 export const controls = {
   checkboxesRenderer,
@@ -52,6 +53,7 @@ export const controls = {
   textAreaRenderer,
   twinlistRenderer,
   valueSwitchRenderer,
+  zonedDateTimeRenderer,
   // without label:
   simpleButtonRenderer,
   textMessageRenderer,
