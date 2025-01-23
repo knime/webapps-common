@@ -1,5 +1,14 @@
 # @knime/json-forms
 
+## 1.2.3
+
+### Patch Changes
+
+- ec12810: Replace v-calendar npm dep version with git url
+- Updated dependencies [ec12810]
+  - @knime/components@1.15.4
+  - @knime/rich-text-editor@1.3.11
+
 ## 1.2.2
 
 ### Patch Changes

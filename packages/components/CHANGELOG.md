@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.15.4
+
+### Patch Changes
+
+- ec12810: Replace v-calendar npm dep version with git url
+
 ## 1.15.3
 
 ### Patch Changes
