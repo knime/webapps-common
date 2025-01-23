@@ -1,5 +1,11 @@
 # @knime/ui-extension-service
 
+## 2.0.0
+
+### Major Changes
+
+- 52708e6: Moved UIExtension API definition from @knime/ui-extension-service to @knime/ui-extension-renderer. Breaking changes for embedders (i.e. consumers of knime/ui-extension-renderer): The vue components are available under "@knime/ui-extension-renderer/vue" now (along with all necessary types). For ui extensions (i.e. consumerts of @knime/ui-extension-service): The API no longer uses Enums but instead union types of concrete strings.
+
 ## 1.2.1
 
 ### Patch Changes
