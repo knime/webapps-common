@@ -47,7 +47,7 @@
     "postcss": "8.4.5",
     "type-fest": "4.26.1",
     "typescript": "^5.4.5",
-    "v-calendar": "git+https://bitbucket.org/KNIME/v-calendar.git",
+    "v-calendar": "git+https://bitbucket.org/KNIME/v-calendar",
     "vite": "^5.4.8",
     "vite-plugin-dts": "4.3.0",
     "vite-svg-loader": "5.1.0",

@@ -190,8 +190,8 @@ importers:
         specifier: ^5.4.5
         version: 5.4.5
       v-calendar:
-        specifier: git+https://bitbucket.org/KNIME/v-calendar.git
-        version: https://bitbucket.org/KNIME/v-calendar/get/7b055aaea6f446c1d9ac3285deca9262ac8e538b.tar.gz(@popperjs/core@2.11.8)(vue@3.4.27(typescript@5.4.5))
+        specifier: git+https://bitbucket.org/KNIME/v-calendar
+        version: https://bitbucket.org/KNIME/v-calendar/get/31f97bfb0854e28c87f35ee28c8f332181c22e8f.tar.gz(@popperjs/core@2.11.8)(vue@3.4.27(typescript@5.4.5))
       vue:
         specifier: 3.x
         version: 3.4.27(typescript@5.4.5)
@@ -361,8 +361,8 @@ importers:
         specifier: ^5.4.5
         version: 5.4.5
       v-calendar:
-        specifier: git+https://bitbucket.org/KNIME/v-calendar.git
-        version: https://bitbucket.org/KNIME/v-calendar/get/7b055aaea6f446c1d9ac3285deca9262ac8e538b.tar.gz(@popperjs/core@2.11.8)(vue@3.4.27(typescript@5.4.5))
+        specifier: git+https://bitbucket.org/KNIME/v-calendar
+        version: https://bitbucket.org/KNIME/v-calendar/get/31f97bfb0854e28c87f35ee28c8f332181c22e8f.tar.gz(@popperjs/core@2.11.8)(vue@3.4.27(typescript@5.4.5))
       vite:
         specifier: ^5.4.8
         version: 5.4.8(@types/node@20.11.26)(sugarss@4.0.1(postcss@8.4.5))(terser@5.36.0)
@@ -4960,8 +4960,8 @@ packages:
     resolution: {integrity: sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA==}
     hasBin: true
 
-  v-calendar@https://bitbucket.org/KNIME/v-calendar/get/7b055aaea6f446c1d9ac3285deca9262ac8e538b.tar.gz:
-    resolution: {tarball: https://bitbucket.org/KNIME/v-calendar/get/7b055aaea6f446c1d9ac3285deca9262ac8e538b.tar.gz}
+  v-calendar@https://bitbucket.org/KNIME/v-calendar/get/31f97bfb0854e28c87f35ee28c8f332181c22e8f.tar.gz:
+    resolution: {tarball: https://bitbucket.org/KNIME/v-calendar/get/31f97bfb0854e28c87f35ee28c8f332181c22e8f.tar.gz}
     version: 3.1.2
     peerDependencies:
       '@popperjs/core': ^2.0.0
@@ -10211,7 +10211,7 @@ snapshots:
 
   uuid@9.0.1: {}
 
-  v-calendar@https://bitbucket.org/KNIME/v-calendar/get/7b055aaea6f446c1d9ac3285deca9262ac8e538b.tar.gz(@popperjs/core@2.11.8)(vue@3.4.27(typescript@5.4.5)):
+  v-calendar@https://bitbucket.org/KNIME/v-calendar/get/31f97bfb0854e28c87f35ee28c8f332181c22e8f.tar.gz(@popperjs/core@2.11.8)(vue@3.4.27(typescript@5.4.5)):
     dependencies:
       '@popperjs/core': 2.11.8
       '@types/lodash': 4.17.4
