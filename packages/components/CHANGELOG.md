@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.15.3
+
+### Patch Changes
+
+- c1bb1a7: fix rare TabBar state SSR/CSR hydration issues
+
 ## 1.15.2
 
 ### Patch Changes
