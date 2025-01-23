@@ -1,5 +1,11 @@
 # @knime/ui-extension-service
 
+## 2.0.1
+
+### Patch Changes
+
+- e392961: Version bump of v-calendar in the pnpm-lock which should have been part of a previous version bump
+
 ## 2.0.0
 
 ### Major Changes

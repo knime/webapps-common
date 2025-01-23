@@ -1,5 +1,13 @@
 # @knime/rich-text-editor
 
+## 1.3.12
+
+### Patch Changes
+
+- e392961: Version bump of v-calendar in the pnpm-lock which should have been part of a previous version bump
+- Updated dependencies [e392961]
+  - @knime/components@1.15.5
+
 ## 1.3.11
 
 ### Patch Changes
