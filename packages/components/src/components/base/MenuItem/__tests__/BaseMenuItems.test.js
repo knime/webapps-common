@@ -521,7 +521,11 @@ describe("BaseMenuItems.vue", () => {
       let menu = wrapper.findComponent(BaseMenuItems).find("ul");
 
       menu.trigger("pointerleave");
-      expect(wrapper.emitted("item-hovered")[0]).toStrictEqual([null, "menu"]);
+      expect(wrapper.emitted("item-hovered")[0]).toStrictEqual([
+        null,
+        "menu",
+        null,
+      ]);
     });
   });
 });

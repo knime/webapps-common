@@ -105,7 +105,7 @@ type Emits = {
   close: [];
   "item-click": [event: MouseEvent, item: MenuItem, menuId: string];
   "item-focused": [itemId: string | null, item: MenuItem | null];
-  "item-hovered": [item: MenuItem | null, menuId: string, index: number];
+  "item-hovered": [item: MenuItem | null, menuId: string, index: number | null];
   "close-submenu": [];
 };
 
@@ -177,8 +177,12 @@ const onKeydownWithOpenCloseSubMenu = (event: KeyboardEvent) => {
   onDropdownNavigationKeydown(event);
 };
 
-const onItemHovered = (item: MenuItem | null, id: string, index: number) => {
-  if (item !== null) {
+const onItemHovered = (
+  item: MenuItem | null,
+  id: string,
+  index: number | null,
+) => {
+  if (item !== null && index !== null) {
     setOpenSubmenuIndex(index);
   }
   emit("item-hovered", item, id, index);

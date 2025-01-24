@@ -36,8 +36,8 @@ export default {
       },
     },
     modelValue: {
-      type: Array as PropType<Id[] | null>,
-      default: () => {},
+      type: Array as PropType<Id[]>,
+      default: () => [],
     },
     disabled: {
       type: Boolean,

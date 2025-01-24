@@ -42,7 +42,7 @@ export type ToastButton = BaseToastButton &
   (ToastButtonWithIcon | ToastButtonWithText);
 
 export interface ToastStack {
-  serviceSymbol?: Symbol | null;
+  serviceSymbol?: symbol | null;
   propertyName?: string | null;
 }
 
@@ -101,14 +101,14 @@ export interface ToastServiceComposableOptions {
   /**
    * The Symbol for the toast service object properties to be bound to.
    */
-  serviceSymbol?: Symbol;
+  serviceSymbol?: symbol;
 }
 
 export interface UseToastsOptions {
   /**
    * Custom Symbol to be used as the injection key.
    */
-  serviceSymbol?: Symbol | null;
+  serviceSymbol?: symbol | null;
 
   /**
    * Custom global property name. "$toast" by default.
