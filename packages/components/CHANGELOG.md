@@ -1,5 +1,12 @@
 # @knime/components
 
+## 1.15.6
+
+### Patch Changes
+
+- fix TS issues:
+  these were showing up in other consuming projects that have stricter ts configs
+
 ## 1.15.5
 
 ### Patch Changes
