@@ -331,6 +331,12 @@ export default {
         errorMessage,
       };
     },
+    onKeydownEscape(e, hidePopover) {
+      if (this.popoverIsVisible) {
+        e.preventDefault();
+        hidePopover();
+      }
+    },
   },
 };
 </script>
@@ -355,9 +361,15 @@ export default {
         >
           <!--Custom Input Slot-->
           <template
-            #default="{ inputValue, inputEvents, hidePopover, togglePopover }"
+            #default="{
+              inputValue,
+              inputEvents,
+              hidePopover,
+              togglePopover,
+              showPopover,
+            }"
           >
-            <div>
+            <div @keydown.esc="onKeydownEscape($event, hidePopover)">
               <input
                 :id="id"
                 :value="inputValue"
@@ -369,7 +381,9 @@ export default {
               <span
                 :class="['button', { active: popoverIsVisible, disabled }]"
                 title="Select date"
+                :tabindex="disabled ? -1 : 0"
                 @click="disabled ? () => {} : togglePopover()"
+                @keydown.space.prevent="disabled ? () => {} : showPopover()"
               >
                 <CalendarIcon />
               </span>
@@ -648,6 +662,14 @@ export default {
 
       &:hover:not(.disabled) {
         cursor: pointer;
+      }
+
+      &:focus:not(.disabled) {
+        outline: none;
+      }
+
+      &:hover:not(.disabled),
+      &:focus:not(.disabled) {
         background-color: var(--theme-date-input-input-hover-background);
       }
 
