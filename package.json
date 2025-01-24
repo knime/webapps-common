@@ -21,6 +21,7 @@
     "build:jsonforms": "pnpm --filter @knime/jsonforms build",
     "build:styles": "pnpm --filter @knime/styles build",
     "build:ui-extension-service": "pnpm --filter @knime/ui-extension-service build",
+    "build:types": "pnpm --filter @knime/components build:types",
     "build:demo": "pnpm --filter demo build",
     "demo": "pnpm run build:packages && pnpm run --filter demo dev",
     "test:unit": "TZ='Europe/Berlin' vitest",

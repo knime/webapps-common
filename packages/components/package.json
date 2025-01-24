@@ -17,19 +17,17 @@
   "sideEffects": false,
   "exports": {
     ".": {
-      "import": "./src/index.ts"
+      "import": "./src/index.ts",
+      "types": "./types/src/index.d.ts"
     },
     "./date-time-input": {
       "import": "./src/components/forms/DateTimeInput/index.ts"
-    },
-    "./js": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
     }
   },
   "scripts": {
     "type-check": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
-    "test:unit": "TZ='Europe/Berlin' vitest"
+    "test:unit": "TZ='Europe/Berlin' vitest",
+    "build:types": "vue-tsc --declaration --emitDeclarationOnly -p tsconfig.app.json"
   },
   "dependencies": {
     "@floating-ui/vue": "1.0.2",
