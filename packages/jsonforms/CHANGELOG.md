@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.3.1
+
+### Patch Changes
+
+- 09d7f1a: Fix style file rename. The last published version outputs a jsonforms.css instead of a styles.css which broke the /styles export
+
 ## 1.3.0
 
 ### Minor Changes
