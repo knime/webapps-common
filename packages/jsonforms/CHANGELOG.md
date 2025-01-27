@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.3.2
+
+### Patch Changes
+
+- 77891fd: Fix description style overwrite that was intended to only impact control labels.
+
 ## 1.3.1
 
 ### Patch Changes
