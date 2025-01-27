@@ -32,7 +32,7 @@ export default defineConfig({
           vue: "Vue",
         },
         assetFileNames: (assetInfo) => {
-          if (assetInfo.name === "style.css") {
+          if (assetInfo.name.endsWith(".css")) {
             return "knime-jsonforms.css";
           }
           return assetInfo.name;
