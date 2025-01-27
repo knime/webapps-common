@@ -76,5 +76,11 @@ module.exports = {
         ignorePseudoClasses: ["deep", "global", "slotted"],
       },
     ],
+    "declaration-property-value-keyword-no-deprecated": [
+      true,
+      {
+        ignoreKeywords: ["break-word"],
+      },
+    ],
   },
 };

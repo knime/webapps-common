@@ -93,7 +93,7 @@ h2 {
 
 .link-icon {
   padding: 0 20px;
-  margin: 0 20 px;
+  margin: 0 20px;
 }
 
 :deep(.tooltip) {
