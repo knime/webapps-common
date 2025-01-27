@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.3.0
+
+### Minor Changes
+
+- b4766a7: Create combined widget for ZonedDateTime inputs
+
 ## 1.2.5
 
 ### Patch Changes
