@@ -43,7 +43,6 @@ export default {
 
   line-height: 26px;
   overflow-wrap: anywhere;
-  word-break: break-word; /* Safari needs this */
 
   &.plain {
     white-space: pre-line;

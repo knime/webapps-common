@@ -273,7 +273,7 @@ watch(toRef(props, "active"), (active) => {
         font-weight: 300;
         font-size: 13px;
         line-height: 150%;
-        word-break: break-word;
+        overflow-wrap: anywhere;
         white-space: break-spaces;
 
         & button.show-more {
