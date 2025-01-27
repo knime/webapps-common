@@ -31,7 +31,7 @@
     "license-check": "src/collect-packages.js"
   },
   "volta": {
-    "node": "20.11.1",
+    "node": "22.11.0",
     "pnpm": "9.1.4"
   }
 }

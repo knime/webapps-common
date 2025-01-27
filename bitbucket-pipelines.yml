@@ -1,4 +1,4 @@
-image: node:20.15.1
+image: node:22.11.0 # using 22.11.0 because the experimental feature for importing ESM (enabled by default starting with node 22.12.0) significantly slows test execution in the pipeline (https://github.com/vitest-dev/vitest/issues/7302)
 
 options:
   max-time: 15
