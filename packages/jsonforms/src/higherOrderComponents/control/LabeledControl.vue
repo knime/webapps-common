@@ -54,7 +54,6 @@ const title = computed(() => (props.label === "" ? " " : props.label));
   position: relative;
   display: flex;
   flex-direction: column;
-  white-space: pre;
 
   &.fill {
     flex-grow: 1;
@@ -73,6 +72,7 @@ const title = computed(() => (props.label === "" ? " " : props.label));
       & .label {
         min-width: 0;
         flex-shrink: 1;
+        white-space: pre;
       }
     }
   }
