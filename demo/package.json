@@ -36,8 +36,8 @@
   },
   "devDependencies": {
     "@knime/eslint-config": "workspace:*",
-    "@tsconfig/node20": "20.1.2",
-    "@types/node": "20.11.6",
+    "@tsconfig/node22": "22.0.0",
+    "@types/node": "22.10.10",
     "@vitejs/plugin-vue": "5.0.3",
     "eslint": "8.56.0",
     "gh-pages": "5.0.0",
@@ -48,9 +48,9 @@
     "vite-svg-loader": "5.1.0"
   },
   "engines": {
-    "node": "20.x"
+    "node": "22.x"
   },
   "volta": {
-    "node": "20.11.0"
+    "node": "22.11.0"
   }
 }
