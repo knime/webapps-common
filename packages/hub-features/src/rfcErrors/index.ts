@@ -1,6 +1,7 @@
 import { h } from "vue";
 import { FetchError } from "ofetch";
-import type { Toast } from "packages/components/src";
+
+import type { Toast } from "@knime/components";
 
 import RFCErrorToastTemplate from "./RFCErrorToastTemplate.vue";
 import { RFCError, type RFCErrorData } from "./types";
