@@ -376,7 +376,6 @@ export default {
                 :disabled="disabled"
                 v-on="inputEvents"
                 @change="onTextInputChange($event, hidePopover)"
-                @blur="hidePopover"
               />
               <span
                 :class="['button', { active: popoverIsVisible, disabled }]"
