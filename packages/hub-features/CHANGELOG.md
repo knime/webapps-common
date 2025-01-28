@@ -1,5 +1,11 @@
 # @knime/hub-features
 
+## 1.2.9
+
+### Patch Changes
+
+- 8cf8803: Correcting type import path for Toast
+
 ## 1.2.8
 
 ### Patch Changes
