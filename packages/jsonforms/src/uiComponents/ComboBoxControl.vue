@@ -3,7 +3,7 @@ import { computed, onMounted, ref } from "vue";
 
 import { ComboBox } from "@knime/components";
 
-import type { VueControlPropsForLabelContent } from "../higherOrderComponents/control/addLabel";
+import type { VueControlPropsForLabelContent } from "../higherOrderComponents/control/withLabel";
 import type { PossibleValue } from "../types/ChoicesUiSchema";
 import { withSpecialChoices } from "../utils/getPossibleValuesFromUiSchema";
 
@@ -53,6 +53,7 @@ const isDisabled = computed(
     :disabled="isDisabled"
     :possible-values="noPossibleValuesPresent ? [] : options"
     :model-value="selectedIds"
+    :is-valid
     compact
     @update:model-value="(newValue: any[]) => changeValue(newValue)"
   />

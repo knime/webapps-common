@@ -59,6 +59,7 @@ describe("DateTimeInput.vue", () => {
       },
       labelForId,
       disabled: false,
+      isValid: false,
     };
 
     const component = mountJsonFormsControlLabelContent(DateTimeControl, {

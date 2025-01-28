@@ -49,6 +49,7 @@ describe("RichTextControl.vue", () => {
       },
       labelForId,
       disabled: false,
+      isValid: false,
     };
     stubs = {
       EditorContent: true,

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { TextArea } from "@knime/components";
 
-import type { VueControlPropsForLabelContent } from "../higherOrderComponents/control/addLabel";
+import type { VueControlPropsForLabelContent } from "../higherOrderComponents/control/withLabel";
 
 defineProps<VueControlPropsForLabelContent<string>>();
 </script>
@@ -13,6 +13,7 @@ defineProps<VueControlPropsForLabelContent<string>>();
     :model-value="control.data"
     :disabled="disabled"
     :rows="control.uischema.options?.rows"
+    :is-valid
     @update:model-value="changeValue"
   />
 </template>

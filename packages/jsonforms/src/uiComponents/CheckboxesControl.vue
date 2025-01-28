@@ -3,7 +3,7 @@ import { computed, onMounted, ref } from "vue";
 
 import { Checkboxes } from "@knime/components";
 
-import type { VueControlPropsForLabelContent } from "../higherOrderComponents/control/addLabel";
+import type { VueControlPropsForLabelContent } from "../higherOrderComponents/control/withLabel";
 import type { IdAndText } from "../types/ChoicesUiSchema";
 import { optionsMapper } from "../utils";
 
@@ -28,6 +28,7 @@ onMounted(() => {
     :alignment="alignment"
     :disabled="disabled"
     :model-value="control.data"
+    :is-valid
     @update:model-value="changeValue"
   />
 </template>

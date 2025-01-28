@@ -3,7 +3,7 @@ import { computed } from "vue";
 
 import { DateTimeInput } from "@knime/components/date-time-input";
 
-import type { VueControlPropsForLabelContent } from "../higherOrderComponents/control/addLabel";
+import type { VueControlPropsForLabelContent } from "../higherOrderComponents/control/withLabel";
 
 const props = defineProps<VueControlPropsForLabelContent<string>>();
 
@@ -29,6 +29,7 @@ const maximum = computed(() =>
     :date-format="options?.dateFormat"
     :min="minimum"
     :max="maximum"
+    :is-valid
     compact
     :disabled="disabled"
     @update:model-value="changeValue"

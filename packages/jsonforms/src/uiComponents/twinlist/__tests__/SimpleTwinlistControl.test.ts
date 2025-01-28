@@ -34,6 +34,7 @@ describe("SimpleTwinlistControl.vue", () => {
     props = {
       labelForId,
       disabled: false,
+      isValid: false,
       control: {
         ...getControlBase("test"),
         data: ["test_1"],

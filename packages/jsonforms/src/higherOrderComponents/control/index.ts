@@ -1,5 +1,5 @@
 export type * from "./types";
-export * from "./addLabel";
+export * from "./withLabel";
 export * from "./controlToRenderer";
 export * from "./util";
 

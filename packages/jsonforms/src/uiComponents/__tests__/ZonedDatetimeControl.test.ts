@@ -63,6 +63,7 @@ describe("ZonedDateTimeControl.vue", () => {
       },
       labelForId,
       disabled: false,
+      isValid: false,
     };
 
     const component = mountJsonFormsControlLabelContent(ZonedDateTimeControl, {

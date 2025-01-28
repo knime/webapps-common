@@ -4,13 +4,13 @@ import { isNumber } from "lodash-es";
 
 import { inputFormats, priorityRanks } from "../constants";
 import { hasFormat } from "../constants/inputFormats";
-import { addLabel } from "../higherOrderComponents/control/addLabel";
+import { withLabel } from "../higherOrderComponents/control/withLabel";
 
 const NumberControl = defineAsyncComponent(
   () => import("../uiComponents/NumberControl.vue"),
 );
 
-export const numberRenderer = addLabel({
+export const numberRenderer = withLabel({
   name: "NumberControl",
   control: NumberControl,
   tester: rankWith(

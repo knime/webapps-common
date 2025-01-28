@@ -7,7 +7,7 @@ import type { PartialDeep } from "type-fest";
 import type { TwinlistModelValue } from "@knime/components";
 import { MultiModeTwinList } from "@knime/components";
 
-import type { VueControlPropsForLabelContent } from "../../higherOrderComponents/control/addLabel";
+import type { VueControlPropsForLabelContent } from "../../higherOrderComponents/control/withLabel";
 import type { IdAndText, PossibleValue } from "../../types/ChoicesUiSchema";
 import { mergeDeep } from "../../utils";
 import { withSpecialChoices } from "../../utils/getPossibleValuesFromUiSchema";
@@ -224,6 +224,7 @@ const rightLabel = computed(
     :size="twinlistSize"
     :left-label="leftLabel"
     :right-label="rightLabel"
+    :is-valid
     compact
     show-resize-handle
     @update:selected="onSelectedChange"

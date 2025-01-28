@@ -3,13 +3,13 @@ import { and, isControl, rankWith } from "@jsonforms/core";
 
 import { inputFormats, priorityRanks } from "../constants";
 import { hasFormat } from "../constants/inputFormats";
-import { addLabel } from "../higherOrderComponents/control/addLabel";
+import { withLabel } from "../higherOrderComponents/control/withLabel";
 
 const ColumnFilter = defineAsyncComponent(
   () => import("../uiComponents/twinlist/ColumnFilter.vue"),
 );
 
-export const columnFilterRenderer = addLabel({
+export const columnFilterRenderer = withLabel({
   name: "ColumnFilter",
   control: ColumnFilter,
   tester: rankWith(

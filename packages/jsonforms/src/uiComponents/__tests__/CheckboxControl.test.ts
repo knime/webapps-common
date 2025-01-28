@@ -45,6 +45,8 @@ describe("CheckboxControl.vue", () => {
         },
       },
       disabled: false,
+      isValid: false,
+      messages: { errors: [] },
     };
     const component = await mountJsonFormsControl(CheckboxControl, {
       props,

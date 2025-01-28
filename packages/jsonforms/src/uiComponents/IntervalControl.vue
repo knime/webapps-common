@@ -3,7 +3,7 @@ import { computed } from "vue";
 
 import { IntervalInput } from "@knime/components";
 
-import type { VueControlPropsForLabelContent } from "../higherOrderComponents/control/addLabel";
+import type { VueControlPropsForLabelContent } from "../higherOrderComponents/control/withLabel";
 
 import useProvidedState from "./composables/useProvidedState";
 

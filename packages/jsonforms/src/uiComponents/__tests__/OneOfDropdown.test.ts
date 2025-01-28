@@ -46,6 +46,8 @@ describe("OneOfDropdown.vue", () => {
         },
       },
       disabled: false,
+      isValid: false,
+      messages: { errors: [] },
     };
 
     const component = mountJsonFormsControl(OneOfDropdown, { props });

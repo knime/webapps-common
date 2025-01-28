@@ -3,7 +3,7 @@ import { computed, markRaw } from "vue";
 
 import { Twinlist } from "@knime/components";
 
-import type { VueControlPropsForLabelContent } from "../../higherOrderComponents/control/addLabel";
+import type { VueControlPropsForLabelContent } from "../../higherOrderComponents/control/withLabel";
 import type { IdAndText } from "../../types/ChoicesUiSchema";
 import type { Control } from "../../types/Control";
 import inject from "../../utils/inject";
@@ -62,6 +62,7 @@ if (!choicesProvider.value) {
     :size="twinlistSize"
     :left-label="twinlistLeftLabel"
     :right-label="twinlistRightLabel"
+    :is-valid
     compact
     show-resize-handle
     :filter-chosen-values-on-possible-values-change="false"

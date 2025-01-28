@@ -49,6 +49,7 @@ describe("DateTimeFormatPickerControl.vue", () => {
       },
       labelForId,
       disabled: false,
+      isValid: false,
     };
     const component = await mountJsonFormsControlLabelContent(
       DateTimeFormatPickerControl,

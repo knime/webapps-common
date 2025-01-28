@@ -3,13 +3,13 @@ import { and, isIntegerControl, rankWith } from "@jsonforms/core";
 
 import { inputFormats, priorityRanks } from "../constants";
 import { hasFormat } from "../constants/inputFormats";
-import { addLabel } from "../higherOrderComponents/control/addLabel";
+import { withLabel } from "../higherOrderComponents/control/withLabel";
 
 const IntegerControl = defineAsyncComponent(
   () => import("../uiComponents/IntegerControl.vue"),
 );
 
-export const integerRenderer = addLabel({
+export const integerRenderer = withLabel({
   name: "IntegerControl",
   control: IntegerControl,
   tester: rankWith(

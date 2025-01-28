@@ -35,6 +35,8 @@ export const controlToRenderer = (
                     processedProps.control.value.path,
                     newValue,
                   ),
+                isValid: true, // TODO
+                messages: { errors: [] }, // TODO
               },
               ctx.slots,
             )

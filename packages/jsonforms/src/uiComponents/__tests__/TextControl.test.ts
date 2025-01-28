@@ -46,6 +46,8 @@ describe("TextControl.vue", () => {
         },
       },
       disabled: false,
+      isValid: false,
+      messages: { errors: [] },
     };
 
     const component = await mountJsonFormsControl(TextControl, {

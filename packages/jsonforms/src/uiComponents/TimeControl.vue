@@ -3,7 +3,7 @@ import { computed } from "vue";
 
 import { DateTimeInput } from "@knime/components/date-time-input";
 
-import type { VueControlPropsForLabelContent } from "../higherOrderComponents/control/addLabel";
+import type { VueControlPropsForLabelContent } from "../higherOrderComponents/control/withLabel";
 import { localTimeUtils } from "../utils/localTimeUtils";
 
 const props = defineProps<VueControlPropsForLabelContent<string>>();
@@ -20,6 +20,7 @@ const model = computed(() => localTimeUtils.fromString(props.control.data));
     :show-date="false"
     :show-time="true"
     :show-milliseconds="true"
+    :is-valid
     @update:model-value="
       (newValue) => changeValue(localTimeUtils.toString(newValue))
     "

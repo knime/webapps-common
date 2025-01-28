@@ -47,12 +47,14 @@ const choices = computed(() => options.value?.possibleValues ?? []);
       v-model="datePart"
       :required="true"
       :show-timezone="false"
+      :is-valid
       compact
       :disabled="disabled"
     />
     <!-- eslint-disable vue/attribute-hyphenation typescript complains with ':aria-label' instead of ':ariaLabel'-->
     <Dropdown
       v-model="zonePart"
+      :is-valid
       compact
       :possible-values="choices"
       ariaLabel="Timezone"

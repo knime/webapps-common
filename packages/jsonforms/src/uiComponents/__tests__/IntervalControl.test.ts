@@ -49,6 +49,7 @@ describe("IntervalControl.vue", () => {
       },
       labelForId,
       disabled: false,
+      isValid: false,
     };
     const component = await mountJsonFormsControlLabelContent(IntervalControl, {
       props,

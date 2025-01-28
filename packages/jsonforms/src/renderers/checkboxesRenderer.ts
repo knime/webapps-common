@@ -2,7 +2,7 @@ import { defineAsyncComponent } from "vue";
 import { type Tester, isAnyOfControl, rankWith } from "@jsonforms/core";
 
 import { inputFormats, priorityRanks } from "../constants";
-import { addLabel } from "../higherOrderComponents/control/addLabel";
+import { withLabel } from "../higherOrderComponents/control/withLabel";
 
 const CheckboxesControl = defineAsyncComponent(
   () => import("../uiComponents/CheckboxesControl.vue"),
@@ -13,7 +13,7 @@ export const checkboxesTester: Tester = (uischema, schema, context) => {
   return isAnyOf && uischema.options?.format === inputFormats.checkboxes;
 };
 
-export const checkboxesRenderer = addLabel({
+export const checkboxesRenderer = withLabel({
   name: "CheckboxesControl" as const,
   control: CheckboxesControl,
   tester: rankWith(priorityRanks.default, checkboxesTester),
