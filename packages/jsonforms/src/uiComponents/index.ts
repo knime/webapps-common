@@ -1,4 +1,5 @@
-import ErrorMessage from "./ErrorMessage.vue";
+import ErrorMessage from "../higherOrderComponents/control/ErrorMessage.vue";
+
 import SimpleButtonControl from "./SimpleButtonControl.vue";
 import TextControl from "./TextControl.vue";
 

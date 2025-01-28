@@ -47,6 +47,7 @@ describe("ValueSwitchControl.vue", () => {
       },
       disabled: false,
       labelForId,
+      isValid: false,
     };
 
     const component = await mountJsonFormsControlLabelContent(

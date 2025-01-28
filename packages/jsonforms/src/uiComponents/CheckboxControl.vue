@@ -5,8 +5,6 @@ import { Checkbox } from "@knime/components";
 
 import type { VueControlProps } from "../higherOrderComponents/control/types";
 
-import ErrorMessage from "./ErrorMessage.vue";
-
 defineProps<VueControlProps<boolean>>();
 const hover = ref(false);
 </script>
@@ -27,7 +25,6 @@ const hover = ref(false);
       <slot name="icon" />
     </Checkbox>
     <slot name="buttons" :hover="hover" />
-    <ErrorMessage :error="control.errors" />
   </div>
 </template>
 

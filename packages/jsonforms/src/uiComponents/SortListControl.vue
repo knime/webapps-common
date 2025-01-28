@@ -8,6 +8,7 @@ import { indexOf } from "lodash-es";
 
 import { Button, SortList } from "@knime/components";
 
+import ErrorMessageWrapper from "../higherOrderComponents/control/ErrorMessageWrapper.vue";
 import LabeledControl from "../higherOrderComponents/control/LabeledControl.vue";
 import type { VueControlProps } from "../higherOrderComponents/control/types";
 import { withSpecialChoices } from "../utils/getPossibleValuesFromUiSchema";
@@ -110,17 +111,19 @@ const controlElement = ref<typeof SortList | null>(null);
     @controlling-flow-variable-set="changeValue"
   >
     <template #default="{ labelForId }">
-      <!--  eslint-disable vue/attribute-hyphenation ariaLabel needs to be given like this for typescript to not complain -->
-      <SortList
-        :id="labelForId ?? undefined"
-        ref="controlElement"
-        :possible-values="possibleValuesWithUnknownValues"
-        :model-value="data"
-        :ariaLabel="control.label"
-        :disabled="disabled"
-        compact
-        @update:model-value="changeValue"
-      />
+      <ErrorMessageWrapper :errors="messages.errors">
+        <!--  eslint-disable vue/attribute-hyphenation ariaLabel needs to be given like this for typescript to not complain -->
+        <SortList
+          :id="labelForId ?? undefined"
+          ref="controlElement"
+          :possible-values="possibleValuesWithUnknownValues"
+          :model-value="data"
+          :ariaLabel="control.label"
+          :disabled="disabled"
+          compact
+          @update:model-value="changeValue"
+        />
+      </ErrorMessageWrapper>
     </template>
     <template #icon>
       <slot name="icon" />

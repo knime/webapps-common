@@ -58,6 +58,7 @@ describe("CheckboxesControl.vue", () => {
       },
       labelForId,
       disabled: false,
+      isValid: false,
     };
     const component = await mountJsonFormsControlLabelContent(
       CheckboxesControl,

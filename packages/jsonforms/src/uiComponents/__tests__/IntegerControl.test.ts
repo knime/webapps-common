@@ -48,6 +48,7 @@ describe("IntegerControl.vue", () => {
       },
       labelForId,
       disabled: false,
+      isValid: false,
     };
     const component = await mountJsonFormsControlLabelContent(IntegerControl, {
       props,

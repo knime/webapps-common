@@ -99,10 +99,10 @@ defineExpose({
         <slot name="top" />
         <JsonForms
           ref="jsonforms"
-          :data="data"
-          :schema="schema"
-          :uischema="uischema"
-          :renderers="renderers"
+          :data
+          :schema
+          :uischema
+          :renderers
           :middleware="updateDataMiddleware"
           @change="onSettingsChanged"
         />

@@ -8,7 +8,7 @@ import {
 
 import { inputFormats, priorityRanks } from "../constants";
 import { hasFormat } from "../constants/inputFormats";
-import { addLabel } from "../higherOrderComponents";
+import { withLabel } from "../higherOrderComponents";
 
 const DateTimeFormatPickerControl = defineAsyncComponent(
   () => import("../uiComponents/DateTimeFormatPickerControl.vue"),
@@ -21,7 +21,7 @@ export const dateTimeFormatPickerTester = (uischema: UISchemaElement) => {
   );
 };
 
-export const dateTimeFormatPickerRenderer = addLabel({
+export const dateTimeFormatPickerRenderer = withLabel({
   name: "DateTimeFormatPickerControl",
   control: DateTimeFormatPickerControl,
   tester: rankWith(

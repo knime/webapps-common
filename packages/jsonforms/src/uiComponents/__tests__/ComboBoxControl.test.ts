@@ -58,6 +58,7 @@ describe("ComboBoxControl.vue", () => {
       },
       labelForId,
       disabled: false,
+      isValid: false,
     };
     const component = mountJsonFormsControlLabelContent(ComboBoxControl, {
       props,

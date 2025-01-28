@@ -29,6 +29,8 @@ describe("TextMessageControl.vue", () => {
         },
       },
       disabled: false,
+      isValid: false,
+      messages: { errors: [] },
     };
   });
 

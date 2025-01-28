@@ -9,8 +9,8 @@ import {
 } from "@jsonforms/core";
 
 import { priorityRanks } from "../constants";
-import { addLabel } from "../higherOrderComponents/control/addLabel";
 import type { VueControlRenderer } from "../higherOrderComponents/control/types";
+import { withLabel } from "../higherOrderComponents/control/withLabel";
 import type { VueLayoutRenderer } from "../higherOrderComponents/layout/types";
 
 import { checkboxRenderer } from "./checkboxRenderer";
@@ -39,7 +39,7 @@ export const fallbackControlRenderers = {
   },
   textRenderer,
   checkboxRenderer,
-  anyOfTwinlistRenderer: addLabel({
+  anyOfTwinlistRenderer: withLabel({
     name: "AnyOfTwinlist",
     control: AnyOfTwinlist,
     tester: rankWith(priorityRanks.fallback, isAnyOfControl),

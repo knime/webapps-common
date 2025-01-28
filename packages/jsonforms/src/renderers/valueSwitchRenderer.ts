@@ -3,13 +3,13 @@ import { and, isOneOfControl, rankWith } from "@jsonforms/core";
 
 import { inputFormats, priorityRanks } from "../constants";
 import { hasFormat } from "../constants/inputFormats";
-import { addLabel } from "../higherOrderComponents/control/addLabel";
+import { withLabel } from "../higherOrderComponents/control/withLabel";
 
 const ValueSwitchControl = defineAsyncComponent(
   () => import("../uiComponents/ValueSwitchControl.vue"),
 );
 
-export const valueSwitchRenderer = addLabel({
+export const valueSwitchRenderer = withLabel({
   name: "ValueSwitchControl",
   control: ValueSwitchControl,
   tester: rankWith(

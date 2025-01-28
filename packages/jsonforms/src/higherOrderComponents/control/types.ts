@@ -2,6 +2,10 @@ import type { useJsonFormsControl } from "@jsonforms/vue";
 
 import type { NamedTester, ParameterizedComponent } from "../types";
 
+export type Messages = {
+  errors: string[];
+};
+
 /**
  * The props that a control can have.
  * I.e., the props of the script setup vue components which are wrapped by modifiers.
@@ -14,6 +18,8 @@ export type VueControlProps<D> = {
   changeValue: (newValue: D) => void;
   disabled: boolean;
   labelForId?: null;
+  isValid: boolean;
+  messages: Messages;
 };
 
 /**

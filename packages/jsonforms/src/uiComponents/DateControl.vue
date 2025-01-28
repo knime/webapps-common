@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { DateTimeInput } from "@knime/components/date-time-input";
 
-import type { VueControlPropsForLabelContent } from "../higherOrderComponents/control/addLabel";
+import type { VueControlPropsForLabelContent } from "../higherOrderComponents/control/withLabel";
 
 defineProps<VueControlPropsForLabelContent<string>>();
 </script>

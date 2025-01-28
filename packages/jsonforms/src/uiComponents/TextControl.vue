@@ -3,6 +3,7 @@ import { computed, ref } from "vue";
 
 import { Checkbox, InputField } from "@knime/components";
 
+import ErrorMessageWrapper from "../higherOrderComponents/control/ErrorMessageWrapper.vue";
 import LabeledControl from "../higherOrderComponents/control/LabeledControl.vue";
 import type { VueControlProps } from "../higherOrderComponents/control/types";
 
@@ -39,16 +40,18 @@ const { showCheckbox, showControl, checkboxProps } = useHideOnNull(
       <Checkbox v-if="showCheckbox" v-bind="checkboxProps" />
     </template>
     <template #default="{ labelForId }">
-      <InputField
-        v-if="showControl"
-        :id="labelForId"
-        ref="controlElement"
-        :placeholder="placeholder"
-        :model-value="control.data"
-        :disabled="disabled"
-        compact
-        @update:model-value="changeValue"
-      />
+      <ErrorMessageWrapper v-if="showControl" :errors="messages.errors">
+        <InputField
+          :id="labelForId"
+          ref="controlElement"
+          :placeholder="placeholder"
+          :model-value="control.data"
+          :disabled="disabled"
+          :is-valid
+          compact
+          @update:model-value="changeValue"
+        />
+      </ErrorMessageWrapper>
     </template>
     <template #icon>
       <slot name="icon" />

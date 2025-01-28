@@ -3,7 +3,7 @@ import { type Ref, computed, onMounted, ref } from "vue";
 
 import { RadioButtons, ValueSwitch } from "@knime/components";
 
-import type { VueControlPropsForLabelContent } from "../higherOrderComponents/control/addLabel";
+import type { VueControlPropsForLabelContent } from "../higherOrderComponents/control/withLabel";
 import { type IdAndText } from "../types/ChoicesUiSchema";
 import { optionsMapper } from "../utils";
 

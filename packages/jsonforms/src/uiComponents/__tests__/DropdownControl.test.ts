@@ -69,6 +69,8 @@ describe("DropdownControl.vue", () => {
         },
       },
       disabled: false,
+      isValid: false,
+      messages: { errors: [] },
     };
     const component = await mountJsonFormsControl(DropdownControl, {
       props,

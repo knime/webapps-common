@@ -8,14 +8,14 @@ import {
   type ControlSlots,
   type VueControl,
   type VueControlProps,
-  addLabel,
   defineControl,
+  withLabel,
 } from "../..";
 import { getControlBase } from "../../../../testUtils";
 
 import TestControlLabelContent from "./TestControlLabelContent.vue";
 
-describe("addLabel", () => {
+describe("withLabel", () => {
   let props: VueControlProps<string>;
 
   const testLabel = "Test Label";
@@ -37,6 +37,8 @@ describe("addLabel", () => {
       handleChange: vi.fn(),
       changeValue: vi.fn(),
       disabled: false,
+      isValid: true,
+      messages: { errors: [] },
     };
   });
 
@@ -46,12 +48,18 @@ describe("addLabel", () => {
     tester: () => 1,
   };
 
-  const testControlRenderer = addLabel(testControlLabelContentRenderer);
+  const testControlRenderer = withLabel(testControlLabelContentRenderer);
 
   const mountTestControlRenderer = () =>
     mount(testControlRenderer.control, {
       props,
     });
+
+  const propsWithoutMessages = (props: VueControlProps<string>) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { messages, ...rest } = props;
+    return rest;
+  };
 
   it("adds a label to the control", () => {
     const wrapper = mountTestControlRenderer();
@@ -60,7 +68,7 @@ describe("addLabel", () => {
     });
     expect(
       wrapper.findComponent(TestControlLabelContent).props(),
-    ).toMatchObject(props);
+    ).toMatchObject(propsWithoutMessages(props));
   });
 
   it("sets labelForId", () => {
@@ -106,6 +114,6 @@ describe("addLabel", () => {
     expect(wrapper.findComponent(Label).exists()).toBeFalsy();
     expect(
       wrapper.findComponent(TestControlLabelContent).props(),
-    ).toMatchObject(props);
+    ).toMatchObject(propsWithoutMessages(props));
   });
 });

@@ -7,7 +7,7 @@ import {
   defaultLinkToolOptions,
 } from "@knime/rich-text-editor";
 
-import type { VueControlPropsForLabelContent } from "../../higherOrderComponents/control/addLabel";
+import type { VueControlPropsForLabelContent } from "../../higherOrderComponents/control/withLabel";
 
 import DialogLinkModal from "./DialogLinkModal.vue";
 

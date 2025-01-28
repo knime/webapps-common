@@ -51,6 +51,7 @@ describe("TimeControl", () => {
       },
       labelForId,
       disabled: false,
+      isValid: false,
     };
     const component = mountJsonFormsControlLabelContent(TimeControl, {
       props,

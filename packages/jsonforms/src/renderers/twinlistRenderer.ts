@@ -9,7 +9,7 @@ import {
 } from "@jsonforms/core";
 
 import { inputFormats, priorityRanks } from "../constants";
-import { addLabel } from "../higherOrderComponents/control/addLabel";
+import { withLabel } from "../higherOrderComponents/control/withLabel";
 
 const TwinlistControl = defineAsyncComponent(
   () => import("../uiComponents/twinlist/TwinlistControl.vue"),
@@ -29,7 +29,7 @@ const isTwinlist: Tester = (uischema) =>
 
 export const twinlistTester = and(isTwinlist, isSelection);
 
-export const twinlistRenderer = addLabel({
+export const twinlistRenderer = withLabel({
   name: "TwinlistControl",
   control: TwinlistControl,
   tester: rankWith(priorityRanks.default, twinlistTester),
@@ -37,7 +37,7 @@ export const twinlistRenderer = addLabel({
 
 export const simpleTwinlistTester = and(isTwinlist, not(isSelection));
 
-export const simpleTwinlistRenderer = addLabel({
+export const simpleTwinlistRenderer = withLabel({
   name: "SimpleTwinlistControl",
   control: SimpleTwinlistControl,
   tester: rankWith(priorityRanks.default, simpleTwinlistTester),

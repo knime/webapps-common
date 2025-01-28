@@ -47,6 +47,7 @@ describe("AnyOfTwinlist.vue", () => {
       },
       labelForId,
       disabled: true,
+      isValid: false,
     };
 
     const component = await mountJsonFormsControlLabelContent(AnyOfTwinlist, {

@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 
 import { Checkbox } from "@knime/components";
 
+import ErrorMessageWrapper from "../higherOrderComponents/control/ErrorMessageWrapper.vue";
 import LabeledControl from "../higherOrderComponents/control/LabeledControl.vue";
 import type { VueControlProps } from "../higherOrderComponents/control/types";
 import type { IdAndText } from "../types/ChoicesUiSchema";
@@ -179,18 +180,20 @@ const onChangeDropDown = (value: string) => {
     </template>
 
     <template #default="{ labelForId }">
-      <!-- eslint-disable vue/attribute-hyphenation typescript complains with ':aria-label' instead of ':ariaLabel'-->
-      <LoadingDropdown
-        v-if="showControl"
-        :id="labelForId ?? ''"
-        ref="controlElement"
-        :ariaLabel="control.label"
-        :disabled="disabled"
-        :model-value="dropdownValue"
-        :possible-values="options"
-        compact
-        @update:model-value="onChangeDropDown"
-      />
+      <ErrorMessageWrapper v-if="showControl" :errors="messages.errors">
+        <!-- eslint-disable vue/attribute-hyphenation typescript complains with ':aria-label' instead of ':ariaLabel'-->
+        <LoadingDropdown
+          :id="labelForId ?? ''"
+          ref="controlElement"
+          :ariaLabel="control.label"
+          :disabled="disabled"
+          :model-value="dropdownValue"
+          :possible-values="options"
+          :is-valid
+          compact
+          @update:model-value="onChangeDropDown"
+        />
+      </ErrorMessageWrapper>
     </template>
     <template #icon>
       <slot name="icon" />

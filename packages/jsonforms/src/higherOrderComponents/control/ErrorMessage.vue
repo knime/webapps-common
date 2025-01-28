@@ -1,19 +1,10 @@
-<script lang="ts">
-import type { PropType } from "vue";
+<script setup lang="ts">
+import { computed } from "vue";
 
-export default {
-  props: {
-    errors: {
-      default: () => [],
-      type: Array as PropType<Array<{ message: string }>>,
-    },
-  },
-  computed: {
-    displayableErrors() {
-      return this.errors.map(({ message }) => message)?.join("; ");
-    },
-  },
-};
+const props = defineProps<{
+  errors: Array<string>;
+}>();
+const displayableErrors = computed(() => props.errors.join("; "));
 </script>
 
 <template>
@@ -22,7 +13,6 @@ export default {
 
 <style lang="postcss" scoped>
 div {
-  display: none;
   font-weight: 400;
   font-size: 12px;
   line-height: 13px;

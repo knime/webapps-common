@@ -1,4 +1,5 @@
 import {
+  type Component,
   type PropType,
   type SetupContext,
   type SlotsType,
@@ -32,13 +33,21 @@ export const controlProps = {
     type: Boolean as PropType<VueControlProps<any>["disabled"]>,
     required: true,
   },
+  isValid: {
+    type: Boolean as PropType<VueControlProps<any>["isValid"]>,
+    required: true,
+  },
+  messages: {
+    type: Object as PropType<VueControlProps<any>["messages"]>,
+    required: true,
+  },
 };
 
 export const defineControl = <D>(
   setup: (
     props: VueControlProps<D>,
     ctx: SetupContext<any, SlotsType<ControlSlots>>,
-  ) => () => VNode | null,
+  ) => () => VNode | null | VNode[],
 ): VueControl<D> =>
   defineComponent(setup, {
     props: controlProps,
@@ -60,3 +69,24 @@ export const mapControls =
       },
       {} as T,
     );
+
+export type SpecialControlRenderer<SpecialControl> = Omit<
+  VueControlRenderer,
+  "control"
+> & {
+  control: SpecialControl;
+};
+
+export const handleAsyncComponents =
+  <S extends Component, T>(mapper: (s: S) => T) =>
+  ({
+    control,
+    tester,
+    name,
+    __asyncSetup,
+  }: SpecialControlRenderer<S>): SpecialControlRenderer<T> => ({
+    name,
+    tester,
+    __asyncSetup: __asyncSetup || getAsyncSetupMethod(control),
+    control: mapper(control),
+  });

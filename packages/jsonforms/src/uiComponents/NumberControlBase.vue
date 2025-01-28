@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { NumberInput } from "@knime/components";
 
-import type { VueControlPropsForLabelContent } from "../higherOrderComponents/control/addLabel";
+import type { VueControlPropsForLabelContent } from "../higherOrderComponents/control/withLabel";
 
 import useProvidedState from "./composables/useProvidedState";
 
@@ -40,6 +40,7 @@ const onFocusOut = () => {
     :type="type"
     :min="min"
     :max="max"
+    :is-valid
     compact
     @update:model-value="changeValue"
     @focusout="onFocusOut"

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { VueControlPropsForLabelContent } from "../higherOrderComponents/control/addLabel";
+import type { VueControlPropsForLabelContent } from "../higherOrderComponents/control/withLabel";
 
 import NumberControlBase from "./NumberControlBase.vue";
 

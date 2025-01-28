@@ -81,6 +81,8 @@ describe("ColumnSelect.vue", () => {
         },
       },
       disabled: false,
+      isValid: false,
+      messages: { errors: [] },
     };
     const component = mountJsonFormsControl(ColumnSelect, {
       props,

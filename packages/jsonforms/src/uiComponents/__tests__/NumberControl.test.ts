@@ -50,6 +50,7 @@ describe("NumberControl.vue", () => {
       },
       labelForId,
       disabled: false,
+      isValid: false,
     };
 
     const component = mountJsonFormsControlLabelContent(NumberControl, {
