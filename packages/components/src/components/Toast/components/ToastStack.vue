@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref, watch } from "vue";
 
 import { useToasts } from "../toastService";
 import type { ToastStack } from "../types";
@@ -44,22 +44,33 @@ const style = (index: number) => {
 
 // Check if the current toast is the first in the stack (active toast)
 const isActive = (index: number) => index === 0;
+
+const toastPopover = ref<HTMLDivElement>();
+
+watch(
+  () => toasts.value.length,
+  (numberOfToasts) => {
+    toastPopover.value?.togglePopover(numberOfToasts > 0);
+  },
+);
 </script>
 
 <template>
-  <transition-group class="toast-stack" tag="div" name="toast-stack">
-    <Toast
-      v-for="(toast, index) in toasts"
-      v-bind="toast"
-      :key="toast.id"
-      :active="isActive(index)"
-      class="toast"
-      :style="style(index)"
-      :stack-id="stackIdentifier"
-      @remove="remove(toast.id!)"
-      @auto-remove="autoRemove()"
-    />
-  </transition-group>
+  <div ref="toastPopover" popover="manual">
+    <transition-group class="toast-stack" tag="div" name="toast-stack">
+      <Toast
+        v-for="(toast, index) in toasts"
+        v-bind="toast"
+        :key="toast.id"
+        :active="isActive(index)"
+        class="toast"
+        :style="style(index)"
+        :stack-id="stackIdentifier"
+        @remove="remove(toast.id!)"
+        @auto-remove="autoRemove()"
+      />
+    </transition-group>
+  </div>
 </template>
 
 <style lang="postcss" scoped>
