@@ -10,9 +10,7 @@ import {
 } from "vue";
 
 import { useDropdownNavigation } from "../../../../composables";
-import FunctionButton from "../../../Buttons/FunctionButton.vue";
 import LoadingIcon from "../../../LoadingIcon/LoadingIcon.vue";
-import Tooltip from "../../../Tooltip/Tooltip.vue";
 import Label from "../../Label/Label.vue";
 import ValueSwitch, {
   type ValueSwitchItem,
@@ -65,7 +63,7 @@ const categoriesToDisplayInValueSwitch = computed<ValueSwitchItem[]>(() => [
   },
   {
     id: "STANDARD",
-    text: "Standard",
+    text: "ISO",
   },
   {
     id: "EUROPEAN",
@@ -78,10 +76,6 @@ const categoriesToDisplayInValueSwitch = computed<ValueSwitchItem[]>(() => [
 ]);
 
 const selectedFormat = ref<string | null>(null);
-const commitButtonDisabledErrorReason = computed<string>(() =>
-  selectedFormat.value ? "" : "No format selected",
-);
-
 const selectedFormatType = ref<FormatDateType>("DATE");
 const selectedFormatStandard = ref<FormatCategory>("RECENT");
 
@@ -268,7 +262,6 @@ onMounted(() => {
 
 <template>
   <div class="popover">
-    <h2 class="title">Date & Time Formats</h2>
     <div class="switch-with-title">
       <Label class="control-title" text="Type" for="selectedFormatType">
         <ValueSwitch
@@ -300,6 +293,7 @@ onMounted(() => {
           tabindex="0"
           role="menu"
           @keydown="onKeydown"
+          @keydown.tab="(e: KeyboardEvent) => e.shiftKey || emit('cancel')"
         >
           <div v-if="applicableFormats === null" class="no-formats-available">
             <LoadingIcon class="loading-spinner" />
@@ -318,7 +312,12 @@ onMounted(() => {
               :class="{ selected: index === currentIndex }"
               class="single-format"
               role="menuitem"
-              @click="currentIndex = index"
+              @click="
+                () => {
+                  currentIndex = index;
+                  formatContainerRef?.focus();
+                }
+              "
               @dblclick="() => emit('commit', format.format)"
             >
               <span class="format-pattern">
@@ -331,22 +330,6 @@ onMounted(() => {
           </template>
         </div>
       </Label>
-    </div>
-    <div class="commit-button-container">
-      <Tooltip :text="commitButtonDisabledErrorReason">
-        <FunctionButton
-          primary
-          class="commit-button"
-          :disabled="!selectedFormat"
-          @keydown.tab="(e: KeyboardEvent) => e.shiftKey || emit('cancel')"
-          @click="
-            () => {
-              emit('commit', selectedFormat!);
-            }
-          "
-          >Set format</FunctionButton
-        >
-      </Tooltip>
     </div>
   </div>
 </template>
@@ -449,17 +432,6 @@ onMounted(() => {
         }
       }
     }
-  }
-}
-
-.commit-button-container {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: var(--space-8);
-  margin-right: var(--space-4);
-
-  & .commit-button {
-    width: fit-content;
   }
 }
 </style>
