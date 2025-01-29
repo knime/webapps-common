@@ -135,7 +135,7 @@ const requestSavePopup = () => {
 
 <template>
   <span class="header">
-    <span class="input-title">Interval value</span>
+    <span class="input-title">Duration</span>
     <ValueSwitch
       v-if="props.format === 'DATE_OR_TIME'"
       v-model="popoverUsedFormat"
@@ -152,8 +152,8 @@ const requestSavePopup = () => {
       v-model="ascendingOrDescending"
       compact
       :possible-values="[
-        { id: 'ASCENDING', text: 'Ascending interval' },
-        { id: 'DESCENDING', text: 'Descending interval' },
+        { id: 'ASCENDING', text: 'Forward' },
+        { id: 'DESCENDING', text: 'Backward' },
       ]"
     />
   </div>

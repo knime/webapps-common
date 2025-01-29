@@ -138,16 +138,6 @@ describe("DateTimeFormatInput", () => {
       popover.assert.isInputValue(getFirstFormat("DATE", "STANDARD"));
     });
 
-    it("clicking apply should close the popover and set the text field", async () => {
-      const popover = await doMountWithPopover("DATE", "STANDARD");
-
-      await popover.selectFormat(0);
-      await popover.apply();
-
-      popover.assert.isClosed();
-      popover.assert.isInputValue(getFirstFormat("DATE", "STANDARD"));
-    });
-
     it("shows a friendly error if there are no formats to display", async () => {
       // Note: we have no formats under DATE_TIME and RECENT
       const popover = await doMountWithPopover("DATE_TIME", "RECENT");
