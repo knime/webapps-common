@@ -35,12 +35,14 @@ describe("ZonedDateTimeControl.vue", () => {
 
   const labelForId = "myLabelForId";
 
+  const dummyTimeWithHours = (hours: number) => `2022-12-12T${hours}:22:22.000`;
+
   beforeEach(() => {
     props = {
       control: {
         ...getControlBase("test"),
         data: {
-          dateTime: "2022-12-12T20:22:22.000",
+          dateTime: dummyTimeWithHours(20),
           timeZone: "Europe/Berlin",
         },
         schema: {
@@ -85,14 +87,20 @@ describe("ZonedDateTimeControl.vue", () => {
     expect(wrapper.find("div").attributes("id")).toBe(labelForId);
   });
 
-  it("calls changeValue when dateTime input is changed", () => {
-    const changedDateTimeInputString = "2022-12-12T20:22:22.000Z";
-    const changedDateTimeInput = new Date(changedDateTimeInputString);
+  it("sets correct initial value and calls changeValue when dateTime input is changed", () => {
+    const modelValue = wrapper.findComponent(DateTimeInput).vm
+      .modelValue as Date;
+    expect(modelValue.toISOString()).toBe(`${dummyTimeWithHours(20)}Z`);
+    expect(wrapper.findComponent(Dropdown).vm.modelValue).toBe(
+      props.control.data.timeZone,
+    );
+    const changedModelValue = new Date(modelValue.setUTCHours(21));
+    expect(changedModelValue.toISOString()).toBe(`${dummyTimeWithHours(21)}Z`);
     wrapper
       .findComponent(DateTimeInput)
-      .vm.$emit("update:modelValue", changedDateTimeInput);
+      .vm.$emit("update:modelValue", changedModelValue);
     expect(changeValue).toHaveBeenCalledWith({
-      dateTime: changedDateTimeInputString,
+      dateTime: dummyTimeWithHours(21),
       timeZone: expect.anything(),
     });
   });
@@ -108,12 +116,9 @@ describe("ZonedDateTimeControl.vue", () => {
     });
   });
 
-  it("sets correct initial value", () => {
-    expect(wrapper.findComponent(DateTimeInput).vm.modelValue).toStrictEqual(
-      new Date(props.control.data.dateTime),
-    );
-    expect(wrapper.findComponent(Dropdown).vm.modelValue).toBe(
-      props.control.data.timeZone,
-    );
+  it("disables both controls when disabled", async () => {
+    await wrapper.setProps({ disabled: true });
+    expect(wrapper.findComponent(DateTimeInput).props("disabled")).toBe(true);
+    expect(wrapper.findComponent(Dropdown).props("disabled")).toBe(true);
   });
 });

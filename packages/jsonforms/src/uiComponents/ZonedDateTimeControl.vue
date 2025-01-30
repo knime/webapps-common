@@ -5,6 +5,7 @@ import { Dropdown } from "@knime/components";
 import { DateTimeInput } from "@knime/components/date-time-input";
 
 import { type VueControlPropsForLabelContent } from "../higherOrderComponents";
+import { fromUTCTime, toUTCTime } from "../utils/localTimeUtils";
 
 type ZonedDateTime = {
   dateTime: string;
@@ -20,11 +21,12 @@ const modelValue = computed<ZonedDateTime>({
 });
 
 const datePart = computed<Date>({
-  get: () => new Date(modelValue.value.dateTime),
+  get: () => toUTCTime(modelValue.value.dateTime),
   set: (value: Date) => {
     modelValue.value = {
       ...modelValue.value,
-      dateTime: value.toISOString(),
+      // get wall time of UTC time
+      dateTime: fromUTCTime(value),
     };
   },
 });
@@ -47,6 +49,7 @@ const choices = computed(() => options.value?.possibleValues ?? []);
       v-model="datePart"
       :required="true"
       :show-timezone="false"
+      :timezone="'UTC'"
       compact
       :disabled="disabled"
     />
@@ -55,6 +58,7 @@ const choices = computed(() => options.value?.possibleValues ?? []);
       v-model="zonePart"
       compact
       :possible-values="choices"
+      :disabled="disabled"
       ariaLabel="Timezone"
     />
   </div>
