@@ -34,11 +34,13 @@ describe("DateTimeInput.vue", () => {
 
   const labelForId = "myLabelForId";
 
+  const dummyTimeWithHours = (hours: number) => `2022-12-12T${hours}:22:22.000`;
+
   beforeEach(() => {
     props = {
       control: {
         ...getControlBase("test"),
-        data: "2022-12-12T20:22:22.000Z",
+        data: dummyTimeWithHours(20),
         schema: {
           properties: {
             dateTime: {
@@ -80,17 +82,15 @@ describe("DateTimeInput.vue", () => {
     expect(wrapper.getComponent(DateTimeInput).props().id).toBe(labelForId);
   });
 
-  it("calls changeValue when dateTime input is changed", () => {
-    const changedDateTimeInput = new Date("2022-12-12T20:22:22.000Z");
+  it("sets correct initial value and calls changeValue when dateTime input is changed", () => {
+    const modelValue = wrapper.findComponent(DateTimeInput).vm
+      .modelValue as Date;
+    expect(modelValue.toISOString()).toBe(`${dummyTimeWithHours(20)}Z`);
+    const changedModelValue = new Date(modelValue.setUTCHours(21));
+    expect(changedModelValue.toISOString()).toBe(`${dummyTimeWithHours(21)}Z`);
     wrapper
       .findComponent(DateTimeInput)
-      .vm.$emit("update:modelValue", changedDateTimeInput);
-    expect(changeValue).toHaveBeenCalledWith(changedDateTimeInput);
-  });
-
-  it("sets correct initial value", () => {
-    expect(wrapper.findComponent(DateTimeInput).vm.modelValue).toStrictEqual(
-      new Date(props.control.data),
-    );
+      .vm.$emit("update:modelValue", changedModelValue);
+    expect(changeValue).toHaveBeenCalledWith(dummyTimeWithHours(21));
   });
 });

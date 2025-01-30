@@ -51,3 +51,6 @@ export const localTimeUtils = {
   toString,
   fromString,
 };
+
+export const toUTCTime = (dateString: string) => new Date(`${dateString}Z`);
+export const fromUTCTime = (date: Date) => date.toISOString().slice(0, -1);
