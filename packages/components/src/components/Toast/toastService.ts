@@ -6,6 +6,7 @@ import type {
   Toast,
   ToastService,
   ToastServiceComposableOptions,
+  ToastWithId,
   UseToastsOptions,
 } from "./types";
 
@@ -32,43 +33,36 @@ export class ToastServiceError extends Error {
  * - get the toast service object directly via `getToastServiceObject` method.
  */
 export class ToastServiceProvider {
-  toasts = ref<Toast[]>([]);
+  toasts = ref<ToastWithId[]>([]);
 
   show = (toast: Toast): string => {
     const clonedToast = cloneDeep(toast);
-    if (clonedToast.key) {
+    if (clonedToast.deduplicationKey) {
       const previousToast = this.toasts.value.find(
-        ({ key }) => clonedToast.key === key,
+        (toast) => clonedToast.deduplicationKey === toast.deduplicationKey,
       );
       if (previousToast) {
         return previousToast.id!;
       }
     }
-    clonedToast.id = clonedToast.id
-      ? `${clonedToast.id}-${uniqueId()}`
-      : uniqueId();
-    clonedToast.autoRemove = clonedToast.autoRemove ?? true;
-    this.toasts.value.unshift(clonedToast);
 
-    return clonedToast.id;
+    const id = uniqueId();
+    clonedToast.autoRemove = clonedToast.autoRemove ?? true;
+    this.toasts.value.unshift({ ...clonedToast, id });
+
+    return id;
   };
 
   remove(id: string): void {
-    this.toasts.value = this.toasts.value.filter(
-      (toast: Toast) => toast.id !== id,
-    );
+    this.toasts.value = this.toasts.value.filter((toast) => toast.id !== id);
   }
 
   removeBy = (predicate: (toast: Toast) => boolean): void => {
-    this.toasts.value = this.toasts.value.filter(
-      (toast: Toast) => !predicate(toast),
-    );
+    this.toasts.value = this.toasts.value.filter((toast) => !predicate(toast));
   };
 
   autoRemove = (): void => {
-    this.toasts.value = this.toasts.value.filter(
-      (toast: Toast) => !toast.autoRemove,
-    );
+    this.toasts.value = this.toasts.value.filter((toast) => !toast.autoRemove);
   };
 
   removeAll = (): void => {

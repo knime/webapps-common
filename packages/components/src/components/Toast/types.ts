@@ -64,23 +64,33 @@ export interface Toast {
    */
   autoRemove?: boolean;
   active?: boolean;
-  id?: string;
-  key?: string;
+  /**
+   * If set, only one toast with the same key will be in the stack. If a new toast with the same key is added, it will be dropped.
+   */
+  deduplicationKey?: string;
   meta?: any;
   stackId?: string;
+}
+
+export interface ToastWithId extends Toast {
+  /**
+   * auto-generated identifier
+   */
+  id: string;
 }
 
 export interface ToastService {
   /**
    * Reactive array of Toast objects.
    */
-  toasts: ComputedRef<Toast[]>;
+  toasts: ComputedRef<ToastWithId[]>;
   /**
    * Adds the provided Toast object to the `toasts` array.
+   * @returns The generated id of the added toast; can be used to call `remove(id)`.
    */
   show: (toast: Toast) => string;
   /**
-   * Removes the specified Toast object from the `toasts` array.
+   * Removes toast with the given id (returned by `show()`).
    */
   remove: (id: string) => void;
   /**
