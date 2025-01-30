@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.16.0
+
+### Minor Changes
+
+- de31f24: `ToastService.show()`: rename `key` to `deduplicationKey` and remove `id` (does get auto-generated)
+
 ## 1.15.6
 
 ### Patch Changes

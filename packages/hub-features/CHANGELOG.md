@@ -1,5 +1,12 @@
 # @knime/hub-features
 
+## 1.2.10
+
+### Patch Changes
+
+- Updated dependencies [de31f24]
+  - @knime/components@1.16.0
+
 ## 1.2.9
 
 ### Patch Changes
