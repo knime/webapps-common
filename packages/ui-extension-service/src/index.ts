@@ -20,6 +20,7 @@ export {
   type SelectionMode,
   type SelectionParams,
   type ReportRenderingConfig,
+  USER_ERROR_CODE_BLOCKING,
 } from "./services";
 
 export type { UIExtensionService } from "@knime/ui-extension-renderer/api";

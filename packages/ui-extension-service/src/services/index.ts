@@ -31,3 +31,4 @@ export {
   DefaultSettingComparator,
 } from "./dialogDirtyState/SettingComparator";
 export { type SettingState } from "./dialogDirtyState/types";
+export { USER_ERROR_CODE_BLOCKING } from "./types/jsonRPCTypes";

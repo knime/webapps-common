@@ -1,7 +1,7 @@
 import type { AlertType } from "@knime/ui-extension-renderer/api";
 
 import { AbstractService } from "./AbstractService";
-import { USER_ERROR_CODE } from "./types/jsonRPCTypes";
+import { USER_ERROR_CODE, type UserErrorCode } from "./types/jsonRPCTypes";
 import type { AlertingServiceAPILayer } from "./types/serviceApiLayers";
 
 export type { AlertType };
@@ -16,6 +16,11 @@ export type AlertParams = {
    * Additional details about the problem that are displayed on demand.
    */
   details?: string;
+  /**
+   * Error code to e.g. distinguish between default errors presented via
+   * toasts and blocking errors showing an error view.
+   */
+  code?: UserErrorCode;
 };
 
 /**
@@ -35,7 +40,7 @@ export class AlertingService extends AbstractService<AlertingServiceAPILayer> {
       });
     } else {
       this.baseService.sendAlert({
-        code: USER_ERROR_CODE,
+        code: params.code || USER_ERROR_CODE,
         type: params.type,
         message: params.message,
         data: {
