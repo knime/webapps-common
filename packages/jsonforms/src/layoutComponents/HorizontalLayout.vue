@@ -8,22 +8,17 @@ defineProps<VueLayoutProps>();
 
 <template>
   <div class="horizontal">
-    <div
+    <DispatchRenderer
       v-for="(element, index) in layout.uischema.elements"
       :key="`${layout.path}-${index}`"
       class="horizontal-element"
-    >
-      <div>
-        <DispatchRenderer
-          :schema="layout.schema"
-          :uischema="element"
-          :path="layout.path"
-          :enabled="layout.enabled"
-          :renderers="layout.renderers"
-          :cells="layout.cells"
-        />
-      </div>
-    </div>
+      :schema="layout.schema"
+      :uischema="element"
+      :path="layout.path"
+      :enabled="layout.enabled"
+      :renderers="layout.renderers"
+      :cells="layout.cells"
+    />
   </div>
 </template>
 
