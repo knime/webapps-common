@@ -39,6 +39,7 @@ describe("withLabel", () => {
       disabled: false,
       isValid: true,
       messages: { errors: [] },
+      onRegisterValidation: vi.fn(),
     };
   });
 

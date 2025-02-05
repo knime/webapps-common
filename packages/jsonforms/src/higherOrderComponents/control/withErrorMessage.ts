@@ -7,18 +7,14 @@ import { defineControl, handleAsyncComponents } from "./util";
 export const addErrorMessageToVNode = (
   vNode: VNode,
   props: Pick<VueControlProps<any>, "messages">,
-): VNode | VNode[] => {
-  if (props.messages.errors.length > 0) {
-    return h(
-      ErrorMessageWrapper,
-      { errors: props.messages.errors },
-      {
-        default: () => vNode,
-      },
-    );
-  }
-  return vNode;
-};
+): VNode | VNode[] =>
+  h(
+    ErrorMessageWrapper,
+    { errors: props.messages.errors },
+    {
+      default: () => vNode,
+    },
+  );
 
 const addErrorMessageToControl = <D>(control: VueControl<D>): VueControl<D> =>
   defineControl((props, ctx) => () => {

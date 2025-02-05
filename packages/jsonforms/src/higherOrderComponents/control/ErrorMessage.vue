@@ -13,10 +13,11 @@ const displayableErrors = computed(() => props.errors.join("; "));
 
 <style lang="postcss" scoped>
 div {
-  font-weight: 400;
-  font-size: 12px;
-  line-height: 13px;
-  color: var(--theme-color-kudos);
+  font-weight: 300;
+  font-size: 10px;
+  line-height: 12px;
+  min-height: 12px;
+  color: var(--theme-color-error);
   position: relative;
   white-space: nowrap;
   overflow: hidden;

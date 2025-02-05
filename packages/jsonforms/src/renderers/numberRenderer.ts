@@ -1,6 +1,5 @@
 import { defineAsyncComponent } from "vue";
-import { and, rankWith } from "@jsonforms/core";
-import { isNumber } from "lodash-es";
+import { and, isNumberControl, rankWith } from "@jsonforms/core";
 
 import { inputFormats, priorityRanks } from "../constants";
 import { hasFormat } from "../constants/inputFormats";
@@ -15,6 +14,6 @@ export const numberRenderer = withLabel({
   control: NumberControl,
   tester: rankWith(
     priorityRanks.default,
-    and(isNumber, hasFormat(inputFormats.number)),
+    and(isNumberControl, hasFormat(inputFormats.number)),
   ),
 });

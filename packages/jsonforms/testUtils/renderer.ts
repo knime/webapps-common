@@ -12,7 +12,7 @@ import { maxBy } from "lodash-es";
 
 import { type NamedRenderer, defaultRenderers } from "../src";
 
-export const setUpRendererTest = (renderers: NamedRenderer[]) => {
+export const setUpRendererTest = (renderers: readonly NamedRenderer[]) => {
   const findRenderer = (uiSchema: UISchemaElement, schema: JsonSchema) => {
     const renderer: NamedRenderer | undefined = maxBy(
       renderers,

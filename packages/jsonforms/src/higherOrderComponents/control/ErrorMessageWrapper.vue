@@ -9,7 +9,7 @@ defineProps<{
 <template>
   <div class="error-message-wrapper">
     <slot />
-    <ErrorMessage v-if="errors.length" :errors class="error-message" />
+    <ErrorMessage :errors class="error-message" />
   </div>
 </template>
 
@@ -18,7 +18,7 @@ defineProps<{
   display: flex;
   flex-direction: column;
   flex: 1;
-  gap: var(--space-6);
+  gap: var(--space-4);
 
   & .error-message {
     flex-shrink: 0;

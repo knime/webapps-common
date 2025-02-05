@@ -21,7 +21,7 @@ defineProps<{
   schema: JsonSchema;
   uischema: UISchemaElement;
   data: any;
-  renderers: NamedRenderer[];
+  renderers: readonly NamedRenderer[];
 }>();
 
 const emit = defineEmits<{

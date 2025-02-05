@@ -112,4 +112,17 @@ describe("TextControl.vue", () => {
     await flushPromises();
     expect(wrapper.findComponent(InputField).props("placeholder")).toBe("Bond");
   });
+
+  it("validates pattern if given", () => {
+    const pattern = ".";
+    props.control.schema.pattern = pattern;
+    const { onRegisterValidation } = mountJsonFormsControl(TextControl, {
+      props,
+    });
+    const validator = onRegisterValidation.mock.calls[0][0];
+    expect(validator("aa").errors[0]).toBe(
+      `The value has to match the pattern "${pattern}"`,
+    );
+    expect(validator("b").errors).toStrictEqual([]);
+  });
 });

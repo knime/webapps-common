@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import { computed } from "vue";
+
 import { NumberInput } from "@knime/components";
 
+import type { Messages } from "../higherOrderComponents/control/validation/types";
 import type { VueControlPropsForLabelContent } from "../higherOrderComponents/control/withLabel";
 
 import useProvidedState from "./composables/useProvidedState";
@@ -11,15 +14,48 @@ const props = defineProps<
   }
 >();
 
-const min = useProvidedState(
-  props.control.uischema.options?.minProvider,
-  props.control.uischema.options?.min,
-);
+const {
+  min: constantMin,
+  minProvider,
+  max: constantMax,
+  maxProvider,
+} = props.control.uischema.options || {};
 
-const max = useProvidedState(
-  props.control.uischema.options?.maxProvider,
-  props.control.uischema.options?.max,
-);
+const min = useProvidedState(minProvider, constantMin);
+const max = useProvidedState(maxProvider, constantMax);
+
+if (
+  typeof [minProvider, maxProvider, constantMin, constantMax].find(
+    (prop) => typeof prop !== "undefined",
+  ) !== "undefined"
+) {
+  const createErrors = ({
+    value,
+    minimum,
+    maximum,
+  }: {
+    value: number;
+    minimum?: number;
+    maximum?: number;
+  }): Messages => {
+    if (typeof minimum === "number" && value < minimum) {
+      return { errors: [`The value has to be at least ${minimum}`] };
+    }
+    if (typeof maximum === "number" && value > maximum) {
+      return { errors: [`The value has to be ${maximum} at max`] };
+    }
+    return { errors: [] };
+  };
+  const minMaxValidator = computed(
+    () => (value: number) =>
+      createErrors({
+        value,
+        minimum: min.value,
+        maximum: max.value,
+      }),
+  );
+  props.onRegisterValidation(minMaxValidator);
+}
 
 const onFocusOut = () => {
   const num = props.control.data;

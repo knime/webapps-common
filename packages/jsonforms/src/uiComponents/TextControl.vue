@@ -6,11 +6,24 @@ import { Checkbox, InputField } from "@knime/components";
 import ErrorMessageWrapper from "../higherOrderComponents/control/ErrorMessageWrapper.vue";
 import LabeledControl from "../higherOrderComponents/control/LabeledControl.vue";
 import type { VueControlProps } from "../higherOrderComponents/control/types";
+import type { Messages } from "../higherOrderComponents/control/validation/types";
 
 import useHideOnNull from "./composables/useHideOnNull";
 import useProvidedState from "./composables/useProvidedState";
 
 const props = defineProps<VueControlProps<string | null>>();
+
+const schemaPattern = props.control.schema.pattern;
+if (typeof schemaPattern === "string") {
+  const pattern = new RegExp(`^(${schemaPattern})$`);
+  const validateAgainstPattern = (value: string | null): Messages => ({
+    errors:
+      value === null || typeof value === "undefined" || !pattern.test(value)
+        ? [`The value has to match the pattern "${schemaPattern}"`]
+        : [],
+  });
+  props.onRegisterValidation(validateAgainstPattern);
+}
 
 const placeholder = useProvidedState(
   props.control.uischema.options?.placeholderProvider,

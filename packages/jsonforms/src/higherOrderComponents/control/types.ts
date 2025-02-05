@@ -2,9 +2,7 @@ import type { useJsonFormsControl } from "@jsonforms/vue";
 
 import type { NamedTester, ParameterizedComponent } from "../types";
 
-export type Messages = {
-  errors: string[];
-};
+import type { ValidationSettings } from "./validation/types";
 
 /**
  * The props that a control can have.
@@ -18,9 +16,7 @@ export type VueControlProps<D> = {
   changeValue: (newValue: D) => void;
   disabled: boolean;
   labelForId?: null;
-  isValid: boolean;
-  messages: Messages;
-};
+} & ValidationSettings<D>;
 
 /**
  * Optional slots that a control can have to render additional elements.

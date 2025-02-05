@@ -41,6 +41,10 @@ export const controlProps = {
     type: Object as PropType<VueControlProps<any>["messages"]>,
     required: true,
   },
+  onRegisterValidation: {
+    type: Function as PropType<VueControlProps<any>["onRegisterValidation"]>,
+    required: true,
+  },
 };
 
 export const defineControl = <D>(

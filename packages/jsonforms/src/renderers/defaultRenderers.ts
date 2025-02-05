@@ -76,21 +76,22 @@ export const toRenderers = (
   renderers: NamedRenderer[],
   controls: VueControlRenderer[],
   layouts: VueLayoutRenderer[],
-): NamedRenderer[] => [
-  ...renderers,
-  ...controls.map(({ name, tester, control, __asyncSetup }) => ({
-    name,
-    tester,
-    renderer: controlToRenderer(control, __asyncSetup),
-  })),
-  ...layouts.map(({ name, tester, layout, __asyncSetup }) => ({
-    name,
-    tester,
-    renderer: layoutToRenderer(layout, __asyncSetup),
-  })),
-];
+): readonly NamedRenderer[] =>
+  Object.freeze([
+    ...renderers,
+    ...controls.map(({ name, tester, control, __asyncSetup }) => ({
+      name,
+      tester,
+      renderer: controlToRenderer(control, __asyncSetup),
+    })),
+    ...layouts.map(({ name, tester, layout, __asyncSetup }) => ({
+      name,
+      tester,
+      renderer: layoutToRenderer(layout, __asyncSetup),
+    })),
+  ]);
 
-export const defaultRenderers: NamedRenderer[] = toRenderers(
+export const defaultRenderers: readonly NamedRenderer[] = toRenderers(
   [],
   Object.values(controls),
   Object.values(layouts),

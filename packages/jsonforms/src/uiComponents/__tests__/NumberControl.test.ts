@@ -7,6 +7,7 @@ import {
   it,
   vi,
 } from "vitest";
+import { unref } from "vue";
 import type { VueWrapper } from "@vue/test-utils";
 import flushPromises from "flush-promises";
 
@@ -112,32 +113,49 @@ describe("NumberControl.vue", () => {
     expect(changeValue).toHaveBeenCalledWith(maximum);
   });
 
-  it.each([
-    ["min" as const, 73, 37, "minProvider"],
-    ["max" as const, 24, 42, "maxProvider"],
-  ])(
-    "overwrites the %s in case a new one is provided",
-    async (key, initialValue, providedValue, providerKey) => {
-      props.control.uischema.options![providerKey] = "someMinProviderID";
-      props.control.uischema.options![key] = initialValue;
-
-      let provideMin: (value: number) => void;
-      const addStateProviderListener = vi.fn((_id, callback) => {
-        provideMin = callback;
-      });
-
-      const { wrapper } = mountJsonFormsControlLabelContent(NumberControlBase, {
+  it("sets the minimum via state provider", async () => {
+    props.control.uischema.options!.minProvider = "someMinProviderID";
+    let provideMin: (value: number) => void;
+    const addStateProviderListener = vi.fn((_id, callback) => {
+      provideMin = callback;
+    });
+    const { wrapper, onRegisterValidation } = mountJsonFormsControlLabelContent(
+      NumberControlBase,
+      {
         props,
         provide: { addStateProviderListener },
-      });
-      expect(wrapper.findComponent(NumberInput).props()[key]).toBe(
-        initialValue,
-      );
-      provideMin!(providedValue);
-      await flushPromises();
-      expect(wrapper.findComponent(NumberInput).props()[key]).toBe(
-        providedValue,
-      );
-    },
-  );
+      },
+    );
+    const registeredValidation = onRegisterValidation.mock.calls[0][0];
+    expect(unref(registeredValidation)(0).errors).toStrictEqual([]);
+    provideMin!(42);
+    await flushPromises();
+    expect(wrapper.findComponent(NumberInput).props().min).toBe(42);
+    expect(unref(registeredValidation)(0).errors).toStrictEqual([
+      "The value has to be at least 42",
+    ]);
+  });
+
+  it("sets the maximum via state provider", async () => {
+    props.control.uischema.options!.maxProvider = "someMinProviderID";
+    let provideMax: (value: number) => void;
+    const addStateProviderListener = vi.fn((_id, callback) => {
+      provideMax = callback;
+    });
+    const { wrapper, onRegisterValidation } = mountJsonFormsControlLabelContent(
+      NumberControlBase,
+      {
+        props,
+        provide: { addStateProviderListener },
+      },
+    );
+    const registeredValidation = onRegisterValidation.mock.calls[0][0];
+    expect(unref(registeredValidation)(0).errors).toStrictEqual([]);
+    provideMax!(42);
+    await flushPromises();
+    expect(wrapper.findComponent(NumberInput).props().max).toBe(42);
+    expect(unref(registeredValidation)(100).errors).toStrictEqual([
+      "The value has to be 42 at max",
+    ]);
+  });
 });

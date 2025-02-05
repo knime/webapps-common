@@ -19,7 +19,10 @@ export type ProvidedMethods = {
 };
 
 export type VueControlTestProps<C extends abstract new (...args: any) => any> =
-  Omit<InstanceType<C>["$props"], "handleChange" | "changeValue">;
+  Omit<
+    InstanceType<C>["$props"],
+    "handleChange" | "changeValue" | "onRegisterValidation"
+  >;
 
 const getGlobal = ({
   provide,
@@ -47,19 +50,26 @@ export const mountJsonFormsControl = <D>(
     provide = {},
     stubs = {},
   }: {
-    props: NoInfer<Omit<VueControlProps<D>, "handleChange" | "changeValue">>;
+    props: NoInfer<
+      Omit<
+        VueControlProps<D>,
+        "handleChange" | "changeValue" | "onRegisterValidation"
+      >
+    >;
     provide?: Partial<ProvidedMethods>;
     stubs?: Record<any, any>;
   },
 ) => {
   const handleChange = vi.fn();
   const changeValue = vi.fn();
+  const onRegisterValidation = vi.fn();
 
   const wrapper = mount(component, {
     props: {
       ...props,
       handleChange,
       changeValue,
+      onRegisterValidation,
     },
     global: getGlobal({ provide, stubs }),
   });
@@ -67,6 +77,7 @@ export const mountJsonFormsControl = <D>(
     wrapper,
     handleChange,
     changeValue,
+    onRegisterValidation,
   };
 };
 
@@ -78,7 +89,10 @@ export const mountJsonFormsControlLabelContent = <D>(
     stubs = {},
   }: {
     props: NoInfer<
-      Omit<VueControlPropsForLabelContent<D>, "handleChange" | "changeValue">
+      Omit<
+        VueControlPropsForLabelContent<D>,
+        "handleChange" | "changeValue" | "onRegisterValidation"
+      >
     >;
     provide?: Partial<ProvidedMethods>;
     stubs?: Record<any, any>;
@@ -86,12 +100,14 @@ export const mountJsonFormsControlLabelContent = <D>(
 ) => {
   const handleChange = vi.fn();
   const changeValue = vi.fn();
+  const onRegisterValidation = vi.fn();
 
   const wrapper = mount(component, {
     props: {
       ...props,
       handleChange,
       changeValue,
+      onRegisterValidation,
     },
     global: getGlobal({ provide, stubs }),
   });
@@ -99,6 +115,7 @@ export const mountJsonFormsControlLabelContent = <D>(
     wrapper,
     handleChange,
     changeValue,
+    onRegisterValidation,
   };
 };
 

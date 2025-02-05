@@ -9,6 +9,7 @@ import type { ParameterizedComponent, RendererParams } from "../types";
 import { getAsyncSetupMethod } from "../utils";
 
 import type { VueControl } from "./types";
+import { useValidation } from "./validation/useValidation";
 
 /**
  * The last transformation step, since JSONForms expects renderers with core params.
@@ -21,6 +22,10 @@ export const controlToRenderer = (
     async (props, ctx) => {
       const processedProps = useJsonFormsControl(props as ControlProps);
       const isVisible = computed(() => processedProps.control.value.visible);
+      const data = computed(() => processedProps.control.value.data);
+      const { messages, isValid, onRegisterValidation } = useValidation({
+        data,
+      });
       await (asyncSetup || getAsyncSetupMethod(component))?.();
       return () =>
         isVisible.value
@@ -35,8 +40,9 @@ export const controlToRenderer = (
                     processedProps.control.value.path,
                     newValue,
                   ),
-                isValid: true, // TODO
-                messages: { errors: [] }, // TODO
+                isValid: isValid.value,
+                messages: messages.value,
+                onRegisterValidation,
               },
               ctx.slots,
             )
