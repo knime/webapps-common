@@ -5,7 +5,6 @@ import { isEqual } from "lodash-es";
 
 import type { VueControlProps } from "../higherOrderComponents/control/types";
 import type { PossibleValue } from "../types/ChoicesUiSchema";
-import { withSpecialChoices } from "../utils/getPossibleValuesFromUiSchema";
 import inject from "../utils/inject";
 
 import DropdownControl from "./DropdownControl.vue";
@@ -20,9 +19,9 @@ const choicesProvider = computed<string | undefined>(
 );
 
 const getPossibleValuesFromUiSchema = inject("getPossibleValuesFromUiSchema");
-const possibleValues = withSpecialChoices(
-  useProvidedState<null | PossibleValue[]>(choicesProvider, null),
-  props.control,
+const possibleValues = useProvidedState<null | PossibleValue[]>(
+  choicesProvider,
+  null,
 );
 
 const asyncInitialOptions = new Promise<PossibleValue[]>((resolve) => {

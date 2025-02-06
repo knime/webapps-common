@@ -11,7 +11,6 @@ import type { VueControlProps } from "../higherOrderComponents/control/types";
 import type { IdAndText } from "../types/ChoicesUiSchema";
 import type { SettingsData } from "../types/provided";
 import getFlattenedSettings from "../utils/getFlattenedSettings";
-import { withSpecialChoices } from "../utils/getPossibleValuesFromUiSchema";
 import inject from "../utils/inject";
 
 import useHideOnNull from "./composables/useHideOnNull";
@@ -43,9 +42,9 @@ const controlElement = ref(null);
 const choicesProvider = computed(
   () => props.control.uischema.options?.choicesProvider,
 );
-const options = withSpecialChoices(
-  useProvidedState<null | IdAndText[]>(choicesProvider.value, null),
-  props.control,
+const options = useProvidedState<null | IdAndText[]>(
+  choicesProvider.value,
+  null,
 );
 
 const previousControlData = ref(props.control.data);

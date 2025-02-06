@@ -282,8 +282,6 @@ export const dialogInitialData = {
                   text: "Universe_1_1",
                 },
               ],
-              showRowKeys: false,
-              showNoneColumn: false,
             },
           },
           {
@@ -313,8 +311,6 @@ export const dialogInitialData = {
                   text: "Universe_1_1",
                 },
               ],
-              showRowKeys: false,
-              showNoneColumn: false,
             },
           },
           {

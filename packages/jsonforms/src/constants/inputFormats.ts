@@ -2,6 +2,7 @@ import type { Tester } from "@jsonforms/core";
 
 export const inputFormats = {
   columnSelect: "columnSelection",
+  singleSelect: "singleSelection",
   dropDown: "dropDown",
   radio: "radio",
   valueSwitch: "valueSwitch",

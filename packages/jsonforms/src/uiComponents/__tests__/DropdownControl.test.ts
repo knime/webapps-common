@@ -45,8 +45,6 @@ describe("DropdownControl.vue", () => {
           scope: "#/properties/view/properties/yAxisColumn",
           options: {
             format: "columnSelection",
-            showRowKeys: false,
-            showNoneColumn: false,
             possibleValues: [
               {
                 id: "Universe_0_0",
