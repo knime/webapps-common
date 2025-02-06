@@ -29,6 +29,7 @@ import { radioRenderer } from "./radioRenderer";
 import { richTextRenderer } from "./richTextRenderer";
 import { sectionLayoutRenderer } from "./sectionLayoutRenderer";
 import { simpleButtonRenderer } from "./simpleButtonRenderer";
+import { singleSelectRenderer } from "./singleSelectRenderer";
 import { sortListRenderer } from "./sortListRenderer";
 import { textAreaRenderer } from "./textAreaRenderer";
 import { textMessageRenderer } from "./textMessageRenderer";
@@ -58,6 +59,7 @@ export const controls = {
   twinlistRenderer,
   valueSwitchRenderer,
   zonedDateTimeRenderer,
+  singleSelectRenderer,
   // without label:
   simpleButtonRenderer,
   textMessageRenderer,
