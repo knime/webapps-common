@@ -21,8 +21,8 @@ definitions:
         clone:
           depth: full # SonarCloud scanner needs the full history to assign issues properly
         script:
+          - npm install -g corepack
           - corepack enable
-          - corepack prepare pnpm@9.13.0 --activate # We should use pnpm@latest-9 again when https://github.com/pnpm/pnpm/issues/8788 is resolved
           - pnpm install
           - pnpm run ci:lint-format
           - pnpm run build:ui-extension-service # temporary build step to enable type-check for ui-extension-renderer
@@ -45,8 +45,8 @@ definitions:
         deployment: production
         script:
           - echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+          - npm install -g corepack
           - corepack enable
-          - corepack prepare pnpm@9.13.0 --activate # We should use pnpm@latest-9 again when https://github.com/pnpm/pnpm/issues/8788 is resolved
           - pnpm install
           - pnpm run publish
           - git push --follow-tags
@@ -56,8 +56,8 @@ definitions:
           - pnpm
         deployment: production
         script:
+          - npm install -g corepack
           - corepack enable
-          - corepack prepare pnpm@latest-9 --activate
           - pnpm install
           # https://support.atlassian.com/bitbucket-cloud/docs/push-back-to-your-repository/#Configuring-an-alternate-Git-client
           - git config --global http.${BITBUCKET_GIT_HTTP_ORIGIN}.proxy http://localhost:29418/
