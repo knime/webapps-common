@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.4.2
+
+### Patch Changes
+
+- c1b0e41: Before this patch a hidden control in a horizontal layout reserved space.
+
 ## 1.4.1
 
 ### Patch Changes
