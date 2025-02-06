@@ -72,7 +72,6 @@ const isActive = (index: number) => index === 0;
     position: absolute;
     pointer-events: none;
     max-height: 300px;
-    height: 100%;
 
     &:first-child {
       position: relative;
