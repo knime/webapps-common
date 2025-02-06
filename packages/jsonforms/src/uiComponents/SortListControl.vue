@@ -11,7 +11,6 @@ import { Button, SortList } from "@knime/components";
 import LabeledControl from "../higherOrderComponents/control/LabeledControl.vue";
 import ErrorMessages from "../higherOrderComponents/control/errorMessage/ErrorMessages.vue";
 import type { VueControlProps } from "../higherOrderComponents/control/types";
-import { withSpecialChoices } from "../utils/getPossibleValuesFromUiSchema";
 import inject from "../utils/inject";
 
 import useProvidedState from "./composables/useProvidedState";
@@ -33,13 +32,9 @@ const data = computed(() => props.control.data);
 const choicesProvider = computed(
   () => props.control.uischema.options!.choicesProvider,
 );
-const possibleValues = withSpecialChoices(
-  useProvidedState<{ id: string; text: string; special?: true }[]>(
-    choicesProvider,
-    [],
-  ),
-  props.control,
-);
+const possibleValues = useProvidedState<
+  { id: string; text: string; special?: true }[]
+>(choicesProvider, []);
 
 const possibleValuesWithUnknownValues = computed(() =>
   possibleValues.value.concat({
