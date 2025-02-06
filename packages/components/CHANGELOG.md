@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.16.1
+
+### Patch Changes
+
+- fd95605: Remove set format button from date time picker
+
 ## 1.16.0
 
 ### Minor Changes
