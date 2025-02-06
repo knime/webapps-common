@@ -5,7 +5,6 @@ import { ComboBox } from "@knime/components";
 
 import type { VueControlPropsForLabelContent } from "../higherOrderComponents/control/withLabel";
 import type { PossibleValue } from "../types/ChoicesUiSchema";
-import { withSpecialChoices } from "../utils/getPossibleValuesFromUiSchema";
 
 import useProvidedState from "./composables/useProvidedState";
 
@@ -14,10 +13,7 @@ const props = defineProps<VueControlPropsForLabelContent<string[]>>();
 const choicesProvider = computed<string | undefined>(
   () => props.control.uischema?.options?.choicesProvider,
 );
-const options = withSpecialChoices(
-  useProvidedState<PossibleValue[]>(choicesProvider, []),
-  props.control,
-);
+const options = useProvidedState<PossibleValue[]>(choicesProvider, []);
 const selectedIds = ref([] as string[]);
 const loaded = ref(false);
 

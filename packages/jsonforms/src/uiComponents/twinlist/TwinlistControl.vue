@@ -10,7 +10,6 @@ import { MultiModeTwinList } from "@knime/components";
 import type { VueControlPropsForLabelContent } from "../../higherOrderComponents/control/withLabel";
 import type { IdAndText, PossibleValue } from "../../types/ChoicesUiSchema";
 import { mergeDeep } from "../../utils";
-import { withSpecialChoices } from "../../utils/getPossibleValuesFromUiSchema";
 import inject from "../../utils/inject";
 import useProvidedState from "../composables/useProvidedState";
 import TwinlistLoadingInfo from "../loading/TwinlistLoadingInfo.vue";
@@ -113,9 +112,9 @@ const onCaseSensitiveChange = (isCaseSensitive: boolean) => {
 const choicesProvider = computed<string | undefined>(
   () => props.control.uischema.options?.choicesProvider,
 );
-const possibleValues = withSpecialChoices(
-  useProvidedState<PossibleValue[] | null>(choicesProvider, null),
-  props.control,
+const possibleValues = useProvidedState<PossibleValue[] | null>(
+  choicesProvider,
+  null,
 );
 const previouslySelectedTypes = ref<IdAndText[]>([]);
 
@@ -185,12 +184,6 @@ if (!choicesProvider.value) {
 const withTypes = computed(() =>
   Boolean(possibleValues.value?.[0]?.hasOwnProperty("type")),
 );
-const showMode = computed(
-  () => props.control.uischema.options?.showMode ?? true,
-);
-const showSearch = computed(
-  () => props.control.uischema.options?.showSearch ?? true,
-);
 
 const leftLabel = computed(
   () =>
@@ -206,8 +199,6 @@ const rightLabel = computed(
   <MultiModeTwinList
     v-bind="$attrs"
     :id="labelForId"
-    :show-mode="showMode"
-    :show-search="showSearch"
     :disabled="disabled"
     :with-types="withTypes"
     :selected-types="control.data.typeFilter?.selectedTypes"

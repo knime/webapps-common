@@ -53,8 +53,6 @@ describe("ColumnSelect.vue", () => {
           scope: "#/properties/view/properties/yAxisColumn",
           options: {
             format: "columnSelection",
-            showRowKeys: false,
-            showNoneColumn: false,
             possibleValues: [
               {
                 id: "Universe_0_0",
@@ -137,53 +135,6 @@ describe("ColumnSelect.vue", () => {
       expect(
         await wrapper.getComponent(DropdownControl).props().asyncInitialOptions,
       ).toEqual([
-        expect.objectContaining({
-          id: "Universe_0_0",
-          text: "Universe_0_0",
-        }),
-        expect.objectContaining({
-          id: "Universe_0_1",
-          text: "Universe_0_1",
-        }),
-        expect.objectContaining({
-          id: "Universe_1_0",
-          text: "Universe_1_0",
-        }),
-        expect.objectContaining({
-          id: "Universe_1_1",
-          text: "Universe_1_1",
-        }),
-      ]);
-    });
-
-    it.skip("optionsGenerator correctly transforms the data with none column and row keys", async () => {
-      props.control.uischema.options!.showNoneColumn = true;
-      props.control.uischema.options!.showRowKeys = true;
-      props.control.uischema.options!.showRowNumbers = true;
-
-      const { wrapper } = mountJsonFormsControl(ColumnSelect, {
-        props,
-        provide: {
-          // @ts-expect-error Argument of type ... is not assignable to parameter of type 'VueControl<unknown>'.
-          getPossibleValuesFromUiSchema,
-        },
-      });
-
-      expect(
-        await wrapper.getComponent(DropdownControl).props().asyncInitialOptions,
-      ).toEqual([
-        expect.objectContaining({
-          id: "<none>",
-          text: "None",
-        }),
-        expect.objectContaining({
-          id: "<row-keys>",
-          text: "RowID",
-        }),
-        expect.objectContaining({
-          id: "<row-numbers>",
-          text: "Row number",
-        }),
         expect.objectContaining({
           id: "Universe_0_0",
           text: "Universe_0_0",

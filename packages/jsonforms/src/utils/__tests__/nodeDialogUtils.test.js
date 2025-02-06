@@ -65,8 +65,6 @@ describe("Utils", () => {
               scope: "#/properties/model/properties/categoryColumn",
               options: {
                 format: "columnSelection",
-                showRowKeys: false,
-                showNoneColumn: false,
                 isAdvanced: true,
               },
             },
@@ -90,7 +88,6 @@ describe("Utils", () => {
               scope: "#/properties/model/properties/categoryColumn",
               options: {
                 format: "columnSelection",
-                showRowKeys: false,
                 showNoneColumn: false,
               },
             },
