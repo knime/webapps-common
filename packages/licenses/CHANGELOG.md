@@ -1,5 +1,11 @@
 # @knime/licenses
 
+## 1.1.0
+
+### Minor Changes
+
+- 1f2459e: update node version to node 22.11.0
+
 ## 1.0.6
 
 ### Patch Changes

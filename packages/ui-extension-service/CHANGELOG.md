@@ -1,5 +1,11 @@
 # @knime/ui-extension-service
 
+## 2.1.0
+
+### Minor Changes
+
+- 1f2459e: update node version to node 22.11.0
+
 ## 2.0.1
 
 ### Patch Changes

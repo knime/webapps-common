@@ -1,5 +1,21 @@
 # demo
 
+## 1.3.0
+
+### Minor Changes
+
+- 0aa268c: update stylelint dependency
+- 1f2459e: update node version to node 22.11.0
+
+### Patch Changes
+
+- Updated dependencies [1f2459e]
+  - @knime/components@1.17.0
+  - @knime/licenses@1.1.0
+  - @knime/virtual-tree@1.3.15
+  - @knime/hub-features@1.2.11
+  - @knime/rich-text-editor@1.3.15
+
 ## 1.2.8
 
 ### Patch Changes

@@ -1,5 +1,12 @@
 # @knime/eslint-config
 
+## 8.3.0
+
+### Minor Changes
+
+- 0aa268c: update stylelint dependency
+- 1f2459e: update node version to node 22.11.0
+
 ## 8.2.0
 
 ### Minor Changes

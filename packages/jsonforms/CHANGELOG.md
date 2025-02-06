@@ -1,5 +1,17 @@
 # @knime/json-forms
 
+## 1.4.0
+
+### Minor Changes
+
+- 1f2459e: update node version to node 22.11.0
+
+### Patch Changes
+
+- Updated dependencies [1f2459e]
+  - @knime/components@1.17.0
+  - @knime/rich-text-editor@1.3.15
+
 ## 1.3.3
 
 ### Patch Changes

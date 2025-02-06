@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.17.0
+
+### Minor Changes
+
+- 1f2459e: update node version to node 22.11.0
+
 ## 1.16.0
 
 ### Minor Changes
