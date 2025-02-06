@@ -17,8 +17,6 @@ describe("ColumnSelect", () => {
       type: "Control",
       scope: "#/properties/comboBoxSettings",
       options: {
-        showRowKeys: false,
-        showNoneColumn: false,
         format: "comboBox",
       },
     };
