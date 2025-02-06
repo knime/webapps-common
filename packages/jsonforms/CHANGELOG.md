@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.4.1
+
+### Patch Changes
+
+- 254f32a: Fix that the control value updates depend on the browser timezone by calculating to/from UTC
+
 ## 1.4.0
 
 ### Minor Changes
