@@ -1,6 +1,6 @@
 import { type Mock, vi } from "vitest";
 import { type Component, type ExtractPropTypes } from "vue";
-import { mount } from "@vue/test-utils";
+import { flushPromises, mount } from "@vue/test-utils";
 import * as jsonformsVueModule from "@jsonforms/vue";
 
 import type {
@@ -193,3 +193,17 @@ export const getControlBase = (path: string) =>
         typeof jsonformsVueModule.useJsonFormsControl
       >["control"]["value"]
   >;
+
+export const useInitialProvidedState = <T>() => {
+  let provideState: (state: T) => void;
+  const addStateProviderListener = vi.fn((_id, callback) => {
+    provideState = callback;
+  });
+  return {
+    addStateProviderListener,
+    provideState: async (state: T) => {
+      provideState(state);
+      await flushPromises();
+    },
+  };
+};

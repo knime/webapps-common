@@ -25,8 +25,6 @@ describe("ColumnSelect", () => {
       type: "Control",
       scope: "#/properties/twinlistSetting",
       options: {
-        showRowKeys: false,
-        showNoneColumn: false,
         format: "columnSelection",
       },
     };
