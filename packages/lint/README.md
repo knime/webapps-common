@@ -91,7 +91,7 @@ Include the following in a `pre-commit` hook to lint and format the changes in y
 
 ```bash
 #!/usr/bin/env bash
-npx lint-staged
+pnpm dlx lint-staged
 ```
 
 Additionaly, use the [lint-staged.config.mjs](lint-staged.config.mjs) file to configure lint-staged, i.e. create a `lint-staged.config.mjs` file in the root folder containing
