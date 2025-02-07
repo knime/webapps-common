@@ -64,6 +64,11 @@ h4 {
 </style>
 `;
 
+const lorumIpsumContent = `And a lot more Lorem ipsum dolor sit amet consectetur adipisicing
+          elit. Enim, nemo nostrum repellat voluptas, nesciunt sequi velit earum
+          iusto iste beatae hic perspiciatis deserunt exercitationem aut
+          sapiente quas culpa sint alias.`;
+
 export default {
   components: {
     SideDrawer,
@@ -73,7 +78,9 @@ export default {
   data() {
     return {
       codeExample,
+      lorumIpsumContent,
       isExpanded: false,
+      isExpandedCustomStyles: false,
     };
   },
   computed: {
@@ -82,6 +89,11 @@ export default {
     },
     expandedMessage() {
       return this.isExpanded ? "expanded" : "not expanded";
+    },
+    expandedMessageCustomStyles() {
+      return this.isExpandedCustomStyles
+        ? "expanded (with custom styles)"
+        : "not expanded (so you can't see the custom styles)";
     },
   },
 };
@@ -106,14 +118,45 @@ export default {
       <div class="contents-side-drawer">
         <h4>something here</h4>
         <p>
-          And a lot more Lorem ipsum dolor sit amet consectetur adipisicing
-          elit. Enim, nemo nostrum repellat voluptas, nesciunt sequi velit earum
-          iusto iste beatae hic perspiciatis deserunt exercitationem aut
-          sapiente quas culpa sint alias.
+          {{ lorumIpsumContent }}
         </p>
         <Button with-border @click="isExpanded = false"> Close me! </Button>
       </div>
     </SideDrawer>
+
+    <section>
+      <div class="grid-container">
+        <div class="grid-item-12 wrapper">
+          <p>
+            It is possible to override some styles of the drawer by using the
+            <code>styleOverrides</code> prop.
+          </p>
+          <Button
+            primary
+            @click="isExpandedCustomStyles = !isExpandedCustomStyles"
+          >
+            Draw it!
+          </Button>
+          <p>I am {{ expandedMessageCustomStyles }}</p>
+        </div>
+      </div>
+    </section>
+    <SideDrawer
+      class="side-drawer"
+      :is-expanded="isExpandedCustomStyles"
+      :style-overrides="{ width: '50%' }"
+    >
+      <div class="contents-side-drawer">
+        <h4>something here</h4>
+        <p>
+          {{ lorumIpsumContent }}
+        </p>
+        <Button with-border @click="isExpandedCustomStyles = false">
+          Close me!
+        </Button>
+      </div>
+    </SideDrawer>
+
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
