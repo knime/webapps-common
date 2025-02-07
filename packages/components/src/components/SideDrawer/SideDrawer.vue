@@ -38,9 +38,9 @@ export default {
 }
 
 .side-drawer {
-  position: fixed;
+  position: var(--position-common-side-drawer, fixed);
   top: 0;
-  width: 500px;
+  width: var(--width-common-side-drawer, 500px);
   right: 0;
   bottom: 0;
   box-shadow: -3px 0 7px 0 var(--knime-gray-dark-semi);
