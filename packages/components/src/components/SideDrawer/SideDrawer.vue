@@ -1,22 +1,34 @@
-<script>
-/*
+<script lang="ts">
+/**
  * Expandable sideDrawer component displaying arbitrary components as content.
  */
+export default {};
+</script>
 
-export default {
-  name: "SideDrawer",
-  props: {
-    isExpanded: {
-      type: Boolean,
-      default: false,
-    },
-  },
+<script setup lang="ts">
+type StyleOverrides = {
+  position: "fixed" | "absolute";
+  width: string;
 };
+
+withDefaults(
+  defineProps<{
+    isExpanded?: boolean;
+    styleOverrides?: StyleOverrides;
+  }>(),
+  {
+    isExpanded: false,
+    styleOverrides: () => ({
+      position: "fixed",
+      width: "500px",
+    }),
+  },
+);
 </script>
 
 <template>
   <Transition name="slide">
-    <div v-if="isExpanded" class="side-drawer">
+    <div v-if="isExpanded" class="side-drawer" :style="styleOverrides">
       <div class="content">
         <slot />
       </div>
@@ -39,8 +51,8 @@ export default {
 
 .side-drawer {
   position: fixed;
-  top: 0;
   width: 500px;
+  top: 0;
   right: 0;
   bottom: 0;
   box-shadow: -3px 0 7px 0 var(--knime-gray-dark-semi);

@@ -25,6 +25,7 @@ import { numberRenderer } from "./numberRenderer";
 import { radioRenderer } from "./radioRenderer";
 import { richTextRenderer } from "./richTextRenderer";
 import { sectionLayoutRenderer } from "./sectionLayoutRenderer";
+import { settingsSubPanelLayoutRenderer } from "./sectionSubPanelLayoutRenderer";
 import { simpleButtonRenderer } from "./simpleButtonRenderer";
 import { sortListRenderer } from "./sortListRenderer";
 import { textAreaRenderer } from "./textAreaRenderer";
@@ -69,6 +70,7 @@ export const layouts = {
   horizontalLayoutRenderer,
   verticalLayoutRenderer,
   sectionLayoutRenderer,
+  settingsSubPanelLayoutRenderer,
   ...fallbackLayoutRenderers,
 } satisfies Record<string, VueLayoutRenderer>;
 
