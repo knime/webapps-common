@@ -1,24 +1,31 @@
 <script setup lang="ts">
-import { ref } from "vue";
 import { DispatchRenderer } from "@jsonforms/vue";
+
+import { FunctionButton } from "@knime/components";
+import NextIcon from "@knime/styles/img/icons/arrow-next.svg";
 
 import type { VueLayoutProps } from "../higherOrderComponents/layout/types";
 
 import VerticalLayoutBase from "./VerticalLayoutBase.vue";
 import SectionHeading from "./section/SectionHeading.vue";
+import SettingsSubPanel from "./settingsSubPanel/SettingsSubPanel.vue";
 
 defineProps<VueLayoutProps>();
-
-const hover = ref(false);
 </script>
 
 <template>
-  <div class="section" @mouseover="hover = true" @mouseleave="hover = false">
-    <SectionHeading :title-text="layout.uischema.label">
-      <template #buttons>
-        <slot name="buttons" :hover="hover" />
-      </template>
-    </SectionHeading>
+  <SettingsSubPanel show-back-arrow>
+    <template #expand-button="{ expand }">
+      <SectionHeading :title-text="layout.uischema.label">
+        <template #right-buttons>
+          <FunctionButton class="set-button" @click="expand">
+            <span>Set</span>
+            <NextIcon />
+          </FunctionButton>
+        </template>
+      </SectionHeading>
+    </template>
+
     <VerticalLayoutBase
       #default="{ element, index }"
       :elements="layout.uischema.elements"
@@ -33,13 +40,11 @@ const hover = ref(false);
         :cells="layout.cells"
       />
     </VerticalLayoutBase>
-  </div>
+  </SettingsSubPanel>
 </template>
 
 <style lang="postcss" scoped>
-.section {
-  &:not(:first-child) {
-    padding-top: var(--space-16);
-  }
+.set-button {
+  height: 30px;
 }
 </style>
