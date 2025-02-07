@@ -202,7 +202,7 @@ export default defineComponent({
     }
 
     & .notice {
-      background-color: var(--knime-porcelain);
+      background-color: var(--modal-notice-info-color, var(--knime-porcelain));
     }
   }
 
