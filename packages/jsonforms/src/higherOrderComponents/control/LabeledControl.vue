@@ -9,7 +9,7 @@ const props = defineProps<{
   fill?: boolean;
 }>();
 const hover = ref(false);
-const labelForId: Ref<null | string> = ref(null);
+const labelForId: Ref<null | string> = ref("");
 
 // An empty string will change the layout. In order to keep the layout we add
 // a space here that will lead to the correct height of the control header.

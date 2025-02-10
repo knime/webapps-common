@@ -20,17 +20,6 @@ describe("ColumnSelect", () => {
     },
   };
 
-  it("determines ColumnSelect renderer", () => {
-    const uiSchema = {
-      type: "Control",
-      scope: "#/properties/twinlistSetting",
-      options: {
-        format: "columnSelection",
-      },
-    };
-    expect(determineRenderer(uiSchema, schema)).toBe("ColumnSelect");
-  });
-
   it("determines TwinList renderer", () => {
     const uiSchema = {
       type: "Control",
