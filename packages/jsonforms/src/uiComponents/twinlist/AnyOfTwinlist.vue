@@ -1,19 +1,13 @@
 <script setup lang="ts">
 import type { VueControlPropsForLabelContent } from "../../higherOrderComponents/control/withLabel";
-import type { Control } from "../../types/Control";
 import { optionsMapper } from "../../utils";
 
-import SimpleTwinlistControl from "./SimpleTwinlistControl.vue";
+import TwinlistControlBase from "./TwinlistControlBase.vue";
 
-defineProps<VueControlPropsForLabelContent<string[]>>();
-const optionsGenerator = (control: Control) => {
-  return control!.schema!.anyOf!.map(optionsMapper);
-};
+const props = defineProps<VueControlPropsForLabelContent<string[]>>();
+const possibleValues = props.control.schema.anyOf!.map(optionsMapper);
 </script>
 
 <template>
-  <SimpleTwinlistControl
-    v-bind="$props"
-    :options-generator="optionsGenerator"
-  />
+  <TwinlistControlBase v-bind="$props" :possible-values />
 </template>

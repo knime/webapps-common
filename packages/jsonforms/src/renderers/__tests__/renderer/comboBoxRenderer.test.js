@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { determineRenderer } from "../../../../testUtils";
 
-describe("ColumnSelect", () => {
+describe("ComboBoxRenderer", () => {
   const schema = {
     type: "object",
     properties: {

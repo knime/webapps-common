@@ -5,9 +5,6 @@ export const dialogInitialData = {
       yAxisScale: "VALUE",
       dropdown: "value 1",
       simpleColumnSelect: "column 1",
-      xAxisColumn: {
-        selected: "Universe_1_1",
-      },
       yAxisColumn: "Universe_0_1",
       xAxisLabel: "",
       yAxisLabel: "",
@@ -37,15 +34,6 @@ export const dialogInitialData = {
           simpleColumnSelect: {
             type: "string",
             title: "Simple Dropdown",
-          },
-          xAxisColumn: {
-            type: "object",
-            properties: {
-              selected: {
-                type: "string",
-              },
-            },
-            title: "X Axis Column",
           },
           xAxisLabel: {
             type: "string",
@@ -257,35 +245,6 @@ export const dialogInitialData = {
         elements: [
           {
             type: "Control",
-            scope: "#/properties/view/properties/xAxisColumn",
-            options: {
-              format: "columnSelection",
-              possibleValues: [
-                {
-                  id: "Cluster_Membership",
-                  text: "Cluster_Membership",
-                },
-                {
-                  id: "Universe_0_0",
-                  text: "Universe_0_0",
-                },
-                {
-                  id: "Universe_0_1",
-                  text: "Universe_0_1",
-                },
-                {
-                  id: "Universe_1_0",
-                  text: "Universe_1_0",
-                },
-                {
-                  id: "Universe_1_1",
-                  text: "Universe_1_1",
-                },
-              ],
-            },
-          },
-          {
-            type: "Control",
             scope: "#/properties/view/properties/yAxisColumn",
             options: {
               format: "twinList",
@@ -490,10 +449,6 @@ export const expectedRenderers = [
   {
     scope: "#/properties/view/properties/showTooltip",
     component: "CheckboxControl",
-  },
-  {
-    scope: "#/properties/view/properties/xAxisColumn",
-    component: "ColumnSelect",
   },
   {
     scope: "#/properties/view/properties/xAxisLabel",

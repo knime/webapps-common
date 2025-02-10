@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { determineRenderer } from "../../../../testUtils";
 
-describe("ColumnSelect", () => {
+describe("TwinlistRenderer", () => {
   const schema = {
     type: "object",
     properties: {
@@ -19,17 +19,6 @@ describe("ColumnSelect", () => {
       },
     },
   };
-
-  it("determines ColumnSelect renderer", () => {
-    const uiSchema = {
-      type: "Control",
-      scope: "#/properties/twinlistSetting",
-      options: {
-        format: "columnSelection",
-      },
-    };
-    expect(determineRenderer(uiSchema, schema)).toBe("ColumnSelect");
-  });
 
   it("determines TwinList renderer", () => {
     const uiSchema = {

@@ -3,10 +3,6 @@ import type { PartialDeep } from "type-fest";
 
 import type { Control } from "../types/Control";
 
-import getPossibleValuesFromUiSchema from "./getPossibleValuesFromUiSchema";
-
-export { getPossibleValuesFromUiSchema };
-
 export const optionsMapper = ({
   const: id,
   title: text,

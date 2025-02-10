@@ -1,38 +1,29 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, toRef } from "vue";
 
 import { ComboBox } from "@knime/components";
 
 import type { VueControlPropsForLabelContent } from "../higherOrderComponents/control/withLabel";
-import type { PossibleValue } from "../types/ChoicesUiSchema";
 
-import useProvidedState from "./composables/useProvidedState";
+import { usePossibleValues } from "./composables/usePossibleValues";
 
 const props = defineProps<VueControlPropsForLabelContent<string[]>>();
 
-const choicesProvider = computed<string | undefined>(
-  () => props.control.uischema?.options?.choicesProvider,
-);
-const options = useProvidedState<PossibleValue[]>(choicesProvider, []);
 const selectedIds = ref([] as string[]);
 const loaded = ref(false);
 
+const { possibleValues } = usePossibleValues(toRef(props, "control"));
+
 onMounted(() => {
   selectedIds.value = props.control.data;
-  if (!choicesProvider.value) {
-    options.value = props.control.uischema?.options?.possibleValues;
-  }
   loaded.value = true;
 });
 
 const noPossibleValuesPresent = computed(
-  () => typeof options.value === "undefined",
+  () => possibleValues.value === null || possibleValues.value.length === 0,
 );
 const isDisabled = computed(
-  () =>
-    props.disabled ||
-    noPossibleValuesPresent.value ||
-    options.value?.length === 0,
+  () => props.disabled || noPossibleValuesPresent.value,
 );
 </script>
 
@@ -47,7 +38,7 @@ const isDisabled = computed(
     :allow-new-values="noPossibleValuesPresent ? ('' as any) : false"
     :aria-label="control.label"
     :disabled="isDisabled"
-    :possible-values="noPossibleValuesPresent ? [] : options"
+    :possible-values="possibleValues ?? []"
     :model-value="selectedIds"
     :is-valid
     compact
@@ -57,6 +48,6 @@ const isDisabled = computed(
 
 <style scoped>
 :deep(.multiselect) {
-  background-color: white;
+  background-color: var(--knime-white);
 }
 </style>

@@ -19,7 +19,6 @@ import {
   mountJsonFormsControlLabelContent,
 } from "../../../testUtils/component";
 import NumberControl from "../NumberControl.vue";
-import NumberControlBase from "../NumberControlBase.vue";
 
 describe("NumberControl.vue", () => {
   let props: VueControlTestProps<typeof NumberControl>,
@@ -104,7 +103,7 @@ describe("NumberControl.vue", () => {
         props,
       },
     );
-    await wrapper.findComponent(NumberControlBase).trigger("focusout");
+    await wrapper.findComponent(NumberControl).trigger("focusout");
     expect(changeValue).toHaveBeenCalledWith(result);
   });
 
@@ -127,7 +126,7 @@ describe("NumberControl.vue", () => {
         props,
       },
     );
-    await wrapper.findComponent(NumberControlBase).trigger("focusout");
+    await wrapper.findComponent(NumberControl).trigger("focusout");
     expect(changeValue).toHaveBeenCalledWith(result);
   });
 

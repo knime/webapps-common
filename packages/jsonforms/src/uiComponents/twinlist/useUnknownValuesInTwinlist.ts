@@ -2,7 +2,7 @@ import { type Ref, ref, watch } from "vue";
 
 import { getValuesInSet, getValuesNotInSet } from "../../utils";
 
-import { type TwinlistData } from "./TwinlistControl.vue";
+import { type TwinlistData } from "./MultimodeTwinlistControl.vue";
 
 interface PreviousAndNext {
   setNext: (next: string[]) => void;

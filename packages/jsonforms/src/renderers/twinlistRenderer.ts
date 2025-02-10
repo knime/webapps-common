@@ -12,7 +12,7 @@ import { inputFormats, priorityRanks } from "../constants";
 import { withLabel } from "../higherOrderComponents/control/withLabel";
 
 const TwinlistControl = defineAsyncComponent(
-  () => import("../uiComponents/twinlist/TwinlistControl.vue"),
+  () => import("../uiComponents/twinlist/MultimodeTwinlistControl.vue"),
 );
 const SimpleTwinlistControl = defineAsyncComponent(
   () => import("../uiComponents/twinlist/SimpleTwinlistControl.vue"),

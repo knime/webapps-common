@@ -10,7 +10,7 @@ import {
 import type { VueWrapper } from "@vue/test-utils";
 import { flushPromises } from "@vue/test-utils";
 
-import { MultiselectListBox, Twinlist } from "@knime/components";
+import { Twinlist } from "@knime/components";
 
 import {
   type ProvidedMethods,
@@ -19,7 +19,6 @@ import {
   mountJsonFormsControlLabelContent,
 } from "../../../../testUtils/component";
 import type { IdAndText } from "../../../types/ChoicesUiSchema";
-import { getPossibleValuesFromUiSchema } from "../../../utils";
 import TwinlistLoadingInfo from "../../loading/TwinlistLoadingInfo.vue";
 import SimpleTwinlistControl from "../SimpleTwinlistControl.vue";
 
@@ -66,24 +65,13 @@ describe("SimpleTwinlistControl.vue", () => {
   });
 
   const mountSimpleTwinlistControl = ({
-    asyncChoicesProviderMock,
     provide,
   }: {
-    asyncChoicesProviderMock?: Mock;
     provide?: Partial<ProvidedMethods>;
   } = {}) => {
     return mountJsonFormsControlLabelContent(SimpleTwinlistControl, {
       props,
-      provide: {
-        // @ts-expect-error Object literal may only specify known properties, and 'getPossibleValuesFromUiSchema' does not exist in type 'Partial<ProvidedMethods>'.
-        getPossibleValuesFromUiSchema: (control: Control) =>
-          getPossibleValuesFromUiSchema(
-            control,
-            asyncChoicesProviderMock ?? vi.fn(),
-            vi.fn(),
-          ),
-        ...provide,
-      },
+      provide,
     });
   };
 
@@ -113,55 +101,6 @@ describe("SimpleTwinlistControl.vue", () => {
     expect(changeValue).toHaveBeenCalled();
   });
 
-  it("correctly transforms the data into possible values", () => {
-    expect(wrapper.findComponent(Twinlist).props().possibleValues).toEqual([
-      {
-        id: "test_1",
-        text: "test_1",
-      },
-      {
-        id: "test_2",
-        text: "test_2",
-      },
-      {
-        id: "test_3",
-        text: "test_3",
-      },
-    ]);
-  });
-
-  it("renders TwinlistLoadingInfo when the possible values are being loaded", async () => {
-    delete props.control.uischema.options!.possibleValues;
-    props.control.uischema.options!.choicesProviderClass =
-      "dummyChoicesProvider";
-    const asyncChoicesResult = [{ id: "id", text: "text" }];
-    let resolveChoices: (choices: any) => void;
-    const asyncChoicesProviderMock = vi.fn().mockReturnValue(
-      new Promise((resolve) => {
-        resolveChoices = resolve;
-      }),
-    );
-    const { wrapper } = mountSimpleTwinlistControl({
-      asyncChoicesProviderMock,
-    });
-    expect(wrapper.findComponent(TwinlistLoadingInfo).exists()).toBeTruthy();
-    expect(
-      wrapper.findComponent(Twinlist).props().possibleValues,
-    ).toStrictEqual([]);
-    expect(
-      wrapper.findAllComponents(MultiselectListBox).at(1)!.find("li").exists(),
-    ).toBeFalsy();
-    resolveChoices!({ result: asyncChoicesResult, state: "SUCCESS" });
-    await flushPromises();
-    expect(wrapper.findComponent(TwinlistLoadingInfo).exists()).toBeFalsy();
-    expect(
-      wrapper.findComponent(Twinlist).props().possibleValues,
-    ).toStrictEqual(asyncChoicesResult);
-    expect(
-      wrapper.findAllComponents(MultiselectListBox).at(1)!.find("li").exists(),
-    ).toBeTruthy();
-  });
-
   it("sets correct initial value", () => {
     expect(wrapper.findComponent(Twinlist).props().modelValue).toStrictEqual(
       props.control.data,
@@ -183,6 +122,7 @@ describe("SimpleTwinlistControl.vue", () => {
   it("uses choicesProvider if present", async () => {
     const choicesProvider = "myChoicesProvider";
     props.control.uischema.options!.choicesProvider = choicesProvider;
+    delete props.control.uischema.options!.possibleValues;
 
     let provideChoices: (choices: IdAndText[]) => void;
     const addStateProviderListener = vi.fn((_id, callback) => {
@@ -201,10 +141,13 @@ describe("SimpleTwinlistControl.vue", () => {
         text: "Universe_0_0",
       },
     ];
+    await flushPromises();
+    expect(wrapper.findComponent(TwinlistLoadingInfo).exists()).toBeTruthy();
     provideChoices!(providedChoices);
     await flushPromises();
     expect(
       wrapper.findComponent(Twinlist).props().possibleValues,
     ).toStrictEqual(providedChoices);
+    expect(wrapper.findComponent(TwinlistLoadingInfo).exists()).toBeFalsy();
   });
 });

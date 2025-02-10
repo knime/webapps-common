@@ -1,28 +1,29 @@
 <script setup lang="ts">
-import type { VueControlProps } from "../higherOrderComponents/control/types";
+import { computed } from "vue";
+
+import { Dropdown } from "@knime/components";
+
+import type { VueControlPropsForLabelContent } from "../higherOrderComponents";
 import { optionsMapper } from "../utils";
 
-import DropdownControl from "./DropdownControl.vue";
+const props = defineProps<VueControlPropsForLabelContent<string | null>>();
 
-const props = defineProps<VueControlProps<string | null>>();
-const options = props.control.schema?.oneOf?.map(optionsMapper) ?? [];
-const asyncInitialOptions = Promise.resolve(options);
+const possibleValues = props.control.schema?.oneOf?.map(optionsMapper) ?? [];
+
+const modelValue = computed<string>({
+  get: () => props.control.data ?? "",
+  set: props.changeValue,
+});
 </script>
 
 <template>
-  <DropdownControl
-    v-bind="{ ...$attrs, ...$props }"
-    :async-initial-options="asyncInitialOptions"
-  >
-    <template #icon>
-      <slot name="icon" />
-    </template>
-    <template #buttons="{ hover, controlHTMLElement }">
-      <slot
-        name="buttons"
-        :hover="hover"
-        :control-h-t-m-l-element="controlHTMLElement"
-      />
-    </template>
-  </DropdownControl>
+  <!-- eslint-disable vue/attribute-hyphenation typescript complains with ':aria-label' instead of ':ariaLabel'-->
+  <Dropdown
+    :id="labelForId"
+    v-model="modelValue"
+    :possible-values
+    :ariaLabel="control.label"
+    :disabled="disabled"
+    compact
+  />
 </template>

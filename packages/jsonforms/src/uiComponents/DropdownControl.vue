@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from "vue";
-import { set } from "lodash-es";
-import { v4 as uuidv4 } from "uuid";
+import { computed, ref, toRef } from "vue";
 
 import { Checkbox } from "@knime/components";
 
@@ -9,51 +7,21 @@ import LabeledControl from "../higherOrderComponents/control/LabeledControl.vue"
 import ErrorMessages from "../higherOrderComponents/control/errorMessage/ErrorMessages.vue";
 import type { VueControlProps } from "../higherOrderComponents/control/types";
 import type { IdAndText } from "../types/ChoicesUiSchema";
-import type { SettingsData } from "../types/provided";
-import getFlattenedSettings from "../utils/getFlattenedSettings";
-import inject from "../utils/inject";
 
 import useHideOnNull from "./composables/useHideOnNull";
-import useProvidedState from "./composables/useProvidedState";
+import { usePossibleValues } from "./composables/usePossibleValues";
 import LoadingDropdown from "./loading/LoadingDropdown.vue";
 
-const props = withDefaults(
-  defineProps<
-    VueControlProps<any> & {
-      asyncInitialOptions?: Promise<IdAndText[]> | null;
-      controlDataToDropdownValue?: (data: any) => string;
-      dropdownValueToControlData?: (value: string | null) => any;
-    }
-  >(),
-  {
-    asyncInitialOptions: null,
-    controlDataToDropdownValue: (data: string) => data,
-    dropdownValueToControlData: (value: string | null) => value,
-  },
-);
-
-const getPossibleValuesFromUiSchema = inject("getPossibleValuesFromUiSchema");
-const registerWatcher = inject("registerWatcher");
-const getData = inject("getData");
-const sendAlert = inject("sendAlert");
+const props = defineProps<VueControlProps<string | null>>();
 
 const controlElement = ref(null);
 
-const choicesProvider = computed(
-  () => props.control.uischema.options?.choicesProvider,
-);
-const options = useProvidedState<null | IdAndText[]>(
-  choicesProvider.value,
-  null,
-);
+const { possibleValues } = usePossibleValues(toRef(props, "control"));
 
 const previousControlData = ref(props.control.data);
 
-const getFirstValueFromDropdownOrNull = (result: IdAndText[]) => {
-  return props.dropdownValueToControlData(
-    result.length > 0 ? result[0].id : null,
-  );
-};
+const getFirstValueFromDropdownOrNull = (result: IdAndText[]) =>
+  result.length > 0 ? result[0].id : null;
 
 const { showCheckbox, showControl, checkboxProps } = useHideOnNull(
   {
@@ -63,8 +31,10 @@ const { showCheckbox, showControl, checkboxProps } = useHideOnNull(
   },
   {
     setDefault: () => {
-      if (!previousControlData.value && options.value) {
-        props.changeValue(getFirstValueFromDropdownOrNull(options.value));
+      if (!previousControlData.value && possibleValues.value) {
+        props.changeValue(
+          getFirstValueFromDropdownOrNull(possibleValues.value),
+        );
       } else {
         props.changeValue(previousControlData.value);
       }
@@ -74,99 +44,6 @@ const { showCheckbox, showControl, checkboxProps } = useHideOnNull(
     },
   },
 );
-
-const dropdownValue = computed(() =>
-  props.controlDataToDropdownValue(props.control.data),
-);
-
-const choicesUpdateHandler = computed(
-  () => props.control.uischema.options?.choicesUpdateHandler,
-);
-const widgetId = uuidv4();
-const getUpdateOptionsMethod = async (
-  dependencySettings: SettingsData,
-  setNewValue: boolean,
-) => {
-  const { result, state, message } = await getData({
-    method: "settings.update",
-    options: [
-      widgetId,
-      choicesUpdateHandler.value,
-      getFlattenedSettings(dependencySettings),
-    ],
-  });
-
-  return (newSettings: SettingsData) => {
-    const handleResult = (result: IdAndText[]) => {
-      options.value = result;
-      if (setNewValue || !dropdownValue.value) {
-        set(
-          newSettings,
-          props.control.path,
-          getFirstValueFromDropdownOrNull(result),
-        );
-        props.changeValue(getFirstValueFromDropdownOrNull(result));
-      }
-    };
-
-    if (result) {
-      handleResult(result);
-    }
-    if (state === "FAIL") {
-      message.forEach((msg: string) => {
-        sendAlert({
-          message: msg,
-          type: "error",
-        });
-      });
-      handleResult([]);
-    }
-  };
-};
-
-const fetchInitialOptions = async (newSettings: SettingsData) => {
-  // initially only fetch possible values, but do not set a value
-  // instead, use value from initial data
-  (await getUpdateOptionsMethod(newSettings, false))(newSettings);
-};
-
-const setInitialOptions = async () => {
-  if (props.asyncInitialOptions !== null) {
-    options.value = await props.asyncInitialOptions;
-  } else if (!choicesProvider.value) {
-    getPossibleValuesFromUiSchema(props.control).then((result) => {
-      options.value = result;
-    });
-  }
-};
-
-let unregisterWatcher = () => {};
-
-onMounted(async () => {
-  if (choicesUpdateHandler.value) {
-    const dependencies = props.control.uischema.options?.dependencies || [];
-    const setFirstValueOnUpdate = Boolean(
-      props.control.uischema.options?.setFirstValueOnUpdate,
-    );
-    unregisterWatcher = await registerWatcher({
-      transformSettings: (dependencySettings) =>
-        getUpdateOptionsMethod(dependencySettings, setFirstValueOnUpdate),
-      init: fetchInitialOptions,
-      dependencies,
-    });
-  } else {
-    setInitialOptions();
-  }
-});
-
-onBeforeUnmount(() => {
-  unregisterWatcher();
-});
-
-const onChangeDropDown = (value: string) => {
-  previousControlData.value = props.dropdownValueToControlData(value);
-  props.changeValue(previousControlData.value);
-};
 </script>
 
 <template>
@@ -186,11 +63,11 @@ const onChangeDropDown = (value: string) => {
           ref="controlElement"
           :ariaLabel="control.label"
           :disabled="disabled"
-          :model-value="dropdownValue"
-          :possible-values="options"
+          :model-value="control.data ?? ''"
+          :possible-values="possibleValues"
           :is-valid
           compact
-          @update:model-value="onChangeDropDown"
+          @update:model-value="changeValue"
         />
       </ErrorMessages>
     </template>

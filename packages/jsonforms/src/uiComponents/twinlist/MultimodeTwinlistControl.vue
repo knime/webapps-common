@@ -1,17 +1,19 @@
 <!-- eslint-disable no-undefined -->
 <!-- eslint-disable class-methods-use-this -->
 <script setup lang="ts">
-import { computed, markRaw, ref } from "vue";
+import { computed, markRaw, ref, toRef } from "vue";
 import type { PartialDeep } from "type-fest";
 
 import type { TwinlistModelValue } from "@knime/components";
 import { MultiModeTwinList } from "@knime/components";
 
 import type { VueControlPropsForLabelContent } from "../../higherOrderComponents/control/withLabel";
-import type { IdAndText, PossibleValue } from "../../types/ChoicesUiSchema";
+import type { IdAndText } from "../../types/ChoicesUiSchema";
 import { mergeDeep } from "../../utils";
-import inject from "../../utils/inject";
-import useProvidedState from "../composables/useProvidedState";
+import {
+  useIncludedExcludedLabels,
+  usePossibleValues,
+} from "../composables/usePossibleValues";
 import TwinlistLoadingInfo from "../loading/TwinlistLoadingInfo.vue";
 
 import useUnknownValuesInTwinlist from "./useUnknownValuesInTwinlist";
@@ -109,12 +111,8 @@ const onCaseSensitiveChange = (isCaseSensitive: boolean) => {
 
 // Initial updates
 
-const choicesProvider = computed<string | undefined>(
-  () => props.control.uischema.options?.choicesProvider,
-);
-const possibleValues = useProvidedState<PossibleValue[] | null>(
-  choicesProvider,
-  null,
+const { possibleValues } = usePossibleValues<{ type?: IdAndText }>(
+  toRef(props, "control"),
 );
 const previouslySelectedTypes = ref<IdAndText[]>([]);
 
@@ -173,26 +171,17 @@ const getPreviouslySelectedTypes = () => {
 
 previouslySelectedTypes.value = getPreviouslySelectedTypes();
 
-if (!choicesProvider.value) {
-  inject("getPossibleValuesFromUiSchema")(props.control).then((result) => {
-    possibleValues.value = result;
-  });
-}
-
 // Hiding controls
 
 const withTypes = computed(() =>
   Boolean(possibleValues.value?.[0]?.hasOwnProperty("type")),
 );
 
-const leftLabel = computed(
-  () =>
-    props.control.uischema.options?.excludedLabel ?? props.twinlistLeftLabel,
+const { excludedLabel, includedLabel } = useIncludedExcludedLabels(
+  toRef(props, "control"),
 );
-const rightLabel = computed(
-  () =>
-    props.control.uischema.options?.includedLabel ?? props.twinlistRightLabel,
-);
+const leftLabel = computed(() => excludedLabel ?? props.twinlistLeftLabel);
+const rightLabel = computed(() => includedLabel ?? props.twinlistRightLabel);
 </script>
 
 <template>

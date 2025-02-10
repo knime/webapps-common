@@ -3,19 +3,20 @@ export type IdAndText = {
   text: string;
 };
 
-export type PossibleValue = IdAndText & {
-  compatibleTypes?: string[];
-  type?: IdAndText;
-};
+export type PossibleValue<SpecialChoicesProps extends Record<string, any>> =
+  IdAndText & SpecialChoicesProps;
 
-export type ChoicesUiSchemaOptions = {
-  possibleValues?: PossibleValue[];
-  choicesProviderClass?: string;
-  setFirstValueOnUpdate?: boolean;
+export type ChoicesUiSchemaOptions<
+  SpcialChoicesProps extends Record<string, any> = {},
+> = {
+  possibleValues?: PossibleValue<SpcialChoicesProps>[];
+  choicesProvider?: string;
+};
+export type IncludedExcludedLabelOptions = {
   includedLabel?: string;
   excludedLabel?: string;
 };
 
-export type ChoicesUiSchema = {
-  options?: ChoicesUiSchemaOptions;
+export type ChoicesUiSchema<S extends Record<string, any> = {}> = {
+  options?: ChoicesUiSchemaOptions<S>;
 };

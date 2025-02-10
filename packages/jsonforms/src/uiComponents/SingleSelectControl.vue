@@ -1,4 +1,3 @@
-<!-- eslint-disable class-methods-use-this -->
 <script setup lang="ts">
 import { computed } from "vue";
 
@@ -43,27 +42,42 @@ const createSpecialId = (specialChoice: string): SingleSelectId =>
 const createRegularId = (regularChoice: string): SingleSelectId =>
   `${regularPrefix}${regularChoice}`;
 
-const allChoices = computed<
-  | {
-      id: SingleSelectId;
-      text: string;
-    }[]
-  | null
->(() => {
+type Choice = {
+  id: SingleSelectId;
+  text: string;
+  isSpecial?: boolean;
+};
+
+const createSpecialChoice = ({
+  id,
+  text,
+}: {
+  id: string;
+  text: string;
+}): Choice => ({
+  id: createSpecialId(id),
+  text,
+  isSpecial: true,
+});
+
+const createRegularChoice = ({
+  id,
+  text,
+}: {
+  id: string;
+  text: string;
+}): Choice => ({
+  id: createRegularId(id),
+  text,
+});
+
+const allChoices = computed<Choice[] | null>(() => {
   if (regularChoices.value === null) {
     return null;
   }
   return specialChoices.value
-    .map(({ id, text }) => ({
-      id: createSpecialId(id),
-      text,
-    }))
-    .concat(
-      regularChoices.value.map(({ id, text }) => ({
-        id: createRegularId(id),
-        text,
-      })),
-    );
+    .map(createSpecialChoice)
+    .concat(regularChoices.value.map(createRegularChoice));
 });
 
 const assertIsSingleSelectId = (id: string) => {
