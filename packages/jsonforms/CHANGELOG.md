@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.5.0
+
+### Minor Changes
+
+- 69e24d3: Add error messages to jsonforms renderers
+
 ## 1.4.2
 
 ### Patch Changes
