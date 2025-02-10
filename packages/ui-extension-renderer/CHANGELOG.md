@@ -1,5 +1,11 @@
 # @knime/ui-extension-renderer
 
+## 2.0.7
+
+### Patch Changes
+
+- c1766a5: Add view for blocking errors
+
 ## 2.0.6
 
 ### Patch Changes

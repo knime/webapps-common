@@ -1,5 +1,11 @@
 # @knime/ui-extension-service
 
+## 2.1.1
+
+### Patch Changes
+
+- c1766a5: Add view for blocking errors
+
 ## 2.1.0
 
 ### Minor Changes
