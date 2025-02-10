@@ -29,7 +29,6 @@ export interface Provided {
   trigger: (triggerId: any) => void;
   sendAlert: (params: AlertParams) => void;
   // To be removed (see JsonFormsDialog.vue)
-  getPossibleValuesFromUiSchema: (control: Control) => Promise<any[]>;
   registerWatcher: registerWatcher;
   getData: getData;
 }

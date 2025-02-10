@@ -1,4 +1,3 @@
-<!-- eslint-disable class-methods-use-this -->
 <script setup lang="ts">
 import { computed } from "vue";
 

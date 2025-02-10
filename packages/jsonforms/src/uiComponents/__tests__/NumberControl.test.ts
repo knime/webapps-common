@@ -19,7 +19,6 @@ import {
   mountJsonFormsControlLabelContent,
 } from "../../../testUtils/component";
 import NumberControl from "../NumberControl.vue";
-import NumberControlBase from "../NumberControlBase.vue";
 
 describe("NumberControl.vue", () => {
   let props: VueControlTestProps<typeof NumberControl>,
@@ -120,7 +119,7 @@ describe("NumberControl.vue", () => {
       provideMin = callback;
     });
     const { wrapper, onRegisterValidation } = mountJsonFormsControlLabelContent(
-      NumberControlBase,
+      NumberControl,
       {
         props,
         provide: { addStateProviderListener },
@@ -143,7 +142,7 @@ describe("NumberControl.vue", () => {
       provideMax = callback;
     });
     const { wrapper, onRegisterValidation } = mountJsonFormsControlLabelContent(
-      NumberControlBase,
+      NumberControl,
       {
         props,
         provide: { addStateProviderListener },
