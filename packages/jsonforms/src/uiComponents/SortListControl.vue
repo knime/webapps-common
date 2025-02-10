@@ -11,15 +11,14 @@ import { Button, SortList } from "@knime/components";
 import LabeledControl from "../higherOrderComponents/control/LabeledControl.vue";
 import ErrorMessages from "../higherOrderComponents/control/errorMessage/ErrorMessages.vue";
 import type { VueControlProps } from "../higherOrderComponents/control/types";
-import inject from "../utils/inject";
 
 import useProvidedState from "./composables/useProvidedState";
 
 const props = withDefaults(
   defineProps<
     VueControlProps<string[]> & {
-      anyUnknownValuesId: string;
-      anyUnknownValuesText: string;
+      anyUnknownValuesId?: string;
+      anyUnknownValuesText?: string;
     }
   >(),
   {
@@ -34,7 +33,7 @@ const choicesProvider = computed(
 );
 const possibleValues = useProvidedState<
   { id: string; text: string; special?: true }[]
->(choicesProvider, []);
+>(choicesProvider, props.control.uischema.options!.possibleValues ?? []);
 
 const possibleValuesWithUnknownValues = computed(() =>
   possibleValues.value.concat({
@@ -68,15 +67,9 @@ const addUnknownValuesToData = (currentPossibleValues: { id: string }[]) => {
     props.changeValue(before.concat(unknownValues, after));
   }
 };
-const getPossibleValuesFromUiSchema = inject("getPossibleValuesFromUiSchema");
 
-onMounted(async () => {
-  const staticPossibleValues = props.control.uischema.options!.possibleValues;
-  if (staticPossibleValues) {
-    possibleValues.value = staticPossibleValues;
-  } else if (!choicesProvider.value) {
-    possibleValues.value = await getPossibleValuesFromUiSchema(props.control);
-  }
+onMounted(() => {
+  addUnknownValuesToData(possibleValues.value);
 });
 
 watch(() => possibleValues.value, addUnknownValuesToData);
@@ -115,7 +108,6 @@ const controlElement = ref<typeof SortList | null>(null);
           :model-value="data"
           :ariaLabel="control.label"
           :disabled="disabled"
-          compact
           @update:model-value="changeValue"
         />
       </ErrorMessages>

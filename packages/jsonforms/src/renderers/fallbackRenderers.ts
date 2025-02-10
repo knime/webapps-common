@@ -28,11 +28,11 @@ const AnyOfTwinlist = defineAsyncComponent(
 );
 
 export const fallbackControlRenderers = {
-  oneOfDropdownRenderer: {
+  oneOfDropdownRenderer: withLabel({
     name: "OneOfDropdown",
     control: OneOfDropdown,
     tester: rankWith(priorityRanks.fallback, isOneOfControl),
-  },
+  }),
   dateTimeFallbackRenderer: {
     ...dateTimeRenderer,
     tester: rankWith(priorityRanks.fallback, isDateTimeControl),
