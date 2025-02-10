@@ -7,9 +7,14 @@ export interface JSONRPCSuccessResponse {
 
 export const USER_ERROR_CODE = -32001;
 export const INTERNAL_ERROR_CODE = -32000;
+export const USER_ERROR_CODE_BLOCKING = -32002;
+
+export type UserErrorCode =
+  | typeof USER_ERROR_CODE
+  | typeof USER_ERROR_CODE_BLOCKING;
 
 export type JsonRpcUserError = {
-  code: typeof USER_ERROR_CODE;
+  code: UserErrorCode;
   message: string;
   data: {
     details?: string | null;
@@ -25,7 +30,7 @@ export type JsonRpcInternalError = {
   };
 };
 export interface JsonRpcOtherError {
-  code: Exclude<number, typeof INTERNAL_ERROR_CODE | typeof USER_ERROR_CODE>;
+  code: Exclude<number, typeof INTERNAL_ERROR_CODE | UserErrorCode>;
   message: string;
   data: null;
 }

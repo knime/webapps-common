@@ -3,7 +3,10 @@ import { describe, expect, it, vi } from "vitest";
 import { setUpCustomEmbedderService } from "@knime/ui-extension-renderer/testing";
 
 import { AlertingService } from "..";
-import { USER_ERROR_CODE } from "../types/jsonRPCTypes";
+import {
+  USER_ERROR_CODE,
+  USER_ERROR_CODE_BLOCKING,
+} from "../types/jsonRPCTypes";
 
 describe("AlertingService", () => {
   const constructAlertingService = () => {
@@ -29,6 +32,24 @@ describe("AlertingService", () => {
     expect(sendAlert).toHaveBeenCalledWith({
       type: "error",
       code: USER_ERROR_CODE,
+      message: "Hello",
+      data: {
+        details: "World",
+      },
+    });
+  });
+
+  it("sends error alerts with a custom error code", () => {
+    const { alertingService, sendAlert } = constructAlertingService();
+    alertingService.sendAlert({
+      message: "Hello",
+      details: "World",
+      type: "error",
+      isBlocking: true,
+    });
+    expect(sendAlert).toHaveBeenCalledWith({
+      type: "error",
+      code: USER_ERROR_CODE_BLOCKING,
       message: "Hello",
       data: {
         details: "World",

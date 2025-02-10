@@ -1,7 +1,10 @@
 import type { AlertType } from "@knime/ui-extension-renderer/api";
 
 import { AbstractService } from "./AbstractService";
-import { USER_ERROR_CODE } from "./types/jsonRPCTypes";
+import {
+  USER_ERROR_CODE,
+  USER_ERROR_CODE_BLOCKING,
+} from "./types/jsonRPCTypes";
 import type { AlertingServiceAPILayer } from "./types/serviceApiLayers";
 
 export type { AlertType };
@@ -16,6 +19,10 @@ export type AlertParams = {
    * Additional details about the problem that are displayed on demand.
    */
   details?: string;
+  /**
+   * Whether the error blocks the user from continuing, which is shown via an blocking error view.
+   */
+  isBlocking?: boolean;
 };
 
 /**
@@ -35,7 +42,7 @@ export class AlertingService extends AbstractService<AlertingServiceAPILayer> {
       });
     } else {
       this.baseService.sendAlert({
-        code: USER_ERROR_CODE,
+        code: params.isBlocking ? USER_ERROR_CODE_BLOCKING : USER_ERROR_CODE,
         type: params.type,
         message: params.message,
         data: {

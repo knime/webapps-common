@@ -1,7 +1,8 @@
 import UIExtension from "./UIExtension.vue";
 import UIExtensionAlerts from "./UIExtensionAlerts.vue";
+import UIExtensionBlockingErrorView from "./UIExtensionBlockingErrorView.vue";
 
-export { UIExtension, UIExtensionAlerts };
+export { UIExtension, UIExtensionAlerts, UIExtensionBlockingErrorView };
 
 export type {
   ExtensionConfig,
