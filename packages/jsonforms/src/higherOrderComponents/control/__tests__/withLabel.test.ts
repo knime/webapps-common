@@ -75,7 +75,7 @@ describe("withLabel", () => {
     const wrapper = mountTestControlRenderer();
     expect(
       wrapper.findComponent(TestControlLabelContent).props().labelForId,
-    ).toBeDefined();
+    ).toBeTypeOf("string");
   });
 
   const Button = defineComponent(() => () => h("div", "Button"), {

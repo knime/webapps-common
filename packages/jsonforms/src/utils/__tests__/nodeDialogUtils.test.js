@@ -64,7 +64,7 @@ describe("Utils", () => {
               type: "Control",
               scope: "#/properties/model/properties/categoryColumn",
               options: {
-                format: "columnSelection",
+                format: "dropDown",
                 isAdvanced: true,
               },
             },
@@ -87,7 +87,7 @@ describe("Utils", () => {
               type: "Control",
               scope: "#/properties/model/properties/categoryColumn",
               options: {
-                format: "columnSelection",
+                format: "dropDown",
                 showNoneColumn: false,
               },
             },

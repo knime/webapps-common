@@ -7,7 +7,7 @@ import {
   mountJsonFormsControlLabelContent,
 } from "../../../../testUtils/component";
 import AnyOfTwinlist from "../AnyOfTwinlist.vue";
-import SimpleTwinlistControl from "../SimpleTwinlistControl.vue";
+import TwinlistControlBase from "../TwinlistControlBase.vue";
 
 describe("AnyOfTwinlist.vue", () => {
   let wrapper: VueWrapper, props: VueControlTestProps<typeof AnyOfTwinlist>;
@@ -64,16 +64,14 @@ describe("AnyOfTwinlist.vue", () => {
   });
 
   it("renders", () => {
-    expect(wrapper.findComponent(SimpleTwinlistControl).exists()).toBe(true);
+    expect(wrapper.findComponent(TwinlistControlBase).exists()).toBe(true);
   });
 
   it("optionsGenerator correctly transforms the data", async () => {
     await wrapper.vm.$nextTick();
 
     expect(
-      wrapper.getComponent(SimpleTwinlistControl).props().optionsGenerator!(
-        props.control,
-      ),
+      wrapper.getComponent(TwinlistControlBase).props().possibleValues,
     ).toEqual([
       {
         id: "Universe_0_0",

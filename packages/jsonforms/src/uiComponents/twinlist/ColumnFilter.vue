@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import type { VueControlPropsForLabelContent } from "../../higherOrderComponents/control/withLabel";
 
-import TwinlistControl, { type TwinlistData } from "./TwinlistControl.vue";
+import TwinlistControl, {
+  type TwinlistData,
+} from "./MultimodeTwinlistControl.vue";
 
 defineProps<VueControlPropsForLabelContent<TwinlistData>>();
 </script>

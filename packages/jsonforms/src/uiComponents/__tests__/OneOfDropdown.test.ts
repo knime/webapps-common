@@ -6,13 +6,14 @@ import { Dropdown } from "@knime/components";
 import {
   type VueControlTestProps,
   getControlBase,
-  mountJsonFormsControl,
+  mountJsonFormsControlLabelContent,
 } from "../../../testUtils/component";
-import DropdownControl from "../DropdownControl.vue";
 import OneOfDropdown from "../OneOfDropdown.vue";
 
 describe("OneOfDropdown.vue", () => {
   let wrapper: VueWrapper, props: VueControlTestProps<typeof OneOfDropdown>;
+
+  const labelForId = "myLabelForId";
 
   beforeEach(() => {
     props = {
@@ -47,10 +48,12 @@ describe("OneOfDropdown.vue", () => {
       },
       disabled: false,
       isValid: false,
-      messages: { errors: [] },
+      labelForId,
     };
 
-    const component = mountJsonFormsControl(OneOfDropdown, { props });
+    const component = mountJsonFormsControlLabelContent(OneOfDropdown, {
+      props,
+    });
     wrapper = component.wrapper;
   });
 
@@ -62,26 +65,30 @@ describe("OneOfDropdown.vue", () => {
     expect(wrapper.findComponent(Dropdown).exists()).toBe(true);
   });
 
+  it("sets labelForId", () => {
+    expect(wrapper.findComponent(Dropdown).props().id).toBe(labelForId);
+  });
+
   it("computed dropdown options from oneof options", async () => {
-    expect(
-      await wrapper.getComponent(DropdownControl).props().asyncInitialOptions,
-    ).toEqual([
-      {
-        id: "Universe_0_0",
-        text: "Universe_0_0",
-      },
-      {
-        id: "Universe_0_1",
-        text: "Universe_0_1",
-      },
-      {
-        id: "Universe_1_0",
-        text: "Universe_1_0",
-      },
-      {
-        id: "Universe_1_1",
-        text: "Universe_1_1",
-      },
-    ]);
+    expect(await wrapper.getComponent(Dropdown).props().possibleValues).toEqual(
+      [
+        {
+          id: "Universe_0_0",
+          text: "Universe_0_0",
+        },
+        {
+          id: "Universe_0_1",
+          text: "Universe_0_1",
+        },
+        {
+          id: "Universe_1_0",
+          text: "Universe_1_0",
+        },
+        {
+          id: "Universe_1_1",
+          text: "Universe_1_1",
+        },
+      ],
+    );
   });
 });
