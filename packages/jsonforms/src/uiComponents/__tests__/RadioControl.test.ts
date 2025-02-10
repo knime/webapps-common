@@ -17,7 +17,6 @@ import {
   mountJsonFormsControlLabelContent,
 } from "../../../testUtils/component";
 import RadioControl from "../RadioControl.vue";
-import RadioControlBase from "../RadioControlBase.vue";
 
 describe("RadioControl.vue", () => {
   let props: VueControlTestProps<typeof RadioControl>,
@@ -107,12 +106,9 @@ describe("RadioControl.vue", () => {
 
   it("disables individual possible values if desired", async () => {
     props.control.uischema.options!.disabledOptions = "LOG";
-    const { wrapper } = await mountJsonFormsControlLabelContent(
-      RadioControlBase,
-      {
-        props,
-      },
-    );
+    const { wrapper } = await mountJsonFormsControlLabelContent(RadioControl, {
+      props,
+    });
     expect(
       wrapper.findComponent(RadioButtons).props().possibleValues,
     ).toStrictEqual([
