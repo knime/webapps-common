@@ -270,6 +270,17 @@ export default defineComponent({
     closeOptions() {
       (this.$refs.combobox as MultiselectRef).closeOptions();
     },
+    validate() {
+      const isValid = !this.selectedValues.some(
+        (x: PossibleValue) => x.invalid,
+      );
+      return {
+        isValid,
+        errorMessage: isValid
+          ? null
+          : "One or more of the selected items is invalid.",
+      };
+    },
   },
 });
 </script>

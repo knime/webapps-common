@@ -466,10 +466,8 @@ export default {
     possibleValues(newPossibleValues: PossibleValue[]) {
       if (this.filterChosenValuesOnPossibleValuesChange) {
         // Required to prevent invalid values from appearing (e.g. missing b/c of upstream filtering)
-        let allValues = newPossibleValues.reduce((arr, valObj) => {
-          arr.push(...Object.values(valObj));
-          return arr;
-        }, [] as Id[]);
+        const allValues = newPossibleValues.map(({ id }) => id);
+
         // Reset chosenValues as subset of original to prevent re-execution from resetting value
         const newIncludedValues = (this.includedValues ?? []).filter((item) =>
           allValues.includes(item),

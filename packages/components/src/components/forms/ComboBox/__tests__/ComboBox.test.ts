@@ -124,6 +124,20 @@ describe("ComboBox.vue", () => {
     ]);
   });
 
+  it("invalidates if invalid value is selected", async () => {
+    const missingId = "missing";
+    const wrapper = doMount({ modelValue: [possibleValues[0].id] });
+    expect(wrapper.vm.validate()).toStrictEqual({
+      isValid: true,
+      errorMessage: null,
+    });
+    await wrapper.setProps({ modelValue: [possibleValues[0].id, missingId] });
+    expect(wrapper.vm.validate()).toStrictEqual({
+      isValid: false,
+      errorMessage: "One or more of the selected items is invalid.",
+    });
+  });
+
   describe("focussing", () => {
     it("opens the multiselect when the input gets focussed and updates focus options", async () => {
       const wrapper = doMount({}, { attachTo: document.body });
