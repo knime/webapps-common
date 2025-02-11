@@ -251,13 +251,24 @@ export default {
     returnContainerRef() {
       return this.$refs.div as HTMLDivElement;
     },
-    allignmentCheck() {
-      if (this.alignment === "vertical") {
-        const calcedStyle = this.cssStyleSize;
+    alignmentCheck() {
+      return this.alignment === "vertical"
+        ? this.cssStyleSize
+        : { height: "auto" };
+    },
+  },
+  watch: {
+    possibleValues(newPossibleValues: PossibleValue[]) {
+      if (this.filterChosenValuesOnPossibleValuesChange) {
+        // Required to prevent invalid values from appearing (e.g. missing b/c of upstream filtering)
+        const allValues = newPossibleValues.map(({ id }) => id);
 
-        return calcedStyle;
+        // Reset selectedValues as subset of original to prevent re-execution from resetting value
+        const newSelectedValues = (this.selectedValues ?? []).filter((item) =>
+          allValues.includes(item),
+        );
+        this.onChange(newSelectedValues);
       }
-      return { height: "auto" };
     },
   },
   methods: {
@@ -296,62 +307,64 @@ export default {
 </script>
 
 <template>
-  <div class="checkboxes-wrapper">
-    <Label
-      v-if="showSearch"
-      #default="{ labelForId }"
-      :active="withSearchLabel"
-      :text="searchLabel"
-      class="search-wrapper"
-    >
-      <SearchInput
-        :id="labelForId"
-        ref="search"
-        :placeholder="searchPlaceholder"
-        :model-value="searchTerm"
-        :label="searchLabel"
-        :initial-case-sensitive-search="initialCaseSensitiveSearch"
-        show-case-sensitive-search-button
-        :disabled="disabled"
-        :compact="compact"
-        @update:model-value="onSearchInput"
-        @toggle-case-sensitive-search="caseSensitiveSearch = $event"
-      />
-    </Label>
-    <div class="header">
-      <div class="title">
-        <div v-if="numLabelInfos" class="info">{{ numLabelInfos }}</div>
+  <div>
+    <div class="checkboxes-wrapper">
+      <Label
+        v-if="showSearch"
+        #default="{ labelForId }"
+        :active="withSearchLabel"
+        :text="searchLabel"
+        class="search-wrapper"
+      >
+        <SearchInput
+          :id="labelForId"
+          ref="search"
+          :placeholder="searchPlaceholder"
+          :model-value="searchTerm"
+          :label="searchLabel"
+          :initial-case-sensitive-search="initialCaseSensitiveSearch"
+          show-case-sensitive-search-button
+          :disabled="disabled"
+          :compact="compact"
+          @update:model-value="onSearchInput"
+          @toggle-case-sensitive-search="caseSensitiveSearch = $event"
+        />
+      </Label>
+      <div class="header">
+        <div class="title">
+          <div v-if="numLabelInfos" class="info">{{ numLabelInfos }}</div>
+        </div>
       </div>
     </div>
-  </div>
 
-  <div
-    ref="div"
-    class="container"
-    :class="{ disabled, 'empty-box': withIsEmptyState }"
-    :style="[allignmentCheck, cssStyleSize]"
-    @mouseenter="handleMouseIn"
-    @mouseleave="handleMouseLeave"
-  >
-    <Checkboxes
-      v-show="!withIsEmptyState"
-      ref="form"
-      :empty-state-label="emptyStateLabel"
-      :empty-state-component="emptyStateComponent"
-      :model-value="modelValue"
-      :alignment="alignment"
-      :possible-values="concatenatedItems"
-      :is-valid="isValid"
-      :disabled="disabled"
-      @update:model-value="onChange"
-    />
     <div
-      v-if="!concatenatedItems.length && withIsEmptyState"
-      class="empty-state"
+      ref="div"
+      class="container"
+      :class="{ disabled, 'empty-box': withIsEmptyState }"
+      :style="[alignmentCheck, cssStyleSize]"
+      @mouseenter="handleMouseIn"
+      @mouseleave="handleMouseLeave"
     >
-      <span>
-        {{ emptyStateLabel }}
-      </span>
+      <Checkboxes
+        v-show="!withIsEmptyState"
+        ref="form"
+        :empty-state-label="emptyStateLabel"
+        :empty-state-component="emptyStateComponent"
+        :model-value="modelValue"
+        :alignment="alignment"
+        :possible-values="concatenatedItems"
+        :is-valid="isValid"
+        :disabled="disabled"
+        @update:model-value="onChange"
+      />
+      <div
+        v-if="!concatenatedItems.length && withIsEmptyState"
+        class="empty-state"
+      >
+        <span>
+          {{ emptyStateLabel }}
+        </span>
+      </div>
     </div>
   </div>
 </template>

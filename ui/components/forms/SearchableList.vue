@@ -249,24 +249,13 @@ export default {
     possibleValues(newPossibleValues: PossibleValue[]) {
       if (this.filterChosenValuesOnPossibleValuesChange) {
         // Required to prevent invalid values from appearing (e.g. missing b/c of upstream filtering)
-        const allValues = newPossibleValues.reduce((arr, valObj) => {
-          arr.push(...Object.values(valObj));
-          return arr;
-        }, [] as Id[]);
+        const allValues = newPossibleValues.map(({ id }) => id);
 
         // Reset selectedValues as subset of original to prevent re-execution from resetting value
-        this.selectedValues = (this.selectedValues ?? []).filter((item) =>
+        const newSelectedValues = (this.selectedValues ?? []).filter((item) =>
           allValues.includes(item),
         );
-      }
-    },
-    selectedValues(newVal: Id[], oldVal: Id[] | null) {
-      if (
-        oldVal === null ||
-        newVal?.length !== oldVal.length ||
-        oldVal.some((item, i) => item !== newVal[i])
-      ) {
-        this.$emit("update:modelValue", this.selectedValues);
+        this.onChange(newSelectedValues);
       }
     },
   },

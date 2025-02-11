@@ -150,6 +150,37 @@ describe("SearchableCheckboxes.vue", () => {
     expect(wrapper.vm.selectedValues).toStrictEqual(["invalidId", "test1"]);
   });
 
+  it("keeps valid state but removes invalid chosen values on possible values change", async () => {
+    let props = {
+      possibleValues: [
+        {
+          id: "test1",
+          text: "Text",
+        },
+        {
+          id: "test2",
+          text: "Some Text",
+        },
+      ],
+      modelValue: ["invalidId", "test1"],
+      ariaLabel: "label",
+    };
+    const wrapper = mount(SearchableCheckboxes, {
+      props,
+    });
+    expect(wrapper.vm.selectedValues).toStrictEqual(["invalidId", "test1"]);
+    await wrapper.setProps({
+      possibleValues: [
+        {
+          id: "test1",
+          text: "validValue",
+        },
+      ],
+      ariaLabel: "label",
+    });
+    expect(wrapper.vm.selectedValues).toStrictEqual(["test1"]);
+  });
+
   it("provides a valid hasSelection method", () => {
     const wrapper = mount(SearchableCheckboxes, {
       props: {
