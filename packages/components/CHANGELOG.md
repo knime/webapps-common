@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.18.1
+
+### Patch Changes
+
+- 3141407: Add option to clear invalid values from searchable checkboxes when the possible values change
+
 ## 1.18.0
 
 ### Minor Changes
