@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.18.2
+
+### Patch Changes
+
+- fix toast height breaking the expand animation
+
 ## 1.18.1
 
 ### Patch Changes
