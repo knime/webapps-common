@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { nextTick, provide, ref, watchEffect } from "vue";
+import { computed, nextTick, provide, ref, watch } from "vue";
 import {
   Actions,
   type CoreActions,
@@ -73,13 +73,15 @@ const dispatchUpdate = (path: string, value: any) => {
   );
 };
 
-watchEffect(() => {
-  if (jsonforms.value) {
+const jsonFormsIsPresent = computed(() => jsonforms.value !== null);
+watch(
+  () => jsonFormsIsPresent.value,
+  (isPresent) =>
+    isPresent &&
     toBeUpdatedBeforeJsonforms.forEach(({ path, value }) =>
       dispatchUpdate(path, value),
-    );
-  }
-});
+    ),
+);
 defineExpose({
   updateData: (path: string, value: any) => {
     if (jsonforms.value) {
