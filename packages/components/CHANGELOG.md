@@ -1,5 +1,17 @@
 # @knime/components
 
+## 1.18.0
+
+### Minor Changes
+
+- 976dba9: Added css variable to change modal color
+
+### Patch Changes
+
+- Updated dependencies [976dba9]
+  - @knime/styles@1.3.0
+  - @knime/utils@1.2.5
+
 ## 1.17.0
 
 ### Minor Changes

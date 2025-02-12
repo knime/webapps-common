@@ -1,5 +1,11 @@
 # @knime/styles
 
+## 1.3.0
+
+### Minor Changes
+
+- 976dba9: Added new user-add icon
+
 ## 1.2.0
 
 ### Minor Changes

@@ -1,5 +1,17 @@
 # @knime/json-forms
 
+## 1.5.1
+
+### Patch Changes
+
+- f074583: Fix delayed initial update dispatch watcher
+- Updated dependencies [976dba9]
+- Updated dependencies [976dba9]
+  - @knime/components@1.18.0
+  - @knime/styles@1.3.0
+  - @knime/rich-text-editor@1.3.16
+  - @knime/utils@1.2.5
+
 ## 1.5.0
 
 ### Minor Changes
