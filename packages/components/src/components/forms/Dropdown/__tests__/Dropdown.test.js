@@ -1,4 +1,5 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+/* eslint-disable max-lines */
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { flushPromises, mount } from "@vue/test-utils";
 import { cloneDeep, isUndefined } from "lodash-es";
 
@@ -608,6 +609,48 @@ describe("Dropdown.vue", () => {
       });
 
       expect(wrapper.findAll(".group-divider").length).toBe(3);
+    });
+  });
+
+  describe("dropdown.vue - keyboard interactions", () => {
+    let wrapper;
+
+    beforeEach(() => {
+      wrapper = mount(Dropdown, {
+        props: {
+          modelValue: POSSIBLE_VALUES_MOCK[0].id,
+          possibleValues: POSSIBLE_VALUES_MOCK,
+          ariaLabel: ARIA_LABEL_MOCK,
+        },
+        attachTo: document.body,
+      });
+    });
+
+    afterEach(() => {
+      wrapper.unmount();
+    });
+
+    it("opens the dropdown when Enter key is pressed", async () => {
+      const button = wrapper.find("[role=button]");
+      await button.trigger("keydown", { key: "Enter" });
+
+      expect(wrapper.vm.isExpanded).toBeTruthy();
+    });
+
+    it("does NOT open the dropdown when Ctrl + Enter is pressed", async () => {
+      const button = wrapper.find("[role=button]");
+      await button.trigger("keydown", { key: "Enter", ctrlKey: true });
+
+      expect(wrapper.vm.isExpanded).toBeFalsy();
+    });
+
+    it("does NOT open the dropdown when it is disabled", async () => {
+      await wrapper.setProps({ disabled: true });
+
+      const button = wrapper.find("[role=button]");
+      await button.trigger("keydown", { key: "Enter" });
+
+      expect(wrapper.vm.isExpanded).toBeFalsy();
     });
   });
 });
