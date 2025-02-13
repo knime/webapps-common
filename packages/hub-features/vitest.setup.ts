@@ -22,6 +22,6 @@ vi.mock("./src/common/ofetchClient", () => {
   globalThis.$ofetchMock = vi.fn(() => Promise.resolve({}));
 
   return {
-    $ofetch: globalThis.$ofetchMock,
+    getFetchClient: () => globalThis.$ofetchMock,
   };
 });

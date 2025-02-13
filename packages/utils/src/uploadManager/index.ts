@@ -111,7 +111,7 @@ export type UploaderManagerConfig = {
    * @param error the error that cause the failure if it exists
    * @returns
    */
-  onFileUploadFailed?: (uploadId: string, error: Error) => void;
+  onFileUploadFailed?: (payload: { uploadId: string; error: Error }) => void;
 
   /**
    * Callback that gets triggered when the progress of a file part upload
@@ -218,7 +218,7 @@ export const createUploadManager = (config: UploaderManagerConfig) => {
     }
 
     setUploadState(uploadId, { state: "failed" });
-    onFileUploadFailed?.(uploadId, error);
+    onFileUploadFailed?.({ uploadId, error });
     failedUploads.add(uploadId);
 
     if (completedUploads.has(uploadId)) {

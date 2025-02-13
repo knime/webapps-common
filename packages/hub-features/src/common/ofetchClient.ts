@@ -1,6 +1,7 @@
-import { ofetch } from "ofetch";
+import { merge } from "lodash-es";
+import { type FetchOptions, ofetch } from "ofetch";
 
-const defaultConfig = {
+export const defaultConfig: FetchOptions = {
   headers: {
     "Content-Type": "application/json",
 
@@ -9,4 +10,5 @@ const defaultConfig = {
   },
 } as const;
 
-export const $ofetch = ofetch.create(defaultConfig);
+export const getFetchClient = (customOptions?: FetchOptions) =>
+  ofetch.create(merge(customOptions, defaultConfig));

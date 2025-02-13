@@ -187,14 +187,14 @@ describe("uploadManager", () => {
       expect(completed.length).toBe(0);
       expect(failed).toEqual([uploadId1, uploadId2]);
       expect(cancelled.length).toBe(0);
-      expect(onFailed).toHaveBeenCalledWith(
-        uploadId1,
-        new Error("Failed to upload file"),
-      );
-      expect(onFailed).toHaveBeenCalledWith(
-        uploadId2,
-        new Error("Failed to upload file"),
-      );
+      expect(onFailed).toHaveBeenCalledWith({
+        uploadId: uploadId1,
+        error: new Error("Failed to upload file"),
+      });
+      expect(onFailed).toHaveBeenCalledWith({
+        uploadId: uploadId2,
+        error: new Error("Failed to upload file"),
+      });
       expect(onComplete).not.toHaveBeenCalled();
     });
 

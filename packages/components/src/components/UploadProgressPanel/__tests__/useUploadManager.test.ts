@@ -173,6 +173,7 @@ describe("useUploadManager", () => {
     });
 
     expect(onComplete).toHaveBeenCalledWith({
+      parentId,
       uploadId: "1",
       filePartIds: ["part1", "part2"],
     });
@@ -195,9 +196,9 @@ describe("useUploadManager", () => {
     });
 
     const error = new Error("this is an error");
-    uploadManagerConfig.onFileUploadFailed?.("1", error);
+    uploadManagerConfig.onFileUploadFailed?.({ uploadId: "1", error });
 
-    expect(onFailed).toHaveBeenCalledWith("1", error);
+    expect(onFailed).toHaveBeenCalledWith({ uploadId: "1", error, parentId });
 
     expect(uploadState.value).toEqual({
       "1": expect.objectContaining({

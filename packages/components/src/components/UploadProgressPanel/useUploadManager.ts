@@ -4,10 +4,21 @@ import { type UploadManagerNS, uploadManager } from "@knime/utils";
 
 import type { UploadItem } from "./types";
 
+type OnCompletePayload = Parameters<
+  NonNullable<UploadManagerNS.UploaderConfig["onFileUploadComplete"]>
+>[0] & { parentId: string };
+
+type OnFailedPayload = Parameters<
+  NonNullable<UploadManagerNS.UploaderConfig["onFileUploadFailed"]>
+>[0] & { parentId: string };
+
 type UseUploadManagerOptions = Omit<
   UploadManagerNS.UploaderConfig,
-  "onProgress"
->;
+  "onProgress" | "onFileUploadComplete" | "onFileUploadFailed"
+> & {
+  onFileUploadComplete?: (payload: OnCompletePayload) => void;
+  onFileUploadFailed?: (payload: OnFailedPayload) => void;
+};
 
 /**
  * This composable wraps the `uploadManager` utility from
@@ -26,14 +37,16 @@ export const useUploadManager = (options: UseUploadManagerOptions) => {
     ...options,
 
     onFileUploadComplete: (params) => {
+      const { parentId } = uploadState.value[params.uploadId];
       uploadState.value[params.uploadId].status = "complete";
-      options.onFileUploadComplete?.(params);
+      options.onFileUploadComplete?.({ ...params, parentId });
     },
 
-    onFileUploadFailed: (uploadId, error) => {
+    onFileUploadFailed: ({ uploadId, error }) => {
+      const { parentId } = uploadState.value[uploadId];
       uploadState.value[uploadId].status = "failed";
       uploadState.value[uploadId].failureDetails = error.message;
-      options.onFileUploadFailed?.(uploadId, error);
+      options.onFileUploadFailed?.({ uploadId, error, parentId });
     },
 
     onProgress: (uploadId, progress) => {

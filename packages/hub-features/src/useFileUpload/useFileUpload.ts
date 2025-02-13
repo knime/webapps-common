@@ -1,10 +1,10 @@
 import { computed, reactive, readonly, ref } from "vue";
-import { FetchError } from "ofetch";
+import { FetchError, type FetchOptions } from "ofetch";
 
 import { useUploadManager } from "@knime/components";
 import { getFileMimeType, knimeFileFormats, promise } from "@knime/utils";
 
-import { $ofetch } from "../common/ofetchClient";
+import { getFetchClient } from "../common/ofetchClient";
 import { rfcErrors } from "../rfcErrors";
 
 const DEFAULT_MAX_UPLOAD_QUEUE_SIZE = 10;
@@ -21,13 +21,22 @@ type UseFileUploadOptions = {
    * will be ignored. This will also call the `onUploadQueueSizeExceeded` callback
    */
   maxUploadQueueSize?: number;
-  apiBaseUrl?: string;
-  onFileUploadComplete?: (
-    uploadId: string,
-    filePartIds: Record<number, string>,
-  ) => void;
-  onFileUploadFailed?: (uploadId: string, error: Error) => void;
+  onFileUploadComplete?: (payload: {
+    uploadId: string;
+    filePartIds: Record<number, string>;
+    parentId: string;
+  }) => void;
+  onFileUploadFailed?: (payload: {
+    uploadId: string;
+    error: Error;
+    parentId: string;
+  }) => void;
   onUploadQueueSizeExceeded?: (maxQueueSize: number) => void;
+  /**
+   * Options to customize the fetch client used internally to make http requests.
+   * e.g: headers, baseUrl, etc
+   */
+  customFetchClientOptions?: FetchOptions;
 };
 
 /**
@@ -100,7 +109,9 @@ type UseFileUploadOptions = {
  * ```
  */
 export const useFileUpload = (options: UseFileUploadOptions = {}) => {
-  const baseUrl = computed(() => options.apiBaseUrl ?? DEFAULT_API_BASE_URL);
+  const baseUrl =
+    options.customFetchClientOptions?.baseURL ?? DEFAULT_API_BASE_URL;
+  const $ofetch = getFetchClient(options.customFetchClientOptions);
 
   const prepareUpload = (
     parentId: string,
@@ -132,7 +143,7 @@ export const useFileUpload = (options: UseFileUploadOptions = {}) => {
     };
 
     return $ofetch<PrepareUploadResponse>(
-      `${baseUrl.value}/repository/${parentId}/manifest`,
+      `${baseUrl}/repository/${parentId}/manifest`,
       { method: "POST", body: { items } },
     ).then(({ items }) => {
       return Object.keys(items).map((name) => {
@@ -151,7 +162,7 @@ export const useFileUpload = (options: UseFileUploadOptions = {}) => {
     };
 
     return $ofetch<UploadURLResponse>(
-      `${baseUrl.value}/uploads/${uploadId}/parts/?partNumber=${partNumber}`,
+      `${baseUrl}/uploads/${uploadId}/parts/?partNumber=${partNumber}`,
       { method: "POST" },
     );
   };
@@ -160,14 +171,14 @@ export const useFileUpload = (options: UseFileUploadOptions = {}) => {
     uploadId: string,
     partIds: Record<number, string>,
   ) => {
-    return $ofetch(`${baseUrl.value}/uploads/${uploadId}`, {
+    return $ofetch(`${baseUrl}/uploads/${uploadId}`, {
       method: "POST",
       body: partIds,
     });
   };
 
   const cancelUpload = (uploadId: string) => {
-    return $ofetch(`${baseUrl.value}/uploads/${uploadId}`, {
+    return $ofetch(`${baseUrl}/uploads/${uploadId}`, {
       method: "DELETE",
     });
   };
@@ -200,11 +211,11 @@ export const useFileUpload = (options: UseFileUploadOptions = {}) => {
   useUploadManagerResult = useUploadManager({
     resolveFilePartUploadURL,
 
-    onFileUploadComplete: ({ uploadId, filePartIds }) => {
+    onFileUploadComplete: ({ uploadId, filePartIds, parentId }) => {
       promise
         .retryPromise({ fn: () => completeUpload(uploadId, filePartIds) })
         .then(() => {
-          options.onFileUploadComplete?.(uploadId, filePartIds);
+          options.onFileUploadComplete?.({ uploadId, filePartIds, parentId });
         })
         .catch((error) => {
           consola.error("Error attempting to complete upload", { error });
@@ -212,8 +223,8 @@ export const useFileUpload = (options: UseFileUploadOptions = {}) => {
         });
     },
 
-    onFileUploadFailed: (uploadId, error) => {
-      options?.onFileUploadFailed?.(uploadId, error);
+    onFileUploadFailed: ({ uploadId, error, parentId }) => {
+      options?.onFileUploadFailed?.({ uploadId, error, parentId });
     },
   });
 
