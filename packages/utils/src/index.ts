@@ -47,6 +47,7 @@ export namespace UploadManagerNS {
 }
 
 export * from "./fileExtensions";
+export * from "./hotkeys";
 
 export {
   uploadManager,
