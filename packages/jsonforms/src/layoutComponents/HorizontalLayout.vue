@@ -10,7 +10,7 @@ defineProps<VueLayoutProps>();
   <div class="horizontal">
     <DispatchRenderer
       v-for="(element, index) in layout.uischema.elements"
-      :key="`${layout.path}-${index}`"
+      :key="index"
       class="horizontal-element"
       :schema="layout.schema"
       :uischema="element"
