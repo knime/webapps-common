@@ -39,7 +39,7 @@ const hover = ref(false);
 <style lang="postcss" scoped>
 .section {
   &:not(:first-child) {
-    padding-top: var(--space-32);
+    padding-top: var(--space-16);
   }
 
   & .section-header {
@@ -50,7 +50,7 @@ const hover = ref(false);
     margin: 0 calc(-1 * var(--horizontal-dialog-padding));
 
     & h3 {
-      margin: 0 var(--horizontal-dialog-padding) 9px;
+      margin: 0 var(--horizontal-dialog-padding);
       border-bottom: 1px solid var(--knime-silver-sand);
       color: var(--knime-masala);
       font-size: 16px;

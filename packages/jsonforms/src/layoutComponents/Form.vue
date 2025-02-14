@@ -23,7 +23,9 @@ container
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  padding: 0 var(--horizontal-dialog-padding) var(--space-16);
+
+  /* We need enough padding bottom to reserve space for error messages */
+  padding: 0 var(--horizontal-dialog-padding) calc(5 * var(--space-base));
   overflow: hidden;
   overflow-y: auto;
 

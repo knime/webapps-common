@@ -148,8 +148,4 @@ const controlElement = ref<typeof SortList | null>(null);
     justify-content: space-between;
   }
 }
-
-.with-padding {
-  padding: 10px;
-}
 </style>

@@ -1,26 +1,33 @@
 <script setup lang="ts">
-import { computed } from "vue";
-
-const props = defineProps<{
-  errors: Array<string>;
+defineProps<{
+  error: string;
 }>();
-const displayableErrors = computed(() => props.errors.join("; "));
 </script>
 
 <template>
-  <div :title="displayableErrors">{{ displayableErrors }}</div>
+  <div :title="error">{{ error }}</div>
 </template>
 
 <style lang="postcss" scoped>
 div {
   font-weight: 300;
-  font-size: 10px;
-  line-height: 12px;
-  min-height: 12px;
+  font-size: 11px;
+  line-height: calc(var(--space-base) * 3);
+  min-height: calc(var(--space-base) * 3);
   color: var(--theme-color-error);
   position: relative;
-  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+
+  /* Limit to two lines */
+
+  /* for webkit-browsers (e.g. Chrome) */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+
+  /* for other browsers */
+  max-height: 24px;
 }
 </style>
