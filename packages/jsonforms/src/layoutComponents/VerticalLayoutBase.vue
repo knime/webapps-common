@@ -26,7 +26,11 @@ defineProps<{ elements: UISchemaElement[] }>();
   /* if a dialog starts with a section header we don't need extra top padding, otherwise adding it here */
   &:not(:has(:first-child > .section:first-child)) {
     padding-top: var(--vertical-padding);
-    gap: var(--space-16);
+
+    /**
+     * We need enough space for one line of error message, which is base * 3 high and should have base * 1 padding.
+    */
+    gap: calc(var(--space-base) * 5);
   }
 }
 </style>
