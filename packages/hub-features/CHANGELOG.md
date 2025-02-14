@@ -1,5 +1,14 @@
 # @knime/hub-features
 
+## 1.2.15
+
+### Patch Changes
+
+- Adjust parameter signature for success/failure callbacks of upload feature
+- Updated dependencies
+  - @knime/components@1.18.3
+  - @knime/utils@1.2.6
+
 ## 1.2.14
 
 ### Patch Changes

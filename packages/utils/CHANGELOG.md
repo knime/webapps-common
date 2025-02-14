@@ -1,5 +1,11 @@
 # @knime/utils
 
+## 1.2.6
+
+### Patch Changes
+
+- Adjust parameter signature for success/failure callbacks of upload feature
+
 ## 1.2.5
 
 ### Patch Changes

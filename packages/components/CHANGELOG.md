@@ -1,5 +1,13 @@
 # @knime/components
 
+## 1.18.3
+
+### Patch Changes
+
+- Adjust parameter signature for success/failure callbacks of upload feature
+- Updated dependencies
+  - @knime/utils@1.2.6
+
 ## 1.18.2
 
 ### Patch Changes
