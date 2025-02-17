@@ -1,19 +1,32 @@
+import { navigatorUtils } from "@knime/utils";
+
 /**
  * Checks if any modifier key (Ctrl, Meta, Alt, or Shift) is pressed.
  * @param {KeyboardEvent} event - The keyboard event to check.
  * @returns {boolean} True if a modifier key is pressed, otherwise false.
  */
-
 export const isModifierKeyPressed = (event: KeyboardEvent): boolean => {
   return event.ctrlKey || event.metaKey || event.altKey || event.shiftKey;
 };
 
 /**
- * Determines if the "Enter" key was pressed without any modifier keys.
+ * Checks if a specific key (or keys) were pressed without any modifier keys.
  * @param {KeyboardEvent} event - The keyboard event to check.
- * @returns {boolean} True if only the "Enter" key was pressed, otherwise false.
+ * @param {string | string[]} keys - The key or keys to check for.
+ * @returns {boolean} True if the specified key(s) were pressed without modifiers, otherwise false.
  */
+export const isKeyWithoutModifiers = (
+  event: KeyboardEvent,
+  keys: string | string[],
+): boolean => {
+  const keyList = Array.isArray(keys) ? keys : [keys];
+  return keyList.includes(event.key) && !isModifierKeyPressed(event);
+};
 
-export const isOnlyEnterPressed = (event: KeyboardEvent): boolean => {
-  return event.key === "Enter" && !isModifierKeyPressed(event);
+/**
+ *
+ * @returns name of the primary modifier key for the current platform
+ */
+export const getMetaOrCtrlKey = (): string => {
+  return navigatorUtils.getMetaOrCtrlKey();
 };

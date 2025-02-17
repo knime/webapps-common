@@ -1,10 +1,23 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { isModifierKeyPressed, isOnlyEnterPressed } from "../keyboardUtils";
+import { navigatorUtils } from "@knime/utils";
+
+import {
+  getMetaOrCtrlKey,
+  isKeyWithoutModifiers,
+  isModifierKeyPressed,
+} from "../keyboardUtils";
 
 afterEach(() => {
   vi.resetAllMocks();
 });
+
+vi.mock("@knime/utils", () => ({
+  navigatorUtils: {
+    isMac: vi.fn(),
+    getMetaOrCtrlKey: vi.fn(),
+  },
+}));
 
 describe("keyboardUtils", () => {
   describe("isModifierKeyPressed", () => {
@@ -33,48 +46,54 @@ describe("keyboardUtils", () => {
     });
   });
 
-  describe("isOnlyEnterPressed", () => {
-    it("should return true when only the Enter key is pressed", () => {
+  describe("isKeyWithoutModifiers", () => {
+    it("should return true when only the specified key (Enter) is pressed without modifiers", () => {
       const event = new KeyboardEvent("keydown", { key: "Enter" });
-      expect(isOnlyEnterPressed(event)).toBe(true);
+      expect(isKeyWithoutModifiers(event, "Enter")).toBe(true);
     });
 
-    it("should return false when Enter is pressed with Ctrl", () => {
+    it("should return true when only a key from a list of allowed keys is pressed", () => {
+      const event = new KeyboardEvent("keydown", { key: "ArrowDown" });
+      expect(isKeyWithoutModifiers(event, ["ArrowUp", "ArrowDown"])).toBe(true);
+    });
+
+    it("should return false when the specified key is pressed with a modifier", () => {
       const event = new KeyboardEvent("keydown", {
         key: "Enter",
         ctrlKey: true,
       });
-      expect(isOnlyEnterPressed(event)).toBe(false);
+      expect(isKeyWithoutModifiers(event, "Enter")).toBe(false);
     });
 
-    it("should return false when Enter is pressed with Meta", () => {
+    it("should return false when any key from the list is pressed with a modifier", () => {
       const event = new KeyboardEvent("keydown", {
-        key: "Enter",
-        metaKey: true,
+        key: "ArrowDown",
+        shiftKey: true,
       });
-      expect(isOnlyEnterPressed(event)).toBe(false);
+      expect(isKeyWithoutModifiers(event, ["ArrowUp", "ArrowDown"])).toBe(
+        false,
+      );
     });
 
-    it("should return false when Enter is pressed with any modifier key (Alt, Shift, Ctrl, or Meta)", () => {
-      const modifiers = [
-        { altKey: true },
-        { shiftKey: true },
-        { ctrlKey: true },
-        { metaKey: true },
-      ];
-
-      modifiers.forEach((modifier) => {
-        const event = new KeyboardEvent("keydown", {
-          key: "Enter",
-          ...modifier,
-        });
-        expect(isOnlyEnterPressed(event)).toBe(false);
-      });
-    });
-
-    it("should return false when a non-Enter key is pressed", () => {
+    it("should return false when a non-specified key is pressed", () => {
       const event = new KeyboardEvent("keydown", { key: "A" });
-      expect(isOnlyEnterPressed(event)).toBe(false);
+      expect(isKeyWithoutModifiers(event, "Enter")).toBe(false);
+    });
+  });
+
+  describe("getMetaOrCtrlKey", () => {
+    it("should return 'metaKey' on macOS", () => {
+      vi.mocked(navigatorUtils.isMac).mockReturnValue(true);
+      vi.mocked(navigatorUtils.getMetaOrCtrlKey).mockReturnValue("metaKey");
+
+      expect(getMetaOrCtrlKey()).toBe("metaKey");
+    });
+
+    it("should return 'ctrlKey' on non-macOS platforms", () => {
+      vi.mocked(navigatorUtils.isMac).mockReturnValue(false);
+      vi.mocked(navigatorUtils.getMetaOrCtrlKey).mockReturnValue("ctrlKey");
+
+      expect(getMetaOrCtrlKey()).toBe("ctrlKey");
     });
   });
 });

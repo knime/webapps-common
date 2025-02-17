@@ -5,7 +5,7 @@ import { isEmpty } from "lodash-es";
 
 import DropdownIcon from "@knime/styles/img/icons/arrow-dropdown.svg";
 import CloseIcon from "@knime/styles/img/icons/close.svg";
-import { isModifierKeyPressed } from "@knime/utils";
+import { isKeyWithoutModifiers } from "@knime/utils";
 
 import "../variables.css";
 import useSearch from "../../../composables/useSearch";
@@ -368,7 +368,7 @@ export default {
     handleKeyDownButton(e: KeyboardEvent) {
       if (this.isExpanded) {
         this.handleKeyDownOnExpanded(e);
-      } else if (expandKeys.includes(e.key) && !isModifierKeyPressed(e)) {
+      } else if (isKeyWithoutModifiers(e, expandKeys)) {
         this.expand();
         e.preventDefault();
       }
