@@ -59,7 +59,6 @@ const secondaryColors = [
   Cornflower,
   CornflowerDark,
   CornflowerLight,
-  // CornflowerSemi,
   Hibiscus,
   HibiscusDark,
   HibiscusLight,
