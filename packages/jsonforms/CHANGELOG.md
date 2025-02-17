@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.5.5
+
+### Patch Changes
+
+- ea0b6b5: Make the v-for key independent of the external context
+
 ## 1.5.4
 
 ### Patch Changes
