@@ -40,7 +40,7 @@ type AvatarProps = {
    */
   layout?: "vertical" | "horizontal";
   /**
-   * Display "trusted" badge or not.
+   * If a name is shown, controls displaying the "trusted" badge.
    */
   showTrusted?: boolean;
   /**
