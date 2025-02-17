@@ -1,5 +1,11 @@
 # @knime/styles
 
+## 1.3.1
+
+### Patch Changes
+
+- b10e3aa: Add filled message icons
+
 ## 1.3.0
 
 ### Minor Changes

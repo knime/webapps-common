@@ -1,5 +1,14 @@
 # @knime/hub-features
 
+## 1.2.16
+
+### Patch Changes
+
+- Updated dependencies [b10e3aa]
+  - @knime/styles@1.3.1
+  - @knime/components@1.18.4
+  - @knime/utils@1.2.7
+
 ## 1.2.15
 
 ### Patch Changes

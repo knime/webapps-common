@@ -1,5 +1,13 @@
 # @knime/components
 
+## 1.18.4
+
+### Patch Changes
+
+- Updated dependencies [b10e3aa]
+  - @knime/styles@1.3.1
+  - @knime/utils@1.2.7
+
 ## 1.18.3
 
 ### Patch Changes
