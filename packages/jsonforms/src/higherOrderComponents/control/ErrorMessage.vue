@@ -1,15 +1,20 @@
 <script setup lang="ts">
+import CircleCloseFilled from "@knime/styles/img/icons/circle-close_filled.svg";
+
 defineProps<{
   error: string;
 }>();
 </script>
 
 <template>
-  <div :title="error">{{ error }}</div>
+  <div :title="error" class="error">
+    <CircleCloseFilled class="icon" />
+    {{ error }}
+  </div>
 </template>
 
 <style lang="postcss" scoped>
-div {
+.error {
   font-weight: 300;
   font-size: 11px;
   line-height: calc(var(--space-base) * 3);
@@ -29,5 +34,11 @@ div {
 
   /* for other browsers */
   max-height: 24px;
+
+  & .icon {
+    width: 12px;
+    height: 12px;
+    vertical-align: middle;
+  }
 }
 </style>
