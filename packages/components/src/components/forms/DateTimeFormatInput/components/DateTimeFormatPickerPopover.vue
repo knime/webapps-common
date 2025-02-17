@@ -18,43 +18,20 @@ import ValueSwitch, {
 import {
   type FormatCategory,
   type FormatDateType,
+  type DateTimeFormatModel,
   type FormatWithExample,
 } from "../utils/types";
 
 const emit = defineEmits<{
-  commit: [value: string];
+  commit: [value: DateTimeFormatModel];
   cancel: [];
 }>();
 
 const props = defineProps<{
   allFormats: FormatWithExample[] | null;
-  allowedTypes: FormatDateType[];
+  selectedType: FormatDateType;
   initialSelectedPattern: string | null;
 }>();
-
-const unfilteredTypesToDisplayInValueSwitch: ValueSwitchItem[] = [
-  {
-    id: "DATE",
-    text: "Date",
-  },
-  {
-    id: "TIME",
-    text: "Time",
-  },
-  {
-    id: "DATE_TIME",
-    text: "Date & Time",
-  },
-  {
-    id: "ZONED_DATE_TIME",
-    text: "Date & Time & Zone",
-  },
-];
-const typesToDisplayInValueSwitch = computed<ValueSwitchItem[]>(() =>
-  unfilteredTypesToDisplayInValueSwitch.filter((valueSwitchItem) =>
-    props.allowedTypes.includes(valueSwitchItem.id as FormatDateType),
-  ),
-);
 
 const categoriesToDisplayInValueSwitch = computed<ValueSwitchItem[]>(() => [
   {
@@ -76,16 +53,16 @@ const categoriesToDisplayInValueSwitch = computed<ValueSwitchItem[]>(() => [
 ]);
 
 const selectedFormat = ref<string | null>(null);
-const selectedFormatType = ref<FormatDateType>("DATE");
 const selectedFormatStandard = ref<FormatCategory>("RECENT");
 
 const applicableFormats = computed<FormatWithExample[] | null>(() => {
   const standard = selectedFormatStandard.value;
-  const type = selectedFormatType.value;
 
   return (
     props.allFormats?.filter(
-      (format) => format.category === standard && format.temporalType === type,
+      (format) =>
+        format.category === standard &&
+        format.temporalType === props.selectedType,
     ) ?? null
   );
 });
@@ -103,13 +80,26 @@ const createFormatListItemRef = (format: FormatWithExample) => {
   };
 };
 
+const formatWithExampleToModel = (
+  format: FormatWithExample,
+): DateTimeFormatModel => {
+  return {
+    format: format.format,
+    temporalType: format.temporalType,
+  };
+};
+
 const { currentIndex, onKeydown, resetNavigation } = useDropdownNavigation({
   keepOpenedOnTab: true,
   getFirstElement: () => {
     const index = 0;
     return {
       index,
-      onClick: () => emit("commit", applicableFormats.value![index].format),
+      onClick: () =>
+        emit(
+          "commit",
+          formatWithExampleToModel(applicableFormats.value![index]),
+        ),
     };
   },
   getLastElement: () => {
@@ -117,7 +107,11 @@ const { currentIndex, onKeydown, resetNavigation } = useDropdownNavigation({
 
     return {
       index,
-      onClick: () => emit("commit", applicableFormats.value![index].format),
+      onClick: () =>
+        emit(
+          "commit",
+          formatWithExampleToModel(applicableFormats.value![index]),
+        ),
     };
   },
   getNextElement: (currentIndex, direction) => {
@@ -131,7 +125,10 @@ const { currentIndex, onKeydown, resetNavigation } = useDropdownNavigation({
       return {
         index: newIndex,
         onClick: () =>
-          emit("commit", applicableFormats.value![newIndex].format),
+          emit(
+            "commit",
+            formatWithExampleToModel(applicableFormats.value![newIndex]),
+          ),
       };
     } else {
       const newIndex =
@@ -141,7 +138,10 @@ const { currentIndex, onKeydown, resetNavigation } = useDropdownNavigation({
       return {
         index: newIndex,
         onClick: () =>
-          emit("commit", applicableFormats.value![newIndex].format),
+          emit(
+            "commit",
+            formatWithExampleToModel(applicableFormats.value![newIndex]),
+          ),
       };
     }
   },
@@ -177,7 +177,6 @@ const selectFormat = async (
   temporalType?: FormatDateType,
   category?: FormatCategory,
 ) => {
-  selectedFormatType.value = temporalType ?? selectedFormatType.value;
   selectedFormatStandard.value = category ?? selectedFormatStandard.value;
 
   // Wait for the next tick to ensure that the list has been rendered
@@ -186,9 +185,7 @@ const selectFormat = async (
   // scroll to the selected format
   selectedFormat.value = format;
   const element =
-    allFormatListItemRefs[
-      `${format}-${selectedFormatStandard.value}-${selectedFormatType.value}`
-    ];
+    allFormatListItemRefs[`${format}-${selectedFormatStandard.value}`];
   if (element) {
     scrollIntoView(element);
   }
@@ -216,8 +213,8 @@ watch(currentIndex, (newIndex) => {
   selectFormat(format.format, format.temporalType, format.category);
 });
 
-watch([selectedFormatType, selectedFormatStandard], () => {
-  // unselect the format when the type or standard changes
+watch(selectedFormatStandard, () => {
+  // unselect the format when the standard changes
   selectedFormat.value = null;
   resetNavigation();
 });
@@ -263,17 +260,6 @@ onMounted(() => {
 <template>
   <div class="popover">
     <div class="switch-with-title">
-      <Label class="control-title" text="Type" for="selectedFormatType">
-        <ValueSwitch
-          id="selectedFormatType"
-          v-model="selectedFormatType"
-          compact
-          :possible-values="typesToDisplayInValueSwitch"
-          @keydown.tab.shift="emit('cancel')"
-        />
-      </Label>
-    </div>
-    <div class="switch-with-title">
       <Label class="control-title" text="Standard" for="selectedFormatStandard">
         <ValueSwitch
           id="selectedFormatStandard"
@@ -318,7 +304,7 @@ onMounted(() => {
                   formatContainerRef?.focus();
                 }
               "
-              @dblclick="() => emit('commit', format.format)"
+              @dblclick="() => emit('commit', formatWithExampleToModel(format))"
             >
               <span class="format-pattern">
                 {{ format.format }}
