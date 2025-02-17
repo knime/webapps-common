@@ -82,21 +82,6 @@ describe("DateTimeFormatInput", () => {
       popover.assert.isClosed();
     });
 
-    it("respects the allowedFormats prop", async () => {
-      const allowedFormats = ["DATE", "DATE_TIME", "TIME"] as FormatDateType[];
-
-      const { wrapper } = await doMount({
-        allowedFormats,
-        showPopupInitially: true,
-      });
-
-      const [temporalValueSwitch] = wrapper.findAllComponents(ValueSwitch);
-
-      expect(temporalValueSwitch.vm.$props.possibleValues?.length).toBe(
-        allowedFormats.length,
-      );
-    });
-
     it("changes what's displayed when changing the temporal type value switch", async () => {
       const firstOption: FormatDateType = "TIME";
       const category: FormatCategory = "STANDARD";

@@ -6,3 +6,8 @@ export type FormatWithExample = {
   category: FormatCategory;
   example: string;
 };
+
+export type DateTimeFormatModel = {
+  temporalType: FormatDateType;
+  format: string;
+};

@@ -17,10 +17,10 @@ import {
   getControlBase,
   mountJsonFormsControlLabelContent,
 } from "../../../testUtils/component";
-import DateTimeFormatPickerControl from "../DateTimeFormatPickerControl.vue";
+import DateTimeFormatPickerWithTypeControl from "../DateTimeFormatPickerWithTypeControl.vue";
 
-describe("DateTimeFormatPickerControl.vue", () => {
-  let props: VueControlTestProps<typeof DateTimeFormatPickerControl>,
+describe("DateTimeFormatPickerWithTypeControl.vue", () => {
+  let props: VueControlTestProps<typeof DateTimeFormatPickerWithTypeControl>,
     wrapper: VueWrapper,
     changeValue: Mock;
 
@@ -30,7 +30,10 @@ describe("DateTimeFormatPickerControl.vue", () => {
     props = {
       control: {
         ...getControlBase("path"),
-        data: "yyyy-MM-dd",
+        data: {
+          format: "yyyy-MM-dd",
+          temporalType: "DATE",
+        },
         schema: {
           properties: {
             path: {
@@ -42,7 +45,7 @@ describe("DateTimeFormatPickerControl.vue", () => {
           type: "Control",
           scope: "#/properties/view/properties/maxRows",
           options: {
-            format: "dateTimeFormat",
+            format: "dateTimeFormatWithType",
           },
         },
       },
@@ -51,7 +54,7 @@ describe("DateTimeFormatPickerControl.vue", () => {
       isValid: false,
     };
     const component = await mountJsonFormsControlLabelContent(
-      DateTimeFormatPickerControl,
+      DateTimeFormatPickerWithTypeControl,
       {
         props,
       },
@@ -68,10 +71,7 @@ describe("DateTimeFormatPickerControl.vue", () => {
     expect(wrapper.getComponent(DateTimeFormatInput).props()).toMatchObject({
       compact: true,
       disabled: false,
-      modelValue: {
-        format: props.control.data,
-        temporalType: expect.any(String),
-      },
+      modelValue: props.control.data,
     });
   });
 
@@ -87,7 +87,7 @@ describe("DateTimeFormatPickerControl.vue", () => {
     wrapper
       .findComponent(DateTimeFormatInput)
       .vm.$emit("update:modelValue", changedFormat);
-    expect(changeValue).toHaveBeenCalledWith(changedFormat.format);
+    expect(changeValue).toHaveBeenCalledWith(changedFormat);
   });
 
   it("uses format from provider in options", async () => {
@@ -98,7 +98,7 @@ describe("DateTimeFormatPickerControl.vue", () => {
       provideFormats = callback;
     });
     const { wrapper } = mountJsonFormsControlLabelContent(
-      DateTimeFormatPickerControl,
+      DateTimeFormatPickerWithTypeControl,
       {
         props,
         provide: { addStateProviderListener },

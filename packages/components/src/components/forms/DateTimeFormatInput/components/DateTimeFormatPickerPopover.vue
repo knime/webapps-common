@@ -11,50 +11,27 @@ import {
 
 import { useDropdownNavigation } from "../../../../composables";
 import LoadingIcon from "../../../LoadingIcon/LoadingIcon.vue";
-import Label from "../../Label/Label.vue";
 import ValueSwitch, {
   type ValueSwitchItem,
 } from "../../ValueSwitch/ValueSwitch.vue";
 import {
+  type DateTimeFormatModel,
   type FormatCategory,
   type FormatDateType,
   type FormatWithExample,
 } from "../utils/types";
 
 const emit = defineEmits<{
-  commit: [value: string];
+  commit: [value: DateTimeFormatModel];
   cancel: [];
 }>();
 
 const props = defineProps<{
   allFormats: FormatWithExample[] | null;
-  allowedTypes: FormatDateType[];
+  selectedType: FormatDateType;
   initialSelectedPattern: string | null;
+  showTypeSwitch: boolean;
 }>();
-
-const unfilteredTypesToDisplayInValueSwitch: ValueSwitchItem[] = [
-  {
-    id: "DATE",
-    text: "Date",
-  },
-  {
-    id: "TIME",
-    text: "Time",
-  },
-  {
-    id: "DATE_TIME",
-    text: "Date & Time",
-  },
-  {
-    id: "ZONED_DATE_TIME",
-    text: "Date & Time & Zone",
-  },
-];
-const typesToDisplayInValueSwitch = computed<ValueSwitchItem[]>(() =>
-  unfilteredTypesToDisplayInValueSwitch.filter((valueSwitchItem) =>
-    props.allowedTypes.includes(valueSwitchItem.id as FormatDateType),
-  ),
-);
 
 const categoriesToDisplayInValueSwitch = computed<ValueSwitchItem[]>(() => [
   {
@@ -75,20 +52,45 @@ const categoriesToDisplayInValueSwitch = computed<ValueSwitchItem[]>(() => [
   },
 ]);
 
+const typesToDisplayInValueSwitch = computed<ValueSwitchItem[]>(() => [
+  {
+    id: "DATE",
+    text: "Date",
+  },
+  {
+    id: "DATE_TIME",
+    text: "Date & time",
+  },
+  {
+    id: "TIME",
+    text: "Time",
+  },
+  {
+    id: "ZONED_DATE_TIME",
+    text: "Zoned date & time",
+  },
+]);
+
 const selectedFormat = ref<string | null>(null);
-const selectedFormatType = ref<FormatDateType>("DATE");
 const selectedFormatStandard = ref<FormatCategory>("RECENT");
 
-const applicableFormats = computed<FormatWithExample[] | null>(() => {
-  const standard = selectedFormatStandard.value;
-  const type = selectedFormatType.value;
+// this can be updated from outside sometimes, hence watcher
+const selectedFormatType = ref<FormatDateType>(props.selectedType);
+watch(
+  () => props.selectedType,
+  (newSelectedType) => {
+    selectedFormatType.value = newSelectedType;
+  },
+);
 
-  return (
+const applicableFormats = computed<FormatWithExample[] | null>(
+  () =>
     props.allFormats?.filter(
-      (format) => format.category === standard && format.temporalType === type,
-    ) ?? null
-  );
-});
+      (format) =>
+        format.category === selectedFormatStandard.value &&
+        format.temporalType === selectedFormatType.value,
+    ) ?? null,
+);
 
 const formatContainerRef = ref<HTMLElement | null>(null);
 
@@ -103,13 +105,26 @@ const createFormatListItemRef = (format: FormatWithExample) => {
   };
 };
 
+const formatWithExampleToModel = (
+  format: FormatWithExample,
+): DateTimeFormatModel => {
+  return {
+    format: format.format,
+    temporalType: format.temporalType,
+  };
+};
+
 const { currentIndex, onKeydown, resetNavigation } = useDropdownNavigation({
   keepOpenedOnTab: true,
   getFirstElement: () => {
     const index = 0;
     return {
       index,
-      onClick: () => emit("commit", applicableFormats.value![index].format),
+      onClick: () =>
+        emit(
+          "commit",
+          formatWithExampleToModel(applicableFormats.value![index]),
+        ),
     };
   },
   getLastElement: () => {
@@ -117,7 +132,11 @@ const { currentIndex, onKeydown, resetNavigation } = useDropdownNavigation({
 
     return {
       index,
-      onClick: () => emit("commit", applicableFormats.value![index].format),
+      onClick: () =>
+        emit(
+          "commit",
+          formatWithExampleToModel(applicableFormats.value![index]),
+        ),
     };
   },
   getNextElement: (currentIndex, direction) => {
@@ -131,7 +150,10 @@ const { currentIndex, onKeydown, resetNavigation } = useDropdownNavigation({
       return {
         index: newIndex,
         onClick: () =>
-          emit("commit", applicableFormats.value![newIndex].format),
+          emit(
+            "commit",
+            formatWithExampleToModel(applicableFormats.value![newIndex]),
+          ),
       };
     } else {
       const newIndex =
@@ -141,7 +163,10 @@ const { currentIndex, onKeydown, resetNavigation } = useDropdownNavigation({
       return {
         index: newIndex,
         onClick: () =>
-          emit("commit", applicableFormats.value![newIndex].format),
+          emit(
+            "commit",
+            formatWithExampleToModel(applicableFormats.value![newIndex]),
+          ),
       };
     }
   },
@@ -237,6 +262,11 @@ onMounted(() => {
   ];
   const sortedFormats = props.allFormats
     .filter((format) => props.initialSelectedPattern === format.format)
+    .filter(
+      (format) =>
+        // if the type switch is hidden, filter to only formats with the same type
+        props.selectedType === format.temporalType || props.showTypeSwitch,
+    )
     .sort((a, b) => {
       const aIndex = sortedCategories.indexOf(a.category);
       const bIndex = sortedCategories.indexOf(b.category);
@@ -262,74 +292,64 @@ onMounted(() => {
 
 <template>
   <div class="popover">
-    <div class="switch-with-title">
-      <Label class="control-title" text="Type" for="selectedFormatType">
-        <ValueSwitch
-          id="selectedFormatType"
-          v-model="selectedFormatType"
-          compact
-          :possible-values="typesToDisplayInValueSwitch"
-          @keydown.tab.shift="emit('cancel')"
-        />
-      </Label>
-    </div>
-    <div class="switch-with-title">
-      <Label class="control-title" text="Standard" for="selectedFormatStandard">
-        <ValueSwitch
-          id="selectedFormatStandard"
-          v-model="selectedFormatStandard"
-          compact
-          :possible-values="categoriesToDisplayInValueSwitch"
-        />
-      </Label>
-    </div>
-    <div class="date-format-input">
-      <Label class="control-title" text="Date formats" for="dateFormats">
+    <ValueSwitch
+      v-if="showTypeSwitch"
+      id="selectedFormatType"
+      v-model="selectedFormatType"
+      compact
+      :possible-values="typesToDisplayInValueSwitch"
+      class="filter-switch"
+    />
+    <ValueSwitch
+      id="selectedFormatStandard"
+      v-model="selectedFormatStandard"
+      compact
+      :possible-values="categoriesToDisplayInValueSwitch"
+      class="filter-switch"
+    />
+    <div
+      id="dateFormats"
+      ref="formatContainerRef"
+      class="formats-container"
+      :style="{ '--formats-container-border-width': BORDER_WIDTH + 'px' }"
+      tabindex="0"
+      role="menu"
+      @keydown="onKeydown"
+      @keydown.tab="(e: KeyboardEvent) => e.shiftKey || emit('cancel')"
+    >
+      <div v-if="applicableFormats === null" class="no-formats-available">
+        <LoadingIcon class="loading-spinner" />
+      </div>
+      <div
+        v-else-if="applicableFormats.length === 0"
+        class="no-formats-available"
+      >
+        No formats available
+      </div>
+      <template v-else>
         <div
-          id="dateFormats"
-          ref="formatContainerRef"
-          class="formats-container"
-          :style="{ '--formats-container-border-width': BORDER_WIDTH + 'px' }"
-          tabindex="0"
-          role="menu"
-          @keydown="onKeydown"
-          @keydown.tab="(e: KeyboardEvent) => e.shiftKey || emit('cancel')"
+          v-for="(format, index) in applicableFormats"
+          :key="createFormatListItemKey(format)"
+          :ref="createFormatListItemRef(format)"
+          :class="{ selected: index === currentIndex }"
+          class="single-format"
+          role="menuitem"
+          @click="
+            () => {
+              currentIndex = index;
+              formatContainerRef?.focus();
+            }
+          "
+          @dblclick="() => emit('commit', formatWithExampleToModel(format))"
         >
-          <div v-if="applicableFormats === null" class="no-formats-available">
-            <LoadingIcon class="loading-spinner" />
-          </div>
-          <div
-            v-else-if="applicableFormats.length === 0"
-            class="no-formats-available"
-          >
-            No formats available
-          </div>
-          <template v-else>
-            <div
-              v-for="(format, index) in applicableFormats"
-              :key="createFormatListItemKey(format)"
-              :ref="createFormatListItemRef(format)"
-              :class="{ selected: index === currentIndex }"
-              class="single-format"
-              role="menuitem"
-              @click="
-                () => {
-                  currentIndex = index;
-                  formatContainerRef?.focus();
-                }
-              "
-              @dblclick="() => emit('commit', format.format)"
-            >
-              <span class="format-pattern">
-                {{ format.format }}
-              </span>
-              <span class="format-preview">
-                {{ format.example }}
-              </span>
-            </div>
-          </template>
+          <span class="format-pattern">
+            {{ format.format }}
+          </span>
+          <span class="format-preview">
+            {{ format.example }}
+          </span>
         </div>
-      </Label>
+      </template>
     </div>
   </div>
 </template>
@@ -348,88 +368,75 @@ onMounted(() => {
   color: var(--knime-masala);
 }
 
-.title {
-  font-size: 16px;
-  font-weight: 500;
-  line-height: 28px;
-  border-bottom: 1px solid var(--knime-silver-sand);
-  margin: 0;
-}
-
-.date-format-input {
+.formats-container {
+  border: var(--formats-container-border-width) solid var(--knime-silver-sand);
+  height: 200px;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   width: 100%;
 
-  & .formats-container {
-    border: var(--formats-container-border-width) solid var(--knime-silver-sand);
-    height: 200px;
-    overflow-y: auto;
+  & .no-formats-available {
+    font-style: italic;
+    color: var(--knime-stone-gray);
     display: flex;
-    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+  }
 
-    & .no-formats-available {
+  & .loading-spinner {
+    width: 50px;
+    height: 50px;
+    margin: auto;
+  }
+
+  & .single-format {
+    display: flex;
+    padding: 2px var(--space-8);
+    flex-direction: column;
+    cursor: pointer;
+    flex: 0;
+
+    &:hover:not(.selected) {
+      background-color: var(--knime-porcelain);
+    }
+
+    & .format-preview,
+    & .format-pattern {
+      white-space: nowrap;
+      overflow-x: hidden;
+      text-overflow: ellipsis;
+      width: 100%;
+      line-height: 1.44;
+      font-weight: 300;
+
+      /* stop double-click from highlighting text */
+      user-select: none;
+    }
+
+    & .format-pattern {
+      font-size: 16px;
+      color: var(--knime-masala);
+      min-height: 23px;
+    }
+
+    & .format-preview {
       font-style: italic;
       color: var(--knime-stone-gray);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100%;
+      font-size: 14px;
+      min-height: 20px;
     }
 
-    & .loading-spinner {
-      width: 50px;
-      height: 50px;
-      margin: auto;
-    }
-
-    & .single-format {
-      display: flex;
-      padding: 2px var(--space-8);
-      flex-direction: column;
-      cursor: pointer;
-      flex: 0;
-
-      &:hover:not(.selected) {
-        background-color: var(--knime-porcelain);
-      }
-
-      & .format-preview,
-      & .format-pattern {
-        white-space: nowrap;
-        overflow-x: hidden;
-        text-overflow: ellipsis;
-        width: 100%;
-        line-height: 1.44;
-        font-weight: 300;
-
-        /* stop double-click from highlighting text */
-        user-select: none;
-      }
+    &.selected {
+      background-color: var(--knime-masala);
 
       & .format-pattern {
-        font-size: 16px;
-        color: var(--knime-masala);
-        min-height: 23px;
+        color: var(--knime-white);
       }
 
       & .format-preview {
-        font-style: italic;
-        color: var(--knime-stone-gray);
-        font-size: 14px;
-        min-height: 20px;
-      }
-
-      &.selected {
-        background-color: var(--knime-masala);
-
-        & .format-pattern {
-          color: var(--knime-white);
-        }
-
-        & .format-preview {
-          color: var(--knime-porcelain);
-        }
+        color: var(--knime-porcelain);
       }
     }
   }

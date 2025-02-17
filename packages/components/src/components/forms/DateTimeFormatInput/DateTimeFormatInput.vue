@@ -13,7 +13,11 @@ import { autoUpdate, flip, offset, shift, useFloating } from "@floating-ui/vue";
 import CalendarFilterIcon from "@knime/styles/img/icons/calendar-filter.svg";
 
 import DateTimeFormatPickerPopover from "./components/DateTimeFormatPickerPopover.vue";
-import { type FormatDateType, type FormatWithExample } from "./utils/types";
+import {
+  type DateTimeFormatModel,
+  type FormatDateType,
+  type FormatWithExample,
+} from "./utils/types";
 
 type FormatPickerProps = {
   disabled?: boolean;
@@ -21,11 +25,8 @@ type FormatPickerProps = {
   isValid?: boolean;
   allDefaultFormats: FormatWithExample[] | null;
   allowedTypes?: FormatDateType[];
+  showTypeSwitchInPopover?: boolean;
 };
-
-const emit = defineEmits<{
-  committed: [string];
-}>();
 
 const props = withDefaults(defineProps<FormatPickerProps>(), {
   disabled: false,
@@ -37,10 +38,24 @@ const props = withDefaults(defineProps<FormatPickerProps>(), {
     "DATE_TIME",
     "ZONED_DATE_TIME",
   ],
+  showTypeSwitchInPopover: true,
 });
 
-const pickedFormatModel = defineModel<string>({
-  default: "yyyy-MM-dd",
+const pickedFormatModel = defineModel<DateTimeFormatModel>({
+  default: {
+    format: "yyyy-MM-dd",
+    temporalType: "DATE",
+  },
+});
+
+const formatSubModel = computed({
+  get: () => pickedFormatModel.value.format,
+  set: (newFormat: string) => {
+    pickedFormatModel.value = {
+      ...pickedFormatModel.value,
+      format: newFormat,
+    };
+  },
 });
 
 const textFieldPlaceholder = "Format like 'yyyy-MM-dd'";
@@ -56,11 +71,9 @@ const showPopOver = ref(false);
  * When the popup is to be closed, we need to propagate the changes. This
  * function takes care of that, and then closes the popover.
  */
-const onCommitPopupChanges = (newFormat: string) => {
+const onCommitPopupChanges = (newFormat: DateTimeFormatModel) => {
   pickedFormatModel.value = newFormat;
   showPopOver.value = false;
-
-  emit("committed", newFormat);
 };
 
 onClickOutside(floatingPopoverRef, () => (showPopOver.value = false), {
@@ -93,13 +106,12 @@ const { floatingStyles: popoverFloatingStyles } = useFloating(
     <div :class="['wrapper', { disabled, compact }]">
       <span class="input-fields">
         <input
-          v-model="pickedFormatModel"
+          v-model="formatSubModel"
           type="text"
           :disabled="disabled"
           :placeholder="textFieldPlaceholder"
           spellcheck="false"
           @focus="showPopOver = false"
-          @change="$emit('committed', pickedFormatModel)"
         />
         <span v-if="!isValueValid" class="invalid-marker" />
         <button
@@ -121,8 +133,9 @@ const { floatingStyles: popoverFloatingStyles } = useFloating(
     >
       <DateTimeFormatPickerPopover
         :all-formats="allDefaultFormats"
-        :initial-selected-pattern="pickedFormatModel"
-        :allowed-types="allowedTypes"
+        :initial-selected-pattern="pickedFormatModel.format"
+        :selected-type="pickedFormatModel.temporalType"
+        :show-type-switch="showTypeSwitchInPopover"
         @commit="onCommitPopupChanges"
         @cancel="showPopOver = false"
       />

@@ -22,6 +22,7 @@ export const inputFormats = {
   zonedDateTime: "zonedDateTime",
   dateTime: "dateTime",
   interval: "interval",
+  dateTimeFormatWithType: "dateTimeFormatWithType",
   dateTimeFormat: "dateTimeFormat",
 } as const;
 

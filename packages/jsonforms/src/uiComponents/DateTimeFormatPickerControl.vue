@@ -3,6 +3,7 @@ import { computed } from "vue";
 
 import {
   DateTimeFormatInput,
+  type DateTimeFormatModel,
   type FormatDateType,
   type FormatWithExample,
 } from "@knime/components";
@@ -31,20 +32,28 @@ const allBaseFormats = useProvidedState<FormatWithExample[] | null>(
 );
 
 // TODO: Listen to the 'committed' event of the DateTimeFormatInput.
-
 // If the format is not in the list and is valid,
 // get an example from the backend, add it to the list of formats.
+
+const modelValue = computed<DateTimeFormatModel>({
+  get: () =>
+    ({
+      format: props.control.data,
+      temporalType: "DATE",
+    }) satisfies DateTimeFormatModel,
+  set: (value: DateTimeFormatModel) => props.changeValue(value.format),
+});
 </script>
 
 <template>
   <DateTimeFormatInput
     :id="labelForId"
+    v-model="modelValue"
     compact
     :disabled="disabled"
-    :model-value="control.data"
+    :show-type-switch-in-popover="true"
     :allowed-formats="allowedFormats"
     :all-default-formats="allBaseFormats"
     :is-valid="true"
-    @update:model-value="changeValue"
   />
 </template>

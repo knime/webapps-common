@@ -1,10 +1,5 @@
 import { defineAsyncComponent } from "vue";
-import {
-  type UISchemaElement,
-  and,
-  isControl,
-  rankWith,
-} from "@jsonforms/core";
+import { and, isControl, rankWith } from "@jsonforms/core";
 
 import { inputFormats, priorityRanks } from "../constants";
 import { hasFormat } from "../constants/inputFormats";
@@ -14,12 +9,9 @@ const DateTimeFormatPickerControl = defineAsyncComponent(
   () => import("../uiComponents/DateTimeFormatPickerControl.vue"),
 );
 
-export const dateTimeFormatPickerTester = (uischema: UISchemaElement) => {
-  return (
-    isControl(uischema) &&
-    uischema.options?.format === inputFormats.dateTimeFormat
-  );
-};
+const DateTimeFormatPickerWithTypeControl = defineAsyncComponent(
+  () => import("../uiComponents/DateTimeFormatPickerWithTypeControl.vue"),
+);
 
 export const dateTimeFormatPickerRenderer = withLabel({
   name: "DateTimeFormatPickerControl",
@@ -27,5 +19,14 @@ export const dateTimeFormatPickerRenderer = withLabel({
   tester: rankWith(
     priorityRanks.default,
     and(isControl, hasFormat(inputFormats.dateTimeFormat)),
+  ),
+});
+
+export const dateTimeFormatPickerWithTypeRenderer = withLabel({
+  name: "DateTimeFormatPickerWithTypeControl",
+  control: DateTimeFormatPickerWithTypeControl,
+  tester: rankWith(
+    priorityRanks.default,
+    and(isControl, hasFormat(inputFormats.dateTimeFormatWithType)),
   ),
 });
