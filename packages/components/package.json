@@ -39,6 +39,7 @@
     "@vueuse/components": "catalog:",
     "@vueuse/core": "catalog:",
     "@vueuse/shared": "catalog:",
+    "color-hash": "2.0.2",
     "date-fns": "2.30.0",
     "date-fns-tz": "2.0.0",
     "filesize": "10.0.6",

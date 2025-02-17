@@ -107,6 +107,7 @@ const demoComponents = {
     SkeletonItem: defineAsyncComponent(
       () => import("./components/SkeletonItem.vue"),
     ),
+    Avatar: defineAsyncComponent(() => import("./components/Avatar.vue")),
   },
   toasts: {
     "Toast Service": defineAsyncComponent(

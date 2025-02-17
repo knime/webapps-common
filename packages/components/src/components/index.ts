@@ -1,4 +1,5 @@
 import AutoPlayVideo from "./AutoPlayVideo/AutoPlayVideo.vue";
+import Avatar from "./Avatar/Avatar.vue";
 import Breadcrumb from "./Breadcrumb/Breadcrumb.vue";
 import Button from "./Buttons/Button.vue";
 import FunctionButton from "./Buttons/FunctionButton.vue";
@@ -56,6 +57,7 @@ export * from "./Progress";
 
 export {
   AutoPlayVideo,
+  Avatar,
   BaseButton,
   BaseMenuItem,
   BaseMenuItems,
