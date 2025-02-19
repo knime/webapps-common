@@ -1,0 +1,11 @@
+* {
+  /* The (line) height of one line of an error message */
+  --error-message-single-line-height: calc(var(--space-base) * 3)
+    /* The space that should be empty above or below an error message */;
+  --error-message-vertical-padding: calc(var(--space-base))
+    /* The space that needs to be reserved wherever an error message is displayed */;
+  --error-message-min-reserved-space: calc(
+    var(--error-message-single-line-height) + 2 *
+      var(--error-message-vertical-padding)
+  );
+}

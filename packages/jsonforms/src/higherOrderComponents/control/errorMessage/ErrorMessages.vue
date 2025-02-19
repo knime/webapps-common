@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ErrorMessage from "./ErrorMessage.vue";
+import ErrorLine from "./ErrorLine.vue";
 
 defineProps<{
   errors: Array<string>;
@@ -9,7 +9,7 @@ defineProps<{
 <template>
   <div :class="['error-message-wrapper', { 'with-error': errors.length > 0 }]">
     <slot />
-    <ErrorMessage
+    <ErrorLine
       v-for="(error, index) in errors"
       :key="index"
       :error
@@ -23,14 +23,16 @@ defineProps<{
   display: flex;
   flex-direction: column;
   flex: 1;
-  gap: var(--space-base);
+  gap: var(--error-message-vertical-padding);
 
   &.with-error {
     /**
-     * We want to not take any additional space if the error message has its minimal height of 
-     * 3 * var(--space-base)
+     * We want to not take any additional space if the error consists of one line.
      */
-    margin-bottom: calc(-4 * var(--space-base));
+    margin-bottom: calc(
+      -1 * (var(--error-message-single-line-height) +
+            var(--error-message-vertical-padding))
+    );
   }
 
   & .error-message {

@@ -25,7 +25,8 @@ container
   flex-direction: column;
 
   /* We need enough padding bottom to reserve space for error messages */
-  padding: 0 var(--horizontal-dialog-padding) calc(5 * var(--space-base));
+  padding: 0 var(--horizontal-dialog-padding)
+    var(--error-message-min-reserved-space);
   overflow: hidden;
   overflow-y: auto;
 

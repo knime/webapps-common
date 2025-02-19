@@ -2,7 +2,7 @@ import { defineAsyncComponent } from "vue";
 import { isBooleanControl, rankWith } from "@jsonforms/core";
 
 import { priorityRanks } from "../constants";
-import { withErrorMessage } from "../higherOrderComponents/control/withErrorMessage";
+import { withErrorMessage } from "../higherOrderComponents/control/errorMessage/withErrorMessage";
 
 const CheckboxControl = defineAsyncComponent(
   () => import("../uiComponents/CheckboxControl.vue"),

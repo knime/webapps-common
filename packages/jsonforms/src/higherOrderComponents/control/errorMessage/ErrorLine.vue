@@ -17,8 +17,8 @@ defineProps<{
 .error {
   font-weight: 300;
   font-size: 11px;
-  line-height: calc(var(--space-base) * 3);
-  min-height: calc(var(--space-base) * 3);
+  line-height: var(--error-message-single-line-height);
+  min-height: var(--error-message-single-line-height);
   color: var(--theme-color-error);
   position: relative;
   overflow: hidden;
@@ -33,11 +33,10 @@ defineProps<{
   -webkit-box-orient: vertical;
 
   /* for other browsers */
-  max-height: 24px;
+  max-height: calc(var(--error-message-single-line-height) * 2);
 
   & .icon {
-    width: 12px;
-    height: 12px;
+    height: var(--error-message-single-line-height);
     vertical-align: middle;
   }
 }

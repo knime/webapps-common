@@ -2,13 +2,13 @@ import type { RendererNode, VNode } from "vue";
 import { computed, h, ref } from "vue";
 
 import LabeledControl from "./LabeledControl.vue";
+import { addErrorMessageToVNode } from "./errorMessage/withErrorMessage";
 import type { PropsToComponent, VueControl, VueControlProps } from "./types";
 import {
   type SpecialControlRenderer,
   defineControl,
   handleAsyncComponents,
 } from "./util";
-import { addErrorMessageToVNode } from "./withErrorMessage";
 
 export type VueControlPropsForLabelContent<D> = Omit<
   VueControlProps<D>,

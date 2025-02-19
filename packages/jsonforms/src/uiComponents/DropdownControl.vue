@@ -5,8 +5,8 @@ import { v4 as uuidv4 } from "uuid";
 
 import { Checkbox } from "@knime/components";
 
-import ErrorMessageWrapper from "../higherOrderComponents/control/ErrorMessageWrapper.vue";
 import LabeledControl from "../higherOrderComponents/control/LabeledControl.vue";
+import ErrorMessages from "../higherOrderComponents/control/errorMessage/ErrorMessages.vue";
 import type { VueControlProps } from "../higherOrderComponents/control/types";
 import type { IdAndText } from "../types/ChoicesUiSchema";
 import type { SettingsData } from "../types/provided";
@@ -180,7 +180,7 @@ const onChangeDropDown = (value: string) => {
     </template>
 
     <template #default="{ labelForId }">
-      <ErrorMessageWrapper v-if="showControl" :errors="messages.errors">
+      <ErrorMessages v-if="showControl" :errors="messages.errors">
         <!-- eslint-disable vue/attribute-hyphenation typescript complains with ':aria-label' instead of ':ariaLabel'-->
         <LoadingDropdown
           :id="labelForId ?? ''"
@@ -193,7 +193,7 @@ const onChangeDropDown = (value: string) => {
           compact
           @update:model-value="onChangeDropDown"
         />
-      </ErrorMessageWrapper>
+      </ErrorMessages>
     </template>
     <template #icon>
       <slot name="icon" />

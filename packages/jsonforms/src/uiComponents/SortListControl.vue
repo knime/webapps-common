@@ -8,8 +8,8 @@ import { indexOf } from "lodash-es";
 
 import { Button, SortList } from "@knime/components";
 
-import ErrorMessageWrapper from "../higherOrderComponents/control/ErrorMessageWrapper.vue";
 import LabeledControl from "../higherOrderComponents/control/LabeledControl.vue";
+import ErrorMessages from "../higherOrderComponents/control/errorMessage/ErrorMessages.vue";
 import type { VueControlProps } from "../higherOrderComponents/control/types";
 import { withSpecialChoices } from "../utils/getPossibleValuesFromUiSchema";
 import inject from "../utils/inject";
@@ -99,7 +99,7 @@ const controlElement = ref<typeof SortList | null>(null);
 </script>
 
 <template>
-  <div :class="['flex', 'space-between', 'with-padding']">
+  <div :class="['flex', 'space-between']">
     <div class="flex">
       <Button with-border compact @click="sortAToZ">A - Z</Button>
       <Button with-border compact @click="sortZToA">Z - A</Button>
@@ -111,7 +111,7 @@ const controlElement = ref<typeof SortList | null>(null);
     @controlling-flow-variable-set="changeValue"
   >
     <template #default="{ labelForId }">
-      <ErrorMessageWrapper :errors="messages.errors">
+      <ErrorMessages :errors="messages.errors">
         <!--  eslint-disable vue/attribute-hyphenation ariaLabel needs to be given like this for typescript to not complain -->
         <SortList
           :id="labelForId ?? undefined"
@@ -123,7 +123,7 @@ const controlElement = ref<typeof SortList | null>(null);
           compact
           @update:model-value="changeValue"
         />
-      </ErrorMessageWrapper>
+      </ErrorMessages>
     </template>
     <template #icon>
       <slot name="icon" />

@@ -1,15 +1,16 @@
 import { type VNode, h } from "vue";
 
-import ErrorMessageWrapper from "./ErrorMessageWrapper.vue";
-import type { VueControl, VueControlProps } from "./types";
-import { defineControl, handleAsyncComponents } from "./util";
+import type { VueControl, VueControlProps } from "../types";
+import { defineControl, handleAsyncComponents } from "../util";
+
+import ErrorMessages from "./ErrorMessages.vue";
 
 export const addErrorMessageToVNode = (
   vNode: VNode,
   props: Pick<VueControlProps<any>, "messages">,
 ): VNode | VNode[] =>
   h(
-    ErrorMessageWrapper,
+    ErrorMessages,
     { errors: props.messages.errors },
     {
       default: () => vNode,

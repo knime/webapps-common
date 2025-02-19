@@ -3,8 +3,8 @@ import { computed, ref } from "vue";
 
 import { Checkbox, InputField } from "@knime/components";
 
-import ErrorMessageWrapper from "../higherOrderComponents/control/ErrorMessageWrapper.vue";
 import LabeledControl from "../higherOrderComponents/control/LabeledControl.vue";
+import ErrorMessages from "../higherOrderComponents/control/errorMessage/ErrorMessages.vue";
 import type { VueControlProps } from "../higherOrderComponents/control/types";
 import type { Messages } from "../higherOrderComponents/control/validation/types";
 
@@ -53,7 +53,7 @@ const { showCheckbox, showControl, checkboxProps } = useHideOnNull(
       <Checkbox v-if="showCheckbox" v-bind="checkboxProps" />
     </template>
     <template #default="{ labelForId }">
-      <ErrorMessageWrapper v-if="showControl" :errors="messages.errors">
+      <ErrorMessages v-if="showControl" :errors="messages.errors">
         <InputField
           :id="labelForId"
           ref="controlElement"
@@ -64,7 +64,7 @@ const { showCheckbox, showControl, checkboxProps } = useHideOnNull(
           compact
           @update:model-value="changeValue"
         />
-      </ErrorMessageWrapper>
+      </ErrorMessages>
     </template>
     <template #icon>
       <slot name="icon" />
