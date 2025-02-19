@@ -1,8 +1,7 @@
 # ![Image](https://www.knime.com/sites/default/files/knime_logo_github_40x40_4layers.png) @knime/eslint-config
 
 This repository contains an [ESLint] ruleset for typical KNIME frontend projects. Rules cover simple
-JavaScript/TypeScript setups as well as [Vue2]/[Vue3] and [Nuxt] projects. A few overrides to cover common test
-scenarios with [Jest] and [Vitest] are also present.
+JavaScript/TypeScript setups as well as [Vue3] and [Nuxt] projects. A few overrides to cover common test scenarios with [Vitest] are also present.
 
 Also it contains some configs for [Stylelint], [lintstaged] and a Git hook to format commit messages.
 
@@ -42,23 +41,21 @@ npm audit
 
 ## Using the ESLint profiles in your project
 
-The ESLint profiles in most cases come with pre-packaged ESLint plugins and plugin configurations. However there is a
-long standing [issue with ESLint](https://github.com/eslint/eslint/issues/3458) which makes it a cumbersome setup.
-To remedy this shortcoming you can use a [patch](https://www.npmjs.com/package/@rushstack/eslint-patch) which is pulled
-in as a transitive dependency already. The following code block should give an understanding of a commonly used setup
-in your `.eslintrc.js` file:
+The following code block should give an understanding of a commonly used setup
+in your `eslint.config.js` file:
 
 ```js
-// This is a workaround for https://github.com/eslint/eslint/issues/3458
-require("@rushstack/eslint-patch/modern-module-resolution");
+import knimeVue3Config from "@knime/eslint-config/vue3.js"
 
-module.exports = {
-  extends: ["@knime/eslint-config/vue3"],
-  globals: {
-    consola: true,
+export default = [
+  ...knimeVue3Config,
+  {
+    globals: {
+      consola: true,
+    }
   },
   // [...]
-};
+];
 ```
 
 ## Using Stylelint in your project
@@ -123,9 +120,7 @@ Refer to [scripts/README.md](scripts/README.md) for more information.
 [ESLint]: https://eslint.org/
 [Stylelint]: https://stylelint.io/
 [Prettier]: https://prettier.io/
-[Vue2]: https://v2.vuejs.org/
 [Vue3]: https://vuejs.org/
 [Nuxt]: https://nuxtjs.org/
-[Jest]: https://jestjs.io/en
 [Vitest]: https://vitest.dev/
 [lintstaged]: https://github.com/okonet/lint-staged
