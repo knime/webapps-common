@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.5.7
+
+### Patch Changes
+
+- 370f5b0: Adjust styling of error message and surrounding spacing
+
 ## 1.5.6
 
 ### Patch Changes
