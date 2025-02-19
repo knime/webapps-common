@@ -10,8 +10,8 @@
   "scripts": {
     "format": "prettier --cache --write .",
     "format:check": "prettier --cache --check .",
-    "lint": "run-p 'lint:* --fix'",
-    "lint:js": "eslint . --cache --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts",
+    "lint": "run-p 'lint:*'",
+    "lint:js": "eslint . --cache",
     "lint:css": "stylelint '**/*.{css,vue}'",
     "ci:lint-format": "run-p ci:lint:* format:check -c -l",
     "ci:lint:js": "pnpm run lint:js && pnpm run lint:js -f json -o test-results/eslint.json",
@@ -51,12 +51,16 @@
     "@vitest/coverage-v8": "catalog:",
     "@vue/tsconfig": "^0.5.1",
     "eslint": "catalog:",
+    "globals": "catalog:",
     "husky": "^9.0.11",
     "npm-run-all": "catalog:",
     "prettier": "catalog:",
     "stylelint": "catalog:",
     "vitest": "catalog:",
     "vue-tsc": "catalog:"
+  },
+  "dependencies": {
+    "@typescript-eslint/utils": "^8.24.1"
   },
   "pnpm": {
     "peerDependencyRules": {
