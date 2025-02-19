@@ -1,5 +1,5 @@
-module.exports = {
-  extends: ["stylelint-config-standard"],
+export default {
+  extends: "stylelint-config-standard",
   rules: {
     "rule-empty-line-before": [
       "always-multi-line",

@@ -1,1 +1,3 @@
-module.exports = require("./vue3");
+import vue3 from "./vue3.js";
+
+export default vue3;

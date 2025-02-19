@@ -1,5 +1,5 @@
-module.exports = {
-  extends: ["stylelint-config-standard-vue"],
+export default {
+  extends: "stylelint-config-standard-vue",
   rules: {
     "rule-empty-line-before": [
       "always-multi-line",
