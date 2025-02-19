@@ -1,6 +1,11 @@
 <script>
+import CheckIcon from "@knime/styles/img/icons/check.svg";
+
 export default {
   name: "ToggleSwitch",
+  components: {
+    CheckIcon,
+  },
   props: {
     id: {
       type: String,
@@ -47,6 +52,7 @@ export default {
 
 <template>
   <label :class="['toggle', labelSize]">
+    <CheckIcon :class="{ checked: modelValue }" />
     <input
       :id="id"
       ref="input"
@@ -63,13 +69,31 @@ export default {
 
 <style lang="postcss" scoped>
 .toggle {
-  display: inline-block;
+  --component-height: 18px;
+
+  display: inline-flex;
   position: relative;
   isolation: isolate;
   padding: 3px 0 3px 37px;
   max-width: 100%;
   cursor: pointer;
-  vertical-align: middle;
+
+  & svg {
+    opacity: 0;
+    position: absolute;
+    z-index: 1;
+    left: 15px;
+    width: 10px;
+    height: 10px;
+    top: 50%;
+    margin-top: -5px; /* half of the height */
+    stroke-width: 2.5; /* manual setting the stroke-width as the usual calc-expression result is too thick */
+
+    &.checked {
+      opacity: 1;
+      transition: opacity 0.1s ease 0.3s;
+    }
+  }
 
   & input {
     user-select: none;
@@ -82,9 +106,6 @@ export default {
     & + span {
       display: inline-flex;
       align-items: center;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
     }
 
     & + span::before {
@@ -152,30 +173,23 @@ export default {
 
   /* label size */
   &.regular {
-    --regular-height: 18px;
-
     font-size: 13px;
     font-weight: 300;
-    line-height: var(--regular-height);
-
-    & > span {
-      min-height: var(--regular-height);
-    }
+    min-height: var(--component-height);
   }
 
   &.large {
-    --large-height: 20px;
+    --component-height: 20px;
 
     font-family: var(--theme-text-bold-font-family);
     color: var(--theme-text-bold-color);
     font-size: 16px;
     font-weight: 700;
-    line-height: var(--large-height);
+    min-height: var(--component-height);
+  }
 
-    & > span {
-      min-height: var(--large-height);
-      max-width: 100%;
-    }
+  &:has(:checked:focus) svg {
+    stroke: var(--knime-white);
   }
 }
 </style>

@@ -14,6 +14,7 @@ describe("ToggleSwitch.vue", () => {
     expect(wrapper.isVisible()).toBeTruthy();
     expect(wrapper.find("label").exists()).toBeTruthy();
     expect(wrapper.find("input").element.checked).toBe(false);
+    expect(wrapper.find(".checked").exists()).toBeFalsy();
   });
 
   it("renders checked state", () => {
@@ -24,6 +25,7 @@ describe("ToggleSwitch.vue", () => {
     });
     expect(wrapper.find("input").element.checked).toBe(true);
     expect(wrapper.vm.isChecked()).toBe(true);
+    expect(wrapper.find(".checked").exists()).toBeTruthy();
   });
 
   it("emits input events", async () => {
