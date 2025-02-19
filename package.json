@@ -47,15 +47,15 @@
     "@tsconfig/node22": "22.0.0",
     "@types/jsdom": "^21.1.7",
     "@types/node": "22.10.10",
-    "@vitest/coverage-v8": "2.1.1",
+    "@vitest/coverage-v8": "2.1.9",
     "@vue/tsconfig": "^0.5.1",
     "eslint": "8.56.0",
     "husky": "^9.0.11",
     "npm-run-all": "^4.1.5",
     "prettier": "3.3.2",
     "stylelint": "16.14.0",
-    "vitest": "2.1.1",
-    "vue-tsc": "^2.0.28"
+    "vitest": "2.1.9",
+    "vue-tsc": "2.2.0"
   },
   "pnpm": {
     "peerDependencyRules": {
@@ -70,7 +70,9 @@
       "micromatch@<4.0.8": ">=4.0.8",
       "rollup@<4.22.4": ">=4.22.4",
       "cross-spawn@<7.0.5": ">=7.0.5",
-      "vite@>=5.0.0 <=5.4.11": ">=5.4.12"
+      "vite@>=5.0.0 <=5.4.11": ">=5.4.12",
+      "postcss@<8.4.31": ">=8.4.31",
+      "esbuild@<=0.24.2": ">=0.25.0"
     }
   },
   "engines": {

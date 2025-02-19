@@ -41,14 +41,14 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.1.4",
-    "@vitest/coverage-v8": "2.1.1",
+    "@vitest/coverage-v8": "2.1.9",
     "@vue/test-utils": "2.4.4",
     "typescript": "^5.4.5",
     "vite": "^5.4.7",
     "vite-plugin-css-injected-by-js": "^3.5.1",
     "vite-plugin-dts": "^4.2.2",
     "vite-svg-loader": "4.0.0",
-    "vue-tsc": "^2.0.19"
+    "vue-tsc": "2.2.0"
   },
   "packageManager": "pnpm@10.2.0+sha512.0d27364e0139c6aadeed65ada153135e0ca96c8da42123bd50047f961339dc7a758fc2e944b428f52be570d1bd3372455c1c65fa2e7aa0bfbf931190f9552001"
 }
