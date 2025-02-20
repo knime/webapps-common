@@ -2,7 +2,7 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
-    reporters: ["default", "junit"],
+    reporters: [["default", { summary: false }], "junit"],
     coverage: {
       all: true,
       exclude: [
