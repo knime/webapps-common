@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.18.6
+
+### Patch Changes
+
+- 3fd06dd: Improved styling for toggleSwitch
+
 ## 1.18.5
 
 ### Patch Changes
