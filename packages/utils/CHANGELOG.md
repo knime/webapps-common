@@ -1,5 +1,11 @@
 # @knime/utils
 
+## 1.3.0
+
+### Minor Changes
+
+- 59af778: Added a utility file for `hotkeys`. This utility can be used to detect if a modifier key is pressed or if the hotkey is pressed without any modifier keys. Additionally the `getMetaOrCtrlKey()` util was moved from `navigator` to the new `hotkeys` util.
+
 ## 1.2.7
 
 ### Patch Changes

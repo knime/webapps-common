@@ -1,5 +1,13 @@
 # @knime/components
 
+## 1.18.5
+
+### Patch Changes
+
+- 59af778: Prevent dropdown from opening when Ctrl or any modifier key is pressed with Enter using new hotkeys util.
+- Updated dependencies [59af778]
+  - @knime/utils@1.3.0
+
 ## 1.18.4
 
 ### Patch Changes
