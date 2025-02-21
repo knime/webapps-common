@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.18.7
+
+### Patch Changes
+
+- 992a9e4: Make type in date&time format picker controllable
+
 ## 1.18.6
 
 ### Patch Changes

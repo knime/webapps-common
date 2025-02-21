@@ -1,5 +1,14 @@
 # @knime/json-forms
 
+## 1.5.10
+
+### Patch Changes
+
+- 992a9e4: Make type in date&time format picker controllable
+- Updated dependencies [992a9e4]
+  - @knime/components@1.18.7
+  - @knime/rich-text-editor@1.3.23
+
 ## 1.5.9
 
 ### Patch Changes
