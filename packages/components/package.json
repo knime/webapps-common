@@ -37,9 +37,8 @@
     "@knime/utils": "workspace:*",
     "@knime/vue-headless-virtual-scroller": "^0.1.2",
     "@vueuse/components": "^10.7.2",
-    "@vueuse/core": "10.4.1",
+    "@vueuse/core": "catalog:",
     "@vueuse/shared": "^10.10.0",
-    "consola": "3.2.3",
     "date-fns": "2.30.0",
     "date-fns-tz": "2.0.0",
     "filesize": "10.0.6",
@@ -50,18 +49,18 @@
     "v-calendar": "git+https://bitbucket.org/KNIME/v-calendar"
   },
   "peerDependencies": {
+    "consola": "3.x",
     "vue": "3.x"
   },
   "devDependencies": {
     "@types/lodash-es": "4.17.12",
-    "@vitejs/plugin-vue": "^5.1.4",
-    "@vitest/coverage-v8": "2.1.9",
-    "@vue/test-utils": "2.4.4",
-    "vite": "^5.4.7",
+    "@vitejs/plugin-vue": "catalog:",
+    "@vue/test-utils": "catalog:",
+    "vite": "catalog:",
     "vite-plugin-css-injected-by-js": "^3.5.1",
-    "vite-plugin-dts": "^4.2.2",
-    "vite-svg-loader": "4.0.0",
-    "vue-tsc": "2.2.0"
+    "vite-svg-loader": "catalog:",
+    "vitest": "catalog:",
+    "vue-tsc": "catalog:"
   },
   "engines": {
     "node": "22.x"
