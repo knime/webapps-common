@@ -22,7 +22,6 @@ type IntervalStringValidationResult =
       valid: true;
       type: AllowedIntervalTypes;
       negative: boolean;
-      zero: boolean;
     }
   | { valid: false };
 
@@ -305,7 +304,6 @@ export const isValidHumanReadableIntervalString = (
         valid: true,
         type: actualType,
         negative,
-        zero: isZero(validationResult),
       };
     } else {
       return { valid: false };
@@ -382,7 +380,6 @@ export const isValidISOIntervalString = (
         valid: true,
         type: actualType,
         negative,
-        zero: isZero(validationResult),
       };
     } else {
       return { valid: false };
