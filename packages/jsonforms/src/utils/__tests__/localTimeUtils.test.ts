@@ -54,6 +54,15 @@ describe("localTimeUtils", () => {
       expect(result.getMilliseconds()).toBe(123);
     });
 
+    it("parses time containing tenths of a second without trailing zeros", () => {
+      const timeStr = "10:10:10.8";
+      const result = localTimeUtils.fromString(timeStr);
+      expect(result.getHours()).toBe(10);
+      expect(result.getMinutes()).toBe(10);
+      expect(result.getSeconds()).toBe(10);
+      expect(result.getMilliseconds()).toBe(800);
+    });
+
     it("throws error for invalid time format", () => {
       expect(() => localTimeUtils.fromString("invalid")).toThrow(/.*invalid.*/);
     });
