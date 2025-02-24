@@ -21,15 +21,15 @@ export const fromString = (value: string): Date => {
     const otherFormats = [
       "HH:mm",
       "HH:mm:ss",
-      "HH:mm:ss.SSS",
-      "HH:mm:ss.SSSSSS",
-      "HH:mm:ss.SSSSSSSSS",
       "HH:mm:ss.S",
       "HH:mm:ss.SS",
+      "HH:mm:ss.SSS",
       "HH:mm:ss.SSSS",
       "HH:mm:ss.SSSSS",
+      "HH:mm:ss.SSSSSS",
       "HH:mm:ss.SSSSSSS",
       "HH:mm:ss.SSSSSSSS",
+      "HH:mm:ss.SSSSSSSSS",
     ];
 
     for (const format of otherFormats) {

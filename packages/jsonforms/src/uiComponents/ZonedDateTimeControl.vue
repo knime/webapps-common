@@ -49,6 +49,7 @@ const choices = computed(() => options.value?.possibleValues ?? []);
       v-model="datePart"
       :required="true"
       :show-timezone="false"
+      :show-milliseconds="options?.showMilliseconds"
       :timezone="'UTC'"
       :is-valid
       compact
