@@ -52,8 +52,7 @@ type IsPopoverModelValidReturn =
   | { valid: true }
   | { valid: false; reason: string };
 /**
- * Check that all values are within bounds, and that not all
- * values are zero.
+ * Check that all values are within bounds.
  */
 const isPopoverModelValid = computed((): IsPopoverModelValidReturn => {
   const relevantKeys =
@@ -85,13 +84,6 @@ const isPopoverModelValid = computed((): IsPopoverModelValidReturn => {
         reason: `${toTitleCase(relevantKeys[i])} out of bounds.`,
       };
     }
-  }
-
-  if (relevantValues.every((v) => v === 0)) {
-    return {
-      valid: false,
-      reason: "All values may not be zero.",
-    };
   }
 
   return { valid: true };
