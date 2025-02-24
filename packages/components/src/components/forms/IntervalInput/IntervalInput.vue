@@ -116,11 +116,9 @@ const textFieldValueValid = computed((): boolean => {
     textFieldModel.value,
     "DATE_OR_TIME",
   );
-
   return (
     validityCheck.valid &&
     (props.allowDescending || !validityCheck.negative) &&
-    !validityCheck.zero &&
     (validityCheck.type === usedFormat.value || props.format === "DATE_OR_TIME")
   );
 });
@@ -177,9 +175,6 @@ const updateAllModelsToMatchPossiblyValidTextFieldModel = (
   );
 
   if (!intervalValidationResult.valid) {
-    return;
-  }
-  if (intervalValidationResult.zero) {
     return;
   }
   if (!props.allowDescending && intervalValidationResult.negative) {
