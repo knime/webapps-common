@@ -1,4 +1,3 @@
-/* eslint-disable max-nested-callbacks */
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { RouterLinkStub, mount } from "@vue/test-utils";
 

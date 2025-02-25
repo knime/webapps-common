@@ -75,7 +75,7 @@ export const createProxy = (
     methodsWithImplementation,
     <K extends keyof UIExtensionServiceAPILayer>(
       method: K,
-      // @ts-ignore
+      // @ts-expect-error migrated from ts-ignore to es-expect-error TODO: explain why error is expected
       ...params: Parameters<UIExtensionServiceAPILayer[K]>
     ) => {
       return callEmbedderMethod({ method, params }, iframeWindow);

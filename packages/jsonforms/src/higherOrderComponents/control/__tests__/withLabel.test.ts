@@ -57,7 +57,6 @@ describe("withLabel", () => {
     });
 
   const propsWithoutMessages = (props: VueControlProps<string>) => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { messages, ...rest } = props;
     return rest;
   };

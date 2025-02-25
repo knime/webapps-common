@@ -51,10 +51,9 @@ export const isModelSettingAndHasNodeView = (
   );
 };
 
-// eslint-disable-next-line max-params
 // recursive function to check if the object contains a key value pair with a given parent
 const isKeyValuePresentInObject = (
-  object: Object,
+  object: object,
   params: {
     parentKey: string;
     keyName: string;

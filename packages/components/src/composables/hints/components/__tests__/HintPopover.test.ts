@@ -26,7 +26,7 @@ describe("HintPopover", () => {
     const completeHintMock = vi.fn();
     const skipAllHintsMock = vi.fn();
     const wrapper = mount(HintPopover, {
-      // @ts-ignore
+      // @ts-expect-error migrated from ts-ignore to es-expect-error TODO: explain why error is expected
       props: {
         ...defaultProps,
         completeHint: completeHintMock,

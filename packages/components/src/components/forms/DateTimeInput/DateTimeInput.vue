@@ -224,7 +224,7 @@ export default {
       }
 
       // use time set in value
-      let value = updateDate(this.localValue, date);
+      const value = updateDate(this.localValue, date);
 
       // hide popover (if open)
       hidePopoverFunction();
@@ -341,14 +341,14 @@ export default {
       }
       if (this.isAfterMax) {
         isValid = false;
-        // eslint-disable-next-line max-len
+
         errorMessage = `${this.formatDate(
           this.invalidValue,
         )} is after maximum ${this.formatDate(this.max)}`;
       }
       if (this.isBeforeMin) {
         isValid = false;
-        // eslint-disable-next-line max-len
+
         errorMessage = `${this.formatDate(
           this.invalidValue,
         )} is before minimum ${this.formatDate(this.min)}`;

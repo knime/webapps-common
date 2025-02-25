@@ -383,7 +383,7 @@ describe("useFileUpload", () => {
       $ofetchMock.mockReset();
 
       // mute consola
-      // @ts-ignore
+      // @ts-expect-error migrated from ts-ignore to es-expect-error TODO: explain why error is expected
       consola.error = () => {};
 
       const apiError = new Error("api error");

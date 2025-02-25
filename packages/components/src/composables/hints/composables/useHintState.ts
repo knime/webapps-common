@@ -42,7 +42,7 @@ export const useHintState = ({
   const updateHintState = async (hintState: HintState) => {
     try {
       await setRemoteHintState(storageKey, hintState);
-    } catch (e) {
+    } catch (_e) {
       consola.error("Updating remote hint state failed");
     }
   };

@@ -16,7 +16,7 @@ import FileExplorerContextMenu from "../FileExplorerContextMenu.vue";
 import FileExplorerItemComp from "../FileExplorerItem.vue";
 
 vi.mock("motion", () => ({
-  // @ts-ignore
+  // @ts-expect-error implicit any
   animate: (_1, _2, { onComplete }) => {
     onComplete();
   },
@@ -101,7 +101,7 @@ describe("FileExplorer.vue", () => {
   ];
 
   type DoMountOptions = {
-    props?: Props | {};
+    props?: Props | object;
     customSlots?: { contextMenu?: any; itemIcon?: any; itemContent?: any };
   };
 
@@ -602,7 +602,7 @@ describe("FileExplorer.vue", () => {
         expect.objectContaining({ onComplete: expect.any(Function) }),
       );
 
-      // @ts-ignore
+      // @ts-expect-error migrated from ts-ignore to es-expect-error TODO: explain why error is expected
       const { onComplete } = wrapper.emitted("moveItems")[0][0];
 
       // mimic callback being triggered from outside listener

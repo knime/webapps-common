@@ -20,7 +20,7 @@ export default {
     onBeforeLeave(el) {
       el.style.height = `${el.scrollHeight}px`;
       // force repaint to trigger animation correctly
-      getComputedStyle(el).height; // eslint-disable-line no-unused-expressions
+      getComputedStyle(el).height; // eslint-disable-line @typescript-eslint/no-unused-expressions
     },
     onLeave(el) {
       el.style.height = 0;

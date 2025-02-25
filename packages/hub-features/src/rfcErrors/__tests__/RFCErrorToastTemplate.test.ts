@@ -81,7 +81,7 @@ describe("RFCErrorToastTemplate.vue", () => {
     await wrapper.find("button").trigger("click"); // first show details
     await wrapper.find("button").trigger("click"); // then the clipboard button
     expect(copyMock).toHaveBeenCalled();
-    // @ts-ignore
+    // @ts-expect-error migrated from ts-ignore to es-expect-error TODO: explain why error is expected
     const copiedText = copyMock.mock.calls[0][0];
     expect(copiedText).toContain(defaultProps.title);
     defaultProps.details.forEach((item) => {

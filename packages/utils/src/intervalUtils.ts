@@ -308,7 +308,7 @@ export const isValidHumanReadableIntervalString = (
     } else {
       return { valid: false };
     }
-  } catch (e) {
+  } catch (_e) {
     return { valid: false };
   }
 };
@@ -384,7 +384,7 @@ export const isValidISOIntervalString = (
     } else {
       return { valid: false };
     }
-  } catch (e) {
+  } catch (_e) {
     return { valid: false };
   }
 };
