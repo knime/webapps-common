@@ -46,16 +46,17 @@
     "@knime/licenses": "workspace:*",
     "@tsconfig/node22": "22.0.0",
     "@types/jsdom": "^21.1.7",
+    "@types/lodash-es": "4.17.12",
     "@types/node": "22.10.10",
-    "@vitest/coverage-v8": "2.1.9",
+    "@vitest/coverage-v8": "catalog:",
     "@vue/tsconfig": "^0.5.1",
-    "eslint": "8.56.0",
+    "eslint": "catalog:",
     "husky": "^9.0.11",
-    "npm-run-all": "^4.1.5",
-    "prettier": "3.3.2",
-    "stylelint": "16.14.0",
-    "vitest": "2.1.9",
-    "vue-tsc": "2.2.0"
+    "npm-run-all": "catalog:",
+    "prettier": "catalog:",
+    "stylelint": "catalog:",
+    "vitest": "catalog:",
+    "vue-tsc": "catalog:"
   },
   "pnpm": {
     "peerDependencyRules": {

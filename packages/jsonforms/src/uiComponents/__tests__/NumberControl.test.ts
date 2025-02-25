@@ -9,7 +9,7 @@ import {
 } from "vitest";
 import { unref } from "vue";
 import type { VueWrapper } from "@vue/test-utils";
-import flushPromises from "flush-promises";
+import { flushPromises } from "@vue/test-utils";
 
 import { NumberInput } from "@knime/components";
 

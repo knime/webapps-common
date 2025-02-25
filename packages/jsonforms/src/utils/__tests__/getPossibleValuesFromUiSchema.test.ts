@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { ref } from "vue";
-import flushPromises from "flush-promises";
+import { flushPromises } from "@vue/test-utils";
 
 import type {
   ChoicesUiSchema,

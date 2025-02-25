@@ -9,7 +9,7 @@ import {
   vi,
 } from "vitest";
 import type { VueWrapper } from "@vue/test-utils";
-import flushPromises from "flush-promises";
+import { flushPromises } from "@vue/test-utils";
 
 import {
   MultiModeTwinList,

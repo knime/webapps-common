@@ -1,6 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { VueWrapper, mount } from "@vue/test-utils";
-import flushPromises from "flush-promises";
+import { VueWrapper, flushPromises, mount } from "@vue/test-utils";
 
 import { Checkbox, InputField } from "@knime/components";
 

@@ -24,23 +24,22 @@
     "@knime/components": "workspace:*",
     "@knime/styles": "workspace:*",
     "@knime/utils": "workspace:*",
-    "@knime/vue-headless-virtual-scroller": "^0.1.2",
-    "consola": "3.2.3",
-    "typescript": "^5.4.5"
+    "@knime/vue-headless-virtual-scroller": "catalog:",
+    "typescript": "catalog:"
   },
   "peerDependencies": {
-    "vue": "3.x"
+    "vue": "catalog:peer",
+    "consola": "catalog:peer"
   },
   "devDependencies": {
     "@knime/eslint-config": "workspace:*",
-    "@vitejs/plugin-vue": "^5.1.4",
-    "@vitest/coverage-v8": "2.1.9",
-    "@vue/test-utils": "2.4.4",
-    "vite": "^5.4.7",
-    "vite-plugin-css-injected-by-js": "^3.5.1",
-    "vite-plugin-dts": "^4.2.2",
-    "vite-svg-loader": "4.0.0",
-    "vue-tsc": "2.2.0"
+    "@vitejs/plugin-vue": "catalog:",
+    "@vue/test-utils": "catalog:",
+    "consola": "catalog:",
+    "vite": "catalog:",
+    "vite-plugin-css-injected-by-js": "catalog:",
+    "vite-svg-loader": "catalog:",
+    "vue-tsc": "catalog:"
   },
   "packageManager": "pnpm@10.2.0+sha512.0d27364e0139c6aadeed65ada153135e0ca96c8da42123bd50047f961339dc7a758fc2e944b428f52be570d1bd3372455c1c65fa2e7aa0bfbf931190f9552001"
 }

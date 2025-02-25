@@ -15,7 +15,7 @@
     "coverage:integration": "vitest run --coverage --mode integration"
   },
   "dependencies": {
-    "@floating-ui/vue": "1.1.5",
+    "@floating-ui/vue": "catalog:",
     "@jsonforms/core": "3.4.0",
     "@jsonforms/vue": "3.4.0",
     "@jsonforms/vue-vanilla": "3.4.0",
@@ -29,31 +29,26 @@
     "uuid": "10.0.0"
   },
   "peerDependencies": {
-    "vue": "~3.4.27"
+    "consola": "catalog:peer",
+    "vue": "catalog:peer"
   },
   "devDependencies": {
-    "@tsconfig/node22": "22.0.0",
-    "@types/jsdom": "21.1.7",
-    "@types/lodash-es": "^4.17.12",
-    "@types/node": "22.10.10",
     "@types/uuid": "10.0.0",
-    "@vitejs/plugin-vue": "^5.1.4",
-    "@vue/test-utils": "2.4.6",
-    "@vue/tsconfig": "0.5.1",
-    "consola": "3.2.3",
-    "flush-promises": "1.0.2",
-    "lodash-es": "4.17.21",
+    "@vitejs/plugin-vue": "catalog:",
+    "@vue/test-utils": "catalog:",
+    "consola": "catalog:",
+    "lodash-es": "catalog:",
     "modern-normalize": "3.0.1",
     "postcss": "8.4.5",
     "type-fest": "4.26.1",
-    "typescript": "^5.4.5",
+    "typescript": "catalog:",
     "v-calendar": "git+https://bitbucket.org/KNIME/v-calendar",
-    "vite": "^5.4.8",
-    "vite-plugin-dts": "4.3.0",
-    "vite-svg-loader": "5.1.0",
-    "vitest": "2.1.9",
-    "vue": "~3.4.27",
-    "vue-tsc": "2.2.0"
+    "vite": "catalog:",
+    "vite-plugin-dts": "catalog:",
+    "vite-svg-loader": "catalog:",
+    "vitest": "catalog:",
+    "vue": "catalog:",
+    "vue-tsc": "catalog:"
   },
   "exports": {
     ".": {

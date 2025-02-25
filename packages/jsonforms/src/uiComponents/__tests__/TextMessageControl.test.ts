@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import flushPromises from "flush-promises";
+import { flushPromises } from "@vue/test-utils";
 
 import { InlineMessage } from "@knime/components";
 

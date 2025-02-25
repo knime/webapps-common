@@ -87,7 +87,6 @@ describe("FileExplorerContextMenu.vue", () => {
 
     const mockMenuHeight = 50;
 
-    // @ts-expect-error
     wrapper.element.getBoundingClientRect = vi.fn(() => ({
       height: mockMenuHeight,
     }));
@@ -132,7 +131,6 @@ describe("FileExplorerContextMenu.vue", () => {
       props: { position: { ...defaultProps.position, y: 80 } },
     });
 
-    // @ts-expect-error
     wrapper.element.getBoundingClientRect = vi.fn(() => ({
       height: mockMenuHeight,
     }));
