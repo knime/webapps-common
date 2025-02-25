@@ -62,7 +62,7 @@ describe("IntegerControl.vue", () => {
   });
 
   it("renders", () => {
-    // @ts-ignore
+    // @ts-expect-error Property 'exists' does not exist on type
     expect(wrapper.getComponent(NumberInput).exists()).toBe(true);
   });
 

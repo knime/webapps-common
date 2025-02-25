@@ -40,7 +40,7 @@ const {
 } = useFloating(referenceElement, floating, {
   whileElementsMounted: autoUpdate,
   placement,
-  // eslint-disable-next-line no-magic-numbers
+
   middleware: [
     offset(ARROW_SIZE_PX + FLOATING_OFFSET_PX),
     flip(),

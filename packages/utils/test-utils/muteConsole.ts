@@ -8,6 +8,7 @@ const methods: ConsoleMethod[] = ["log", "warn", "error", "info"];
  * @param f The function to run. Can be async.
  * @returns The original function's return value
  */
+// TODO: replace Function with fitting top type (...args: never[]) => unknown has unknown return type which makes problems in line 41
 export default (f: Function) => {
   const originals = methods.map((method) => console[method]);
   methods.forEach((method) => {
@@ -15,11 +16,11 @@ export default (f: Function) => {
   });
 
   let originalConsola: typeof consola;
-  // @ts-ignore - needs to extend the globalThis namespace
+  // @ts-expect-error Property 'consola' does not exist on type 'typeof globalThis'.
   if (global.consola) {
-    // @ts-ignore
+    // @ts-expect-error Property 'consola' does not exist on type 'typeof globalThis'.
     originalConsola = global.consola;
-    // @ts-ignore
+    // @ts-expect-error Property 'consola' does not exist on type 'typeof globalThis'.
     global.consola = consola.create({
       level: -1,
     });
@@ -30,7 +31,7 @@ export default (f: Function) => {
       console[method] = originals[i];
     });
     if (originalConsola) {
-      // @ts-ignore
+      // @ts-expect-error Property 'consola' does not exist on type 'typeof globalThis'.
       global.consola = originalConsola;
     }
   };

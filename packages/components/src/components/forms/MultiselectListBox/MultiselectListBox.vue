@@ -557,7 +557,7 @@ export default {
     getCurrentKeyNavItem() {
       try {
         return this.possibleValues[this.currentKeyNavIndex];
-      } catch (e) {
+      } catch (_e) {
         return {
           id: "",
           text: "",

@@ -72,7 +72,7 @@ describe("hide on null", () => {
     });
     const checkbox = findCheckbox(wrapper);
     await checkbox.vm.$emit("update:model-value", true);
-    // @ts-expect-error
+    // @ts-expect-error Object is of type 'unknown'
     expect(wrapper.emitted("change")[1][0].data.setting).not.toBeNull();
     await flushPromises();
     expect(document.activeElement).toBe(
@@ -97,7 +97,7 @@ describe("hide on null", () => {
     });
     const checkbox = findCheckbox(wrapper);
     await checkbox.vm.$emit("update:model-value", false);
-    // @ts-expect-error
+    // @ts-expect-error Object is of type 'unknown'
     expect(wrapper.emitted("change")[1][0].data.setting).toBeNull();
   });
 });

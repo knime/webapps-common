@@ -81,7 +81,7 @@ describe("RFCErrorToastTemplate.vue", () => {
     await wrapper.find("button").trigger("click"); // first show details
     await wrapper.find("button").trigger("click"); // then the clipboard button
     expect(copyMock).toHaveBeenCalled();
-    // @ts-ignore
+    // @ts-expect-error Tuple type '[]' of length '0' has no element at index '0'.
     const copiedText = copyMock.mock.calls[0][0];
     expect(copiedText).toContain(defaultProps.title);
     defaultProps.details.forEach((item) => {

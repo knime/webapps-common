@@ -1,4 +1,3 @@
-/* eslint-disable no-magic-numbers */
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {

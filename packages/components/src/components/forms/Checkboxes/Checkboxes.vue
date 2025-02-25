@@ -59,7 +59,7 @@ export default {
   emits: ["update:modelValue"],
   methods: {
     validate() {
-      let isValid = !this.possibleValues.some((x) => x.invalid);
+      const isValid = !this.possibleValues.some((x) => x.invalid);
       return {
         isValid,
         errorMessage: isValid

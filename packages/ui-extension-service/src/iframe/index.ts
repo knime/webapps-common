@@ -75,7 +75,7 @@ export const createProxy = (
     methodsWithImplementation,
     <K extends keyof UIExtensionServiceAPILayer>(
       method: K,
-      // @ts-ignore
+      // @ts-expect-error Type 'UIExtensionServiceAPILayer[K]' does not satisfy the constraint '(...args: any) => any'
       ...params: Parameters<UIExtensionServiceAPILayer[K]>
     ) => {
       return callEmbedderMethod({ method, params }, iframeWindow);

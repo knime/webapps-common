@@ -1,4 +1,3 @@
-/* eslint-disable vitest/max-nested-describe */
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { FunctionalComponent } from "vue";
 import { flushPromises, mount, shallowMount } from "@vue/test-utils";
@@ -116,12 +115,12 @@ describe("SortList.vue", () => {
   });
 
   describe("moving items", () => {
-    const shallowMountSortList = () => shallowMount(SortList, { props });
+    const _shallowMountSortList = () => shallowMount(SortList, { props });
 
-    let wrapper: ReturnType<typeof shallowMountSortList>,
-      scrollUpIntoView: () => {},
-      scrollDownIntoView: () => {},
-      setCurrentKeyNavIndex: () => {};
+    let wrapper: ReturnType<typeof _shallowMountSortList>,
+      scrollUpIntoView: () => unknown,
+      scrollDownIntoView: () => unknown,
+      setCurrentKeyNavIndex: () => unknown;
 
     beforeEach(() => {
       scrollUpIntoView = vi.fn();

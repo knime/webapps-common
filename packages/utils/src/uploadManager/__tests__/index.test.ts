@@ -1,4 +1,3 @@
-/* eslint-disable vitest/no-disabled-tests */
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { newServer } from "mock-xmlhttprequest";
 
@@ -56,7 +55,6 @@ describe("uploadManager", () => {
   const getUploadId = createIdGenerator();
 
   describe("success", () => {
-    // eslint-disable-next-line vitest/no-focused-tests
     it("should handle `uploadFiles`", async () => {
       setup();
       const { uploadFiles } = createUploadManager({

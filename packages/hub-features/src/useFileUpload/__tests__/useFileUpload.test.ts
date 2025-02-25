@@ -383,7 +383,7 @@ describe("useFileUpload", () => {
       $ofetchMock.mockReset();
 
       // mute consola
-      // @ts-ignore
+      // @ts-expect-error Property 'raw' is missing in type '() => void' but required in type 'LogFn'
       consola.error = () => {};
 
       const apiError = new Error("api error");

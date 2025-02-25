@@ -48,7 +48,7 @@ export default {
        * @event input
        * @type {Boolean}
        */
-      let { checked } = $event.target;
+      const { checked } = $event.target;
       consola.trace("Checkbox value changed to", checked);
       this.$emit("update:modelValue", checked);
     },

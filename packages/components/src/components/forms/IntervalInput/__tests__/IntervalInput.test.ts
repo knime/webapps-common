@@ -23,7 +23,7 @@ const doMount = async (
   },
 ) => {
   const component = mount(IntervalInput, {
-    // @ts-ignore
+    // @ts-expect-error Type ... is not assignable to type ...
     props: args.props,
     attachTo: "body",
   });

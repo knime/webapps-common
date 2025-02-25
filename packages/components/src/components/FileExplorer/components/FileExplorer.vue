@@ -321,7 +321,7 @@ const forwardEmit = (
     return;
   }
 
-  // @ts-expect-error
+  // @ts-expect-error No overload matches this call.
   emit(eventName, eventPayload);
 };
 /** DRAGGING */
@@ -421,7 +421,7 @@ const openContextMenu = (
     contextMenuPos.value.y = event.clientY;
   } else {
     const rect = element.getBoundingClientRect();
-    // eslint-disable-next-line no-magic-numbers
+
     contextMenuPos.value.x = rect.x + rect.width * 0.8;
     contextMenuPos.value.y = rect.y + rect.height / 2;
   }

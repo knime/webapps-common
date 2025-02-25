@@ -5,7 +5,6 @@ import { rfcErrors } from "@knime/hub-features";
 import Interactive from "@knime/styles/img/icons/interactive.svg";
 
 import CodeExample from "./demo/CodeExample.vue";
-// @ts-ignore
 
 // import toastServiceCode from "@knime/components/toastService?raw";
 // import typesCode from "@knime/components/types?raw";

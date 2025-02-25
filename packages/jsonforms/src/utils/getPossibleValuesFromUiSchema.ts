@@ -100,7 +100,7 @@ export const withSpecialChoices = <T extends PossibleValue[] | null>(
   watch(
     () => choicesRef.value,
     () => {
-      // @ts-expect-error
+      // @ts-expect-error Type 'PossibleValue[] | null' is not assignable to type 'UnwrapRef<T>'
       withSpecialColumns.value =
         choicesRef.value === null
           ? null
@@ -133,6 +133,6 @@ export default async (
       normalPossibleValues = [];
     }
   }
-  // @ts-expect-error
+  // @ts-expect-error Argument of type 'boolean | PossibleValue[] | undefined' is not assignable to parameter of type 'PossibleValue[]'.
   return addSpecialColumns(normalPossibleValues, control);
 };

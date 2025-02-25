@@ -160,7 +160,7 @@ export const formatIntervalToHumanReadableIntervalString = (
       if (milliSecondsZero) {
         output += formatPart(toFormat.interval.seconds, "second");
       } else {
-        output += `${toFormat.interval.seconds}.${toFormat.interval.milliseconds.toString().padStart(3, "0")} seconds `;
+        output += `${toFormat.interval.seconds}.${toFormat.interval.milliseconds.toString().padStart(3, "0")} seconds `; // eslint-disable-line no-magic-numbers
       }
     }
   }
@@ -308,7 +308,7 @@ export const isValidHumanReadableIntervalString = (
     } else {
       return { valid: false };
     }
-  } catch (e) {
+  } catch (_e) {
     return { valid: false };
   }
 };
@@ -384,7 +384,7 @@ export const isValidISOIntervalString = (
     } else {
       return { valid: false };
     }
-  } catch (e) {
+  } catch (_e) {
     return { valid: false };
   }
 };

@@ -124,7 +124,7 @@ export default {
     const expanded = ref(false);
     const shadowRoot = inject<ShadowRoot | null>("shadowRoot", null);
 
-    // @ts-expect-error - force cast shadowRoot into HTMLElement
+    // @ts-expect-error No overload matches this call.
     const clippingBoundary = computed<HTMLElement>(
       () => shadowRoot || document?.body,
     );
@@ -180,8 +180,7 @@ export default {
       this.expanded = !this.expanded;
 
       const toggleCallback = this.expanded
-        ? // eslint-disable-next-line brace-style
-          () => {
+        ? () => {
             this.expanded = false;
           }
         : () => {};

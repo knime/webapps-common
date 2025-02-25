@@ -82,7 +82,7 @@ describe("BaseRadioButtons.vue", () => {
     const radioInputs = wrapper.findAll("input[type=radio]");
     possibleValues.forEach((option, i) => {
       const expectedCheckedValue = option.id === modelValue;
-      // eslint-disable-next-line no-extra-parens
+
       expect((radioInputs[i].element as HTMLInputElement).checked).toBe(
         expectedCheckedValue,
       );

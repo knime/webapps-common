@@ -19,7 +19,6 @@ export const setUpRendererTest = (renderers: readonly NamedRenderer[]) => {
       (r: NamedRenderer) => r.tester(uiSchema, schema, {} as TesterContext),
     );
 
-    // eslint-disable-next-line no-undefined
     if (
       typeof renderer === "undefined" ||
       renderer.tester(uiSchema, schema, {} as TesterContext) === -1

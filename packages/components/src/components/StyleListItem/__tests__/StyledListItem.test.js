@@ -1,5 +1,3 @@
-/* eslint-disable max-lines */
-/* eslint-disable no-magic-numbers */
 import { describe, expect, it, vi } from "vitest";
 import { mount } from "@vue/test-utils";
 

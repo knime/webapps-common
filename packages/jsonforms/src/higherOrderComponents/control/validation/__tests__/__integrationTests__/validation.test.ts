@@ -20,7 +20,7 @@ describe("validation", () => {
           },
         },
         uischema: {
-          // @ts-expect-error
+          // @ts-expect-error Object literal may only specify known properties, and 'elements' does not exist in type 'UISchemaElement'.
           elements: [
             {
               type: "Control",

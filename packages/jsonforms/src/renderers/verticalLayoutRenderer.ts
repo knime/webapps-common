@@ -18,7 +18,7 @@ export const verticalLayoutFallbackRenderer = {
   layout: VerticalLayout,
   tester: rankWith(
     priorityRanks.fallback,
-    // @ts-expect-error
+    // @ts-expect-error Argument of type 'undefined' is not assignable to parameter of type 'string'.
     // eslint-disable-next-line no-undefined
     uiTypeIs(undefined),
   ),

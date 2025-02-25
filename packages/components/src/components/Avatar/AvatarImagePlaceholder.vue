@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
-// @ts-ignore No types available for module
+// @ts-expect-error No types available for module
 import ColorHash from "color-hash/dist/esm";
 
 import {

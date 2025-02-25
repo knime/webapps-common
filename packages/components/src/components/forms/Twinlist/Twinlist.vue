@@ -632,7 +632,7 @@ export default {
       return (this.includedValues?.length ?? 0) > 0;
     },
     validate() {
-      let isValid =
+      const isValid =
         !this.filteredIncludedItems.some((x) => x.invalid) &&
         (!this.excludedValues ||
           !this.filteredExcludedItems.some((x) => x.invalid));

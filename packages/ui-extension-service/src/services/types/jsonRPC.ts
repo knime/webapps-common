@@ -1,4 +1,3 @@
-/* eslint-disable no-magic-numbers */
 export interface JSONRPCSuccessResponse {
   result: any;
   error?: null;

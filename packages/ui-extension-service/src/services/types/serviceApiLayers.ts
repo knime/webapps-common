@@ -76,7 +76,7 @@ export type ReportingServiceAPILayer = Pick<
 export type ResourceServiceAPILayer = Pick<
   UIExtensionServiceAPILayer,
   "getResourceLocation"
-> & { getConfig: () => {} };
+> & { getConfig: () => object };
 
 type SelectionServiceExtensionConfig = Identifiers & {
   initialData?: any;
@@ -91,4 +91,4 @@ export type SelectionServiceAPILayer = Pick<
 export type DataValueViewAPILayer = Pick<
   UIExtensionServiceAPILayer,
   "showDataValueView" | "closeDataValueView"
-> & { getConfig: () => {} };
+> & { getConfig: () => object };

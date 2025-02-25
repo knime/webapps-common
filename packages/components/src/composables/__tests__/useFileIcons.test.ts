@@ -13,7 +13,7 @@ vi.mock("@knime/utils", async (importOriginal) => {
     docxIcon: "MockDocxComponent",
   };
   return {
-    // @ts-ignore
+    // @ts-expect-error Spread types may only be created from object types
     ...actual,
     icons,
     isIconExisting: (name: string) => name in icons,

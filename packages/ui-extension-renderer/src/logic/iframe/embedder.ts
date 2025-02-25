@@ -28,7 +28,7 @@ const enableRequestsToMethods = (
   const callApiLayer = <K extends keyof UIExtensionServiceAPILayer>(
     payload: PayloadForKey<UIExtensionServiceAPILayer, K>,
   ) => {
-    // @ts-expect-error
+    // @ts-expect-error Cannot invoke an object which is possibly 'undefined'.
     return apiLayer[payload.method](...payload.params);
   };
 

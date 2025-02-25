@@ -67,9 +67,9 @@ describe("useHint", () => {
       delete hintConfigurationsMock[key];
     });
 
-    // @ts-ignore
+    // @ts-expect-error Property 'isAllSkippedMock' does not exist on type
     useHintState.isAllSkippedMock.value = false;
-    // @ts-ignore
+    // @ts-expect-error Property 'currentlyVisibleHintMock' does not exist on type
     useHintState.currentlyVisibleHintMock.value = null;
   });
 
@@ -94,7 +94,6 @@ describe("useHint", () => {
     alreadyCompletedHints?: Array<string>;
     attachHintIdToElement?: boolean;
   } = {}) => {
-    // @ts-ignore
     hintConfigurationsMock[hintKey] = Object.assign(
       {
         title: "my hint",
@@ -106,9 +105,9 @@ describe("useHint", () => {
       hintConfig,
     );
 
-    // @ts-ignore
+    // @ts-expect-error Property 'isAllSkippedMock' does not exist on type
     useHintState.isAllSkippedMock.value = skipAllHints;
-    // @ts-ignore
+    // @ts-expect-error Property 'currentlyVisibleHintMock' does not exist on type
     useHintState.currentlyVisibleHintMock.value = currentlyVisibleHint;
 
     const completedHints = [
@@ -118,7 +117,7 @@ describe("useHint", () => {
         ),
       ),
     ];
-    // @ts-ignore
+    // @ts-expect-error Property 'isCompletedMock' does not exist on type
     useHintState.isCompletedMock.mockImplementation((hintId: string) =>
       completedHints.includes(hintId),
     );
@@ -134,9 +133,9 @@ describe("useHint", () => {
       hints: hintConfigurationsMock,
       skipHints,
       uniqueUserId,
-      // @ts-ignore
+      // @ts-expect-error Type '() => Mock<Procedure>' is not assignable to type
       getRemoteHintState,
-      // @ts-ignore
+      // @ts-expect-error Type '() => Mock<Procedure>' is not assignable to type
       setRemoteHintState,
     });
 
@@ -148,27 +147,27 @@ describe("useHint", () => {
     return {
       getComposableResult,
       lifeCycle,
-      // @ts-ignore
+      // @ts-expect-error Property 'createHintDataMock' does not exist on type
       createHintDataMock: useHintProvider.createHintDataMock,
-      // @ts-ignore
+      // @ts-expect-error Property 'showHintMock' does not exist on type
       showHintMock: useHintProvider.showHintMock,
-      // @ts-ignore
+      // @ts-expect-error Property 'closeHintMock' does not exist on type
       closeHintMock: useHintProvider.closeHintMock,
       useHintState: useHintState.useHintState,
-      // @ts-ignore
+      // @ts-expect-error Property 'initializeMock' does not exist on type
       initializeMock: useHintState.initializeMock,
-      // @ts-ignore
+      // @ts-expect-error Property 'completeHintMock' does not exist on type
       completeHintMock: useHintState.completeHintMock,
       completeHintWithoutVisibilityMock:
-        // @ts-ignore
+        // @ts-expect-error Property 'completeHintWithoutVisibilityMock' does not exist on type
         useHintState.completeHintWithoutVisibilityMock,
-      // @ts-ignore
+      // @ts-expect-error Property 'isCompletedMock' does not exist on type
       isCompletedMock: useHintState.isCompletedMock,
-      // @ts-ignore
+      // @ts-expect-error Property 'setSkipAllMock' does not exist on type
       setSkipAllMock: useHintState.setSkipAllMock,
-      // @ts-ignore
+      // @ts-expect-error Property 'currentlyVisibleHintMock' does not exist on type
       currentlyVisibleHintMock: useHintState.currentlyVisibleHintMock,
-      // @ts-ignore
+      // @ts-expect-error Property 'setCurrentlyVisibleHintMock' does not exist on type
       setCurrentlyVisibleHintMock: useHintState.setCurrentlyVisibleHintMock,
     };
   };

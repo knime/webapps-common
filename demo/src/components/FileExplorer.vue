@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { h, onMounted, reactive, ref } from "vue";
-import type {
-  FileExplorerContextMenu,
-  FileExplorerItem,
-  // @ts-ignore
-} from "webapps-common/ui/components/FileExplorer/types";
 
-import { Button, Checkbox, Dropdown, FileExplorer } from "@knime/components";
+import {
+  Button,
+  Checkbox,
+  Dropdown,
+  FileExplorer,
+  type FileExplorerContextMenu,
+  type FileExplorerItem,
+} from "@knime/components";
 
 const items = [
   {
@@ -143,7 +145,7 @@ const customContextMenuComponent = ({
 }) => {
   return {
     render(): any {
-      // @ts-expect-error
+      // @ts-expect-error Property 'items' does not exist on type '{ render(): any; computed: { items(): any[]; }; }'
       const options = this.items.map((item: any) => {
         const onClick = () => {
           if (item.id === "custom-option") {

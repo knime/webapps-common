@@ -45,18 +45,17 @@ export default defineComponent({
   emits: ["update:modelValue"],
   computed: {
     inputName() {
-      // @ts-expect-error
+      // @ts-expect-error Property 'count' does not exist on type
       return this.name || `wc-radio-${this.count}`;
     },
   },
   beforeCreate() {
     count += 1;
-    // @ts-expect-error
+    // @ts-expect-error Property 'count' does not exist on type
     this.count = count;
   },
   methods: {
     onInput($event: Event) {
-      // eslint-disable-next-line no-extra-parens
       const value = ($event.target as HTMLInputElement).value;
 
       /**

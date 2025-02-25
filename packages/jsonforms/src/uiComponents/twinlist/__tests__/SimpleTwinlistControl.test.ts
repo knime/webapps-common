@@ -75,7 +75,7 @@ describe("SimpleTwinlistControl.vue", () => {
     return mountJsonFormsControlLabelContent(SimpleTwinlistControl, {
       props,
       provide: {
-        // @ts-expect-error
+        // @ts-expect-error Object literal may only specify known properties, and 'getPossibleValuesFromUiSchema' does not exist in type 'Partial<ProvidedMethods>'.
         getPossibleValuesFromUiSchema: (control: Control) =>
           getPossibleValuesFromUiSchema(
             control,

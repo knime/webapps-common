@@ -269,7 +269,7 @@ export default {
       this.returnContainerRef.style.overflow = "hidden";
     },
     validate() {
-      let isValid = !this.concatenatedItems.some(
+      const isValid = !this.concatenatedItems.some(
         (x: PossibleValue) => x.invalid,
       );
       return {

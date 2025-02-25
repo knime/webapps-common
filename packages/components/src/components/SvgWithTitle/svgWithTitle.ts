@@ -30,7 +30,7 @@ export default (SvgComponent: ComponentInstance<any>, title: string) => ({
     const renderedComponent = SvgComponent.render({}, []);
 
     const titleEl = h("title", title);
-    // @ts-ignore
+    // @ts-expect-error Property 'ns' does not exist on type 'VNode<RendererNode, RendererElement, { [key: string]: any; }>'.
     titleEl.ns = "svg";
 
     renderedComponent.children.unshift(titleEl);

@@ -1,3 +1,9 @@
-/* eslint-disable one-var */
+import type { ConsolaInstance } from "consola";
 
-declare const consola: import("consola").ConsolaInstance;
+declare global {
+  const consola: ConsolaInstance;
+
+  interface Window {
+    consola: ConsolaInstance;
+  }
+}

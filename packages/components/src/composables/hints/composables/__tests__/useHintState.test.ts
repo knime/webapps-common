@@ -52,7 +52,7 @@ describe("useHintState", () => {
     const getRemoteHintStateMock = vi.fn().mockResolvedValue({});
     const setRemoteHintStateMock = vi.fn();
 
-    // @ts-ignore
+    // @ts-expect-error Property 'mockReturnValue' does not exist on type
     useLocalStorage.mockReturnValue(state);
 
     const { getComposableResult } = mountComposable({

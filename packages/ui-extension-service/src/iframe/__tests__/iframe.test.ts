@@ -8,18 +8,17 @@ import { setUpIframeEmbedderService } from "@knime/ui-extension-renderer/testing
 
 import { getInitializedBaseServiceProxy } from "../../services/AbstractService";
 
-class Embedder<APILayer extends { getConfig: () => {} }> {
+class Embedder<APILayer extends { getConfig: () => unknown }> {
   iframe: HTMLIFrameElement;
   dispatchPushEvent: (event: UIExtensionPushEvents.PushEvent<any>) => void;
 
   constructor(apiLayer: APILayer) {
-    // @ts-expect-error
+    // @ts-expect-error Property 'getInitializedBaseService' does not exist on type 'Window & typeof globalThis'
     window.getInitializedBaseService = getInitializedBaseServiceProxy;
     const iframe = document.createElement("iframe");
     document.body.appendChild(iframe);
 
-    // the parent window of the HTMLIFrameElement is not properly loaded/attached so we explicitly need to set it
-    // @ts-expect-error
+    // @ts-expect-error the parent window of the HTMLIFrameElement is not properly loaded/attached so we explicitly need to set it
     iframe.contentWindow.parent = window;
     const { dispatchPushEvent } = setUpIframeEmbedderService(
       apiLayer as any,

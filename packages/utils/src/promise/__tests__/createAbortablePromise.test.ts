@@ -26,6 +26,6 @@ describe("createAbortablePromise", () => {
     await flushPromises();
 
     expect(catchSpy).toHaveBeenCalledWith(abortError);
-    expect(promise).resolves.toBe("aborted");
+    await expect(promise).resolves.toBe("aborted");
   });
 });

@@ -45,5 +45,6 @@ describe("Avatar.vue", () => {
       },
     });
     wrapper.getComponent(AvatarImagePlaceholder);
+    expect(wrapper.findComponent(AvatarImagePlaceholder).exists()).toBe(true);
   });
 });

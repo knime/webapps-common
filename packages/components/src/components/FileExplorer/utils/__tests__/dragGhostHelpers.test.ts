@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import { createDragGhosts } from "../dragGhostHelpers";
 
 vi.mock("motion", () => ({
-  // @ts-ignore
+  // @ts-expect-error implicit any
   animate: (_1, _2, { onComplete }) => {
     onComplete();
   },
@@ -34,7 +34,7 @@ describe("dragGhostHelpers", () => {
     const dataTransfer = {
       setDragImage: vi.fn(),
     };
-    // @ts-expect-error
+    // @ts-expect-error Cannot assign to 'dataTransfer' because it is a read-only property
     dragStartEvent.dataTransfer = dataTransfer;
     dragTarget.dispatchEvent(dragStartEvent);
 

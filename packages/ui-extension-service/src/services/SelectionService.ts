@@ -15,7 +15,7 @@ export type { SelectionMode, SelectionParams };
  * To use it, the relating Java implementation also needs to use the SelectionService.
  */
 export class SelectionService extends AbstractService<SelectionServiceAPILayer> {
-  private removeCallbacksMap: Map<Function, () => void>;
+  private removeCallbacksMap: Map<(...args: never[]) => unknown, () => void>;
 
   constructor(baseService: UIExtensionService<SelectionServiceAPILayer>) {
     super(baseService);

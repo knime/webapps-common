@@ -193,7 +193,7 @@ describe("TwinlistControl.vue", () => {
     return mountJsonFormsControlLabelContent(TwinlistControl, {
       props,
       provide: {
-        // @ts-expect-error
+        // @ts-expect-error Object literal may only specify known properties, and 'getPossibleValuesFromUiSchema' does not exist in type 'Partial<ProvidedMethods>'.
         getPossibleValuesFromUiSchema: (control: Control) =>
           getPossibleValuesFromUiSchema(
             control,
@@ -530,16 +530,16 @@ describe("TwinlistControl.vue", () => {
       props.control.uischema.options!.includedLabel = includedLabel;
       props.control.uischema.options!.excludedLabel = excludedLabel;
       const { wrapper } = await mountTwinlistControl();
-      // @ts-expect-error
+      // @ts-expect-error Property 'leftLabel' does not exist on type
       expect(wrapper.vm.leftLabel).toBe(excludedLabel);
-      // @ts-expect-error
+      // @ts-expect-error Property 'rightLabel' does not exist on type
       expect(wrapper.vm.rightLabel).toBe(includedLabel);
     });
 
     it("passes the labels given by the props if uischema options are not available", () => {
-      // @ts-expect-error
+      // @ts-expect-error Property 'leftLabel' does not exist on type
       expect(wrapper.vm.leftLabel).toBe("Excludes");
-      // @ts-expect-error
+      // @ts-expect-error Property 'rightLabel' does not exist on type
       expect(wrapper.vm.rightLabel).toBe("Includes");
     });
   });

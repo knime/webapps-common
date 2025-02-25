@@ -23,8 +23,6 @@ export default [
     },
     languageOptions: {
       globals: {
-        // TODO: Consider removing this setting when this typescript configuration
-        // is used on projects that are not necessarily node or browser
         ...globals.browser,
         ...globals.node,
       },

@@ -90,10 +90,10 @@ describe("PortsList.vue", () => {
       },
     });
     let allPortsListItems = wrapper.findAllComponents(PortGroup);
-    // eslint-disable-next-line no-magic-numbers
+
     expect(allPortsListItems.length).toBe(4);
     expect(allPortsListItems[2].props("ports")).toEqual([{ foo: "bar" }]);
-    // eslint-disable-next-line no-magic-numbers
+
     expect(allPortsListItems[3].props("ports")).toEqual([{ baz: "qux" }]);
   });
 });

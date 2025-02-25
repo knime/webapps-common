@@ -107,7 +107,7 @@ describe("RichTextControl.vue", () => {
     const { wrapper } = mountJsonFormsControlLabelContent(RichTextControl, {
       props,
     });
-    // @ts-expect-error
+    // @ts-expect-error Property 'sanitizeUrlText' does not exist on type 'LinkToolOptions | undefined'
     const { urlValidator, sanitizeUrlText } = wrapper
       .findComponent(RichTextEditor)
       .props("linkToolOptions");

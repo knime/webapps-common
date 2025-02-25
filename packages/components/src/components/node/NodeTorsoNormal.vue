@@ -63,8 +63,8 @@ export default {
       return nodeBackgroundColors.Component;
     },
     componentBackgroundTransformation() {
-      let offset = nodeSize / 2;
-      let scaleFactor = componentBackgroundPortion;
+      const offset = nodeSize / 2;
+      const scaleFactor = componentBackgroundPortion;
       return `translate(${offset}, ${offset}) scale(${scaleFactor}) translate(-${offset}, -${offset})`;
     },
   },

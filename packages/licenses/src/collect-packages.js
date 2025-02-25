@@ -1,18 +1,21 @@
 #!/usr/bin/env node
-/* eslint-disable no-process-env */
+
 /* eslint-disable no-console */
-const fs = require("fs");
-const path = require("path");
+/* eslint-disable import/extensions */
+import fs from "node:fs";
+import { readFile } from "node:fs/promises";
+import path from "path";
 
-const chalk = require("chalk");
-const { Command } = require("commander");
-const licensechecker = require("license-checker");
-const pkgUp = require("pkg-up");
-const semver = require("semver");
+import chalk from "chalk";
+import { Command } from "commander";
+import licensechecker from "license-checker";
+import pkgUp from "pkg-up";
+import semver from "semver";
 
-const config = require("../config/license.config");
+// esm requires file extensions
+import config from "../config/license.config.js";
 
-const read = require("./read-packages");
+import read from "./read-packages.js";
 
 const program = new Command();
 const basePath = process.cwd();
@@ -48,9 +51,9 @@ const parentPkgPath =
   pkgUp.sync({ cwd: ".." });
 const parentRoot = path.resolve(parentPkgPath, "..");
 
-const checkLicenses = (knimePackages) => {
+const checkLicenses = async (knimePackages) => {
   // exclude parent package
-  const parentPkg = require(parentPkgPath);
+  const parentPkg = JSON.parse(await readFile(parentPkgPath, "utf-8"));
 
   // license-checker only accepts semver versions
   if (!semver.valid(parentPkg.version)) {
@@ -73,7 +76,7 @@ const checkLicenses = (knimePackages) => {
     onlyAllow: config.onlyAllow.join(";"),
     excludePackages: config.excludePackages.join(";"),
     customPath: path.resolve(
-      __dirname,
+      import.meta.dirname,
       "../config/collect-packages-format.json",
     ),
   };

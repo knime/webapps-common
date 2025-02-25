@@ -53,8 +53,8 @@ export default [
           config: "ignorePackages",
         },
       ],
-      "vue/multi-word-component-names": "off", // TODO enable?
-      "vue/no-reserved-component-names": "off", // TODO enable?
+      "vue/multi-word-component-names": "off",
+      "vue/no-reserved-component-names": "off",
       "vue/padding-line-between-blocks": "error",
       "vue/require-v-for-key": "warn",
       "vue/v-slot-style": ["error", "shorthand"],

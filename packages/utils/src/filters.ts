@@ -65,7 +65,7 @@ const modeDefinitions = [
       try {
         const flags = caseSensitiveSearch ? "" : "i";
         return new RegExp(searchTerm, flags);
-      } catch (error) {
+      } catch (_error) {
         // In case of an invalid regular expression, an impossible
         // regex is returned, not matching anything.
         return /$^/;
@@ -82,7 +82,7 @@ const modeDefinitions = [
       try {
         const flags = caseSensitiveSearch ? "" : "i";
         return new RegExp(`^(${searchTerm})$`, flags);
-      } catch (error) {
+      } catch (_error) {
         // In case of an invalid regular expression, an impossible
         // regex is returned, not matching anything.
         return /$^/;

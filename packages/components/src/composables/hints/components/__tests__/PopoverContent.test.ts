@@ -13,7 +13,7 @@ describe("PopoverContent", () => {
 
   const doMount = ({ props = {} }) => {
     const wrapper = mount(PopoverContent, {
-      // @ts-ignore
+      // @ts-expect-error Type '{}' is not assignable to type ...
       props: {
         ...props,
       },

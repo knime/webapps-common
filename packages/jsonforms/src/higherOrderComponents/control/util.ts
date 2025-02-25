@@ -62,7 +62,7 @@ export const mapControls =
   <T extends Record<string, VueControlRenderer>>(cs: T): T =>
     Object.entries(cs).reduce(
       (acc, [key, { control, name, tester, __asyncSetup }]) => {
-        // @ts-expect-error
+        // @ts-expect-error Type 'T' is generic and can only be indexed for reading.
         acc[key] = {
           control: mapper(control, key),
           name,

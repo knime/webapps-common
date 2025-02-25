@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   // allowed licenses; others will fail
   onlyAllow: [
     "MIT",

@@ -26,7 +26,7 @@ describe("HintPopover", () => {
     const completeHintMock = vi.fn();
     const skipAllHintsMock = vi.fn();
     const wrapper = mount(HintPopover, {
-      // @ts-ignore
+      // @ts-expect-error Type ... is not assignable to type ...
       props: {
         ...defaultProps,
         completeHint: completeHintMock,

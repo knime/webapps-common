@@ -1,4 +1,3 @@
-/* eslint-disable class-methods-use-this */
 import { describe, expect, it, vi } from "vitest";
 import flushPromises from "flush-promises";
 

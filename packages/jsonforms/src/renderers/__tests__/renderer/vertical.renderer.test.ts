@@ -10,7 +10,7 @@ describe("VerticalLayout", () => {
       scope: "#/properties/test",
     };
 
-    // @ts-expect-error
+    // @ts-expect-error Argument of type '{ scope: string; }' is not assignable to parameter of type 'UISchemaElement'.
     expect(determineRenderer(uiSchema, schema)).toBe("VerticalLayout");
   });
 

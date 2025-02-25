@@ -87,7 +87,7 @@ describe("ColumnSelect.vue", () => {
     const component = mountJsonFormsControl(ColumnSelect, {
       props,
       provide: {
-        // @ts-expect-error
+        // @ts-expect-error Argument of type ... is not assignable to parameter of type 'VueControl<unknown>'.
         getPossibleValuesFromUiSchema,
       },
     });
@@ -164,7 +164,7 @@ describe("ColumnSelect.vue", () => {
       const { wrapper } = mountJsonFormsControl(ColumnSelect, {
         props,
         provide: {
-          // @ts-expect-error
+          // @ts-expect-error Argument of type ... is not assignable to parameter of type 'VueControl<unknown>'.
           getPossibleValuesFromUiSchema,
         },
       });
@@ -208,7 +208,7 @@ describe("ColumnSelect.vue", () => {
     const { wrapper } = mountJsonFormsControl(ColumnSelect, {
       props,
       provide: {
-        // @ts-expect-error
+        // @ts-expect-error Argument of type ... is not assignable to parameter of type 'VueControl<unknown>'.
         getPossibleValuesFromUiSchema,
       },
     });
@@ -231,7 +231,7 @@ describe("ColumnSelect.vue", () => {
       props,
       provide: {
         addStateProviderListener,
-        // @ts-expect-error
+        // @ts-expect-error Argument of type ... is not assignable to parameter of type 'VueControl<unknown>'.
         getPossibleValuesFromUiSchema,
       },
     });

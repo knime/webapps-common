@@ -3,18 +3,18 @@ import { h } from "vue";
 import type { VueWrapper } from "@vue/test-utils";
 
 type IntersectionObserverMockType = {
-  // @ts-ignore
+  // @ts-expect-error Call signature, which lacks return-type annotation, implicitly has an 'any' return type
   (callback: (...args: any[]) => any);
   __trigger__: (isIntersecting: boolean) => void;
 };
 
-// @ts-ignore
+// @ts-expect-error Property '__trigger__' is missing in type '(this: any, callback: (...args: any[]) => any) => void' but required in type 'IntersectionObserverMockType'.
 export const MockIntersectionObserver: IntersectionObserverMockType =
   function MockIntersectionObserver(this: any, callback) {
     this.callbackRef = callback;
     this.element = null;
 
-    // @ts-ignore
+    // @ts-expect-error Property '__trigger__' does not exist on type '(this: any, callback: (...args: any[]) => any) => void'.
     MockIntersectionObserver.__trigger__ = (isIntersecting = false) => {
       this.callbackRef([{ isIntersecting }]);
     };

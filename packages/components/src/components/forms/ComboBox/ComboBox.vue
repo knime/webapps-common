@@ -96,7 +96,6 @@ export default defineComponent({
   },
 
   emits: {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     "update:modelValue": (_payload: Array<Id>) => true,
   },
 
