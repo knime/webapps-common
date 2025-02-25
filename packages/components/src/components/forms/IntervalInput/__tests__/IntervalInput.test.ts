@@ -235,6 +235,15 @@ describe("IntervalInput", () => {
 
     expect(textField.value).toBe("definitely not a valid duration");
 
+    // NaN durations are also invalid!
+    textField.value = "";
+    textField.dispatchEvent(new Event("input"));
+    textField.dispatchEvent(new KeyboardEvent("keypress", { key: "Enter" }));
+
+    await nextTick();
+
+    expect(textField.value, "empty durations are also invalid").toBe("");
+
     // And negative durations are invalid if we have set the appropriate prop, which we have
     textField.value = "-(1d)";
     textField.dispatchEvent(new Event("input"));

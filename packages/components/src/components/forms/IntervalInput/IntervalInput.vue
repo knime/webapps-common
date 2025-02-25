@@ -32,6 +32,7 @@ type IntervalInputProps = {
   allowDescending?: boolean;
   disabled?: boolean;
   compact?: boolean;
+  id: string;
 };
 
 const props = withDefaults(defineProps<IntervalInputProps>(), {
@@ -374,6 +375,7 @@ const { floatingStyles: popoverFloatingStyles, update: updateFloating } =
     >
       <IntervalInputPopoverContent
         :model-value="popoverModel"
+        :name-prefix="id"
         :used-format="usedFormat"
         :format="props.format"
         :allow-descending="props.allowDescending"

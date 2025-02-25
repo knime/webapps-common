@@ -31,6 +31,7 @@ const emit = defineEmits<{
 const props = defineProps<{
   format: AllowedIntervalFormatsType;
   allowDescending: boolean;
+  namePrefix: string;
 }>();
 
 /**
@@ -75,13 +76,16 @@ const isPopoverModelValid = computed((): IsPopoverModelValidReturn => {
         );
 
   for (let i = 0; i < relevantValues.length; i++) {
+    const relevantKey = relevantKeys[i];
+    const relevantValue = relevantValues[i];
     if (
-      relevantValues[i] < bounds[relevantKeys[i]].min ||
-      relevantValues[i] > bounds[relevantKeys[i]].max
+      isNaN(relevantValue) ||
+      relevantValue < bounds[relevantKey].min ||
+      relevantValue > bounds[relevantKey].max
     ) {
       return {
         valid: false,
-        reason: `${toTitleCase(relevantKeys[i])} out of bounds.`,
+        reason: `${toTitleCase(relevantKey)} out of bounds.`,
       };
     }
   }
@@ -131,6 +135,7 @@ const requestSavePopup = () => {
     <ValueSwitch
       v-if="props.format === 'DATE_OR_TIME'"
       v-model="popoverUsedFormat"
+      :name="`${props.namePrefix}-date-or-time`"
       :possible-values="[
         { id: 'DATE', text: 'Date' },
         { id: 'TIME', text: 'Time' },
@@ -142,6 +147,7 @@ const requestSavePopup = () => {
   <div v-show="allowDescending" class="ascending-descending-switch-container">
     <ValueSwitch
       v-model="ascendingOrDescending"
+      :name="`${props.namePrefix}-ascending-or-descending`"
       compact
       :possible-values="[
         { id: 'ASCENDING', text: 'Forward' },
