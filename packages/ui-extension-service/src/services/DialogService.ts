@@ -14,7 +14,7 @@ export interface DisplayModeEventCallbackParams
  * A utility class to interact with Dialog settings implemented by a UI Extension node.
  */
 export class DialogService extends AbstractService<DialogServiceAPILayer> {
-  private removeCallbacksMap: Map<Function, () => void>;
+  private removeCallbacksMap: Map<(...args: never[]) => unknown, () => void>;
 
   constructor(baseService: UIExtensionService<DialogServiceAPILayer>) {
     super(baseService);
@@ -78,7 +78,6 @@ export class DialogService extends AbstractService<DialogServiceAPILayer> {
   ): void {
     const removeCallback = this.baseService.addPushEventListener(
       "DisplayModeEvent" satisfies UIExtensionPushEvents.KnownEventType,
-      // @ts-ignore
       callback,
     );
 

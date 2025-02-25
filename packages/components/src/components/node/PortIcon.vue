@@ -55,11 +55,11 @@ export default {
       /* eslint-enable no-magic-numbers */
 
       // move points towards the center of the triangle according to strokeWidth
-      let { strokeWidth } = this;
+      const { strokeWidth } = this;
       x1 += strokeWidth / 2;
-      x2 -= strokeWidth * d; /* eslint-disable-line no-magic-numbers */
-      y1 += strokeWidth * y; /* eslint-disable-line no-magic-numbers */
-      y3 -= strokeWidth * y; /* eslint-disable-line no-magic-numbers */
+      x2 -= strokeWidth * d;
+      y1 += strokeWidth * y;
+      y3 -= strokeWidth * y;
 
       // draw triangle clock-wise
       return `${x1},${y1} ${x2},${0} ${x1},${y3}`;

@@ -7,7 +7,7 @@ import svgLoader from "vite-svg-loader";
 import { svgoConfig } from "@knime/styles/config/svgo.config";
 
 export default defineProject({
-  // @ts-ignore
+  // @ts-expect-error TODO: explain why error is expected
   plugins: [vue(), svgLoader({ svgoConfig })],
   test: {
     environment: "jsdom",

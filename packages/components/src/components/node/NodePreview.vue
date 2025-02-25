@@ -94,8 +94,8 @@ export default {
       }
       /* eslint-enable no-magic-numbers */
 
-      let totalHeight = total * portSize + (total - 1) * spacing;
-      let delta = (bgSize - totalHeight) / 2;
+      const totalHeight = total * portSize + (total - 1) * spacing;
+      const delta = (bgSize - totalHeight) / 2;
       return (spacing + portSize) * index + delta + portSize / 2;
     },
   },

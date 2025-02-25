@@ -13,7 +13,7 @@ export const formatDateString = (
 ) => {
   const date = new Date(dateString);
 
-  // @ts-ignore
+  // @ts-expect-error migrated from ts-ignore to es-expect-error TODO: explain why error is expected
   if (isNaN(date)) {
     throw Error("Invalid Date format");
   }
@@ -47,7 +47,7 @@ export const formatTimeString = (
 ) => {
   const time = new Date(timeString);
 
-  // @ts-ignore
+  // @ts-expect-error migrated from ts-ignore to es-expect-error TODO: explain why error is expected
   if (isNaN(time)) {
     throw Error("Invalid Date format");
   }
@@ -79,7 +79,6 @@ export const formatDateTimeString = (
   dateTimeString: string | number,
   useTimeZone = false,
 ) => {
-  // eslint-disable-line arrow-body-style
   return `${formatDateString(dateTimeString, useTimeZone)} ${formatTimeString(
     dateTimeString,
     useTimeZone,

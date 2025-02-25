@@ -107,7 +107,7 @@ describe("RichTextControl.vue", () => {
     const { wrapper } = mountJsonFormsControlLabelContent(RichTextControl, {
       props,
     });
-    // @ts-expect-error
+    // @ts-expect-error TODO: explain why error is expected
     const { urlValidator, sanitizeUrlText } = wrapper
       .findComponent(RichTextEditor)
       .props("linkToolOptions");

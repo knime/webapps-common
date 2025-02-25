@@ -18,7 +18,7 @@ export const verticalLayoutFallbackRenderer = {
   layout: VerticalLayout,
   tester: rankWith(
     priorityRanks.fallback,
-    // @ts-expect-error
+    // @ts-expect-error TODO: explain why error is expected
     // eslint-disable-next-line no-undefined
     uiTypeIs(undefined),
   ),

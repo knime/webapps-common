@@ -100,7 +100,7 @@ export const withSpecialChoices = <T extends PossibleValue[] | null>(
   watch(
     () => choicesRef.value,
     () => {
-      // @ts-expect-error
+      // @ts-expect-error TODO: explain why error is expected
       withSpecialColumns.value =
         choicesRef.value === null
           ? null
@@ -133,6 +133,6 @@ export default async (
       normalPossibleValues = [];
     }
   }
-  // @ts-expect-error
+  // @ts-expect-error TODO: explain why error is expected
   return addSpecialColumns(normalPossibleValues, control);
 };

@@ -248,7 +248,7 @@ export default {
       this.searchTerm = value;
     },
     validate() {
-      let isValid = !this.concatenatedItems.some(
+      const isValid = !this.concatenatedItems.some(
         (x: PossibleValue) => x.invalid,
       );
       return {

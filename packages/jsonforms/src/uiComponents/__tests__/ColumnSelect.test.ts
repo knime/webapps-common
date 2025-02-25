@@ -87,7 +87,7 @@ describe("ColumnSelect.vue", () => {
     const component = mountJsonFormsControl(ColumnSelect, {
       props,
       provide: {
-        // @ts-expect-error
+        // @ts-expect-error TODO: explain why error is expected
         getPossibleValuesFromUiSchema,
       },
     });
@@ -164,7 +164,7 @@ describe("ColumnSelect.vue", () => {
       const { wrapper } = mountJsonFormsControl(ColumnSelect, {
         props,
         provide: {
-          // @ts-expect-error
+          // @ts-expect-error TODO: explain why error is expected
           getPossibleValuesFromUiSchema,
         },
       });
@@ -208,7 +208,7 @@ describe("ColumnSelect.vue", () => {
     const { wrapper } = mountJsonFormsControl(ColumnSelect, {
       props,
       provide: {
-        // @ts-expect-error
+        // @ts-expect-error TODO: explain why error is expected
         getPossibleValuesFromUiSchema,
       },
     });
@@ -231,7 +231,7 @@ describe("ColumnSelect.vue", () => {
       props,
       provide: {
         addStateProviderListener,
-        // @ts-expect-error
+        // @ts-expect-error TODO: explain why error is expected
         getPossibleValuesFromUiSchema,
       },
     });

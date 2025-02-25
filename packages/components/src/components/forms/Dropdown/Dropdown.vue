@@ -120,8 +120,8 @@ export default {
     const { caseSensitiveSearch, possibleValues } = toRefs(props);
     const useFilterValues = ref(false);
     const displayTextMap = computed(() => {
-      let map = {} as Record<Id, string>;
-      for (let value of possibleValues.value) {
+      const map = {} as Record<Id, string>;
+      for (const value of possibleValues.value) {
         map[value.id] = value.text;
       }
       return map;
@@ -191,8 +191,8 @@ export default {
       return !this.modelValue;
     },
     displayTextMap() {
-      let map = {} as Record<Id, string>;
-      for (let value of this.possibleValues) {
+      const map = {} as Record<Id, string>;
+      for (const value of this.possibleValues) {
         map[value.id] = value.text;
       }
       return map;
@@ -274,17 +274,17 @@ export default {
       this.toggleExpanded();
     },
     scrollTo(id: Id) {
-      let listBoxNode = this.getListBoxNodeRef();
+      const listBoxNode = this.getListBoxNodeRef();
       if (listBoxNode.scrollHeight >= listBoxNode.clientHeight) {
-        let element = this.optionRefs.get(id);
+        const element = this.optionRefs.get(id);
         if (!element) {
           consola.error(
             `trying to scroll to element with Id ${id.toString()} which does not exist`,
           );
           return;
         }
-        let scrollBottom = listBoxNode.clientHeight + listBoxNode.scrollTop;
-        let elementBottom = element.offsetTop + element.offsetHeight;
+        const scrollBottom = listBoxNode.clientHeight + listBoxNode.scrollTop;
+        const elementBottom = element.offsetTop + element.offsetHeight;
         if (elementBottom > scrollBottom) {
           listBoxNode.scrollTop = elementBottom - listBoxNode.clientHeight;
         } else if (element.offsetTop < listBoxNode.scrollTop) {
@@ -293,7 +293,7 @@ export default {
       }
     },
     onArrowDown() {
-      let next = this.selectedIndex + 1;
+      const next = this.selectedIndex + 1;
       if (next >= this.flatOrderedValues.length) {
         return;
       }
@@ -302,7 +302,7 @@ export default {
       this.scrollTo(nextId);
     },
     onArrowUp() {
-      let next = this.selectedIndex - 1;
+      const next = this.selectedIndex - 1;
       if (next < 0) {
         return;
       }
@@ -320,13 +320,13 @@ export default {
       this.emitAndClose(this.candidate);
     },
     onEndKey() {
-      let next = this.flatOrderedValues.length - 1;
+      const next = this.flatOrderedValues.length - 1;
       this.updateCandidate(this.flatOrderedValues[next].id);
       const listBoxNode = this.getListBoxNodeRef();
       listBoxNode.scrollTop = listBoxNode.scrollHeight;
     },
     onHomeKey() {
-      let next = 0;
+      const next = 0;
       this.updateCandidate(this.flatOrderedValues[next].id);
       this.getListBoxNodeRef().scrollTop = 0;
     },
@@ -406,7 +406,7 @@ export default {
     getCurrentSelectedId() {
       try {
         return this.flatOrderedValues[this.selectedIndex].id;
-      } catch (e) {
+      } catch (_e) {
         return "";
       }
     },
@@ -414,7 +414,7 @@ export default {
       if (!itemId) {
         return `${node}-${this.id}`;
       }
-      let cleanId = String(itemId).replace(/[^\w]/gi, "");
+      const cleanId = String(itemId).replace(/[^\w]/gi, "");
       return `${node}-${this.id}-${cleanId}`;
     },
     closeDropdown() {

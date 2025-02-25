@@ -29,10 +29,10 @@ const setSubPanelExpanded: () => {} = inject("setSubPanelExpanded")!;
 
 watch(
   isExpanded,
-  // @ts-ignore
+  // @ts-expect-error expected 0 arguments
   (isExpanded) => setSubPanelExpanded({ isExpanded }),
 );
-// @ts-ignore
+// @ts-expect-error expression not callable
 const subSettingsPanels = inject("getPanelsContainer")!()! as HTMLElement;
 </script>
 

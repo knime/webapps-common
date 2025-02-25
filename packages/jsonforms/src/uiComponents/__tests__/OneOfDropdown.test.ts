@@ -59,7 +59,7 @@ describe("OneOfDropdown.vue", () => {
   });
 
   it("renders", () => {
-    // @ts-ignore
+    // @ts-expect-error migrated from ts-ignore to es-expect-error TODO: explain why error is expected
     expect(wrapper.getComponent(Dropdown).exists()).toBe(true);
   });
 

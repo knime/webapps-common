@@ -183,7 +183,7 @@ export const useToasts = ({
   if (!serviceSymbol && !propertyName) {
     try {
       return useToastsFromSymbol(defaultToastServiceSymbol);
-    } catch (error) {
+    } catch (_error) {
       return useToastsFromGlobalProperty(defaultGlobalPropertyName);
     }
   }

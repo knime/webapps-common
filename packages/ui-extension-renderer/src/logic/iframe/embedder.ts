@@ -28,7 +28,7 @@ const enableRequestsToMethods = (
   const callApiLayer = <K extends keyof UIExtensionServiceAPILayer>(
     payload: PayloadForKey<UIExtensionServiceAPILayer, K>,
   ) => {
-    // @ts-expect-error
+    // @ts-expect-error TODO: explain why error is expected
     return apiLayer[payload.method](...payload.params);
   };
 

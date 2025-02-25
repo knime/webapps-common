@@ -75,7 +75,7 @@ describe("SimpleTwinlistControl.vue", () => {
     return mountJsonFormsControlLabelContent(SimpleTwinlistControl, {
       props,
       provide: {
-        // @ts-expect-error
+        // @ts-expect-error TODO: explain why error is expected
         getPossibleValuesFromUiSchema: (control: Control) =>
           getPossibleValuesFromUiSchema(
             control,

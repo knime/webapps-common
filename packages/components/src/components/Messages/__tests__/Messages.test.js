@@ -155,7 +155,6 @@ describe("Messages.vue", () => {
       expect(messageComponents[i].find("a").exists()).toBe(false);
     }
 
-    // eslint-disable-next-line no-magic-numbers
     let link = messageComponents[3].find("a");
     expect(link.exists()).toBe(true);
     expect(link.text()).toBe("Linked text.");
@@ -182,7 +181,6 @@ describe("Messages.vue", () => {
       );
     }
 
-    // eslint-disable-next-line no-magic-numbers
     let link = messageComponents[3].findComponent(RouterLinkStub);
     expect(link.exists()).toBe(true);
     expect(link.text()).toBe("Linked text.");

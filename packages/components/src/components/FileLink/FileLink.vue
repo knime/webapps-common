@@ -35,7 +35,7 @@ export default {
   },
   computed: {
     icon() {
-      let candidate = `${this.fileExt}Icon`;
+      const candidate = `${this.fileExt}Icon`;
       return this.fileExt && this.$options.components[candidate]
         ? candidate
         : "fileIcon";

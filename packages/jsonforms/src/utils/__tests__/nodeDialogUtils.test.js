@@ -102,7 +102,6 @@ describe("Utils", () => {
   });
 
   it("does not throw errors with an empty uischema", () => {
-    // eslint-disable-next-line no-undefined
     expect(hasAdvancedOptions(undefined)).not.toBeTruthy();
   });
 });
