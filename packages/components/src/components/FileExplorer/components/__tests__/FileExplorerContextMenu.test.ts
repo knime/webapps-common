@@ -76,7 +76,7 @@ describe("FileExplorerContextMenu.vue", () => {
   });
 
   it("should set the popper offset accounting for the menu height", async () => {
-    // @ts-expect-error
+    // @ts-expect-error TODO: explain why error is expected
     defaultProps.anchor.element.getBoundingClientRect = vi.fn(() => ({
       top: 0,
       left: 10,
@@ -93,8 +93,8 @@ describe("FileExplorerContextMenu.vue", () => {
 
     await nextTick();
 
-    // @ts-expect-error
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    // @ts-expect-error TODO: explain why error is expected
+
     const [_, __, options] = useFloating.mock.calls[0];
     expect(options.middleware.value[0]).toStrictEqual({
       crossAxis: 30,
@@ -118,7 +118,7 @@ describe("FileExplorerContextMenu.vue", () => {
   });
 
   it("should set the popper offset accounting distance to the window bottom", async () => {
-    // @ts-expect-error
+    // @ts-expect-error TODO: explain why error is expected
     defaultProps.anchor.element.getBoundingClientRect = vi.fn(() => ({
       top: 20,
       left: 10,
@@ -137,8 +137,8 @@ describe("FileExplorerContextMenu.vue", () => {
 
     await nextTick();
 
-    // @ts-expect-error
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    // @ts-expect-error TODO: explain why error is expected
+
     const [_, __, options] = useFloating.mock.calls[0];
     expect(options.middleware.value[0]).toStrictEqual({
       crossAxis: 30,

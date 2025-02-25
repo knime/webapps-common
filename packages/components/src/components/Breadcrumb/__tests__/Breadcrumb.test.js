@@ -37,7 +37,6 @@ describe("Breadcrumb.vue", () => {
     });
     let renderedItems = wrapper.findAll("li > *");
 
-    /* eslint-disable no-magic-numbers */
     expect(renderedItems[0].element.tagName).toBe("SPAN");
     expect(renderedItems[2].element.tagName).toBe("A");
     expect(renderedItems[4].element.tagName).toBe("SPAN");
@@ -61,7 +60,6 @@ describe("Breadcrumb.vue", () => {
       }
     }
     expect(arrows).toBe(3);
-    /* eslint-enable no-magic-numbers */
   });
 
   it.each([

@@ -20,7 +20,7 @@ describe("validation", () => {
           },
         },
         uischema: {
-          // @ts-expect-error
+          // @ts-expect-error TODO: explain why error is expected
           elements: [
             {
               type: "Control",

@@ -10,7 +10,7 @@ describe("VerticalLayout", () => {
       scope: "#/properties/test",
     };
 
-    // @ts-expect-error
+    // @ts-expect-error TODO: explain why error is expected
     expect(determineRenderer(uiSchema, schema)).toBe("VerticalLayout");
   });
 

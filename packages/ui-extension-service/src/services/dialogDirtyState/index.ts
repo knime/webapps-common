@@ -1,4 +1,3 @@
-/* eslint-disable no-magic-numbers */
 import type {
   APILayerDirtyState,
   ApplyState,

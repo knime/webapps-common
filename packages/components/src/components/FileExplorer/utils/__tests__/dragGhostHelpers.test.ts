@@ -5,7 +5,7 @@ import { createDragGhosts } from "../dragGhostHelpers";
 
 vi.mock("gsap", () => ({
   gsap: {
-    // @ts-ignore
+    // @ts-expect-error migrated from ts-ignore to es-expect-error TODO: explain why error is expected
     to: (_, { onComplete }) => {
       onComplete();
     },
@@ -38,7 +38,7 @@ describe("dragGhostHelpers", () => {
     const dataTransfer = {
       setDragImage: vi.fn(),
     };
-    // @ts-expect-error
+    // @ts-expect-error TODO: explain why error is expected
     dragStartEvent.dataTransfer = dataTransfer;
     dragTarget.dispatchEvent(dragStartEvent);
 

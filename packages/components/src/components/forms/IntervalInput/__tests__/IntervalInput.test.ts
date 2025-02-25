@@ -23,7 +23,7 @@ const doMount = async (
   },
 ) => {
   const component = mount(IntervalInput, {
-    // @ts-ignore
+    // @ts-expect-error migrated from ts-ignore to es-expect-error TODO: explain why error is expected
     props: args.props,
     attachTo: "body",
   });

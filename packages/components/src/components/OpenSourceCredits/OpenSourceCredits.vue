@@ -54,7 +54,7 @@ export default {
   },
   computed: {
     displayPackages() {
-      let allUniquePackages = [];
+      const allUniquePackages = [];
 
       this.packages.concat(this.additionalPackages).forEach((pkg) => {
         const alreadyExists = allUniquePackages.some(
@@ -78,7 +78,7 @@ export default {
   },
   methods: {
     toggleDetails(e) {
-      let expanded = e.target.getAttribute("aria-expanded") === "true";
+      const expanded = e.target.getAttribute("aria-expanded") === "true";
       e.target.setAttribute("aria-expanded", (!expanded).toString());
       e.target.parentElement.parentElement.classList[
         expanded ? "remove" : "add"

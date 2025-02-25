@@ -52,7 +52,7 @@ describe("useHintState", () => {
     const getRemoteHintStateMock = vi.fn().mockResolvedValue({});
     const setRemoteHintStateMock = vi.fn();
 
-    // @ts-ignore
+    // @ts-expect-error migrated from ts-ignore to es-expect-error TODO: explain why error is expected
     useLocalStorage.mockReturnValue(state);
 
     const { getComposableResult } = mountComposable({

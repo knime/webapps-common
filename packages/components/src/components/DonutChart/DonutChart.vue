@@ -86,14 +86,17 @@ export default {
         : this.secondaryValue;
     },
     clippedValue() {
-      let value = Math.max(0, this.primarySegment.value);
+      const value = Math.max(0, this.primarySegment.value);
       return this.acceptValuesLargerThanMax
         ? value
         : Math.min(value, this.maxValue);
     },
     secondaryClippedValue() {
       // calculate secondary value including the first value (to overlap the two svgs)
-      let value = Math.max(0, this.secondarySegment.value + this.clippedValue);
+      const value = Math.max(
+        0,
+        this.secondarySegment.value + this.clippedValue,
+      );
       return this.acceptValuesLargerThanMax
         ? value
         : Math.min(value, this.maxValue);
@@ -137,11 +140,11 @@ export default {
     },
     labelStyle() {
       // simple approach to account for larger numbers as the label inside the donut hole
-      let valueExceedsLarge = this.clippedValue > this.regularLabelMaxValue;
-      let maxValueExceedsLarge =
+      const valueExceedsLarge = this.clippedValue > this.regularLabelMaxValue;
+      const maxValueExceedsLarge =
         Number.isFinite(this.maxValue) &&
         this.maxValue > this.regularLabelMaxValue;
-      let size =
+      const size =
         valueExceedsLarge || maxValueExceedsLarge
           ? this.smallLabelFontSize
           : this.regularLabelFontSize;

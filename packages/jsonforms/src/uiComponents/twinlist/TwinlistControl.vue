@@ -53,6 +53,7 @@ const props = withDefaults(
   },
 );
 
+// TODO: use const instead of let (prefer-const) requires initializing
 let setManualFilterOnChange: (newData: TwinlistData["manualFilter"]) => void;
 
 const onChangeTwinlist = (obj: PartialDeep<TwinlistData>) => {

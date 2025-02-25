@@ -3,18 +3,18 @@ import { h } from "vue";
 import type { VueWrapper } from "@vue/test-utils";
 
 type IntersectionObserverMockType = {
-  // @ts-ignore
+  // @ts-expect-error migrated from ts-ignore to es-expect-error TODO: explain why error is expected
   (callback: (...args: any[]) => any);
   __trigger__: (isIntersecting: boolean) => void;
 };
 
-// @ts-ignore
+// @ts-expect-error migrated from ts-ignore to es-expect-error TODO: explain why error is expected
 export const MockIntersectionObserver: IntersectionObserverMockType =
   function MockIntersectionObserver(this: any, callback) {
     this.callbackRef = callback;
     this.element = null;
 
-    // @ts-ignore
+    // @ts-expect-error migrated from ts-ignore to es-expect-error TODO: explain why error is expected
     MockIntersectionObserver.__trigger__ = (isIntersecting = false) => {
       this.callbackRef([{ isIntersecting }]);
     };

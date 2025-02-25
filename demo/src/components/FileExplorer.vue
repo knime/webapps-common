@@ -3,7 +3,7 @@ import { h, onMounted, reactive, ref } from "vue";
 import type {
   FileExplorerContextMenu,
   FileExplorerItem,
-  // @ts-ignore
+  // @ts-expect-error migrated from ts-ignore to es-expect-error TODO: explain why error is expected
 } from "webapps-common/ui/components/FileExplorer/types";
 
 import { Button, Checkbox, Dropdown, FileExplorer } from "@knime/components";
@@ -143,7 +143,7 @@ const customContextMenuComponent = ({
 }) => {
   return {
     render(): any {
-      // @ts-expect-error
+      // @ts-expect-error TODO: explain why error is expected
       const options = this.items.map((item: any) => {
         const onClick = () => {
           if (item.id === "custom-option") {

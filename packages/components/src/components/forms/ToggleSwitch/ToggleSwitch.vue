@@ -39,7 +39,7 @@ export default {
        * @event input
        * @type {Boolean}
        */
-      let { checked } = $event.target;
+      const { checked } = $event.target;
       consola.trace("ToggleSwitch value changed to", checked);
       this.$emit("update:modelValue", checked);
     },

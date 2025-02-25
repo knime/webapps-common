@@ -75,7 +75,6 @@ describe("NodePreview.vue", () => {
       },
     });
 
-    // eslint-disable-next-line no-magic-numbers
     expect(wrapper.findAll("circle").length).toBe(3);
   });
 });

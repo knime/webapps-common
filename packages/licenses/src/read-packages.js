@@ -1,6 +1,7 @@
-const readInstalled = require("read-installed-packages");
+// const readInstalled = require("read-installed-packages");
+import readInstalled from "read-installed-packages";
 
-module.exports = function (basePath, filterByScope, callback) {
+export default function (basePath, filterByScope, callback) {
   const flatten = (options) => {
     let json = options.deps;
     let data = options.data;
@@ -38,4 +39,4 @@ module.exports = function (basePath, filterByScope, callback) {
     }
     callback(list);
   });
-};
+}

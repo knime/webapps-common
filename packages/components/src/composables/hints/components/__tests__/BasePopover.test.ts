@@ -10,7 +10,6 @@ describe("BasePopover", () => {
 
   const doMount = ({ props = {} }) => {
     const wrapper = mount(HintPopover, {
-      // @ts-ignore
       props: {
         reference: div,
         placement: "bottom-end",

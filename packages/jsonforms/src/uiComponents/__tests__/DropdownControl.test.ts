@@ -75,7 +75,7 @@ describe("DropdownControl.vue", () => {
     const component = await mountJsonFormsControl(DropdownControl, {
       props,
       provide: {
-        // @ts-expect-error
+        // @ts-expect-error TODO: explain why error is expected
         getPossibleValuesFromUiSchema,
       },
     });
@@ -115,7 +115,7 @@ describe("DropdownControl.vue", () => {
     const { wrapper } = mountJsonFormsControl(DropdownControl, {
       props,
       provide: {
-        // @ts-expect-error
+        // @ts-expect-error TODO: explain why error is expected
         getPossibleValuesFromUiSchema,
       },
     });
@@ -128,7 +128,7 @@ describe("DropdownControl.vue", () => {
     const { wrapper } = mountJsonFormsControl(DropdownControl, {
       props,
       provide: {
-        // @ts-expect-error
+        // @ts-expect-error TODO: explain why error is expected
         getPossibleValuesFromUiSchema,
       },
     });
@@ -143,7 +143,7 @@ describe("DropdownControl.vue", () => {
     const { wrapper } = mountJsonFormsControl(DropdownControl, {
       props,
       provide: {
-        // @ts-expect-error
+        // @ts-expect-error TODO: explain why error is expected
         getPossibleValuesFromUiSchema,
       },
     });
@@ -163,7 +163,7 @@ describe("DropdownControl.vue", () => {
     const { wrapper } = await mountJsonFormsControl(DropdownControl, {
       props,
       provide: {
-        // @ts-expect-error
+        // @ts-expect-error TODO: explain why error is expected
         getPossibleValuesFromUiSchema,
       },
     });
@@ -225,7 +225,7 @@ describe("DropdownControl.vue", () => {
       const comp = mountJsonFormsControl(DropdownControl, {
         props,
         provide: {
-          // @ts-expect-error
+          // @ts-expect-error TODO: explain why error is expected
           getData,
           getPossibleValuesFromUiSchema,
           sendAlert,
@@ -299,7 +299,7 @@ describe("DropdownControl.vue", () => {
       mountJsonFormsControl(DropdownControl, {
         props,
         provide: {
-          // @ts-expect-error
+          // @ts-expect-error TODO: explain why error is expected
           getData,
           registerWatcher: vi.fn(({ transformSettings }) => {
             callbacks.push({ transformSettings });
@@ -323,7 +323,7 @@ describe("DropdownControl.vue", () => {
       mountJsonFormsControl(DropdownControl, {
         props,
         provide: {
-          // @ts-expect-error
+          // @ts-expect-error TODO: explain why error is expected
           registerWatcher: vi.fn(({ transformSettings }) => {
             callbacks.push({ transformSettings });
             return vi.fn();
@@ -363,7 +363,7 @@ describe("DropdownControl.vue", () => {
     const { wrapper } = mountJsonFormsControl(DropdownControl, {
       props,
       provide: {
-        // @ts-expect-error
+        // @ts-expect-error TODO: explain why error is expected
         getPossibleValuesFromUiSchema,
       },
     });

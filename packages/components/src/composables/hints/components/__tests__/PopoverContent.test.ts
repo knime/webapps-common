@@ -13,7 +13,7 @@ describe("PopoverContent", () => {
 
   const doMount = ({ props = {} }) => {
     const wrapper = mount(PopoverContent, {
-      // @ts-ignore
+      // @ts-expect-error migrated from ts-ignore to es-expect-error TODO: explain why error is expected
       props: {
         ...props,
       },

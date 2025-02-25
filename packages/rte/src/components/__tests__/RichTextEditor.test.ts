@@ -385,10 +385,8 @@ describe("RichTextEditor.vue", () => {
       // mock the isActive state of the editor to simulate both the
       // lists and the text alignment as being active
       mockEditorIsActive.mockImplementation((param) => {
-        // eslint-disable-next-line vitest/no-conditional-tests
         return typeof param === "string"
-          ? // eslint-disable-next-line vitest/no-conditional-tests
-            param === "bulletList" || param === "orderedList"
+          ? param === "bulletList" || param === "orderedList"
           : Boolean(param.textAlign);
       });
 
@@ -544,7 +542,6 @@ describe("RichTextEditor.vue", () => {
           wrapper = component.wrapper;
           mockEditorIsActive.mockImplementation(
             (name: any, params: { level?: number }) => {
-              // eslint-disable-next-line vitest/no-conditional-tests
               return (
                 name === "heading" && params?.level === preSelectedHeadingLevel
               );
@@ -633,7 +630,7 @@ describe("RichTextEditor.vue", () => {
           h(getScopedComponent, { scope: props });
 
         const { wrapper } = doMount({
-          // @ts-ignore
+          // @ts-expect-error migrated from ts-ignore to es-expect-error TODO: explain why error is expected
           slots: { customToolbar },
           props: {
             baseExtensions: { all: true },
@@ -662,7 +659,7 @@ describe("RichTextEditor.vue", () => {
         const linkModal = (props: any) =>
           h(getScopedComponent, { scope: props });
         const { wrapper } = doMount({
-          // @ts-ignore
+          // @ts-expect-error migrated from ts-ignore to es-expect-error TODO: explain why error is expected
           slots: { linkModal },
           props: {
             baseExtensions: { link: true },
@@ -690,7 +687,6 @@ describe("RichTextEditor.vue", () => {
 
       it("should render default link modal", () => {
         const { wrapper } = doMount({
-          // @ts-ignore
           props: {
             baseExtensions: { link: true },
           },

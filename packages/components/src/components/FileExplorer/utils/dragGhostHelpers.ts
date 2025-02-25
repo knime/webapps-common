@@ -1,6 +1,5 @@
 import { gsap } from "gsap";
 
-// @ts-ignore
 import * as knimeColors from "@knime/styles/colors/knimeColors";
 
 const COLORS = {
@@ -22,7 +21,7 @@ const applyStyles = (
   styles: Partial<CSSStyleDeclaration>,
 ): void => {
   Object.entries(styles).forEach(([property, value]) => {
-    // @ts-ignore
+    // @ts-expect-error migrated from ts-ignore to es-expect-error TODO: explain why error is expected
     element.style[property] = value;
   });
 };
@@ -279,7 +278,7 @@ export const createDragGhosts = ({
     const { ghost } = createGhostElement({
       textContent,
       target: targetEl,
-      // eslint-disable-next-line no-magic-numbers
+
       // Don't add shadows when there are more than 2 elements to ghost, since it makes the shadow too dark
       addShadow: index < 2,
     });
@@ -318,7 +317,7 @@ export const createDragGhosts = ({
       }
       try {
         document.body.removeChild(ghost);
-      } catch (error) {
+      } catch (_error) {
         // mute exception trying to delete ghost.
         // this could happen if the `removeGhosts` function is called more than once
         // in which case it would result in an exception when attempting to remove
