@@ -1,0 +1,1 @@
+import{o as e,c as o,b as t}from"./index-CvmvCe6B.js";const n={xmlns:"http://www.w3.org/2000/svg",fill:"none",stroke:"#000","stroke-linejoin":"round",viewBox:"0 0 32 32"},s=t("path",{d:"m13.31 27.81 5.11-3.19v-9.15L28.95 4.19H3.05l10.26 11.28z"},null,-1),r=[s];function c(l,i){return e(),o("svg",n,[...r])}const d={render:c};export{d as F};
