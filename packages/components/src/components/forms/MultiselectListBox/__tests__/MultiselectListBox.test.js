@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-/* eslint-disable no-magic-numbers */
+
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { computed, markRaw, nextTick, ref } from "vue";
 import { mount } from "@vue/test-utils";

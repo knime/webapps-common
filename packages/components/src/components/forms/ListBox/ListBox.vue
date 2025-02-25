@@ -123,11 +123,11 @@ export default {
       this.$emit("update:modelValue", value);
     },
     scrollToCurrent() {
-      let listBoxNode = this.$refs.ul;
+      const listBoxNode = this.$refs.ul;
       if (listBoxNode.scrollHeight > listBoxNode.clientHeight) {
-        let element = this.$refs.options[this.selectedIndex];
-        let scrollBottom = listBoxNode.clientHeight + listBoxNode.scrollTop;
-        let elementBottom = element.offsetTop + element.offsetHeight;
+        const element = this.$refs.options[this.selectedIndex];
+        const scrollBottom = listBoxNode.clientHeight + listBoxNode.scrollTop;
+        const elementBottom = element.offsetTop + element.offsetHeight;
         if (elementBottom > scrollBottom) {
           listBoxNode.scrollTop = elementBottom - listBoxNode.clientHeight;
         } else if (element.offsetTop < listBoxNode.scrollTop) {
@@ -136,7 +136,7 @@ export default {
       }
     },
     onArrowDown() {
-      let next = this.selectedIndex + 1;
+      const next = this.selectedIndex + 1;
       if (next >= this.selectableValues.length) {
         return;
       }
@@ -144,7 +144,7 @@ export default {
       this.scrollToCurrent();
     },
     onArrowUp() {
-      let next = this.selectedIndex - 1;
+      const next = this.selectedIndex - 1;
       if (next < 0) {
         return;
       }
@@ -152,12 +152,12 @@ export default {
       this.scrollToCurrent();
     },
     onEndKey() {
-      let next = this.selectableValues.length - 1;
+      const next = this.selectableValues.length - 1;
       this.setSelected(this.selectableValues[next].id, next);
       this.$refs.ul.scrollTop = this.$refs.ul.scrollHeight;
     },
     onHomeKey() {
-      let next = 0;
+      const next = 0;
       this.setSelected(this.selectableValues[next].id, next);
       this.$refs.ul.scrollTop = 0;
     },
@@ -201,7 +201,7 @@ export default {
       if (!item || !item.id) {
         return "";
       }
-      let cleanId = item.id.replace(/[^\w]/gi, "");
+      const cleanId = item.id.replace(/[^\w]/gi, "");
       return `option-${this.id}-${cleanId}`;
     },
   },

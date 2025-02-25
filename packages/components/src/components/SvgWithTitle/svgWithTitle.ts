@@ -30,7 +30,7 @@ export default (SvgComponent: ComponentInstance<any>, title: string) => ({
     const renderedComponent = SvgComponent.render({}, []);
 
     const titleEl = h("title", title);
-    // @ts-ignore
+    // @ts-expect-error migrated from ts-ignore to es-expect-error TODO: explain why error is expected
     titleEl.ns = "svg";
 
     renderedComponent.children.unshift(titleEl);

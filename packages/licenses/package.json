@@ -5,10 +5,12 @@
   "homepage": "https://knime.github.io/webapps-common/",
   "license": "GPL 3 and Additional Permissions according to Sec. 7 (SEE the file LICENSE)",
   "author": "KNIME AG, Zurich, Switzerland",
+  "type": "module",
   "scripts": {
     "opensourcecredits": "node src/collect-packages"
   },
   "dependencies": {
+    "chalk": "^5.4.1",
     "commander": "12.1.0",
     "license-checker": "25.0.1",
     "pkg-up": "3.1.0",

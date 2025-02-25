@@ -67,9 +67,9 @@ describe("useHint", () => {
       delete hintConfigurationsMock[key];
     });
 
-    // @ts-ignore
+    // @ts-expect-error migrated from ts-ignore to es-expect-error TODO: explain why error is expected
     useHintState.isAllSkippedMock.value = false;
-    // @ts-ignore
+    // @ts-expect-error migrated from ts-ignore to es-expect-error TODO: explain why error is expected
     useHintState.currentlyVisibleHintMock.value = null;
   });
 
@@ -94,7 +94,6 @@ describe("useHint", () => {
     alreadyCompletedHints?: Array<string>;
     attachHintIdToElement?: boolean;
   } = {}) => {
-    // @ts-ignore
     hintConfigurationsMock[hintKey] = Object.assign(
       {
         title: "my hint",
@@ -106,9 +105,9 @@ describe("useHint", () => {
       hintConfig,
     );
 
-    // @ts-ignore
+    // @ts-expect-error migrated from ts-ignore to es-expect-error TODO: explain why error is expected
     useHintState.isAllSkippedMock.value = skipAllHints;
-    // @ts-ignore
+    // @ts-expect-error migrated from ts-ignore to es-expect-error TODO: explain why error is expected
     useHintState.currentlyVisibleHintMock.value = currentlyVisibleHint;
 
     const completedHints = [
@@ -118,7 +117,7 @@ describe("useHint", () => {
         ),
       ),
     ];
-    // @ts-ignore
+    // @ts-expect-error migrated from ts-ignore to es-expect-error TODO: explain why error is expected
     useHintState.isCompletedMock.mockImplementation((hintId: string) =>
       completedHints.includes(hintId),
     );
@@ -134,9 +133,9 @@ describe("useHint", () => {
       hints: hintConfigurationsMock,
       skipHints,
       uniqueUserId,
-      // @ts-ignore
+      // @ts-expect-error migrated from ts-ignore to es-expect-error TODO: explain why error is expected
       getRemoteHintState,
-      // @ts-ignore
+      // @ts-expect-error migrated from ts-ignore to es-expect-error TODO: explain why error is expected
       setRemoteHintState,
     });
 
@@ -148,27 +147,27 @@ describe("useHint", () => {
     return {
       getComposableResult,
       lifeCycle,
-      // @ts-ignore
+      // @ts-expect-error migrated from ts-ignore to es-expect-error TODO: explain why error is expected
       createHintDataMock: useHintProvider.createHintDataMock,
-      // @ts-ignore
+      // @ts-expect-error migrated from ts-ignore to es-expect-error TODO: explain why error is expected
       showHintMock: useHintProvider.showHintMock,
-      // @ts-ignore
+      // @ts-expect-error migrated from ts-ignore to es-expect-error TODO: explain why error is expected
       closeHintMock: useHintProvider.closeHintMock,
       useHintState: useHintState.useHintState,
-      // @ts-ignore
+      // @ts-expect-error migrated from ts-ignore to es-expect-error TODO: explain why error is expected
       initializeMock: useHintState.initializeMock,
-      // @ts-ignore
+      // @ts-expect-error migrated from ts-ignore to es-expect-error TODO: explain why error is expected
       completeHintMock: useHintState.completeHintMock,
       completeHintWithoutVisibilityMock:
-        // @ts-ignore
+        // @ts-expect-error migrated from ts-ignore to es-expect-error TODO: explain why error is expected
         useHintState.completeHintWithoutVisibilityMock,
-      // @ts-ignore
+      // @ts-expect-error migrated from ts-ignore to es-expect-error TODO: explain why error is expected
       isCompletedMock: useHintState.isCompletedMock,
-      // @ts-ignore
+      // @ts-expect-error migrated from ts-ignore to es-expect-error TODO: explain why error is expected
       setSkipAllMock: useHintState.setSkipAllMock,
-      // @ts-ignore
+      // @ts-expect-error migrated from ts-ignore to es-expect-error TODO: explain why error is expected
       currentlyVisibleHintMock: useHintState.currentlyVisibleHintMock,
-      // @ts-ignore
+      // @ts-expect-error migrated from ts-ignore to es-expect-error TODO: explain why error is expected
       setCurrentlyVisibleHintMock: useHintState.setCurrentlyVisibleHintMock,
     };
   };

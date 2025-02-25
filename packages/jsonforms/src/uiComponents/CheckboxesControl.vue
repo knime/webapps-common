@@ -15,7 +15,9 @@ const alignment = computed(
 
 const options = ref(null as null | IdAndText[]);
 onMounted(() => {
-  options.value = props.control.schema.anyOf?.map(optionsMapper)!;
+  options.value = props.control.schema.anyOf
+    ? props.control.schema.anyOf.map(optionsMapper)
+    : null;
 });
 </script>
 

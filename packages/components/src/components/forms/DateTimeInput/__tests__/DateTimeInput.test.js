@@ -61,7 +61,7 @@ describe("DateTimeInput.vue", () => {
       expect(
         wrapper.findComponent({ ref: "datePicker" }).isVisible(),
       ).toBeTruthy();
-      // eslint-disable-next-line no-magic-numbers
+
       expect(wrapper.findAllComponents(TimePartInput).length).toBe(4);
       expect(wrapper.findComponent(Dropdown).exists()).toBe(false);
     });
@@ -80,7 +80,7 @@ describe("DateTimeInput.vue", () => {
       expect(
         wrapper.findComponent({ ref: "datePicker" }).isVisible(),
       ).toBeTruthy();
-      // eslint-disable-next-line no-magic-numbers
+
       expect(wrapper.findAllComponents(TimePartInput).length).toBe(4);
       expect(wrapper.findComponent(Dropdown).exists()).toBe(true);
     });

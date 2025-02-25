@@ -68,7 +68,6 @@ export default {
     },
   },
   emits: {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     "click-item": (_item: BreadcrumbItem) => true,
   },
   computed: {

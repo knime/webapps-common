@@ -13,7 +13,7 @@ vi.mock("@knime/utils", async (importOriginal) => {
     docxIcon: "MockDocxComponent",
   };
   return {
-    // @ts-ignore
+    // @ts-expect-error migrated from ts-ignore to es-expect-error TODO: explain why error is expected
     ...actual,
     icons,
     isIconExisting: (name: string) => name in icons,

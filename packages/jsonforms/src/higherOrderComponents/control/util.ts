@@ -62,7 +62,7 @@ export const mapControls =
   <T extends Record<string, VueControlRenderer>>(cs: T): T =>
     Object.entries(cs).reduce(
       (acc, [key, { control, name, tester, __asyncSetup }]) => {
-        // @ts-expect-error
+        // @ts-expect-error TODO: explain why error is expected
         acc[key] = {
           control: mapper(control, key),
           name,
