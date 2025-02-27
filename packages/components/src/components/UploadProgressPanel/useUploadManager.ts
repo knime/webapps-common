@@ -1,19 +1,19 @@
 import { computed, ref } from "vue";
 
-import { type UploadManagerNS, uploadManager } from "@knime/utils";
+import { type UploaderConfig, uploadManager } from "@knime/utils";
 
 import type { UploadItem } from "./types";
 
 type OnCompletePayload = Parameters<
-  NonNullable<UploadManagerNS.UploaderConfig["onFileUploadComplete"]>
+  NonNullable<UploaderConfig["onFileUploadComplete"]>
 >[0] & { parentId: string };
 
 type OnFailedPayload = Parameters<
-  NonNullable<UploadManagerNS.UploaderConfig["onFileUploadFailed"]>
+  NonNullable<UploaderConfig["onFileUploadFailed"]>
 >[0] & { parentId: string };
 
 type UseUploadManagerOptions = Omit<
-  UploadManagerNS.UploaderConfig,
+  UploaderConfig,
   "onProgress" | "onFileUploadComplete" | "onFileUploadFailed"
 > & {
   onFileUploadComplete?: (payload: OnCompletePayload) => void;

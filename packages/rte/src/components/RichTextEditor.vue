@@ -101,7 +101,7 @@ const props = withDefaults(defineProps<Props>(), {
     };
 
     const mapSymbols = (key: string) => MacOSkeyMap[key] || key;
-    const identityFn = (value: any) => value;
+    const identityFn = (value: unknown) => value;
 
     return (
       hotkey
@@ -149,8 +149,7 @@ const isToolEnabled = (extensionName: keyof BaseExtensionsConfig) => {
 
 const getStarterKitExtensionConfig = (
   extensionName: keyof BaseExtensionsConfig,
-): false | undefined | Partial<any> => {
-  // eslint-disable-next-line no-undefined
+): false | undefined | Partial<unknown> => {
   return isToolEnabled(extensionName) ? undefined : false;
 };
 
@@ -234,7 +233,6 @@ watch(modelValue, (_value) => {
 
 const usedCharactersPercentage = computed(() => {
   if (!editor.value) {
-    // eslint-disable-next-line no-undefined
     return undefined;
   }
 

@@ -58,8 +58,7 @@ export const createSetting =
     value: { initialValue: T; valueComparator?: SettingComparator<T> },
     modelOrView: "model" | "view",
   ) => {
-    // TODO: use const instead of let (prefer-const) requires initializing
-    let dirtyStatesOnChange: () => void;
+    let dirtyStatesOnChange: () => void = () => {};
     const onChange = () => {
       dirtyStatesOnChange();
     };

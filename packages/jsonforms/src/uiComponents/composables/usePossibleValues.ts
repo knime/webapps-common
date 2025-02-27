@@ -9,7 +9,7 @@ import type {
 import useProvidedState from "./useProvidedState";
 
 export const usePossibleValues = <
-  SpecialChoicesProps extends Record<string, any> = {},
+  SpecialChoicesProps extends Record<string, unknown>,
 >(
   control: Ref<{ uischema: ChoicesUiSchema<SpecialChoicesProps> }>,
 ) => {
