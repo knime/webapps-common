@@ -9,11 +9,11 @@ export type IdAndText = {
   text: string;
 };
 
-export type PossibleValue<SpecialChoicesProps extends Record<string, any>> =
+export type PossibleValue<SpecialChoicesProps extends Record<string, unknown>> =
   IdAndText & SpecialChoicesProps;
 
 export type ChoicesUiSchemaOptions<
-  SpecialChoicesProps extends Record<string, any> = {},
+  SpecialChoicesProps extends Record<string, unknown>,
 > = {
   possibleValues?: PossibleValue<SpecialChoicesProps>[];
   choicesProvider?: StateProviderLocation;
@@ -23,7 +23,7 @@ export type IncludedExcludedLabelOptions = {
   excludedLabel?: string;
 };
 
-export type ChoicesUiSchema<S extends Record<string, any> = {}> =
+export type ChoicesUiSchema<S extends Record<string, unknown> = {}> =
   ControlElement & {
     options?: ChoicesUiSchemaOptions<S>;
   };

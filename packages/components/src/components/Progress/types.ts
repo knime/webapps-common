@@ -1,3 +1,5 @@
+import type { FunctionalComponent, SVGAttributes } from "vue";
+
 import type { PillVariant } from "../Pill/Pill.vue";
 
 export type ProgressItemProps = {
@@ -8,7 +10,7 @@ export type ProgressItemProps = {
   statusPill?: {
     text: string;
     variant: PillVariant;
-    icon?: any;
+    icon?: FunctionalComponent<SVGAttributes>;
     tooltip?: string;
   };
 };

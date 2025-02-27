@@ -1,3 +1,4 @@
+import type { IdAndText } from "./ChoicesUiSchema";
 import type { AlertParams } from "./alert";
 
 export type StateProviderLocation = (
@@ -29,14 +30,16 @@ type registerWatcher = (params: {
   dependencies: string[];
 }) => Promise<() => void>;
 
-type getData = (params: any) => Promise<any>;
+type getData = (
+  params: unknown,
+) => Promise<{ result: IdAndText[]; state: string; message: string[] }>;
 
 /**
  * Types provided by the JsonFormsDialog.vue component
  */
 export interface Provided {
-  addStateProviderListener: addStateProviderListener<any>;
-  trigger: (triggerId: any) => void;
+  addStateProviderListener: addStateProviderListener<never>;
+  trigger: (triggerId: unknown) => void;
   sendAlert: (params: AlertParams) => void;
   // To be removed (see JsonFormsDialog.vue)
   registerWatcher: registerWatcher;

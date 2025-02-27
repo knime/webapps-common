@@ -2,6 +2,8 @@ import type { FunctionalComponent, SVGAttributes } from "vue";
 
 import type { MenuItem } from "@knime/components";
 
+import type { ParagraphTextStyleId } from "./utils/paragraphTextStyle";
+
 interface EditorToolItemBase {
   id: string;
   name: string;
@@ -32,7 +34,7 @@ export type EditorToolItem<T> = EditorToolItemBase &
       }
   );
 
-export type EditorTools = Array<EditorToolItem<any>>;
+export type EditorTools = Array<EditorToolItem<ParagraphTextStyleId>>;
 
 export type BaseExtensionsConfig = {
   bold?: true;
