@@ -311,7 +311,7 @@ export const createUploadManager = (config: UploaderManagerConfig) => {
 
         setFailed(
           uploadId,
-          error instanceof Error ? error : new Error(error as any),
+          error instanceof Error ? error : new Error(error as string),
         );
         return;
       }
@@ -332,7 +332,7 @@ export const createUploadManager = (config: UploaderManagerConfig) => {
   };
 
   const uploadFiles = (files: Array<{ uploadId: string; file: File }>) => {
-    const result: Array<Promise<any>> = [];
+    const result: Array<Promise<unknown>> = [];
 
     for (const { uploadId, file } of files) {
       result.push(uploadFileFromChunkIndex(uploadId, file));

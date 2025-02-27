@@ -16,7 +16,7 @@ const extractFromUiSchemaOptions = <Key extends keyof ChoicesUiSchemaOptions>(
 };
 
 const extractPossibleValues = (
-  asyncResult: any,
+  asyncResult: { state: string; result: PossibleValue[]; message: string },
   sendAlert: (params: AlertParams) => void,
   choicesProviderClass: string,
 ) => {
@@ -112,7 +112,9 @@ export const withSpecialChoices = <T extends PossibleValue[] | null>(
 
 export default async (
   control: { uischema: ChoicesUiSchema },
-  getAsyncPossibleValues: (choicesProviderClass: string) => Promise<any>,
+  getAsyncPossibleValues: (
+    choicesProviderClass: string,
+  ) => Promise<{ state: string; result: PossibleValue[]; message: string }>,
   sendAlert: (params: AlertParams) => void,
 ) => {
   let normalPossibleValues = extractFromUiSchemaOptions(
@@ -133,6 +135,5 @@ export default async (
       normalPossibleValues = [];
     }
   }
-  // @ts-expect-error Argument of type 'boolean | PossibleValue[] | undefined' is not assignable to parameter of type 'PossibleValue[]'.
   return addSpecialColumns(normalPossibleValues, control);
 };

@@ -7,7 +7,7 @@ import ErrorMessages from "./ErrorMessages.vue";
 
 export const addErrorMessageToVNode = (
   vNode: VNode,
-  props: Pick<VueControlProps<any>, "messages">,
+  props: Pick<VueControlProps<unknown>, "messages">,
 ): VNode | VNode[] =>
   h(
     ErrorMessages,

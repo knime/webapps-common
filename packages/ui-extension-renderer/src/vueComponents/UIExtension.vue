@@ -12,7 +12,7 @@ import {
 
 import UIExtIFrame from "./UIExtIFrame.vue";
 import UIExtShadowApp from "./UIExtShadowApp.vue";
-import { type UIExtensionPushEvents } from "./types";
+import { type EventType, type PushEvent } from "./types";
 import type { ExtensionConfig } from "./types/ExtensionConfig";
 import type { UIExtensionAPILayer } from "./types/UIExtensionAPILayer";
 
@@ -29,6 +29,7 @@ type Props = {
   /**
    * See ExtensionConfig.initialSharedData
    */
+  // TODO: replace any - tried UIExtensionAPILayer but seems to need some adjustment of withDefaults value
   initialSharedData?: any;
   isReporting?: boolean;
   isDialogLayout?: boolean;
@@ -62,7 +63,7 @@ const serviceAPILayer = computed(() => {
 });
 
 const onServiceCreated = (service: {
-  dispatchPushEvent: (event: UIExtensionPushEvents.PushEvent<any>) => void;
+  dispatchPushEvent: (event: PushEvent<EventType>) => void;
 }) => {
   deregisterOldService = props.apiLayer.registerPushEventService(service);
 };

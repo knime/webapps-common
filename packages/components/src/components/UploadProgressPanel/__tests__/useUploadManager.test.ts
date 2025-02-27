@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { flushPromises } from "@vue/test-utils";
 
-import type { UploadManagerNS } from "@knime/utils";
+import type { UploaderConfig } from "@knime/utils";
 
 import { useUploadManager } from "../useUploadManager";
 
@@ -12,7 +12,7 @@ const uploadManagerMock = {
 };
 
 // use the config injected to the uploadManager as a way to trigger callbacks
-let uploadManagerConfig: UploadManagerNS.UploaderConfig;
+let uploadManagerConfig: UploaderConfig;
 
 vi.mock("@knime/utils", async (importOriginal) => {
   const actual = (await importOriginal()) as any;

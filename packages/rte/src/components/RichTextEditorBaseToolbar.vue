@@ -37,7 +37,7 @@ const props = defineProps<Props>();
 
 const registerTool = (
   toolName: keyof BaseExtensionsConfig,
-  tool: EditorToolItem<any>,
+  tool: EditorToolItem<ParagraphTextStyleId>,
 ) => {
   if ("all" in props.baseExtensions) {
     return [tool];

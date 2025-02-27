@@ -191,7 +191,7 @@ export default {
 
       this.updateFloatingMenu();
     },
-    onItemClick(event: Event, item: any) {
+    onItemClick(event: Event, item: MenuItem) {
       this.$emit("item-click", event, item, this.id);
       if (item.checkbox) {
         item.checkbox.setBoolean(!item.checkbox.checked);
@@ -203,7 +203,7 @@ export default {
       this.getMenuItems()?.onKeydown(event);
     },
     getMenuItems() {
-      return this.$refs.menuItems as any;
+      return this.$refs.menuItems as InstanceType<typeof MenuItems>;
     },
     setActiveDescendant(id: string | null) {
       if (id === null) {

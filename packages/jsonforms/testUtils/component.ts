@@ -18,18 +18,19 @@ export type ProvidedMethods = {
   addStateProviderListener: Mock;
 };
 
-export type VueControlTestProps<C extends abstract new (...args: any) => any> =
-  Omit<
-    InstanceType<C>["$props"],
-    "handleChange" | "changeValue" | "onRegisterValidation"
-  >;
+export type VueControlTestProps<
+  C extends abstract new (...args: never[]) => void,
+> = Omit<
+  InstanceType<C>["$props"],
+  "handleChange" | "changeValue" | "onRegisterValidation"
+>;
 
 const getGlobal = ({
   provide,
   stubs,
 }: {
   provide?: Partial<ProvidedMethods>;
-  stubs?: Record<any, any>;
+  stubs?: Record<string | number | symbol, unknown>;
 }) => ({
   provide: {
     sendAlert: provide?.sendAlert || vi.fn(),
@@ -57,7 +58,7 @@ export const mountJsonFormsControl = <D>(
       >
     >;
     provide?: Partial<ProvidedMethods>;
-    stubs?: Record<any, any>;
+    stubs?: Record<string | number | symbol, unknown>;
   },
 ) => {
   const handleChange = vi.fn();
@@ -95,7 +96,7 @@ export const mountJsonFormsControlLabelContent = <D>(
       >
     >;
     provide?: Partial<ProvidedMethods>;
-    stubs?: Record<any, any>;
+    stubs?: Record<string | number | symbol, unknown>;
   },
 ) => {
   const handleChange = vi.fn();
@@ -128,7 +129,7 @@ export const mountJsonFormsLayout = (
   }: {
     props: VueLayoutProps;
     provide?: Partial<ProvidedMethods>;
-    stubs?: Record<any, any>;
+    stubs?: Record<string | number | symbol, unknown>;
   },
 ) => {
   const wrapper = mount(component, {
@@ -159,10 +160,11 @@ export const mountJsonFormsRenderer = (
           >["layout"];
         };
     provide?: Partial<ProvidedMethods>;
-    stubs?: Record<any, any>;
+    stubs?: Record<string | number | symbol, unknown>;
   },
 ) =>
   mount(component, {
+    // TODO: replace any
     props: props as any,
     global: getGlobal({ provide, stubs }),
   });

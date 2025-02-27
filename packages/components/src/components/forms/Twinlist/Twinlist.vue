@@ -615,13 +615,17 @@ export default {
     },
     onLeftInput(value: Id[]) {
       if (value.length > 0) {
-        (this.$refs.right as any).clearSelection();
+        (
+          this.$refs.right as InstanceType<typeof MultiselectListBox>
+        ).clearSelection();
       }
       this.leftSelected = value;
     },
     onRightInput(value: Id[]) {
       if (value.length > 0) {
-        (this.$refs.left as any).clearSelection();
+        (
+          this.$refs.left as InstanceType<typeof MultiselectListBox>
+        ).clearSelection();
       }
       this.rightSelected = value;
     },
