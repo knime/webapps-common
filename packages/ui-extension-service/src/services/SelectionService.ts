@@ -1,8 +1,8 @@
 import type {
+  KnownEventType,
   SelectionEventPayload,
   SelectionMode,
   SelectionParams,
-  UIExtensionPushEvents,
   UIExtensionService,
 } from "@knime/ui-extension-renderer/api";
 
@@ -46,12 +46,12 @@ export class SelectionService extends AbstractService<SelectionServiceAPILayer> 
    * Replaces current selection with provided data.
    * @param {SelectionMode} mode - the selection mode.
    * @param {string[]} selection - will be passed as params to backend NodeService.updateDataPointSelection.
-   * @returns {Promise<any>} - based on backend implementation.
+   * @returns {Promise<unknown>} - based on backend implementation.
    */
   private updateSelection(
     mode: SelectionMode,
     selection: string[],
-  ): Promise<any> {
+  ): Promise<unknown> {
     const config = this.baseService.getConfig();
     return this.baseService
       .updateDataPointSelection({
@@ -69,27 +69,27 @@ export class SelectionService extends AbstractService<SelectionServiceAPILayer> 
   /**
    * Adds data to currently selected data set.
    * @param {string[]} selection - will be passed as params to backend NodeService.updateDataPointSelection.
-   * @returns {Promise<any>} based on backend implementation.
+   * @returns {Promise<unknown>} based on backend implementation.
    */
-  add(selection: string[]): Promise<any> {
+  add(selection: string[]): Promise<unknown> {
     return this.updateSelection("ADD", selection);
   }
 
   /**
    * Removes data from currently selected data set.
    * @param {string[]} selection - will be passed as params to backend NodeService.updateDataPointSelection.
-   * @returns {Promise<any>} based on backend implementation.
+   * @returns {Promise<unknown>} based on backend implementation.
    */
-  remove(selection: string[]): Promise<any> {
+  remove(selection: string[]): Promise<unknown> {
     return this.updateSelection("REMOVE", selection);
   }
 
   /**
    * Replaces current selection with provided data.
    * @param {string[]} selection - will be passed as params to backend NodeService.updateDataPointSelection.
-   * @returns {Promise<any>} based on backend implementation.
+   * @returns {Promise<unknown>} based on backend implementation.
    */
-  replace(selection: string[]): Promise<any> {
+  replace(selection: string[]): Promise<unknown> {
     return this.updateSelection("REPLACE", selection);
   }
 
@@ -112,7 +112,7 @@ export class SelectionService extends AbstractService<SelectionServiceAPILayer> 
       }
     };
     const removeCallback = this.baseService.addPushEventListener(
-      "SelectionEvent" satisfies UIExtensionPushEvents.KnownEventType,
+      "SelectionEvent" satisfies KnownEventType,
       wrappedCallback,
     );
     this.removeCallbacksMap.set(callback, removeCallback);
