@@ -1,4 +1,4 @@
-import type { UIExtensionPushEvents } from "@knime/ui-extension-renderer/api";
+import type { KnownEventType } from "@knime/ui-extension-renderer/api";
 
 import { AbstractService } from "./AbstractService";
 import type { SharedDataServiceAPILayer } from "./types/serviceApiLayers";
@@ -26,7 +26,7 @@ export class SharedDataService extends AbstractService<SharedDataServiceAPILayer
    */
   addSharedDataListener(callback: (data: any) => void) {
     return this.baseService.addPushEventListener(
-      "DataEvent" satisfies UIExtensionPushEvents.KnownEventType,
+      "DataEvent" satisfies KnownEventType,
       callback,
     );
   }
