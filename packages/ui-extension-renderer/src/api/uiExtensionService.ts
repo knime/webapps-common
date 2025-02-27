@@ -1,4 +1,4 @@
-import type { UIExtensionPushEvents } from "./pushEvents";
+import type { AddPushEventListener } from "./pushEvents";
 import type { ColorModel } from "./services/ColorModel";
 import type { DataServiceType } from "./services/DataServiceType";
 import type { ExtensionType } from "./services/ExtensionTypes";
@@ -188,4 +188,4 @@ export type UIExtensionServiceAPILayer = {
 };
 
 export type UIExtensionService<APILayer = UIExtensionServiceAPILayer> =
-  APILayer & UIExtensionPushEvents.AddPushEventListener;
+  APILayer & AddPushEventListener;
