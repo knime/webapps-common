@@ -1,5 +1,5 @@
 export interface JSONRPCSuccessResponse {
-  result: any;
+  result: unknown;
   error?: null;
   warningMessages?: string[];
 }

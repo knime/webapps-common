@@ -36,7 +36,7 @@ describe("UIExtShadowApp.vue", () => {
   const resourceLocation = "http://localhost:8080/my_widget.html";
   const apiLayer = {
     getConfig: () => ({
-      initialData: null,
+      initialData: {},
     }),
   } as UIExtensionServiceAPILayer;
   const context = {

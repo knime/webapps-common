@@ -18,7 +18,7 @@ export const layoutProps = {
 export const defineLayout = (
   setup: (
     props: VueLayoutProps,
-    ctx: SetupContext<any, SlotsType<LayoutSlots>>,
+    ctx: SetupContext<unknown, SlotsType<LayoutSlots>>,
   ) => () => VNode | null,
 ): VueLayout =>
   defineComponent(setup, {

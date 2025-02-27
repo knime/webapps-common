@@ -9,7 +9,7 @@ const methods: ConsoleMethod[] = ["log", "warn", "error", "info"];
  * @returns The original function's return value
  */
 // TODO: replace Function with fitting top type (...args: never[]) => unknown has unknown return type which makes problems in line 41
-export default (f: Function) => {
+export default (f: (...args: never[]) => unknown | Promise<unknown>) => {
   const originals = methods.map((method) => console[method]);
   methods.forEach((method) => {
     console[method] = () => {};
@@ -38,7 +38,10 @@ export default (f: Function) => {
 
   if (f.constructor.name === "AsyncFunction") {
     // async
-    return f().finally(restoreOriginals);
+    const result = f();
+    if (result instanceof Promise) {
+      return result.finally(restoreOriginals);
+    }
   } else {
     // sync
     try {

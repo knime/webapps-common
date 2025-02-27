@@ -39,7 +39,7 @@ export class JsonDataService extends AbstractService<JsonDataServiceAPILayer> {
           typeof response === "string" && response !== ""
             ? JSON.parse(response)
             : response,
-        ) as Promise<{ result?: any }>
+        ) as Promise<{ result?: string }>
     );
   }
 
@@ -88,6 +88,7 @@ export class JsonDataService extends AbstractService<JsonDataServiceAPILayer> {
    * @param {any} [params.options] - optional options that should be passed to called method.
    * @returns {Promise} rejected or resolved depending on backend response.
    */
+  // TODO: replace any
   async data(params: { method?: string; options?: any } = {}) {
     const response = await this.callDataService(
       "data",
@@ -124,8 +125,10 @@ export class JsonDataService extends AbstractService<JsonDataServiceAPILayer> {
    *
    * @returns a boolean whether the data was successfully applied.
    */
+  // TODO: replace any
   async applyData(data: any) {
     const internalResult = JSON.parse(
+      // @ts-expect-error Argument of type 'string | undefined' is not assignable to parameter of type 'string'
       (await this.callDataService("apply_data", JSON.stringify(data))).result,
     ) satisfies ApplyDataResponse;
     if (!internalResult.isApplied) {

@@ -54,7 +54,7 @@ const props = withDefaults(
   },
 );
 
-// TODO: use const instead of let (prefer-const) requires initializing
+// eslint-disable-next-line prefer-const
 let setManualFilterOnChange: (newData: TwinlistData["manualFilter"]) => void;
 
 const onChangeTwinlist = (obj: PartialDeep<TwinlistData>) => {
@@ -140,7 +140,7 @@ const manualSelection = computed<ManualSelection>(() => {
 
 const loadingInfo = computed(() =>
   selectedAndDeselected.value.selected === null
-    ? (markRaw(TwinlistLoadingInfo) as any)
+    ? markRaw(TwinlistLoadingInfo)
     : null,
 );
 

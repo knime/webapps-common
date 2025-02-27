@@ -9,7 +9,7 @@ import type { NamedTester, ParameterizedComponent } from "../types";
 export type VueLayoutProps = {
   layout: ReturnType<typeof useJsonFormsLayout>["layout"]["value"] & {
     uischema: {
-      [K: string]: any;
+      [K: string]: never;
     };
   };
 };
@@ -18,7 +18,7 @@ export type VueLayoutProps = {
  * Optional slots that a label can have to render common additional elements.
  */
 export type LayoutSlots = {
-  buttons?: (props: { hover: boolean }) => any[];
+  buttons?: (props: { hover: boolean }) => unknown[];
 };
 
 export type VueLayout = ParameterizedComponent<{

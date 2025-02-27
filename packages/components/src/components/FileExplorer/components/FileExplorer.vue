@@ -14,8 +14,9 @@ import useClickOutside from "../../../composables/useClickOutside";
 import useKeyPressedUntilMouseClick from "../../../composables/useKeyPressedUntilMouseClick";
 import { useItemDragging } from "../composables/useItemDragging";
 import type {
-  FileExplorerContextMenu as FileExplorerContextMenuNamespace,
+  Anchor,
   FileExplorerItem as FileExplorerItemType,
+  ItemClickPayload,
 } from "../types";
 
 import FileExplorerContextMenu from "./FileExplorerContextMenu.vue";
@@ -383,9 +384,7 @@ watch(focusedIndex, async (index) => {
 
 const isContextMenuVisible = ref(false);
 const contextMenuPos = ref({ x: 0, y: 0 });
-const contextMenuAnchor = ref<FileExplorerContextMenuNamespace.Anchor | null>(
-  null,
-);
+const contextMenuAnchor = ref<Anchor | null>(null);
 
 const closeContextMenu = (focusLastItem = true) => {
   isContextMenuVisible.value = false;
@@ -458,9 +457,7 @@ const renameItem = (item: FileExplorerItemType, index: number) => {
   }
 };
 
-const onContextMenuItemClick = (
-  payload: FileExplorerContextMenuNamespace.ItemClickPayload,
-) => {
+const onContextMenuItemClick = (payload: ItemClickPayload) => {
   const { isDelete, isRename, anchorItem } = payload;
 
   if (isDelete) {

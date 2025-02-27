@@ -90,7 +90,7 @@ const animateHeightTo = (targetHeight: number) => {
   currentHeight.value = targetHeight;
 };
 // Listen to height changes of other toasts and animate height accordingly
-eventBus.on((newStackHeight: any) => {
+eventBus.on((newStackHeight: unknown) => {
   if (
     typeof newStackHeight === "number" &&
     currentHeight.value !== newStackHeight
