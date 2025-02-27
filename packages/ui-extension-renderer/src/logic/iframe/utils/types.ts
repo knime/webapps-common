@@ -1,4 +1,4 @@
-import { type UIExtensionPushEvents } from "../../../api";
+import type { EventType, PushEvent } from "../../../api";
 
 export interface WrappedIframePushEvent<T, S> {
   type: S;
@@ -6,8 +6,5 @@ export interface WrappedIframePushEvent<T, S> {
 }
 
 export type IframeMessageEvent = MessageEvent<
-  WrappedIframePushEvent<
-    UIExtensionPushEvents.PushEvent<UIExtensionPushEvents.EventType>,
-    "UIExtensionPushEvent"
-  >
+  WrappedIframePushEvent<PushEvent<EventType>, "UIExtensionPushEvent">
 >;

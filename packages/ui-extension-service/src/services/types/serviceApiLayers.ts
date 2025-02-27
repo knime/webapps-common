@@ -47,7 +47,7 @@ export type ImageGenerationServiceAPILayer = Pick<
 
 type JsonDataServiceExtensionConfig = Identifiers & {
   extensionType: ExtensionType;
-  initialData?: any;
+  initialData?: object;
 };
 
 export type JsonDataServiceAPILayer = Pick<
@@ -56,7 +56,7 @@ export type JsonDataServiceAPILayer = Pick<
 > & { getConfig: () => JsonDataServiceExtensionConfig };
 
 type SharedDataServiceExtensionConfig = {
-  initialSharedData?: any;
+  initialSharedData?: object;
 };
 
 export type SharedDataServiceAPILayer = Pick<
@@ -79,8 +79,8 @@ export type ResourceServiceAPILayer = Pick<
 > & { getConfig: () => object };
 
 type SelectionServiceExtensionConfig = Identifiers & {
-  initialData?: any;
-  initialSelection?: any;
+  initialData?: object;
+  initialSelection?: object;
 };
 
 export type SelectionServiceAPILayer = Pick<

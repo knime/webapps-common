@@ -1,4 +1,4 @@
-export interface SettingState<T = any> {
+export interface SettingState<T = unknown> {
   setValue: (t: T) => void;
   addControllingFlowVariable: (flowVarName: string | null) => {
     set: (flowVarName: string, options?: { isFlawed: boolean }) => void;

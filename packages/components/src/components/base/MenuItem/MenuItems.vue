@@ -31,6 +31,7 @@
  * Use the selector `:deep(.menu-items-sub-level)` to style the sub menus
  */
 import {
+  type ComponentPublicInstance,
   type FunctionalComponent,
   type Ref,
   type SVGAttributes,
@@ -47,7 +48,7 @@ import useDropdownNavigation from "../../../composables/useDropdownNavigation";
 import BaseMenuItem from "./BaseMenuItem.vue";
 import BaseMenuItems from "./BaseMenuItems.vue";
 
-export interface MenuItem<TMetadata = any, TChildrenMetadata = TMetadata> {
+export interface MenuItem<TMetadata = unknown, TChildrenMetadata = TMetadata> {
   text: string;
   icon?: FunctionalComponent<SVGAttributes>;
   disabled?: boolean;
@@ -112,7 +113,14 @@ type Emits = {
 const emit = defineEmits<Emits>();
 const baseMenuItems: Ref<InstanceType<typeof BaseMenuItems> | null> = ref(null);
 const openSubmenuItemIndex = ref(-1);
-const subLevelItems = ref<any>(null);
+const subLevelItems = ref<ComponentPublicInstance<
+  {
+    focusIndex: (index?: number) => void;
+  },
+  {
+    onKeydown: (event: KeyboardEvent) => void;
+  }
+> | null>(null);
 
 const getNextElement = (current: number | null, direction: 1 | -1) => {
   if (!baseMenuItems.value) {
