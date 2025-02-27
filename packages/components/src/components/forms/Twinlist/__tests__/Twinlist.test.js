@@ -192,67 +192,17 @@ describe("Twinlist.vue", () => {
     expect(wrapper.vm.possibleValueIds).toStrictEqual(["test4"]);
   });
 
-  it("keeps valid state but removes invalid chosen values on possible values change", async () => {
-    let props = {
-      possibleValues: [
-        {
-          id: "test1",
-          text: "Text",
-        },
-        {
-          id: "test2",
-          text: "Some Text",
-        },
-      ],
-      modelValue: ["invalidId", "test1"],
-      leftLabel: "Choose",
-      rightLabel: "The value",
-    };
+  it("creates missing items", () => {
     const wrapper = mount(Twinlist, {
-      props,
+      props: {
+        possibleValues: defaultPossibleValues,
+        modelValue: ["test1", "testMissing"],
+      },
     });
-
-    await wrapper.setProps({
-      possibleValues: [
-        {
-          id: "test1",
-          text: "validValue",
-        },
-      ],
-    });
-    expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual(["test1"]);
-  });
-
-  it("does not remove invalid chosen values on possible values change if desired", async () => {
-    let props = {
-      filterChosenValuesOnPossibleValuesChange: false,
-      possibleValues: [
-        {
-          id: "test1",
-          text: "Text",
-        },
-        {
-          id: "test2",
-          text: "Some Text",
-        },
-      ],
-      modelValue: ["invalidId", "test1"],
-      leftLabel: "Choose",
-      rightLabel: "The value",
-    };
-    const wrapper = mount(Twinlist, {
-      props,
-    });
-
-    await wrapper.setProps({
-      possibleValues: [
-        {
-          id: "test1",
-          text: "validValue",
-        },
-      ],
-    });
-    expect(wrapper.emitted("update:modelValue")).toBeUndefined();
+    expect(wrapper.vm.allIncludedItems).toStrictEqual([
+      { id: "test1", text: "Text 1" },
+      { id: "testMissing", invalid: true, text: "(MISSING) testMissing" },
+    ]);
   });
 
   it("provides a valid hasSelection method", async () => {

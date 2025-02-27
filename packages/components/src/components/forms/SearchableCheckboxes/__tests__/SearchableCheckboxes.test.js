@@ -122,68 +122,7 @@ describe("SearchableCheckboxes.vue", () => {
     );
   });
 
-  it("does not remove invalid chosen values on possible values change if desired", async () => {
-    let props = {
-      filterChosenValuesOnPossibleValuesChange: false,
-      possibleValues: [
-        {
-          id: "test1",
-          text: "Text",
-        },
-        {
-          id: "test2",
-          text: "Some Text",
-        },
-      ],
-      modelValue: ["invalidId", "test1"],
-    };
-    const wrapper = mount(SearchableCheckboxes, {
-      props,
-    });
-    expect(wrapper.vm.selectedValues).toStrictEqual(["invalidId", "test1"]);
-    await wrapper.setProps({
-      possibleValues: [
-        {
-          id: "test1",
-          text: "validValue",
-        },
-      ],
-    });
-    expect(wrapper.vm.selectedValues).toStrictEqual(["invalidId", "test1"]);
-  });
-
-  it("keeps valid state but removes invalid chosen values on possible values change", async () => {
-    let props = {
-      possibleValues: [
-        {
-          id: "test1",
-          text: "Text",
-        },
-        {
-          id: "test2",
-          text: "Some Text",
-        },
-      ],
-      modelValue: ["invalidId", "test1"],
-      ariaLabel: "label",
-    };
-    const wrapper = mount(SearchableCheckboxes, {
-      props,
-    });
-    expect(wrapper.vm.selectedValues).toStrictEqual(["invalidId", "test1"]);
-    await wrapper.setProps({
-      possibleValues: [
-        {
-          id: "test1",
-          text: "validValue",
-        },
-      ],
-      ariaLabel: "label",
-    });
-    expect(wrapper.vm.selectedValues).toStrictEqual(["test1"]);
-  });
-
-  it("provides a valid hasSelection method", () => {
+  it("provides a valid hasSelection method", async () => {
     const wrapper = mount(SearchableCheckboxes, {
       props: {
         possibleValues: defaultPossibleValues,
@@ -191,8 +130,21 @@ describe("SearchableCheckboxes.vue", () => {
       },
     });
     expect(wrapper.vm.hasSelection()).toBe(false);
-    wrapper.vm.selectedValues = ["test3"];
+    await wrapper.setProps({ modelValue: ["test3"] });
     expect(wrapper.vm.hasSelection()).toBe(true);
+  });
+
+  it("creates missing items", () => {
+    const wrapper = mount(SearchableCheckboxes, {
+      props: {
+        possibleValues: defaultPossibleValues,
+        modelValue: ["test1", "testMissing"],
+      },
+    });
+    expect(wrapper.vm.visibleValues).toStrictEqual([
+      { id: "testMissing", invalid: true, text: "(MISSING) testMissing" },
+      ...defaultPossibleValues,
+    ]);
   });
 
   describe("emit modelValue", () => {

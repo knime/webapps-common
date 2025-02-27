@@ -121,75 +121,23 @@ describe("SearchableList.vue", () => {
       props,
     });
     expect(wrapper.vm.invalidValueIds).toStrictEqual(["invalidId"]);
-    // make it valid again
-    wrapper.vm.selectedValues = ["test1"];
-    expect(wrapper.vm.validate().isValid).toBe(true);
+    expect(wrapper.vm.validate().isValid).toBeFalsy();
   });
 
-  it("keeps valid state but removes invalid chosen values on possible values change", async () => {
-    let props = {
-      possibleValues: [
-        {
-          id: "test1",
-          text: "Text",
-        },
-        {
-          id: "test2",
-          text: "Some Text",
-        },
-      ],
-      modelValue: ["invalidId", "test1"],
-      ariaLabel: "label",
-    };
+  it("creates missing items", () => {
     const wrapper = mount(SearchableList, {
-      props,
+      props: {
+        possibleValues: defaultPossibleValues,
+        modelValue: ["test1", "testMissing"],
+      },
     });
-    expect(wrapper.vm.selectedValues).toStrictEqual(["invalidId", "test1"]);
-    await wrapper.setProps({
-      possibleValues: [
-        {
-          id: "test1",
-          text: "validValue",
-        },
-      ],
-      ariaLabel: "label",
-    });
-    expect(wrapper.vm.selectedValues).toStrictEqual(["test1"]);
+    expect(wrapper.vm.visibleValues).toStrictEqual([
+      { id: "testMissing", invalid: true, text: "(MISSING) testMissing" },
+      ...defaultPossibleValues,
+    ]);
   });
 
-  it("does not remove invalid chosen values on possible values change if desired", async () => {
-    let props = {
-      filterChosenValuesOnPossibleValuesChange: false,
-      possibleValues: [
-        {
-          id: "test1",
-          text: "Text",
-        },
-        {
-          id: "test2",
-          text: "Some Text",
-        },
-      ],
-      modelValue: ["invalidId", "test1"],
-      ariaLabel: "label",
-    };
-    const wrapper = mount(SearchableList, {
-      props,
-    });
-    expect(wrapper.vm.selectedValues).toStrictEqual(["invalidId", "test1"]);
-    await wrapper.setProps({
-      possibleValues: [
-        {
-          id: "test1",
-          text: "validValue",
-        },
-      ],
-      ariaLabel: "label",
-    });
-    expect(wrapper.vm.selectedValues).toStrictEqual(["invalidId", "test1"]);
-  });
-
-  it("provides a valid hasSelection method", () => {
+  it("provides a valid hasSelection method", async () => {
     const wrapper = mount(SearchableList, {
       props: {
         possibleValues: defaultPossibleValues,
@@ -198,7 +146,7 @@ describe("SearchableList.vue", () => {
       },
     });
     expect(wrapper.vm.hasSelection()).toBe(false);
-    wrapper.vm.selectedValues = ["test3"];
+    await wrapper.setProps({ modelValue: ["test1"] });
     expect(wrapper.vm.hasSelection()).toBe(true);
   });
 
@@ -224,7 +172,7 @@ describe("SearchableList.vue", () => {
       expect(wrapper.emitted("update:modelValue")).toStrictEqual([["test3"]]);
     });
 
-    it("isValid causes invalid style on  box", async () => {
+    it("isValid causes invalid style on box", async () => {
       let props = {
         possibleValues: [
           {
@@ -243,41 +191,6 @@ describe("SearchableList.vue", () => {
       expect(box.vm.isValid).toBe(false);
       await wrapper.setProps({ isValid: true });
       expect(box.vm.isValid).toBe(true);
-    });
-
-    it("keeps valid state but removes invalid chosen values on possible values change", async () => {
-      let props = {
-        possibleValues: [
-          {
-            id: "test1",
-            text: "Text",
-          },
-          {
-            id: "test2",
-            text: "Some Text",
-          },
-        ],
-        modelValue: ["invalidId", "test1"],
-        ariaLabel: "label",
-      };
-      const wrapper = mount(SearchableList, {
-        props,
-      });
-      expect(wrapper.vm.invalidValueIds).toBeTruthy();
-
-      await wrapper.setProps({
-        possibleValues: [
-          {
-            id: "test1",
-            text: "validValue",
-          },
-        ],
-        ariaLabel: "label",
-      });
-      expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual([
-        "test1",
-      ]);
-      expect(wrapper.vm.invalidValueIds).toStrictEqual([]);
     });
   });
 

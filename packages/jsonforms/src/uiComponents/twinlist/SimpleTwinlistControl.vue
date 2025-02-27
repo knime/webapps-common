@@ -65,7 +65,6 @@ if (!choicesProvider.value) {
     :is-valid
     compact
     show-resize-handle
-    :filter-chosen-values-on-possible-values-change="false"
     @update:model-value="changeValue"
   />
 </template>
