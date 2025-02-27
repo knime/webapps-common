@@ -6,7 +6,7 @@ import knimeVue3TS from "@knime/eslint-config/vue3-typescript.js";
 // needs dependency @typescript-eslint/utils in package.json to properly resolve type
 export default [
   {
-    ignores: ["demo/*", "**/check-pnpm.js", "**/dist/*"],
+    ignores: ["demo/*", "**/check-pnpm.js", "**/dist/*", "**/.pnpm-store/*"],
   },
   ...knimeVue3TS,
   ...knimeVitest,
