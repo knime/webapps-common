@@ -1,8 +1,8 @@
 import type {
+  KnownEventType,
   SelectionEventPayload,
   SelectionMode,
   SelectionParams,
-  UIExtensionPushEvents,
   UIExtensionService,
 } from "@knime/ui-extension-renderer/api";
 
@@ -112,7 +112,7 @@ export class SelectionService extends AbstractService<SelectionServiceAPILayer> 
       }
     };
     const removeCallback = this.baseService.addPushEventListener(
-      "SelectionEvent" satisfies UIExtensionPushEvents.KnownEventType,
+      "SelectionEvent" satisfies KnownEventType,
       wrappedCallback,
     );
     this.removeCallbacksMap.set(callback, removeCallback);
