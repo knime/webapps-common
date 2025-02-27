@@ -41,6 +41,7 @@ const getReportDirectory = (mode: "integration" | "unit") => {
   }
 };
 
+// @ts-expect-error TODO: explain why error is expected
 export default defineConfig(({ mode }) => {
   const testMode = mode === "integration" ? "integration" : "unit";
 
