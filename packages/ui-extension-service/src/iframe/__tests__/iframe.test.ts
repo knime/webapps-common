@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
-  type UIExtensionPushEvents,
+  type PushEvent,
   type UIExtensionService,
 } from "@knime/ui-extension-renderer/api";
 import { setUpIframeEmbedderService } from "@knime/ui-extension-renderer/testing";
@@ -10,7 +10,7 @@ import { getInitializedBaseServiceProxy } from "../../services/AbstractService";
 
 class Embedder<APILayer extends { getConfig: () => unknown }> {
   iframe: HTMLIFrameElement;
-  dispatchPushEvent: (event: UIExtensionPushEvents.PushEvent<any>) => void;
+  dispatchPushEvent: (event: PushEvent<any>) => void;
 
   constructor(apiLayer: APILayer) {
     // @ts-expect-error Property 'getInitializedBaseService' does not exist on type 'Window & typeof globalThis'

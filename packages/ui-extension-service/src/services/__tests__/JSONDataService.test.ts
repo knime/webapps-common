@@ -62,6 +62,7 @@ describe("JsonDataService", () => {
     it("fetches initialData if it's passed to constructor", async () => {
       const { jsonDataService } = constructJsonDataService();
       const response = await jsonDataService.initialData();
+      // @ts-expect-error 'extensionConfig.initialData' is possibly 'null' or 'undefined'
       expect(response).toStrictEqual(extensionConfig.initialData.result);
     });
 
@@ -100,13 +101,11 @@ describe("JsonDataService", () => {
     });
 
     it("calls data service with options", () => {
-      const options = {
-        columns: [1, 2],
-        rows: 500,
-      };
+      const options = ["columns: [1, 2]", "rows: 500"];
       const { jsonDataService, callNodeDataService } =
         constructJsonDataService();
 
+      // @ts-expect-error Type 'string[]' is not assignable to type '[]'
       jsonDataService.data({ options });
 
       const parameters = getFirstCallParameter(callNodeDataService);

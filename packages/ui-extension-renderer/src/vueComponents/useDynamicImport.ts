@@ -1,5 +1,8 @@
 // cache the imported modules
-const moduleCache: Record<string, { default: (...args: any[]) => any }> = {};
+const moduleCache: Record<
+  string,
+  { default: (...args: unknown[]) => { teardown: () => void } }
+> = {};
 
 export const useDynamicImport = () => {
   const dynamicImport = async (location: string, ignoreCache = false) => {

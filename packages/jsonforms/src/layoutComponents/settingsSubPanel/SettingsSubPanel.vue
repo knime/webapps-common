@@ -48,7 +48,7 @@ const close = () => {
 
 defineExpose({ expand, close });
 
-const setSubPanelExpanded: () => {} = inject("setSubPanelExpanded")!;
+const setSubPanelExpanded: () => object = inject("setSubPanelExpanded")!;
 
 watch(
   isExpanded,

@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
-  type UIExtensionPushEvents,
+  type PushEvent,
   type UIExtensionService,
 } from "@knime/ui-extension-renderer/api";
 import { setUpCustomEmbedderService } from "@knime/ui-extension-renderer/testing";
@@ -14,9 +14,7 @@ import { extensionConfig } from "./mocks";
 describe("CachingSelectionService", () => {
   let cachingSelectionService: CachingSelectionService,
     knimeService: UIExtensionService<SelectionServiceAPILayer>,
-    dispatchPushEvent: (
-      event: UIExtensionPushEvents.PushEvent<"SelectionEvent">,
-    ) => void;
+    dispatchPushEvent: (event: PushEvent<"SelectionEvent">) => void;
 
   const setInitialSelection = (initialSelection: string[]) => {
     vi.spyOn(SelectionService.prototype, "initialSelection").mockResolvedValue(

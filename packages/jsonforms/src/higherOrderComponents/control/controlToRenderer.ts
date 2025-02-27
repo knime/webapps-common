@@ -20,7 +20,7 @@ export const controlToRenderer = ({
   asyncSetup,
   config = {},
 }: {
-  component: VueControl<any>;
+  component: VueControl<unknown>;
   asyncSetup?: () => Promise<void>;
   config?: {
     performExternalValidation?: PerformExternalValidation<unknown>;
@@ -51,9 +51,9 @@ export const controlToRenderer = ({
               component,
               {
                 handleChange: processedProps.handleChange,
-                control: processedProps.control.value as any,
+                control: processedProps.control.value,
                 disabled: !processedProps.control.value.enabled,
-                changeValue: (newValue: any) => {
+                changeValue: (newValue: unknown) => {
                   processedProps.handleChange(
                     processedProps.control.value.path,
                     newValue,

@@ -23,8 +23,8 @@ interface ComponentData {
    * When the searchInput of this component is focussed then they shouldn't be closed either, which is why
    * it needs to be passed to the Multiselect component.
    */
-  focusElement: any; // TODO - remove any type. Multiselect is not properly typed so when this value is passed as a prop the type-checker errors out
-  refocusElement: any; // TODO - remove any type. Multiselect is not properly typed so when this value is passed as a prop the type-checker errors out
+  focusElement: HTMLInputElement;
+  refocusElement: HTMLDivElement;
   allPossibleItems: Array<PossibleValue>;
 }
 
@@ -117,8 +117,8 @@ export default defineComponent({
        * When the searchInput of this component is focussed then they shouldn't be closed either, which is why
        * it needs to be passed to the Multiselect component.
        */
-      focusElement: null,
-      refocusElement: null,
+      focusElement: null as unknown as HTMLInputElement,
+      refocusElement: null as unknown as HTMLDivElement,
       allPossibleItems: [...this.possibleValues],
     };
   },

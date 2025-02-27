@@ -54,8 +54,9 @@ const props = withDefaults(
   },
 );
 
-// TODO: use const instead of let (prefer-const) requires initializing
-let setManualFilterOnChange: (newData: TwinlistData["manualFilter"]) => void;
+let setManualFilterOnChange: (
+  newData: TwinlistData["manualFilter"],
+) => void = () => {};
 
 const onChangeTwinlist = (obj: PartialDeep<TwinlistData>) => {
   const newData = mergeDeep(props.control.data, obj) as TwinlistData;
@@ -140,7 +141,7 @@ const manualSelection = computed<ManualSelection>(() => {
 
 const loadingInfo = computed(() =>
   selectedAndDeselected.value.selected === null
-    ? (markRaw(TwinlistLoadingInfo) as any)
+    ? markRaw(TwinlistLoadingInfo)
     : null,
 );
 

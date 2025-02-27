@@ -1,5 +1,5 @@
 import { type Ref, computed, reactive, unref } from "vue";
-import { debounce } from "lodash-es";
+import { debounce } from "lodash-es"; // eslint-disable-line depend/ban-dependencies
 import { v4 as uuidv4 } from "uuid";
 
 import type {
@@ -10,7 +10,7 @@ import type {
 
 const EXTERNAL_VALIDATION_DEBOUNCE = 500;
 
-export const useValidation = <T = any>({
+export const useValidation = <T = unknown>({
   data,
   options,
   performExternalValidation,

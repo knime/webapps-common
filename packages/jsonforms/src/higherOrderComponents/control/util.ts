@@ -19,31 +19,31 @@ import {
 
 export const controlProps = {
   control: {
-    type: Object as PropType<VueControlProps<any>["control"]>,
+    type: Object as PropType<VueControlProps<never>["control"]>,
     required: true,
   },
   handleChange: {
-    type: Function as PropType<VueControlProps<any>["handleChange"]>,
+    type: Function as PropType<VueControlProps<never>["handleChange"]>,
     required: true,
   },
   changeValue: {
-    type: Function as PropType<VueControlProps<any>["changeValue"]>,
+    type: Function as PropType<VueControlProps<unknown>["changeValue"]>,
     required: true,
   },
   disabled: {
-    type: Boolean as PropType<VueControlProps<any>["disabled"]>,
+    type: Boolean as PropType<VueControlProps<never>["disabled"]>,
     required: true,
   },
   isValid: {
-    type: Boolean as PropType<VueControlProps<any>["isValid"]>,
+    type: Boolean as PropType<VueControlProps<never>["isValid"]>,
     required: true,
   },
   messages: {
-    type: Object as PropType<VueControlProps<any>["messages"]>,
+    type: Object as PropType<VueControlProps<never>["messages"]>,
     required: true,
   },
   onRegisterValidation: {
-    type: Function as PropType<VueControlProps<any>["onRegisterValidation"]>,
+    type: Function as PropType<VueControlProps<never>["onRegisterValidation"]>,
     required: true,
   },
 };
@@ -51,7 +51,7 @@ export const controlProps = {
 export const defineControl = <D>(
   setup: (
     props: VueControlProps<D>,
-    ctx: SetupContext<any, SlotsType<ControlSlots>>,
+    ctx: SetupContext<unknown, SlotsType<ControlSlots>>,
   ) => () => VNode | null | VNode[],
 ): VueControl<D> =>
   defineComponent(setup, {
@@ -59,11 +59,13 @@ export const defineControl = <D>(
   });
 
 export const mapControls =
-  (mapper: (control: VueControl<any>, key: string) => VueControl<any>) =>
+  (
+    mapper: (control: VueControl<any>, key: string) => VueControl<any>, // eslint-disable-line @typescript-eslint/no-explicit-any
+  ) =>
   <T extends Record<string, VueControlRenderer>>(cs: T): T =>
     Object.entries(cs).reduce(
       (acc, [key, { control, name, tester, __asyncSetup }]) => {
-        // @ts-expect-error Type 'T' is generic and can only be indexed for reading.
+        // @ts-expect-error Type 'T' is generic and can only be indexed for reading
         acc[key] = {
           control: mapper(control, key),
           name,

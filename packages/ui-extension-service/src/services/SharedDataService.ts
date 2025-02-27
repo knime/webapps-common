@@ -1,4 +1,4 @@
-import type { UIExtensionPushEvents } from "@knime/ui-extension-renderer/api";
+import type { KnownEventType } from "@knime/ui-extension-renderer/api";
 
 import { AbstractService } from "./AbstractService";
 import type { SharedDataServiceAPILayer } from "./types/serviceApiLayers";
@@ -15,7 +15,7 @@ export class SharedDataService extends AbstractService<SharedDataServiceAPILayer
    * @param {T} data - the updated data.
    * @returns {void}
    */
-  shareData(data: any) {
+  shareData(data: unknown) {
     this.baseService.publishData(data);
   }
 
@@ -24,9 +24,9 @@ export class SharedDataService extends AbstractService<SharedDataServiceAPILayer
    * @param {Function} callback - called on shared data change.
    * @returns {() => void} - method for removing the listener again
    */
-  addSharedDataListener(callback: (data: any) => void) {
+  addSharedDataListener(callback: (data: unknown) => void) {
     return this.baseService.addPushEventListener(
-      "DataEvent" satisfies UIExtensionPushEvents.KnownEventType,
+      "DataEvent" satisfies KnownEventType,
       callback,
     );
   }
@@ -38,7 +38,7 @@ export class SharedDataService extends AbstractService<SharedDataServiceAPILayer
    *
    * If no such date have been shared, null is returned.
    */
-  getInitialSharedData(): any {
+  getInitialSharedData(): unknown | null {
     return this.baseService.getConfig().initialSharedData ?? null;
   }
 }

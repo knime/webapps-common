@@ -16,7 +16,7 @@ export type VueControlProps<D> = {
       id?: string;
     };
   } & Omit<ReturnType<typeof useJsonFormsControl>["control"]["value"], "data">;
-  handleChange: (path: string, value: any) => void;
+  handleChange: (path: string, value: unknown) => void;
   changeValue: (newValue: D) => void;
   disabled: boolean;
   labelForId?: null;
@@ -29,8 +29,8 @@ export type ControlSlots = {
   buttons?: (props: {
     controlHTMLElement?: HTMLElement | null;
     hover: boolean;
-  }) => any[];
-  icon?: any;
+  }) => unknown[];
+  icon?: unknown;
 };
 
 export type VueControlParamsFromProps<P> = {
@@ -38,16 +38,18 @@ export type VueControlParamsFromProps<P> = {
   slots: ControlSlots;
 };
 
-export type PropsToComponent<P extends Record<string, any>> =
+export type PropsToComponent<P extends Record<string, unknown>> =
   ParameterizedComponent<VueControlParamsFromProps<P>>;
 
 export type VueControl<D> = PropsToComponent<VueControlProps<D>>;
 
 export type VueControlRenderer = NamedTester & {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   control: VueControl<any>;
   __asyncSetup?: () => Promise<void>;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type ExtractVueControlData<T extends VueControl<any>> =
   T extends VueControl<infer P> ? P : never;
 

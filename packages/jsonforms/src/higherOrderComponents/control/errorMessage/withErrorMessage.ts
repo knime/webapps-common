@@ -9,7 +9,7 @@ export const addErrorMessageToVNode =
   ({ fill }: { fill: boolean }) =>
   (
     vNode: VNode,
-    props: Pick<VueControlProps<any>, "messages">,
+    props: Pick<VueControlProps<unknown>, "messages">,
   ): VNode | VNode[] =>
     h(
       ErrorMessages,

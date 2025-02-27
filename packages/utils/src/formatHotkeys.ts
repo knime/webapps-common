@@ -73,8 +73,8 @@ export const formatHotkey = (hotkey: Hotkey): string => {
    * Pipe function implementation. Receives a list of functions to execute in order
    * and will pipe the parameter passed at the end to each function returning the final output
    */
-  const pipe = <T extends () => any>(
-    ...fns: Array<(...args: any[]) => ReturnType<T>>
+  const pipe = <T extends () => string>(
+    ...fns: Array<(...args: Hotkey[]) => ReturnType<T>>
   ) => fns.reduce((f, g) => (arg) => g(f(arg)));
 
   const macKeyFormatter = pipe(

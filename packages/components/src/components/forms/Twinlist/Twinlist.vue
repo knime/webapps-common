@@ -222,7 +222,7 @@ export default {
      */
     emptyStateComponent: {
       default: null,
-      type: Object,
+      type: Object as PropType<Record<string, unknown> | null>,
     },
     /**
      * Controls the size of the list.
@@ -615,13 +615,17 @@ export default {
     },
     onLeftInput(value: Id[]) {
       if (value.length > 0) {
-        (this.$refs.right as any).clearSelection();
+        (
+          this.$refs.right as InstanceType<typeof MultiselectListBox>
+        ).clearSelection();
       }
       this.leftSelected = value;
     },
     onRightInput(value: Id[]) {
       if (value.length > 0) {
-        (this.$refs.left as any).clearSelection();
+        (
+          this.$refs.left as InstanceType<typeof MultiselectListBox>
+        ).clearSelection();
       }
       this.rightSelected = value;
     },

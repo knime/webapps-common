@@ -1,11 +1,11 @@
-import { type UIExtensionPushEvents as Events } from "../../api";
+import type { DispatchPushEvent, EventType, PushEvent } from "../../api";
 
 import { toWrappedEventOfType } from "./utils/events";
 
 const iframePushEventId = "UIExtensionPushEvent";
 
-const toUIExtensionPushEventMessage = <T extends Events.EventType>(
-  event: Events.PushEvent<T>,
+const toUIExtensionPushEventMessage = <T extends EventType>(
+  event: PushEvent<T>,
 ) => toWrappedEventOfType(event, iframePushEventId);
 
 /**
@@ -13,14 +13,14 @@ const toUIExtensionPushEventMessage = <T extends Events.EventType>(
  * the embedder side of an iframe ui extension to dispatch events
  * to any listeners registered by an {@link IframeAddEventListener} inside that iframe
  */
-export class IframeDispatchEvent implements Events.DispatchPushEvent {
+export class IframeDispatchEvent implements DispatchPushEvent {
   private readonly contentWindow: Window;
 
   constructor(contentWindow: Window) {
     this.contentWindow = contentWindow;
   }
 
-  dispatchPushEvent<T extends Events.EventType>(event: Events.PushEvent<T>) {
+  dispatchPushEvent<T extends EventType>(event: PushEvent<T>) {
     this.contentWindow.postMessage(toUIExtensionPushEventMessage(event), "*");
   }
 }

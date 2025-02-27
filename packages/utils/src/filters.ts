@@ -110,5 +110,5 @@ const modeDefinitions = [
 // convert [{id: "key1", text: "asdf"}, ...] to {"key1": {id:"key1", text: "asdf"} ... }
 export const filters: Record<
   string,
-  FilterDefinition<any, any, any>
+  FilterDefinition<unknown, unknown, unknown>
 > = Object.assign({}, ...modeDefinitions.map((obj) => ({ [obj.id]: obj })));

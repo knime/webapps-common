@@ -12,7 +12,7 @@ import {
 
 import UIExtIFrame from "./UIExtIFrame.vue";
 import UIExtShadowApp from "./UIExtShadowApp.vue";
-import { type UIExtensionPushEvents } from "./types";
+import { type EventType, type PushEvent } from "./types";
 import type { ExtensionConfig } from "./types/ExtensionConfig";
 import type { UIExtensionAPILayer } from "./types/UIExtensionAPILayer";
 
@@ -29,14 +29,18 @@ type Props = {
   /**
    * See ExtensionConfig.initialSharedData
    */
-  initialSharedData?: any;
+  initialSharedData?: {
+    result?: string | object;
+    userError?: object;
+    internalError?: object;
+  };
   isReporting?: boolean;
   isDialogLayout?: boolean;
   shadowAppStyle?: StyleValue | null;
 };
 
 const props = withDefaults(defineProps<Props>(), {
-  initialSharedData: null,
+  initialSharedData: () => ({}),
   shadowAppStyle: null,
 });
 
@@ -62,9 +66,13 @@ const serviceAPILayer = computed(() => {
 });
 
 const onServiceCreated = (service: {
-  dispatchPushEvent: (event: UIExtensionPushEvents.PushEvent<any>) => void;
+  dispatchPushEvent: (event: PushEvent<EventType>) => void;
 }) => {
-  deregisterOldService = props.apiLayer.registerPushEventService(service);
+  deregisterOldService = props.apiLayer.registerPushEventService(
+    service as {
+      dispatchPushEvent: <T extends EventType>(event: PushEvent<T>) => void;
+    },
+  );
 };
 
 const showMessageFromNodeInfo = (nodeInfo: ExtensionConfig["nodeInfo"]) => {

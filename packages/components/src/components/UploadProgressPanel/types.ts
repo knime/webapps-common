@@ -1,8 +1,6 @@
-import type { UploadManagerNS } from "@knime/utils";
+import type { UploadStateName } from "@knime/utils";
 
-export type UploadItemStatus =
-  | Exclude<UploadManagerNS.UploadStateName, "idle">
-  | "processing";
+export type UploadItemStatus = Exclude<UploadStateName, "idle"> | "processing";
 
 export type UploadItem = {
   id: string;

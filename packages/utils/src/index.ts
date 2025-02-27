@@ -37,15 +37,11 @@ import * as uploadManager from "./uploadManager";
 
 const hotkeys = { formatHotkeys, formatHotkey, getDefaultSeparator };
 
-export namespace HotkeysNS {
-  export type Hotkey = _Hotkey;
-  export type KnownHotkey = _KnownHotkey;
-}
+export type Hotkey = _Hotkey;
+export type KnownHotkey = _KnownHotkey;
 
-export namespace UploadManagerNS {
-  export type UploaderConfig = _UploadManagerConfig;
-  export type UploadStateName = _UploadStateName;
-}
+export type UploaderConfig = _UploadManagerConfig;
+export type UploadStateName = _UploadStateName;
 
 export * from "./fileExtensions";
 export * from "./hotkeys";

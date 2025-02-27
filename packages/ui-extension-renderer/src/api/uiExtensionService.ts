@@ -1,4 +1,4 @@
-import type { UIExtensionPushEvents } from "./pushEvents";
+import type { AddPushEventListener } from "./pushEvents";
 import type { ColorModel } from "./services/ColorModel";
 import type { DataServiceType } from "./services/DataServiceType";
 import type { ExtensionType } from "./services/ExtensionTypes";
@@ -32,16 +32,20 @@ export type UIExtensionServiceConfig = Identifiers & {
   /**
    * optional initial data to provide directly to the UI Extension.
    */
-  initialData?: any;
+  initialData?: {
+    result?: string | object;
+    userError?: object;
+    internalError?: object;
+  };
   /**
    * optional initial selection to provide directly to the UI Extension.
    */
-  initialSelection?: any;
+  initialSelection?: object;
   /**
    * optional initial state supplying the UI Extension with the shared state of
    * already existing other UI Extensions.
    */
-  initialSharedData?: any;
+  initialSharedData?: object;
   /**
    * rendering config to determine in which context the ui extension is rendered
    */
@@ -124,7 +128,7 @@ export interface DataValueViewConfig {
 
 type SomeKnimeUiApiResponse = {
   isSome: true;
-  result: any;
+  result: unknown;
 };
 
 type NoneKnimeUiApiResponse = {
@@ -148,7 +152,7 @@ export type UIExtensionServiceAPILayer = {
       serviceType: DataServiceType;
       dataServiceRequest: string;
     },
-  ) => Promise<any>;
+  ) => Promise<unknown>;
 
   // TODO get rid of this method - This is for providing data for an input-port-view in the scripting editor
   callKnimeUiApi?: (
@@ -156,7 +160,7 @@ export type UIExtensionServiceAPILayer = {
     params: object | readonly unknown[] | undefined,
   ) => Promise<KnimeUiApiResponse>;
 
-  updateDataPointSelection: (params: SelectionParams) => Promise<any>;
+  updateDataPointSelection: (params: SelectionParams) => Promise<unknown>;
 
   setReportingContent: (content: string | false) => void;
 
@@ -165,7 +169,7 @@ export type UIExtensionServiceAPILayer = {
   /**
    * TODO UIEXT-1791 Rename
    */
-  publishData: (data: any) => void;
+  publishData: (data: unknown) => void;
 
   onDirtyStateChange: (newDirtyState: APILayerDirtyState) => void;
 
@@ -188,4 +192,4 @@ export type UIExtensionServiceAPILayer = {
 };
 
 export type UIExtensionService<APILayer = UIExtensionServiceAPILayer> =
-  APILayer & UIExtensionPushEvents.AddPushEventListener;
+  APILayer & AddPushEventListener;

@@ -5,7 +5,7 @@ import { indexOf, keyBy, partition } from "lodash-es"; // eslint-disable-line de
 import ArrowDownIcon from "@knime/styles/img/icons/arrow-down.svg";
 import ArrowDownloadIcon from "@knime/styles/img/icons/arrow-download.svg";
 import ArrowUpIcon from "@knime/styles/img/icons/arrow-up.svg";
-import { type HotkeysNS, hotkeys } from "@knime/utils";
+import { type Hotkey, hotkeys } from "@knime/utils";
 
 import FunctionButton from "../../Buttons/FunctionButton.vue";
 import MultiselectListBox from "../MultiselectListBox/MultiselectListBox.vue";
@@ -109,7 +109,7 @@ const moveDown = move("down");
 const moveToStart = () => moveUp({ to: 0 });
 const moveToEnd = () => moveDown({ to: props.modelValue.length });
 
-const getFormattedTooltip = (text: string, hotkey: Array<HotkeysNS.Hotkey>) => {
+const getFormattedTooltip = (text: string, hotkey: Array<Hotkey>) => {
   return `${text} (${hotkeys.formatHotkeys(hotkey)})`;
 };
 </script>

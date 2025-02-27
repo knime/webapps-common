@@ -12,7 +12,7 @@ const clearHeading = (editor: Editor) => {
       editor
         .chain()
         .focus()
-        .toggleHeading({ level: i as any })
+        .toggleHeading({ level: i as Level })
         .run();
       break;
     }

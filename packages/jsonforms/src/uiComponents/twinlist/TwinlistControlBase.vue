@@ -20,10 +20,10 @@ const props = withDefaults(
   },
 );
 
-const TwinlistLoadingInfoRaw = markRaw(TwinlistLoadingInfo) as any;
+const TwinlistLoadingInfoRaw = markRaw(TwinlistLoadingInfo);
 
 const { includedLabel, excludedLabel } = useIncludedExcludedLabels(
-  toRef(props, "control") as any,
+  toRef(props, "control"),
 );
 </script>
 

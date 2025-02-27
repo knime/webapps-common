@@ -1,5 +1,5 @@
 import type {
-  UIExtensionPushEvents,
+  DispatchPushEvent,
   UIExtensionService,
   UIExtensionServiceAPILayer,
 } from "../api";
@@ -18,7 +18,7 @@ export const addDefaults = (
  */
 export const setUpCustomEmbedderService = <APILayer>(
   apiLayer: APILayer,
-): UIExtensionPushEvents.DispatchPushEvent & {
+): DispatchPushEvent & {
   service: UIExtensionService<APILayer>;
 } => {
   const pushEventHandler = new DefaultEventHandler();
@@ -38,7 +38,7 @@ export const setUpCustomEmbedderService = <APILayer>(
  */
 export const setUpEmbedderService = (
   apiLayer: UIExtensionServiceAPILayer,
-): UIExtensionPushEvents.DispatchPushEvent & {
+): DispatchPushEvent & {
   service: UIExtensionService;
 } => {
   return setUpCustomEmbedderService(addDefaults(apiLayer));

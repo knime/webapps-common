@@ -6,6 +6,7 @@ import { FunctionButton, type MenuItem, SubMenu } from "@knime/components";
 import MoreActionsIcon from "@knime/styles/img/icons/menu-options.svg";
 
 import type { EditorTools } from "../types";
+import type { ParagraphTextStyleId } from "../utils/paragraphTextStyle";
 
 interface Props {
   editor: Editor;
@@ -40,8 +41,8 @@ const secondaryToolsMenuItems = computed<MenuItem[]>(() =>
 );
 
 const onSecondaryToolClick = (
-  _: any,
-  { id }: { id: string | { toolId: string; childId: unknown } },
+  _: unknown,
+  { id }: { id: string | { toolId: string; childId: ParagraphTextStyleId } },
 ) => {
   const isChildElement = typeof id === "object";
   const toolId = isChildElement ? id.toolId : id;

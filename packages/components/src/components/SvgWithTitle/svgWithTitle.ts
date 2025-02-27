@@ -25,8 +25,9 @@ import { type ComponentInstance, h } from "vue";
  * @param title The title to insert
  * @returns The component with a title inserted as the first child of `<svg>`
  */
-export default (SvgComponent: ComponentInstance<any>, title: string) => ({
+export default (SvgComponent: ComponentInstance<unknown>, title: string) => ({
   render() {
+    // @ts-expect-error Property 'render' does not exist on type 'never'.
     const renderedComponent = SvgComponent.render({}, []);
 
     const titleEl = h("title", title);

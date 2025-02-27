@@ -1,4 +1,8 @@
-import type { UIExtensionPushEvents as Events } from "@knime/ui-extension-renderer/api";
+import type {
+  AddPushEventListener,
+  EventType,
+  PushEventListenerCallback,
+} from "@knime/ui-extension-renderer/api";
 import type { IframeMessageEvent } from "@knime/ui-extension-renderer/iframe";
 
 const iframePushEventId = "UIExtensionPushEvent";
@@ -11,16 +15,16 @@ const isUIExtensionPushEvent = (event: IframeMessageEvent) =>
  * implementations inside an iframe. The registered listeners are triggered
  * by an {@link IframeDispatchEvent} on the embedder side
  */
-export class IframeAddEventListener implements Events.AddPushEventListener {
+export class IframeAddEventListener implements AddPushEventListener {
   private contentWindow: Window;
 
   constructor(contentWindow: Window) {
     this.contentWindow = contentWindow;
   }
 
-  addPushEventListener<T extends Events.EventType>(
+  addPushEventListener<T extends EventType>(
     eventType: T,
-    callback: Events.PushEventListenerCallback<T>,
+    callback: PushEventListenerCallback<T>,
   ): () => void {
     const handler = (messageEvent: IframeMessageEvent) => {
       if (!isUIExtensionPushEvent(messageEvent)) {
@@ -30,7 +34,8 @@ export class IframeAddEventListener implements Events.AddPushEventListener {
       if (event.eventType !== eventType) {
         return;
       }
-      callback(event.payload);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      callback(event.payload as any);
     };
 
     this.contentWindow.addEventListener("message", handler);

@@ -15,7 +15,7 @@ interface TreeNodeOptions {
   customSlot?: string;
   icon?: FunctionalComponent<SVGAttributes>;
   children?: TreeNodeOptions[];
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 interface TreeNodeInstance {
