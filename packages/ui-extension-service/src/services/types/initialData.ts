@@ -1,5 +1,5 @@
 export type InitialDataResponse = {
-  result: any;
+  result: unknown;
   warningMessages: string[];
   userError?: {
     message: string;
