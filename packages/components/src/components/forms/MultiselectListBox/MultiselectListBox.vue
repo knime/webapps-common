@@ -44,7 +44,7 @@ export default {
      */
     emptyStateComponent: {
       default: null,
-      type: Object,
+      type: Object as PropType<Record<string, unknown> | null>,
     },
     /**
      * If enabled the single click will allow the user to select multiple items, otherwise this only works with

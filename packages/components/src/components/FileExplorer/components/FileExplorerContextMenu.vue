@@ -5,11 +5,17 @@ import { autoUpdate, offset, useFloating } from "@floating-ui/vue";
 
 import MenuItems from "../../base/MenuItem/MenuItems.vue";
 import type { MenuItem as BaseMenuItem } from "../../types";
-import type { FileExplorerContextMenu, FileExplorerItem } from "../types";
+import type {
+  Anchor,
+  CreateDefaultMenuOption,
+  FileExplorerItem,
+  FileExplorerMenuItem,
+  ItemClickPayload,
+} from "../types";
 
 interface Props {
   position: { x: number; y: number };
-  anchor: FileExplorerContextMenu.Anchor;
+  anchor: Anchor;
   selectedItems: Array<FileExplorerItem>;
 }
 
@@ -85,11 +91,11 @@ watch(wrapperHeight, () => {
 });
 
 const emit = defineEmits<{
-  (e: "itemClick", payload: FileExplorerContextMenu.ItemClickPayload): void;
+  (e: "itemClick", payload: ItemClickPayload): void;
   (e: "close"): void;
 }>();
 
-const createRenameOption: FileExplorerContextMenu.CreateDefaultMenuOption = (
+const createRenameOption: CreateDefaultMenuOption = (
   item,
   customProps = {},
 ) => ({
@@ -103,7 +109,7 @@ const createRenameOption: FileExplorerContextMenu.CreateDefaultMenuOption = (
     false,
 });
 
-const createDeleteOption: FileExplorerContextMenu.CreateDefaultMenuOption = (
+const createDeleteOption: CreateDefaultMenuOption = (
   item,
   customProps = {},
 ) => {
@@ -124,7 +130,7 @@ const createDeleteOption: FileExplorerContextMenu.CreateDefaultMenuOption = (
 };
 
 const onItemClick = (menuItem: BaseMenuItem) => {
-  const contextMenuItem = menuItem as FileExplorerContextMenu.MenuItem;
+  const contextMenuItem = menuItem as FileExplorerMenuItem;
   const { id } = contextMenuItem;
 
   const isRename = id === "rename";

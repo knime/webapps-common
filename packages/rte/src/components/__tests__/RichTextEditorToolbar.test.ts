@@ -11,7 +11,7 @@ describe("RichTextEditorToolbar.vue", () => {
   it("displays secondary tools", () => {
     const toolName = "Tool name";
     const toolId = "toolId";
-    const toolWithChildren: EditorToolItem<any> = {
+    const toolWithChildren: EditorToolItem<string | number> = {
       id: toolId,
       icon: BoldIcon,
       name: toolName,

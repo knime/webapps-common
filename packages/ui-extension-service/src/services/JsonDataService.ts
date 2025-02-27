@@ -39,7 +39,7 @@ export class JsonDataService extends AbstractService<JsonDataServiceAPILayer> {
           typeof response === "string" && response !== ""
             ? JSON.parse(response)
             : response,
-        ) as Promise<{ result?: any }>
+        ) as Promise<{ result?: string }>
     );
   }
 
@@ -62,7 +62,6 @@ export class JsonDataService extends AbstractService<JsonDataServiceAPILayer> {
       initialData = JSON.parse(initialData);
     }
     if (!initialData) {
-      // eslint-disable-next-line no-undefined
       return undefined;
     }
     initialData satisfies InitialDataResponse;
@@ -85,10 +84,10 @@ export class JsonDataService extends AbstractService<JsonDataServiceAPILayer> {
    * @param {Object} params - parameter options.
    * @param {string} [params.method] - optional target method in the node's DataService implementation
    *      (default 'getData').
-   * @param {any} [params.options] - optional options that should be passed to called method.
+   * @param {[]} [params.options] - optional options that should be passed to called method.
    * @returns {Promise} rejected or resolved depending on backend response.
    */
-  async data(params: { method?: string; options?: any } = {}) {
+  async data(params: { method?: string; options?: [] } = {}) {
     const response = await this.callDataService(
       "data",
       JSON.stringify(
@@ -97,7 +96,6 @@ export class JsonDataService extends AbstractService<JsonDataServiceAPILayer> {
     );
     // https://www.jsonrpc.org/specification#response_object:~:text=method%27s%20expected%20parameters.-,5%20Response%20object,-When%20a%20rpc
     if (!response?.result) {
-      // eslint-disable-next-line no-undefined
       return undefined;
     }
     const jsonRPCResponse: JSONRPCResponse =
@@ -106,7 +104,7 @@ export class JsonDataService extends AbstractService<JsonDataServiceAPILayer> {
         : response.result;
     if (jsonRPCResponse.error) {
       this.handleError(jsonRPCResponse.error);
-      // eslint-disable-next-line no-undefined
+
       return undefined;
     } else {
       const { result, warningMessages } = jsonRPCResponse;
@@ -124,8 +122,9 @@ export class JsonDataService extends AbstractService<JsonDataServiceAPILayer> {
    *
    * @returns a boolean whether the data was successfully applied.
    */
-  async applyData(data: any) {
+  async applyData(data: unknown) {
     const internalResult = JSON.parse(
+      // @ts-expect-error Argument of type 'string | undefined' is not assignable to parameter of type 'string'
       (await this.callDataService("apply_data", JSON.stringify(data))).result,
     ) satisfies ApplyDataResponse;
     if (!internalResult.isApplied) {

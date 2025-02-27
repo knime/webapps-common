@@ -6,7 +6,10 @@ import {
   Checkbox,
   Dropdown,
   FileExplorer,
-  type FileExplorerContextMenu,
+  type Anchor,
+  type CreateDefaultMenuOption,
+  type ItemClickHandler,
+  type FileExplorerMenuItem,
   type FileExplorerItem,
 } from "@knime/components";
 
@@ -171,16 +174,16 @@ const customContextMenuComponent = ({
   createDeleteOption,
 }: {
   // this is a reference to the item in the explorer where the menu was opened on
-  anchor: FileExplorerContextMenu.Anchor;
+  anchor: Anchor;
 
   // this is the handler for the default options (rename & delete). It has to be called
   // only for those options because it works with the internals of the FileExplorer to handle them.
   // For any other custom option you can handle that yourself
-  onItemClick: FileExplorerContextMenu.ItemClickHandler;
+  onItemClick: ItemClickHandler;
 
   // These 2 are factory fns used to create the 2 default options that come with the FileExplorer -> rename & delete
-  createRenameOption: FileExplorerContextMenu.CreateDefaultMenuOption;
-  createDeleteOption: FileExplorerContextMenu.CreateDefaultMenuOption;
+  createRenameOption: CreateDefaultMenuOption;
+  createDeleteOption: CreateDefaultMenuOption;
 }) => {
   return {
     render(): any {
@@ -204,7 +207,7 @@ const customContextMenuComponent = ({
       items() {
         const renameOption = createRenameOption(anchor.item);
         const deleteOption = createDeleteOption(anchor.item);
-        const customOption: FileExplorerContextMenu.MenuItem = {
+        const customOption: FileExplorerMenuItem = {
           id: "custom-option",
           text: "My awesome custom option",
         };
