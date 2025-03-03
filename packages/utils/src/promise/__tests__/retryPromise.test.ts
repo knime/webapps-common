@@ -44,7 +44,7 @@ describe("retryPromise", () => {
     const promise = retryPromise({ fn: () => mockFetchCall() }).then(doneSpy);
 
     await promise.catch(() => {}); // ignore errors caught by test
-    expect(() => promise).rejects.toThrowError(error);
+    await expect(() => promise).rejects.toThrowError(error);
 
     expect(doneSpy).not.toHaveBeenCalled();
     expect(mockFetchCall).toHaveBeenCalledTimes(6);
@@ -65,7 +65,7 @@ describe("retryPromise", () => {
     }).then(doneSpy);
 
     await promise.catch(() => {}); // ignore errors caught by test
-    expect(() => promise).rejects.toThrowError(myError);
+    await expect(() => promise).rejects.toThrowError(myError);
 
     expect(doneSpy).not.toHaveBeenCalled();
     expect(mockFetchCall).toHaveBeenCalledOnce();
