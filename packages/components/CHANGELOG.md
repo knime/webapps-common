@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.18.8
+
+### Patch Changes
+
+- replace GSAP with motion.dev
+
 ## 1.18.7
 
 ### Patch Changes
