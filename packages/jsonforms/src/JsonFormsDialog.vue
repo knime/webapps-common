@@ -52,7 +52,7 @@ const onSettingsChanged = (changedData: { data: any }) => {
 };
 
 // TODO (to be resolved with UIEXT-1673)
-// @ts-expect-error TODO: explain why error is expected the parent component NodeDialog in knime-core-ui still provides "getPossibleValuesFromUiSchema", ...
+// @ts-expect-error the parent component NodeDialog in knime-core-ui still provides "getPossibleValuesFromUiSchema", ...
 const provided: Provided = {
   trigger: (id) => emit("trigger", id),
   addStateProviderListener: (id, callback) =>
