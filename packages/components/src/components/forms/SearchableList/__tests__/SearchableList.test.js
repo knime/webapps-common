@@ -39,7 +39,6 @@ describe("SearchableList.vue", () => {
     expect(
       wrapper.findComponent(MultiselectListBox).props("possibleValues").length,
     ).toBe(3);
-    expect();
   });
 
   it("renders with null model value", () => {
