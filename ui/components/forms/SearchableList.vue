@@ -2,7 +2,7 @@
 import MultiselectListBox from "../forms/MultiselectListBox.vue";
 import Label from "./Label.vue";
 import SearchInput from "../forms/SearchInput.vue";
-import { ref, computed } from "vue";
+import { ref, computed, toRef } from "vue";
 import type { PropType, Ref } from "vue";
 import {
   useSearch,
@@ -68,7 +68,7 @@ export default {
     },
     modelValue: {
       type: Array as PropType<Id[] | null>,
-      default: () => {},
+      default: () => [],
     },
     possibleValues: {
       type: Array as PropType<PossibleValue[]>,
@@ -125,12 +125,6 @@ export default {
       default: null,
       type: Object,
     },
-    filterChosenValuesOnPossibleValuesChange: {
-      type: Boolean,
-      default: true,
-      required: false,
-    },
-
     unknownValuesText: {
       type: String,
       required: false,
@@ -143,7 +137,6 @@ export default {
   },
   emits: ["update:modelValue"],
   setup(props) {
-    const selectedValues = ref(props.modelValue);
     const searchTerm = ref(props.initialSearchTerm);
     const caseSensitiveSearch = ref(props.initialCaseSensitiveSearch);
 
@@ -163,12 +156,10 @@ export default {
       );
     });
     const invalidValueIds = computed(() => {
-      if (!selectedValues.value) {
+      if (!props.modelValue) {
         return [];
       }
-      return selectedValues.value?.filter(
-        (x: Id) => !possibleValueMap.value[x],
-      );
+      return props.modelValue?.filter((x: Id) => !possibleValueMap.value[x]);
     });
 
     const matchingInvalidValueIds = computed(() => {
@@ -176,7 +167,7 @@ export default {
     });
 
     const visibleValues = computed(() => {
-      if (selectedValues.value === null) {
+      if (props.modelValue === null) {
         return [];
       }
       return [...matchingInvalidValueIds.value, ...matchingValidIds.value];
@@ -212,21 +203,20 @@ export default {
 
     const numLabelInfos = computed(() => {
       if (!props.showSearch) {
-        return `[ ${selectedValues.value?.length} selected ]`;
+        return `[ ${props.modelValue?.length} selected ]`;
       }
       return hasActiveSearch.value
         ? useLabelInfo(
             numMatchedSearchedItems,
             matchingValidIds.value.length,
-            selectedValues as Ref<Id[]>,
+            toRef(props.modelValue ?? []) as Ref<Id[]>,
           )
-        : `[ ${selectedValues.value?.length} selected ]`;
+        : `[ ${props.modelValue?.length} selected ]`;
     });
 
     return {
       concatenatedItems,
       visibleValues,
-      selectedValues,
       searchTerm,
       matchingValidIds,
       caseSensitiveSearch,
@@ -245,26 +235,11 @@ export default {
       return size > MIN_LIST_SIZE ? size : MIN_LIST_SIZE;
     },
   },
-  watch: {
-    possibleValues(newPossibleValues: PossibleValue[]) {
-      if (this.filterChosenValuesOnPossibleValuesChange) {
-        // Required to prevent invalid values from appearing (e.g. missing b/c of upstream filtering)
-        const allValues = newPossibleValues.map(({ id }) => id);
-
-        // Reset selectedValues as subset of original to prevent re-execution from resetting value
-        const newSelectedValues = (this.selectedValues ?? []).filter((item) =>
-          allValues.includes(item),
-        );
-        this.onChange(newSelectedValues);
-      }
-    },
-  },
   methods: {
     hasSelection() {
-      return (this.selectedValues?.length ?? 0) > 0;
+      return (this.modelValue?.length ?? 0) > 0;
     },
     onChange(newVal: Id[]) {
-      this.selectedValues = newVal;
       this.$emit("update:modelValue", newVal);
     },
     onSearchInput(value: string) {

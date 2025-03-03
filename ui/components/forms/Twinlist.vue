@@ -240,16 +240,6 @@ export default {
       type: Array as PropType<PossibleValue[]>,
       default: () => [],
     },
-    /**
-     * If this setting is true, on a change of possible values, the currently
-     * chosen values which are missing with respect to the new possible values
-     * are removed.
-     */
-    filterChosenValuesOnPossibleValuesChange: {
-      type: Boolean,
-      default: true,
-      required: false,
-    },
     compact: {
       type: Boolean,
       default: false,
@@ -432,20 +422,6 @@ export default {
     },
     moveLeftButtonDisabled() {
       return this.rightSelected.length === 0;
-    },
-  },
-  watch: {
-    possibleValues(newPossibleValues: PossibleValue[]) {
-      if (this.filterChosenValuesOnPossibleValuesChange) {
-        // Required to prevent invalid values from appearing (e.g. missing b/c of upstream filtering)
-        const allValues = newPossibleValues.map(({ id }) => id);
-
-        // Reset chosenValues as subset of original to prevent re-execution from resetting value
-        const newIncludedValues = (this.includedValues ?? []).filter((item) =>
-          allValues.includes(item),
-        );
-        this.$emit("update:modelValue", this.getEmitValue(newIncludedValues));
-      }
     },
   },
   methods: {
