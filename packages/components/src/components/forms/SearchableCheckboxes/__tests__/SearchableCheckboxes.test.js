@@ -38,10 +38,9 @@ describe("SearchableCheckboxes.vue", () => {
     expect(
       wrapper.findComponent(Checkboxes).props("possibleValues").length,
     ).toBe(3);
-    expect();
   });
 
-  it("it activates scroll bar after mouseenter event on container", () => {
+  it("activates scroll bar after mouseenter event on container", () => {
     let props = {
       possibleValues: defaultPossibleValues,
       modelValue: ["test3"],
@@ -54,7 +53,7 @@ describe("SearchableCheckboxes.vue", () => {
     });
   });
 
-  it("it hides scroll bar after mouseleave event on container", () => {
+  it("hides scroll bar after mouseleave event on container", () => {
     let props = {
       possibleValues: defaultPossibleValues,
       modelValue: ["test3"],
@@ -67,7 +66,7 @@ describe("SearchableCheckboxes.vue", () => {
     });
   });
 
-  it("it doesn't scroll when we it is disabled", () => {
+  it("doesn't scroll when we it is disabled", () => {
     let props = {
       possibleValues: defaultPossibleValues,
       modelValue: ["test3"],
@@ -97,7 +96,7 @@ describe("SearchableCheckboxes.vue", () => {
     ).toBe(0);
   });
 
-  it("it makes sure checkboxes has right alignment", async () => {
+  it("makes sure checkboxes has right alignment", async () => {
     let props = {
       possibleValues: defaultPossibleValues,
       modelValue: null,
