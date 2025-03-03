@@ -15,13 +15,10 @@ import FileExplorer from "../FileExplorer.vue";
 import FileExplorerContextMenu from "../FileExplorerContextMenu.vue";
 import FileExplorerItemComp from "../FileExplorerItem.vue";
 
-vi.mock("gsap", () => ({
-  gsap: {
-    // @ts-ignore
-    to: (_, { onComplete }) => {
-      onComplete();
-    },
-    killTweensOf: vi.fn(),
+vi.mock("motion", () => ({
+  // @ts-ignore
+  animate: (_1, _2, { onComplete }) => {
+    onComplete();
   },
 }));
 

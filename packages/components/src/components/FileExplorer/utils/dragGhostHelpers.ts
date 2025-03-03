@@ -1,4 +1,4 @@
-import { gsap } from "gsap";
+import { animate } from "motion";
 
 // @ts-ignore
 import * as knimeColors from "@knime/styles/colors/knimeColors";
@@ -183,12 +183,7 @@ const createGhostPositionUpdateHandler =
     });
 
     ghosts.forEach((g) => {
-      gsap.to(g, {
-        left,
-        top,
-        width: "200px",
-        duration: 0.35,
-      });
+      animate(g, { left, top, width: "200px" }, { duration: 0.01 });
     });
   };
 
@@ -337,29 +332,22 @@ export const createDragGhosts = ({
     allGhosts.forEach(({ ghost, targetEl }) => {
       const { x, y, width } = targetEl.getBoundingClientRect();
       if (badge) {
-        // animate the disappeareance of the badge first
-        gsap.to(badge, {
-          autoAlpha: 0,
-          duration: 0.05,
-          onComplete: () => {
-            gsap.killTweensOf(badge);
-          },
-        });
+        // hide the badge first
+        badge.style.opacity = "0";
       }
 
       const { x: left, y: top } = applyPositionOffsets({ x, y });
-
-      gsap.to(ghost, {
-        left,
-        top,
-        width,
-        duration: 0.2,
-        onComplete: () => {
-          gsap.killTweensOf(ghost);
-          removeGhost({ ghost });
-          document.removeEventListener("drag", updatePosition);
+      animate(
+        ghost,
+        { left, top, width },
+        {
+          duration: 0.2,
+          onComplete: () => {
+            removeGhost({ ghost });
+            document.removeEventListener("drag", updatePosition);
+          },
         },
-      });
+      );
     });
   };
 

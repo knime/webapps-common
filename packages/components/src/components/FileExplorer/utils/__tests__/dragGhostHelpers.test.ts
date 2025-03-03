@@ -1,15 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
-import { gsap } from "gsap";
 
 import { createDragGhosts } from "../dragGhostHelpers";
 
-vi.mock("gsap", () => ({
-  gsap: {
-    // @ts-ignore
-    to: (_, { onComplete }) => {
-      onComplete();
-    },
-    killTweensOf: vi.fn(),
+vi.mock("motion", () => ({
+  // @ts-ignore
+  animate: (_1, _2, { onComplete }) => {
+    onComplete();
   },
 }));
 
@@ -116,7 +112,7 @@ describe("dragGhostHelpers", () => {
     });
   });
 
-  it("should remove the ghosts, badge and cleaup animations", () => {
+  it("should remove the ghosts, badge and cleanup animations", () => {
     const selectedTargets = [
       { textContent: "MOCK1", targetEl: document.createElement("div") },
       { textContent: "MOCK2", targetEl: document.createElement("div") },
@@ -125,9 +121,7 @@ describe("dragGhostHelpers", () => {
     const badgeEl = getBadgeElement(ghosts[1]);
     removeGhosts();
 
-    expect(gsap.killTweensOf).toHaveBeenCalledWith(ghosts[0]);
-    expect(gsap.killTweensOf).toHaveBeenCalledWith(ghosts[1]);
-    expect(gsap.killTweensOf).toHaveBeenCalledWith(badgeEl);
+    expect(badgeEl.style.opacity).toBe("0");
     expect(document.body.contains(ghosts[0])).toBe(false);
     expect(document.body.contains(ghosts[1])).toBe(false);
   });
