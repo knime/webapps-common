@@ -18,7 +18,7 @@ interface PossibleValue {
   title?: string;
   group?: string;
   slotData?: {
-    [K in keyof any]: string | number | boolean;
+    [K in keyof unknown]: string | number | boolean;
   };
 }
 

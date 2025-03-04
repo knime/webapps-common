@@ -20,16 +20,16 @@ import "./assets/main.css";
 defineProps<{
   schema: JsonSchema;
   uischema: UISchemaElement;
-  data: any;
+  data: unknown;
   renderers: readonly NamedRenderer[];
 }>();
 
 const emit = defineEmits<{
   updateData: [path: string];
-  trigger: [id: any];
-  change: [{ data: any }];
+  trigger: [id: unknown];
+  change: [{ data: unknown }];
   alert: [alert: AlertParams];
-  stateProviderListener: [id: any, callback: (value: any) => void];
+  stateProviderListener: [id: unknown, callback: (value: unknown) => void];
 }>();
 
 const exposedMethodSource = "EXPOSED_METHOD";
@@ -40,6 +40,7 @@ const updateDataMiddleware: (
 ) => JsonFormsCore = (state, action, defaultReducer) => {
   if (
     action.type === UPDATE_DATA &&
+    // TODO: replace any
     (action.context as any)?.source !== exposedMethodSource
   ) {
     setTimeout(() => nextTick(() => emit("updateData", action.path)));
@@ -47,7 +48,7 @@ const updateDataMiddleware: (
   return defaultReducer(state, action);
 };
 
-const onSettingsChanged = (changedData: { data: any }) => {
+const onSettingsChanged = (changedData: { data: unknown }) => {
   emit("change", changedData);
 };
 
@@ -63,9 +64,9 @@ const provided: Provided = {
 Object.entries(provided).forEach(([key, value]) => provide(key, value));
 
 const jsonforms = ref<InstanceType<typeof JsonForms> | null>(null);
-const toBeUpdatedBeforeJsonforms: { path: string; value: any }[] = [];
+const toBeUpdatedBeforeJsonforms: { path: string; value: unknown }[] = [];
 
-const dispatchUpdate = (path: string, value: any) => {
+const dispatchUpdate = (path: string, value: unknown) => {
   jsonforms.value!.dispatch(
     Actions.update(path, () => value, {
       source: exposedMethodSource,
@@ -83,7 +84,7 @@ watch(
     ),
 );
 defineExpose({
-  updateData: (path: string, value: any) => {
+  updateData: (path: string, value: unknown) => {
     if (jsonforms.value) {
       dispatchUpdate(path, value);
     } else {

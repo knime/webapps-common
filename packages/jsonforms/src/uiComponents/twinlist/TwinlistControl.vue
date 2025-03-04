@@ -142,6 +142,7 @@ const manualSelection = computed<ManualSelection>(() => {
 });
 
 const loadingInfo = computed(() =>
+  // TODO: replace any
   selectedAndDeselected.value.selected === null
     ? (markRaw(TwinlistLoadingInfo) as any)
     : null,

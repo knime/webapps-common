@@ -271,6 +271,7 @@ export default {
       this.$emit("update:inversePattern", value);
     },
     validate() {
+      // TODO:  replace any
       return (this.$refs.twinlist as any).validate();
     },
     hasSelection() {

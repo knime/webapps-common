@@ -36,7 +36,10 @@ const possibleValues = useProvidedState<null | IdAndText[]>(
   choicesProvider,
   null,
 );
-const TwinlistLoadingInfoRaw = markRaw(TwinlistLoadingInfo) as any;
+const TwinlistLoadingInfoRaw = markRaw(TwinlistLoadingInfo) as Record<
+  string,
+  unknown
+>;
 
 if (!choicesProvider.value) {
   if (props.optionsGenerator === null) {
@@ -56,7 +59,7 @@ if (!choicesProvider.value) {
     :model-value="control.data"
     :possible-values="possibleValues ?? []"
     :empty-state-component="
-      possibleValues === null ? TwinlistLoadingInfoRaw : null
+      possibleValues === null ? TwinlistLoadingInfoRaw : undefined
     "
     :hide-options="possibleValues === null"
     :size="twinlistSize"

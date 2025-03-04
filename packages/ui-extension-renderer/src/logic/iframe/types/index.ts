@@ -1,12 +1,13 @@
 type MethodSignature<
   Name extends string = string,
-  Params extends any[] = any[],
-  Result = any,
+  Params extends unknown[] = unknown[],
+  Result = unknown,
 > = {
   name: Name;
   params: Params;
   result: Result;
 };
+// TODO: replace any
 export type Method = (...args: any[]) => any;
 export type API = Record<string, Method>;
 type Names<T extends API> = keyof T & string;
@@ -62,7 +63,7 @@ export type RequestFor<A extends API> = {
 }[Names<A>];
 
 // Response
-
+// TODO: replace any
 export type Response<T = any> =
   IframeProxyMessageEvent<"UIExtensionResponse"> & {
     payload: T;

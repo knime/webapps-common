@@ -2,7 +2,7 @@ import { type Ref, computed, reactive, unref } from "vue";
 
 import type { Messages, ValidationMethod } from "./types";
 
-export const useValidation = <T = any>({ data }: { data: Ref<T> }) => {
+export const useValidation = <T = unknown>({ data }: { data: Ref<T> }) => {
   const validationMethods: ValidationMethod<T>[] = reactive([]);
   const onRegisterValidation = (validationMethod: ValidationMethod<T>) =>
     validationMethods.push(validationMethod);

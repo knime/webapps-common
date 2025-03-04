@@ -35,7 +35,9 @@ export class AbstractService<T> {
 
   private static initializedProxyService: UIExtensionService;
 
-  static async getInstance<S>(this: new (baseService: any) => S): Promise<S> {
+  static async getInstance<S>(
+    this: new (baseService: unknown) => S,
+  ): Promise<S> {
     if (!AbstractService.initializedProxyService) {
       AbstractService.initializedProxyService = (
         await getInitializedBaseServiceProxy(window)

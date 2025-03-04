@@ -32,15 +32,18 @@ export type UIExtensionServiceConfig = Identifiers & {
   /**
    * optional initial data to provide directly to the UI Extension.
    */
+  // TODO: replace any
   initialData?: any;
   /**
    * optional initial selection to provide directly to the UI Extension.
    */
+  // TODO: replace any
   initialSelection?: any;
   /**
    * optional initial state supplying the UI Extension with the shared state of
    * already existing other UI Extensions.
    */
+  // TODO: replace any
   initialSharedData?: any;
   /**
    * rendering config to determine in which context the ui extension is rendered
@@ -124,6 +127,7 @@ export interface DataValueViewConfig {
 
 type SomeKnimeUiApiResponse = {
   isSome: true;
+  // TODO: replace any
   result: any;
 };
 
@@ -148,6 +152,7 @@ export type UIExtensionServiceAPILayer = {
       serviceType: DataServiceType;
       dataServiceRequest: string;
     },
+    // TODO: replace any
   ) => Promise<any>;
 
   // TODO get rid of this method - This is for providing data for an input-port-view in the scripting editor
@@ -156,6 +161,7 @@ export type UIExtensionServiceAPILayer = {
     params: object | readonly unknown[] | undefined,
   ) => Promise<KnimeUiApiResponse>;
 
+  // TODO: replace any
   updateDataPointSelection: (params: SelectionParams) => Promise<any>;
 
   setReportingContent: (content: string | false) => void;
@@ -165,7 +171,7 @@ export type UIExtensionServiceAPILayer = {
   /**
    * TODO Rename with UIEXT-1791
    */
-  publishData: (data: any) => void;
+  publishData: (data: unknown) => void;
 
   onDirtyStateChange: (newDirtyState: APILayerDirtyState) => void;
 

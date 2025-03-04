@@ -13,7 +13,7 @@ type Construct<T extends object> = {
 };
 
 const useDirtyStatesGeneric =
-  <T extends { [key: string]: any }>(cleanState: T) =>
+  <T extends { [key: string]: unknown }>(cleanState: T) =>
   (construct: Construct<T>, onChangeCallback?: (state: T) => void) => {
     const state = { ...cleanState };
 
@@ -22,6 +22,7 @@ const useDirtyStatesGeneric =
         triggerCallbackOnChange: true,
       },
     ) => {
+      // TODO: replace any
       const newState: T = Object.entries(construct).reduce(
         (acc, [key, getter]: any) => {
           acc[key] = getter();
