@@ -1,5 +1,14 @@
 # @knime/json-forms
 
+## 1.5.12
+
+### Patch Changes
+
+- 4aa2490: Remove prop to filter invalid selected values on possible value change
+- Updated dependencies [4aa2490]
+  - @knime/components@1.19.0
+  - @knime/rich-text-editor@1.3.25
+
 ## 1.5.11
 
 ### Patch Changes

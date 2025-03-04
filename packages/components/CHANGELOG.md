@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.19.0
+
+### Minor Changes
+
+- 4aa2490: Remove prop to filter invalid selected values on possible value change
+
 ## 1.18.8
 
 ### Patch Changes
