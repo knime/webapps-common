@@ -1,7 +1,0 @@
-import{_,K as u,r as a,o as h,c as C,b as e,d as t,w as o,e as r,t as i,p as x,f}from"./index-CaI_SItD.js";import{C as w}from"./CodeExample-DDCCozzU.js";import{C as b}from"./Collapser-B4AiaqbK.js";import"./arrow-dropdown-FrMjki_c.js";import"./ExpandTransition-c3XTuVDQ.js";const g="",v={components:{Collapser:b,BulbIcon:u,CodeExample:w},data(){return{codeExample:`<Collapser title="Collapser with icon">
-  <template v-slot:title>
-    <BulbIcon style="width: 20px; height: 20px;" />
-    <h5>Collapser with icon</h5> /* Has to be h5 */
-  </template>
-  <p>Lorem ipsum…</p>
-</Collapser>`}},computed:{code(){return g}}},l=s=>(x("data-v-eb64c7cb"),s=s(),f(),s),I={class:"grid-container"},B={class:"grid-item-12"},E={class:"grid-container demo"},S=l(()=>e("h5",null,"Collapser",-1)),y=l(()=>e("p",null,"Lorem ipsum…",-1)),L=l(()=>e("h5",null,"Collapser with icon",-1)),N=l(()=>e("p",null,"Lorem ipsum…",-1));function V(s,$,k,D,n,d){const c=a("Collapser",!0),m=a("BulbIcon"),p=a("CodeExample");return h(),C("section",null,[e("div",I,[e("div",B,[e("div",E,[t(c,{class:"grid-item-3 collapser"},{title:o(()=>[S]),default:o(()=>[y]),_:1}),t(c,{class:"grid-item-3 collapser"},{title:o(()=>[t(m,{style:{width:"20px",height:"20px"}}),L]),default:o(()=>[N]),_:1})]),t(p,{summary:"Show usage example with icon"},{default:o(()=>[r(i(n.codeExample),1)]),_:1}),t(p,{summary:"Show Collapser.vue source code"},{default:o(()=>[r(i(d.code),1)]),_:1})])])])}const z=_(v,[["render",V],["__scopeId","data-v-eb64c7cb"]]);export{z as default};
