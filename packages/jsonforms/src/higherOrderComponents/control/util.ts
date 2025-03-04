@@ -16,6 +16,7 @@ import {
   type VueControlRenderer,
 } from "./types";
 
+// TODO: replace any
 export const controlProps = {
   control: {
     type: Object as PropType<VueControlProps<any>["control"]>,
@@ -50,6 +51,7 @@ export const controlProps = {
 export const defineControl = <D>(
   setup: (
     props: VueControlProps<D>,
+    // TODO: replace any
     ctx: SetupContext<any, SlotsType<ControlSlots>>,
   ) => () => VNode | null | VNode[],
 ): VueControl<D> =>
@@ -57,6 +59,7 @@ export const defineControl = <D>(
     props: controlProps,
   });
 
+// TODO: replace any
 export const mapControls =
   (mapper: (control: VueControl<any>, key: string) => VueControl<any>) =>
   <T extends Record<string, VueControlRenderer>>(cs: T): T =>

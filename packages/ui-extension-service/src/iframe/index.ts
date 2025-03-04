@@ -10,6 +10,7 @@ import { IframeAddEventListener } from "./pushEvents";
 /**
  * Makes the given method asynchronous by making the return type a promise if not already so
  */
+// TODO: replace any
 type Asyncify<F extends (...args: any[]) => any> = (
   ...args: Parameters<F>
 ) => Promise<Awaited<ReturnType<F>>>;
@@ -29,11 +30,12 @@ type AsyncAPI<A extends API> = {
  * @returns
  */
 // eslint-disable-next-line func-style
-function proxyMissingMethods<A extends API, T extends Record<string, any>>(
+function proxyMissingMethods<A extends API, T extends Record<string, unknown>>(
   obj: T,
   handleMethodCall: ProxyMethodFor<A>,
 ) {
   return new Proxy(obj, {
+    // TODO: replace any
     get<K extends keyof A & string>(target: any, methodName: K) {
       if (typeof target[methodName] !== "undefined") {
         return target[methodName];

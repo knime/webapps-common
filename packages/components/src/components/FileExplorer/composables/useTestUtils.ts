@@ -3,13 +3,15 @@ import { h } from "vue";
 import type { VueWrapper } from "@vue/test-utils";
 
 type IntersectionObserverMockType = {
-  // @ts-expect-error migrated from ts-ignore to es-expect-error TODO: explain why error is expected
+  // TODO: replace any
+  // @ts-expect-error implicit any
   (callback: (...args: any[]) => any);
   __trigger__: (isIntersecting: boolean) => void;
 };
 
 // @ts-expect-error migrated from ts-ignore to es-expect-error TODO: explain why error is expected
 export const MockIntersectionObserver: IntersectionObserverMockType =
+  // TODO: replace any
   function MockIntersectionObserver(this: any, callback) {
     this.callbackRef = callback;
     this.element = null;
@@ -19,7 +21,7 @@ export const MockIntersectionObserver: IntersectionObserverMockType =
       this.callbackRef([{ isIntersecting }]);
     };
 
-    this.observe = function (element: any) {
+    this.observe = function (element: unknown) {
       this.element = element;
     };
 
@@ -29,7 +31,7 @@ export const MockIntersectionObserver: IntersectionObserverMockType =
 
 export const createSlottedChildComponent = (params: {
   slottedComponentTemplate: string;
-  slottedComponentData?: any;
+  slottedComponentData?: unknown;
 }) => {
   // Dummy component to be inserted in the slot
   const mockComponentInSlot = {
@@ -49,20 +51,21 @@ export const createSlottedChildComponent = (params: {
   /**
    * Function used to render a slot that has a dummy component in it
    */
-  const renderSlot = (props: any) => h(mockComponentInSlot, { scope: props });
+  const renderSlot = (props: unknown) =>
+    h(mockComponentInSlot, { scope: props });
 
   /**
    * Given a test component wrapper, this function is used to find the
    * mocked component in the slot
    */
-  const getSlottedChildComponent = (wrapper: VueWrapper<any>) =>
+  const getSlottedChildComponent = (wrapper: VueWrapper<unknown>) =>
     wrapper.findComponent({ name: "SlottedChild" });
 
   const getSlottedStubProp = ({
     wrapper,
     propName,
   }: {
-    wrapper: VueWrapper<any>;
+    wrapper: VueWrapper<unknown>;
     propName: string;
   }) => {
     // access the `scope` prop of the dummy slotted component and get value that was injected by

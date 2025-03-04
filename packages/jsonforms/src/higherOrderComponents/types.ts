@@ -7,6 +7,7 @@ export type ComponentParams = {
   slots: Record<string, any>;
 };
 
+// TODO: replace any
 export type ParameterizedComponent<T extends ComponentParams> = Component<
   T["props"], // props
   any, // bindings
@@ -17,6 +18,7 @@ export type ParameterizedComponent<T extends ComponentParams> = Component<
   T["slots"] // slots
 >;
 
+// TODO: replace any
 export type RendererParams = {
   props: RendererProps;
   slots: any;
@@ -24,4 +26,5 @@ export type RendererParams = {
 
 export type NamedTester = { tester: RankedTester; name: string };
 
+// TODO: replace any
 export type NamedRenderer = NamedTester & { renderer: any };

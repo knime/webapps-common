@@ -26,7 +26,7 @@ export interface SettingComparator<T> {
  *
  * The methods {@link toInternalState} and {@link equals} need to be implemented.
  */
-export class DefaultSettingComparator<T = any, S = any>
+export class DefaultSettingComparator<T = unknown, S = unknown>
   implements SettingComparator<T>
 {
   /**

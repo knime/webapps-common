@@ -32,6 +32,7 @@ export type EditorToolItem<T> = EditorToolItemBase &
       }
   );
 
+// TODO: replace any
 export type EditorTools = Array<EditorToolItem<any>>;
 
 export type BaseExtensionsConfig = {

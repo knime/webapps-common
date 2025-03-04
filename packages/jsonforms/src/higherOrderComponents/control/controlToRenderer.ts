@@ -15,7 +15,7 @@ import { useValidation } from "./validation/useValidation";
  * The last transformation step, since JSONForms expects renderers with core params.
  */
 export const controlToRenderer = (
-  component: VueControl<any>,
+  component: VueControl<unknown>,
   asyncSetup?: () => Promise<void>,
 ): ParameterizedComponent<RendererParams> =>
   defineComponent(
@@ -33,9 +33,9 @@ export const controlToRenderer = (
               component,
               {
                 handleChange: processedProps.handleChange,
-                control: processedProps.control.value as any,
+                control: processedProps.control.value,
                 disabled: !processedProps.control.value.enabled,
-                changeValue: (newValue: any) =>
+                changeValue: (newValue: unknown) =>
                   processedProps.handleChange(
                     processedProps.control.value.path,
                     newValue,

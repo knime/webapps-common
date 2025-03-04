@@ -47,7 +47,7 @@ import useDropdownNavigation from "../../../composables/useDropdownNavigation";
 import BaseMenuItem from "./BaseMenuItem.vue";
 import BaseMenuItems from "./BaseMenuItems.vue";
 
-export interface MenuItem<TMetadata = any, TChildrenMetadata = TMetadata> {
+export interface MenuItem<TMetadata = unknown, TChildrenMetadata = TMetadata> {
   text: string;
   icon?: FunctionalComponent<SVGAttributes>;
   disabled?: boolean;
@@ -112,6 +112,7 @@ type Emits = {
 const emit = defineEmits<Emits>();
 const baseMenuItems: Ref<InstanceType<typeof BaseMenuItems> | null> = ref(null);
 const openSubmenuItemIndex = ref(-1);
+// TODO: replace any
 const subLevelItems = ref<any>(null);
 
 const getNextElement = (current: number | null, direction: 1 | -1) => {

@@ -2,7 +2,7 @@ import type { Control } from "./Control";
 import type { AlertParams } from "./alert";
 
 type addStateProviderListener<T> = (
-  id: any,
+  id: unknown,
   callback: (data: T) => void,
 ) => void;
 
@@ -19,16 +19,19 @@ type registerWatcher = (params: {
   dependencies: string[];
 }) => Promise<() => void>;
 
-type getData = (params: any) => Promise<any>;
+// TODO: replace any
+type getData = (params: unknown) => Promise<any>;
 
 /**
  * Types provided by the JsonFormsDialog.vue component
  */
 export interface Provided {
+  // TODO: replace any
   addStateProviderListener: addStateProviderListener<any>;
-  trigger: (triggerId: any) => void;
+  trigger: (triggerId: unknown) => void;
   sendAlert: (params: AlertParams) => void;
   // To be removed (see JsonFormsDialog.vue)
+  // TODO: replace any
   getPossibleValuesFromUiSchema: (control: Control) => Promise<any[]>;
   registerWatcher: registerWatcher;
   getData: getData;

@@ -13,6 +13,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   serviceCreated: [
     service: {
+      // TODO: replace any
       dispatchPushEvent: (event: PushEvent<any>) => void;
     },
   ];

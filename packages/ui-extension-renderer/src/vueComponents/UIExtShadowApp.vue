@@ -24,6 +24,7 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits<{
   serviceCreated: [
     _service: {
+      // TODO: replace any
       dispatchPushEvent: (event: PushEvent<any>) => void;
     },
   ];

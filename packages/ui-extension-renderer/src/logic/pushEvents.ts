@@ -36,6 +36,7 @@ export class DefaultEventHandler
 {
   private readonly callbacksMap = new MapOfArrays<
     EventType,
+    // TODO: replace any
     PushEventListenerCallback<any>
   >();
 

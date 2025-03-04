@@ -12,11 +12,12 @@ export const optionsMapper = ({
   title: text,
 }: JsonSchema4 | JsonSchema7) => ({ id: id as string, text: text! });
 
-const isObject = (item: any) =>
+const isObject = (item: unknown) =>
   item && typeof item === "object" && !Array.isArray(item);
 
 // Merge two objects deeply while overwriting only keys of obj1 if necessary. This can be used to alter the data
 // in the dialog settings in a more simple way for complex data structures.
+
 const mergeDeepUntyped = (obj1: any, obj2: any) => {
   const output = { ...obj1 };
   if (isObject(obj2)) {
@@ -57,7 +58,7 @@ const isKeyValuePresentInObject = (
   params: {
     parentKey: string;
     keyName: string;
-    value: any;
+    value: unknown;
   },
   currentParentKey = "",
 ) => {
