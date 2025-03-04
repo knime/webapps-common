@@ -1,5 +1,9 @@
 import { computed, defineComponent, h } from "vue";
-import { rendererProps, useJsonFormsLayout } from "@jsonforms/vue";
+import {
+  type LayoutProps, // correct layoutprops? other option from jsonforms/core
+  rendererProps,
+  useJsonFormsLayout,
+} from "@jsonforms/vue";
 
 import type { ParameterizedComponent, RendererParams } from "../types";
 import { getAsyncSetupMethod } from "../utils";
@@ -15,7 +19,7 @@ export const layoutToRenderer = (
 ): ParameterizedComponent<RendererParams> =>
   defineComponent(
     async (props, ctx) => {
-      const { layout } = useJsonFormsLayout(props as any);
+      const { layout } = useJsonFormsLayout(props as LayoutProps);
       const isVisible = computed(() => layout.value.visible);
       await (asyncSetup || getAsyncSetupMethod(component))?.();
       return () =>

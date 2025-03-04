@@ -615,12 +615,14 @@ export default {
     },
     onLeftInput(value: Id[]) {
       if (value.length > 0) {
+        // TODO: replace any
         (this.$refs.right as any).clearSelection();
       }
       this.leftSelected = value;
     },
     onRightInput(value: Id[]) {
       if (value.length > 0) {
+        // TODO: replace any
         (this.$refs.left as any).clearSelection();
       }
       this.rightSelected = value;

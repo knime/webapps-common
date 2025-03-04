@@ -29,6 +29,7 @@ type Props = {
   /**
    * See ExtensionConfig.initialSharedData
    */
+  // TODO: replace any
   initialSharedData?: any;
   isReporting?: boolean;
   isDialogLayout?: boolean;
@@ -62,6 +63,7 @@ const serviceAPILayer = computed(() => {
 });
 
 const onServiceCreated = (service: {
+  // TODO: replace any
   dispatchPushEvent: (event: PushEvent<any>) => void;
 }) => {
   deregisterOldService = props.apiLayer.registerPushEventService(service);

@@ -17,7 +17,7 @@ export interface DisplayModeEventPayload {
 type KnownPushEvents = {
   SelectionEvent: SelectionEventPayload;
   DisplayModeEvent: DisplayModeEventPayload;
-  DataEvent: any;
+  DataEvent: unknown;
   ApplyDataEvent: undefined;
   DataValueViewShownEvent: boolean;
 };
@@ -28,7 +28,7 @@ type KnownPushEvents = {
 export type EventType = KnownEventType | Omit<string, KnownEventType>;
 
 type MakePayloadOptionalIfUndefined<
-  T extends { eventType: any; payload: any },
+  T extends { eventType: unknown; payload: unknown },
 > = T["payload"] extends undefined
   ? {
       eventType: T["eventType"];
@@ -37,8 +37,8 @@ type MakePayloadOptionalIfUndefined<
   : T;
 
 export type PushEvent<
-  N extends EventType = any,
-  P = any,
+  N extends EventType,
+  P = any, // TODO: replace any
 > = MakePayloadOptionalIfUndefined<{
   eventType: N;
   payload: N extends keyof KnownPushEvents ? KnownPushEvents[N] : P;

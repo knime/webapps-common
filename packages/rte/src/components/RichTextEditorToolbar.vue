@@ -40,7 +40,7 @@ const secondaryToolsMenuItems = computed<MenuItem[]>(() =>
 );
 
 const onSecondaryToolClick = (
-  _: any,
+  _: unknown,
   { id }: { id: string | { toolId: string; childId: unknown } },
 ) => {
   const isChildElement = typeof id === "object";

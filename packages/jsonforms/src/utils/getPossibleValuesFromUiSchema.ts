@@ -16,6 +16,7 @@ const extractFromUiSchemaOptions = <Key extends keyof ChoicesUiSchemaOptions>(
 };
 
 const extractPossibleValues = (
+  // TODO: replace any
   asyncResult: any,
   sendAlert: (params: AlertParams) => void,
   choicesProviderClass: string,
@@ -112,6 +113,7 @@ export const withSpecialChoices = <T extends PossibleValue[] | null>(
 
 export default async (
   control: { uischema: ChoicesUiSchema },
+  // TODO: replace any
   getAsyncPossibleValues: (choicesProviderClass: string) => Promise<any>,
   sendAlert: (params: AlertParams) => void,
 ) => {

@@ -51,6 +51,7 @@ export class SelectionService extends AbstractService<SelectionServiceAPILayer> 
   private updateSelection(
     mode: SelectionMode,
     selection: string[],
+    // TODO: replace any
   ): Promise<any> {
     const config = this.baseService.getConfig();
     return this.baseService
@@ -71,6 +72,7 @@ export class SelectionService extends AbstractService<SelectionServiceAPILayer> 
    * @param {string[]} selection - will be passed as params to backend NodeService.updateDataPointSelection.
    * @returns {Promise<any>} based on backend implementation.
    */
+  // TODO: replace any
   add(selection: string[]): Promise<any> {
     return this.updateSelection("ADD", selection);
   }
@@ -80,6 +82,7 @@ export class SelectionService extends AbstractService<SelectionServiceAPILayer> 
    * @param {string[]} selection - will be passed as params to backend NodeService.updateDataPointSelection.
    * @returns {Promise<any>} based on backend implementation.
    */
+  // TODO: replace any
   remove(selection: string[]): Promise<any> {
     return this.updateSelection("REMOVE", selection);
   }
@@ -89,6 +92,7 @@ export class SelectionService extends AbstractService<SelectionServiceAPILayer> 
    * @param {string[]} selection - will be passed as params to backend NodeService.updateDataPointSelection.
    * @returns {Promise<any>} based on backend implementation.
    */
+  // TODO: replace any
   replace(selection: string[]): Promise<any> {
     return this.updateSelection("REPLACE", selection);
   }

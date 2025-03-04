@@ -11,7 +11,7 @@ export type BreadcrumbItem = {
   icon?: FunctionalComponent<SVGAttributes>;
   clickable?: boolean;
   title?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 };
 
 export default {

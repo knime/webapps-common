@@ -25,6 +25,7 @@ import { type ComponentInstance, h } from "vue";
  * @param title The title to insert
  * @returns The component with a title inserted as the first child of `<svg>`
  */
+// TODO: replace any
 export default (SvgComponent: ComponentInstance<any>, title: string) => ({
   render() {
     const renderedComponent = SvgComponent.render({}, []);

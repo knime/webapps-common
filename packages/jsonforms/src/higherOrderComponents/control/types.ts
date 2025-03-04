@@ -12,6 +12,7 @@ export type VueControlProps<D> = {
   control: {
     data: D;
   } & Omit<ReturnType<typeof useJsonFormsControl>["control"]["value"], "data">;
+  // TODO: replace any
   handleChange: (path: string, value: any) => void;
   changeValue: (newValue: D) => void;
   disabled: boolean;
@@ -21,6 +22,7 @@ export type VueControlProps<D> = {
 /**
  * Optional slots that a control can have to render additional elements.
  */
+// TODO: replace any
 export type ControlSlots = {
   buttons?: (props: {
     controlHTMLElement?: HTMLElement | null;
@@ -34,11 +36,13 @@ export type VueControlParamsFromProps<P> = {
   slots: ControlSlots;
 };
 
+// TODO: replace any
 export type PropsToComponent<P extends Record<string, any>> =
   ParameterizedComponent<VueControlParamsFromProps<P>>;
 
 export type VueControl<D> = PropsToComponent<VueControlProps<D>>;
 
+// TODO: replace any
 export type VueControlRenderer = NamedTester & {
   control: VueControl<any>;
   __asyncSetup?: () => Promise<void>;

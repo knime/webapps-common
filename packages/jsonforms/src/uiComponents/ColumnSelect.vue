@@ -43,6 +43,7 @@ const toData = (value: string | null) => {
   return { selected: value, compatibleTypes };
 };
 
+// TODO: replace any
 const toValue = ({ selected }: any) => selected;
 
 const updateData = () => {

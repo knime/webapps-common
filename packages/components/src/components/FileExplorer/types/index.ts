@@ -2,7 +2,7 @@ import type { FunctionalComponent, SVGAttributes } from "vue";
 
 import type { MenuItem as BaseMenuItem } from "../../base/MenuItem/MenuItems.vue";
 
-export type FileExplorerItem<T = Record<string, any>> = {
+export type FileExplorerItem<T = Record<string, unknown>> = {
   id: string;
   name: string;
   isOpen: boolean;

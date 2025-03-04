@@ -37,6 +37,7 @@ const props = defineProps<Props>();
 
 const registerTool = (
   toolName: keyof BaseExtensionsConfig,
+  // TODO: replace any
   tool: EditorToolItem<any>,
 ) => {
   if ("all" in props.baseExtensions) {

@@ -87,7 +87,7 @@ const props = withDefaults(defineProps<Props>(), {
     };
 
     const mapSymbols = (key: string) => MacOSkeyMap[key] || key;
-    const identityFn = (value: any) => value;
+    const identityFn = (value: unknown) => value;
 
     return (
       hotkey
@@ -128,7 +128,7 @@ const isToolEnabled = (extensionName: keyof BaseExtensionsConfig) => {
 
 const getStarterKitExtensionConfig = (
   extensionName: keyof BaseExtensionsConfig,
-): false | undefined | Partial<any> => {
+): false | undefined | Partial<unknown> => {
   // eslint-disable-next-line no-undefined
   return isToolEnabled(extensionName) ? undefined : false;
 };

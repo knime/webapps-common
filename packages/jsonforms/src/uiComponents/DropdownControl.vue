@@ -19,6 +19,7 @@ import useProvidedState from "./composables/useProvidedState";
 import LoadingDropdown from "./loading/LoadingDropdown.vue";
 
 const props = withDefaults(
+  // TODO: replace any
   defineProps<
     VueControlProps<any> & {
       asyncInitialOptions?: Promise<IdAndText[]> | null;
