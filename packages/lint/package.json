@@ -1,7 +1,7 @@
 {
   "name": "@knime/eslint-config",
   "version": "8.3.0",
-  "description": "ESLint/Stylelint configs designed for typical KNIME frontend projects using JavaScript/TypeScript as well as Vue2/3 and Nuxt.",
+  "description": "ESLint/Stylelint configs designed for typical KNIME frontend projects using JavaScript/TypeScript as well as Vue, Nuxt and Vitest.",
   "type": "module",
   "scripts": {
     "lint": "eslint --cache .",
