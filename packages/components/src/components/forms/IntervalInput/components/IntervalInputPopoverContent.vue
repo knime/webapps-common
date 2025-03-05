@@ -213,7 +213,7 @@ const requestSavePopup = () => {
         :disabled="!isPopoverModelValid.valid"
         @click="requestSavePopup"
       >
-        Set {{ popoverUsedFormat.toLowerCase() }} interval
+        Set duration
       </FunctionButton>
     </Tooltip>
   </div>
