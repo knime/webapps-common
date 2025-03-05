@@ -37,6 +37,10 @@ function proxyMissingMethods<A extends API, T extends Record<string, unknown>>(
   return new Proxy(obj, {
     // TODO: replace any
     get<K extends keyof A & string>(target: any, methodName: K) {
+      if (typeof target[methodName] !== "undefined") {
+        return target[methodName];
+      }
+
       return (...args: Parameters<A[K]>) => {
         // Add the method name as the first argument
         return handleMethodCall(methodName, ...args);
