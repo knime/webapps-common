@@ -16,7 +16,10 @@ export default [
       "no-undefined": "off",
       "max-nested-callbacks": "off",
       "vitest/consistent-test-it": "error",
-      "vitest/expect-expect": "off",
+      "vitest/expect-expect": [
+        "error",
+        { assertFunctionNames: ["expect*", "assert*"] },
+      ],
 
       "vitest/max-nested-describe": [
         "error",
