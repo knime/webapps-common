@@ -1,5 +1,15 @@
 # @knime/json-forms
 
+## 1.5.14
+
+### Patch Changes
+
+- a674c18: Allow zero duration but disallow empty duration in IntervalInput
+- Updated dependencies [a674c18]
+  - @knime/components@1.19.2
+  - @knime/utils@1.3.1
+  - @knime/rich-text-editor@1.3.27
+
 ## 1.5.13
 
 ### Patch Changes

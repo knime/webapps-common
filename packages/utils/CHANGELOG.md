@@ -1,5 +1,11 @@
 # @knime/utils
 
+## 1.3.1
+
+### Patch Changes
+
+- a674c18: Allow zero duration but disallow empty duration in IntervalInput
+
 ## 1.3.0
 
 ### Minor Changes
