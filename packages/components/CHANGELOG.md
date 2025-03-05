@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.19.1
+
+### Patch Changes
+
+- 0932714: Change wording of apply button in Duration picker
+
 ## 1.19.0
 
 ### Minor Changes
