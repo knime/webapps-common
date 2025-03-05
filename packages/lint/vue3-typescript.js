@@ -51,6 +51,13 @@ export default defineConfigWithVueTs({
     "import/no-duplicates": "error",
     "no-duplicate-imports": "off",
     "unused-imports/no-unused-vars": "off",
-    "vue/block-lang": "warn",
+    "vue/block-lang": [
+      "warn",
+      {
+        script: {
+          lang: "ts",
+        },
+      },
+    ],
   },
 });
