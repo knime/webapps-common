@@ -1,3 +1,4 @@
+/* eslint-disable vitest/expect-expect */
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import ValueSwitch from "../../ValueSwitch/ValueSwitch.vue";
