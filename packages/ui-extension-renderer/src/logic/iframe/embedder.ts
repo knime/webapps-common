@@ -1,3 +1,5 @@
+import { ref } from "vue";
+
 import type { UIExtensionServiceAPILayer } from "../../api";
 import { addDefaults } from "../embedder";
 
@@ -55,15 +57,35 @@ const enableRequestsToMethods = (
     iframeContentWindow.removeEventListener("message", messageHandler);
 };
 
+const useIframeReady = (iframeContentWindow: Window) => {
+  const iframeIsReady = ref(false);
+
+  const handleIFrameReady = (event: MessageEvent) => {
+    if (
+      event.source === iframeContentWindow &&
+      event.data.type === "UIExtensionReady"
+    ) {
+      iframeIsReady.value = true;
+      window.removeEventListener("message", handleIFrameReady);
+    }
+  };
+
+  window.addEventListener("message", handleIFrameReady);
+  return { iframeIsReady };
+};
+
 export const setUpIframeEmbedderService = (
   apiLayer: UIExtensionServiceAPILayer,
   iframeContentWindow: Window,
 ) => {
   enableRequestsToMethods(iframeContentWindow, addDefaults(apiLayer));
   const dispatchEventService = new IframeDispatchEvent(iframeContentWindow);
+
+  const iframeIsReady = useIframeReady(iframeContentWindow);
   const boundDispatchPushEvent =
     dispatchEventService.dispatchPushEvent.bind(dispatchEventService);
   return {
     dispatchPushEvent: boundDispatchPushEvent,
+    iframeIsReady,
   };
 };

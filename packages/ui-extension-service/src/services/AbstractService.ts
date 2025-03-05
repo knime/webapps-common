@@ -16,6 +16,10 @@ export const getInitializedBaseServiceProxy = async (
     "getConfig"
   > & { getConfig: () => typeof extensionConfig };
   initializedBaseService.getConfig = () => extensionConfig;
+  const readyMessage = {
+    type: "UIExtensionReady",
+  };
+  iframeWindow.parent.postMessage(readyMessage, "*");
   /**
    * Without nesting the result in an object, because this is an asynchronous method,
    * e.g. the 'then' method would also be proxied
