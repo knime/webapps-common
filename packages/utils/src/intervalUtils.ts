@@ -161,7 +161,7 @@ export const formatIntervalToHumanReadableIntervalString = (
       if (milliSecondsZero) {
         output += formatPart(toFormat.interval.seconds, "second");
       } else {
-        output += `${toFormat.interval.seconds}.${toFormat.interval.milliseconds.toString().padStart(3, "0")} seconds `;
+        output += `${toFormat.interval.seconds}.${toFormat.interval.milliseconds.toString().padStart(3, "0")} seconds `; // eslint-disable-line no-magic-numbers
       }
     }
   }
