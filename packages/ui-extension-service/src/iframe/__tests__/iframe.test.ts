@@ -117,7 +117,7 @@ describe("iframe UIExtension embedding", () => {
     const payload = "myPayload";
     return new Promise<void>((resolve) => {
       window.addEventListener("message", (event: MessageEvent) => {
-        if (event.data === "ready") {
+        if (event.data.type === "UIExtensionReady") {
           embedder.dispatchPushEvent({ eventType: "my-push-event", payload });
         }
         if (event.data.type !== "pushEventListenerCalled") {
@@ -133,7 +133,6 @@ describe("iframe UIExtension embedding", () => {
             "*",
           ),
         );
-        window.parent.postMessage("ready", "*");
       });
     });
   });
