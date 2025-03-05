@@ -16,12 +16,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/knime/webapps-common",
-    "directory": "lint"
-  },
-  "peerDependencies": {
-    "eslint": "catalog:peer",
-    "prettier": "catalog:peer",
-    "stylelint": "catalog:peer"
+    "directory": "packages/lint"
   },
   "dependencies": {
     "@eslint/js": "^9.20.0",
@@ -43,6 +38,11 @@
   "devDependencies": {
     "eslint": "catalog:",
     "prettier": "catalog:"
+  },
+  "peerDependencies": {
+    "eslint": "catalog:peer",
+    "prettier": "catalog:peer",
+    "stylelint": "catalog:peer"
   },
   "engines": {
     "node": "22.x"
