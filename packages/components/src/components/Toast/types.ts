@@ -68,8 +68,7 @@ export interface Toast {
    * If set, only one toast with the same key will be in the stack. If a new toast with the same key is added, it will be dropped.
    */
   deduplicationKey?: string;
-  // TODO: replace any
-  meta?: any;
+  meta?: Record<string, unknown>;
   stackId?: string;
 }
 
