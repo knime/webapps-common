@@ -28,7 +28,6 @@ type ItemVersion = number | "current-state" | "most-recent";
  * Usage Example:
  * ```
  * const { isDownloading, downloadArtifact } = useDownloadArtifact({
- *      artifactId: "*123abcd", // The artifact ID to download.
  *      maxRetries: 10, // Optional: The maximum number of times to poll for the download URL.
  *      pollingInterval: 2000, // Optional: The interval in milliseconds between each poll.
  *      customFetchClientOptions: // Optional: Custom options to pass to the fetch client.
@@ -40,10 +39,6 @@ type ItemVersion = number | "current-state" | "most-recent";
  *
  */
 export const useDownloadArtifact = (options: {
-  /**
-   * The artifact ID to download.
-   */
-  artifactId: string;
   /**
    * The maximum number of times to poll for the download URL.
    */
