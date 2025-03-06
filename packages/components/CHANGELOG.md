@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.19.3
+
+### Patch Changes
+
+- b30c0b8: Side Drawer widget now accepts CSS style overrides for width and position via prop
+
 ## 1.19.2
 
 ### Patch Changes

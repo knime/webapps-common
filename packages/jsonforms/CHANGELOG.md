@@ -1,5 +1,22 @@
 # @knime/json-forms
 
+## 1.6.0
+
+### Minor Changes
+
+- b30c0b8: Changes to SideDrawer related code to bring side drawer to node dialogues:
+
+  - some new components that are used in side drawers in node dialogues
+  - new SectionHeading component to avoid style duplication between side drawers in node
+    dialogues and the existing SectionLayout component
+  - new renderers and controls to connect the side drawer to the WebUI node dialogue framework
+
+### Patch Changes
+
+- Updated dependencies [b30c0b8]
+  - @knime/components@1.19.3
+  - @knime/rich-text-editor@1.3.28
+
 ## 1.5.14
 
 ### Patch Changes
