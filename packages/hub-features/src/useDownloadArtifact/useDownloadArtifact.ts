@@ -38,21 +38,23 @@ type ItemVersion = number | "current-state" | "most-recent";
  *
  *
  */
-export const useDownloadArtifact = (options: {
-  /**
-   * The maximum number of times to poll for the download URL.
-   */
-  maxRetries?: number;
-  /**
-   * The interval in milliseconds between each poll.
-   */
-  pollingInterval?: number;
-  /**
-   * Custom options to pass to the fetch client.
-   * @example { baseURL: "/_/api" }
-   */
-  customFetchClientOptions?: FetchOptions;
-}) => {
+export const useDownloadArtifact = (
+  options: {
+    /**
+     * The maximum number of times to poll for the download URL.
+     */
+    maxRetries?: number;
+    /**
+     * The interval in milliseconds between each poll.
+     */
+    pollingInterval?: number;
+    /**
+     * Custom options to pass to the fetch client.
+     * @example { baseURL: "/_/api" }
+     */
+    customFetchClientOptions?: FetchOptions;
+  } = {},
+) => {
   const isDownloading = ref(false);
   const downloadPath = ref("");
 
