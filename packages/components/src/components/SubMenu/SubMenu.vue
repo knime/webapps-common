@@ -203,8 +203,7 @@ export default {
       this.getMenuItems()?.onKeydown(event);
     },
     getMenuItems() {
-      // TODO: replace any
-      return this.$refs.menuItems as any;
+      return this.$refs.menuItems as InstanceType<typeof MenuItems>;
     },
     setActiveDescendant(id: string | null) {
       if (id === null) {
