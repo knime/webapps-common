@@ -4,12 +4,11 @@ import { FetchError, type FetchOptions } from "ofetch";
 import { useUploadManager } from "@knime/components";
 import { getFileMimeType, knimeFileFormats, promise } from "@knime/utils";
 
+import { DEFAULT_API_BASE_URL } from "../common/constants";
 import { getFetchClient } from "../common/ofetchClient";
 import { rfcErrors } from "../rfcErrors";
 
 const DEFAULT_MAX_UPLOAD_QUEUE_SIZE = 10;
-
-const DEFAULT_API_BASE_URL = "/_/api";
 
 const DEFAULT_RETRY_DELAY_MS = 50;
 
