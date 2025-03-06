@@ -5,7 +5,6 @@ import type { VueLayoutRenderer } from "../higherOrderComponents/layout/types";
 import type { NamedRenderer } from "../higherOrderComponents/types";
 
 import { checkboxesRenderer } from "./checkboxesRenderer";
-import { columnFilterRenderer } from "./columnFilterRenderer";
 import { comboBoxRenderer } from "./comboBoxRenderer";
 import {
   dateTimeFormatPickerRenderer,
@@ -34,13 +33,14 @@ import { sortListRenderer } from "./sortListRenderer";
 import { textAreaRenderer } from "./textAreaRenderer";
 import { textMessageRenderer } from "./textMessageRenderer";
 import { simpleTwinlistRenderer, twinlistRenderer } from "./twinlistRenderer";
+import { typedNameFilterRenderer } from "./typedNameFilterRenderer";
 import { valueSwitchRenderer } from "./valueSwitchRenderer";
 import { verticalLayoutRenderer } from "./verticalLayoutRenderer";
 import { zonedDateTimeRenderer } from "./zonedDateTimeRenderer";
 
 export const controls = {
   checkboxesRenderer,
-  columnFilterRenderer,
+  typedNameFilterRenderer,
   comboBoxRenderer,
   dateTimeRenderer,
   dateTimeFormatPickerRenderer,

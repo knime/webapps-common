@@ -1,18 +1,21 @@
 <script setup lang="ts">
+import { computed } from "vue";
+
 import type { VueControlPropsForLabelContent } from "../../higherOrderComponents/control/withLabel";
 
 import TwinlistControl, {
   type TwinlistData,
 } from "./MultimodeTwinlistControl.vue";
 
-defineProps<VueControlPropsForLabelContent<TwinlistData>>();
+const props = defineProps<VueControlPropsForLabelContent<TwinlistData>>();
+const options = computed(() => props.control.uischema.options!);
 </script>
 
 <template>
   <TwinlistControl
     v-bind="{ ...$props, ...$attrs }"
-    unknown-values-text="Any unknown column"
     show-unknown-values
-    empty-state-label="No columns in this list"
+    :unknown-values-text="options.unknownValuesText"
+    :empty-state-label="options.emptyStateLabel"
   />
 </template>
