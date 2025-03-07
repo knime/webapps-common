@@ -27,7 +27,7 @@ type ItemVersion = number | "current-state" | "most-recent";
 /**
  *  This composable provides a loading state and a method to download an artifact from the repository and poll for the download URL.
  *  The download is initiated by calling the `downloadArtifact` method with the artifact ID.
- *  The composable will poll the download status until it's ready, at which point it will open the download link in the *same* tab.
+ *  The composable will poll the download status until a terminal download status is reached or the polling timed out. On success, it will start the download in the browser, otherwise, an error toast is displayed.
  *
  *  Usage Example:
  *  ```
