@@ -17,7 +17,6 @@ describe("useDownloadArtifact", () => {
       });
     }
     const downloadComposable = useDownloadArtifact({
-      artifactId: "mockArtifact",
       maxRetries: 3,
       pollingInterval: 10,
       customFetchClientOptions: { baseURL: "/_/api" },
@@ -57,6 +56,7 @@ describe("useDownloadArtifact", () => {
         query: {
           version: 1,
         },
+        signal: expect.any(AbortSignal),
       },
     );
 
@@ -64,6 +64,7 @@ describe("useDownloadArtifact", () => {
       "/_/api/downloads/testDownloadId/status",
       {
         method: "GET",
+        signal: expect.any(AbortSignal),
       },
     );
 
@@ -86,6 +87,7 @@ describe("useDownloadArtifact", () => {
         query: {
           version: 1,
         },
+        signal: expect.any(AbortSignal),
       },
     );
     expect($ofetchMock).toHaveBeenCalledTimes(1);
@@ -94,6 +96,7 @@ describe("useDownloadArtifact", () => {
       "/_/api/downloads/testDownloadId/status",
       {
         method: "GET",
+        signal: expect.any(AbortSignal),
       },
     );
     expect($ofetchMock).toHaveBeenCalledTimes(2);
