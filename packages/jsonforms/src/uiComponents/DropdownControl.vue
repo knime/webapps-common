@@ -23,8 +23,8 @@ const props = withDefaults(
   defineProps<
     VueControlProps<any> & {
       asyncInitialOptions?: Promise<IdAndText[]> | null;
-      controlDataToDropdownValue?: (data: any) => string;
-      dropdownValueToControlData?: (value: string | null) => any;
+      controlDataToDropdownValue?: (data: string) => string;
+      dropdownValueToControlData?: (value: string | null) => any; // TODO: replace any
     }
   >(),
   {

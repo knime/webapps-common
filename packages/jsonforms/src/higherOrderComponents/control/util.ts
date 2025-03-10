@@ -16,34 +16,33 @@ import {
   type VueControlRenderer,
 } from "./types";
 
-// TODO: replace any
 export const controlProps = {
   control: {
-    type: Object as PropType<VueControlProps<any>["control"]>,
+    type: Object as PropType<VueControlProps<any>["control"]>, // TODO: replace any
     required: true,
   },
   handleChange: {
-    type: Function as PropType<VueControlProps<any>["handleChange"]>,
+    type: Function as PropType<VueControlProps<any>["handleChange"]>, // TODO: replace any
     required: true,
   },
   changeValue: {
-    type: Function as PropType<VueControlProps<any>["changeValue"]>,
+    type: Function as PropType<VueControlProps<any>["changeValue"]>, // TODO: replace any
     required: true,
   },
   disabled: {
-    type: Boolean as PropType<VueControlProps<any>["disabled"]>,
+    type: Boolean as PropType<VueControlProps<any>["disabled"]>, // TODO: replace any
     required: true,
   },
   isValid: {
-    type: Boolean as PropType<VueControlProps<any>["isValid"]>,
+    type: Boolean as PropType<VueControlProps<any>["isValid"]>, // TODO: replace any
     required: true,
   },
   messages: {
-    type: Object as PropType<VueControlProps<any>["messages"]>,
+    type: Object as PropType<VueControlProps<any>["messages"]>, // TODO: replace any
     required: true,
   },
   onRegisterValidation: {
-    type: Function as PropType<VueControlProps<any>["onRegisterValidation"]>,
+    type: Function as PropType<VueControlProps<any>["onRegisterValidation"]>, // TODO: replace any
     required: true,
   },
 };
@@ -51,31 +50,32 @@ export const controlProps = {
 export const defineControl = <D>(
   setup: (
     props: VueControlProps<D>,
-    // TODO: replace any
-    ctx: SetupContext<any, SlotsType<ControlSlots>>,
+    ctx: SetupContext<any, SlotsType<ControlSlots>>, // TODO: replace any
   ) => () => VNode | null | VNode[],
 ): VueControl<D> =>
   defineComponent(setup, {
     props: controlProps,
   });
 
-// TODO: replace any
 export const mapControls =
-  (mapper: (control: VueControl<any>, key: string) => VueControl<any>) =>
-  <T extends Record<string, VueControlRenderer>>(cs: T): T =>
-    Object.entries(cs).reduce(
-      (acc, [key, { control, name, tester, __asyncSetup }]) => {
-        // @ts-expect-error TODO: explain why error is expected
-        acc[key] = {
-          control: mapper(control, key),
-          name,
-          tester,
-          __asyncSetup: __asyncSetup || getAsyncSetupMethod(control),
-        };
-        return acc;
-      },
-      {} as T,
-    );
+  // TODO: replace any
+
+
+    (mapper: (control: VueControl<any>, key: string) => VueControl<any>) =>
+    <T extends Record<string, VueControlRenderer>>(cs: T): T =>
+      Object.entries(cs).reduce(
+        (acc, [key, { control, name, tester, __asyncSetup }]) => {
+          // @ts-expect-error Type 'T' is generic and can only be indexed for reading ts(2862)
+          acc[key] = {
+            control: mapper(control, key),
+            name,
+            tester,
+            __asyncSetup: __asyncSetup || getAsyncSetupMethod(control),
+          };
+          return acc;
+        },
+        {} as T,
+      );
 
 export type SpecialControlRenderer<SpecialControl> = Omit<
   VueControlRenderer,

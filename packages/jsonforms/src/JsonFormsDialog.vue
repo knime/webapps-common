@@ -40,8 +40,8 @@ const updateDataMiddleware: (
 ) => JsonFormsCore = (state, action, defaultReducer) => {
   if (
     action.type === UPDATE_DATA &&
-    // TODO: replace any
-    (action.context as any)?.source !== exposedMethodSource
+    // @ts-expect-error source doesn't exist on type object
+    action.context?.source !== exposedMethodSource
   ) {
     setTimeout(() => nextTick(() => emit("updateData", action.path)));
   }

@@ -32,19 +32,20 @@ export type UIExtensionServiceConfig = Identifiers & {
   /**
    * optional initial data to provide directly to the UI Extension.
    */
-  // TODO: replace any
-  initialData?: any;
+  initialData?: object & {
+    result?: string | object;
+    userError?: object;
+    internalError?: object;
+  };
   /**
    * optional initial selection to provide directly to the UI Extension.
    */
-  // TODO: replace any
-  initialSelection?: any;
+  initialSelection?: object;
   /**
    * optional initial state supplying the UI Extension with the shared state of
    * already existing other UI Extensions.
    */
-  // TODO: replace any
-  initialSharedData?: any;
+  initialSharedData?: object;
   /**
    * rendering config to determine in which context the ui extension is rendered
    */
@@ -127,8 +128,7 @@ export interface DataValueViewConfig {
 
 type SomeKnimeUiApiResponse = {
   isSome: true;
-  // TODO: replace any
-  result: any;
+  result: unknown;
 };
 
 type NoneKnimeUiApiResponse = {
@@ -161,8 +161,7 @@ export type UIExtensionServiceAPILayer = {
     params: object | readonly unknown[] | undefined,
   ) => Promise<KnimeUiApiResponse>;
 
-  // TODO: replace any
-  updateDataPointSelection: (params: SelectionParams) => Promise<any>;
+  updateDataPointSelection: (params: SelectionParams) => Promise<unknown>;
 
   setReportingContent: (content: string | false) => void;
 

@@ -28,7 +28,7 @@ const useDirtyStatesGeneric =
           acc[key] = getter();
           return acc;
         },
-        {} as any,
+        {} as any, // TODO: replace any
       );
 
       const isNew = Object.keys(newState).some(

@@ -29,7 +29,7 @@ type Props = {
   /**
    * See ExtensionConfig.initialSharedData
    */
-  // TODO: replace any
+  // TODO: replace any - tried UIExtensionAPILayer but seems to need some adjustment of withDefaults value
   initialSharedData?: any;
   isReporting?: boolean;
   isDialogLayout?: boolean;

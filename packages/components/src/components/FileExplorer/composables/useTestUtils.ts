@@ -3,9 +3,8 @@ import { h } from "vue";
 import type { VueWrapper } from "@vue/test-utils";
 
 type IntersectionObserverMockType = {
-  // TODO: replace any
   // @ts-expect-error implicit any
-  (callback: (...args: any[]) => any);
+  (callback: (...args: never[]) => any);
   __trigger__: (isIntersecting: boolean) => void;
 };
 

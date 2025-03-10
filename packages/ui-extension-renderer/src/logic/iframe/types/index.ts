@@ -7,8 +7,7 @@ type MethodSignature<
   params: Params;
   result: Result;
 };
-// TODO: replace any
-export type Method = (...args: any[]) => any;
+export type Method = (...args: never[]) => unknown;
 export type API = Record<string, Method>;
 type Names<T extends API> = keyof T & string;
 

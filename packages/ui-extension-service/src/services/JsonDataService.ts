@@ -35,7 +35,7 @@ export class JsonDataService extends AbstractService<JsonDataServiceAPILayer> {
           typeof response === "string" && response !== ""
             ? JSON.parse(response)
             : response,
-        ) as Promise<{ result?: any }> // TODO: replace any
+        ) as Promise<{ result?: object }>
     );
   }
 
@@ -121,8 +121,7 @@ export class JsonDataService extends AbstractService<JsonDataServiceAPILayer> {
    *
    * @returns {Promise} rejected or resolved depending on backend response.
    */
-  // TODO: replace any
-  applyData(data: any) {
+  applyData(data: object) {
     return this.callDataService("apply_data", JSON.stringify(data));
   }
 

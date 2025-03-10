@@ -19,8 +19,7 @@ export type VueLayoutProps = {
  * Optional slots that a label can have to render common additional elements.
  */
 export type LayoutSlots = {
-  // TODO: replace any
-  buttons?: (props: { hover: boolean }) => any[];
+  buttons?: (props: { hover: boolean }) => unknown[];
 };
 
 export type VueLayout = ParameterizedComponent<{
