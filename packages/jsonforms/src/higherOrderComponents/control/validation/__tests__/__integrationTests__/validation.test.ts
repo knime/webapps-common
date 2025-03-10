@@ -15,8 +15,8 @@ describe("validation", () => {
         schema: {
           type: "object",
           properties: {
-            stringWithPattern: { type: "string", pattern: "." },
-            doubleWithMinimum: { type: "number", format: "number" },
+            stringWithPattern: { type: "string" },
+            doubleWithMinimum: { type: "number" },
           },
         },
         uischema: {
@@ -25,12 +25,30 @@ describe("validation", () => {
             {
               type: "Control",
               scope: "#/properties/stringWithPattern",
+              options: {
+                validations: [
+                  {
+                    id: "pattern",
+                    parameters: { value: "." },
+                    errorMessage: "The value has to match the pattern '.'",
+                  },
+                ],
+              },
             },
             {
               type: "Control",
               scope: "#/properties/doubleWithMinimum",
               options: {
-                min: 1,
+                validations: [
+                  {
+                    id: "min",
+                    parameters: {
+                      value: 1,
+                      isExclusive: false,
+                    },
+                    errorMessage: "The value has to be at least 1",
+                  },
+                ],
                 format: "number",
               },
             },
@@ -50,7 +68,7 @@ describe("validation", () => {
 
   it("validates text controls", async () => {
     const wrapper = await mountJsonFormsDialog({ stringWithPattern: "abc" });
-    expect(wrapper.text()).toContain('The value has to match the pattern "."');
+    expect(wrapper.text()).toContain("The value has to match the pattern '.'");
   });
 
   it("validates number controls", async () => {

@@ -6,24 +6,36 @@ import { Checkbox, InputField } from "@knime/components";
 import LabeledControl from "../higherOrderComponents/control/LabeledControl.vue";
 import ErrorMessages from "../higherOrderComponents/control/errorMessage/ErrorMessages.vue";
 import type { VueControlProps } from "../higherOrderComponents/control/types";
-import type { Messages } from "../higherOrderComponents/control/validation/types";
 
+import { useBuiltinValidation } from "./composables/useBuiltinValidations";
 import useHideOnNull from "./composables/useHideOnNull";
 import useProvidedState from "./composables/useProvidedState";
 
 const props = defineProps<VueControlProps<string | null>>();
 
-const schemaPattern = props.control.schema.pattern;
-if (typeof schemaPattern === "string") {
-  const pattern = new RegExp(`^(${schemaPattern})$`);
-  const validateAgainstPattern = (value: string | null): Messages => ({
-    errors:
-      value === null || typeof value === "undefined" || !pattern.test(value)
-        ? [`The value has to match the pattern "${schemaPattern}"`]
-        : [],
-  });
-  props.onRegisterValidation(validateAgainstPattern);
-}
+type ValidationParameters = {
+  pattern: { pattern: string };
+  minLength: { minLength: number };
+  maxLength: { maxLength: number };
+};
+
+useBuiltinValidation<ValidationParameters, string | null>(
+  {
+    pattern: ({ pattern }) => {
+      const regex = new RegExp(`^(${pattern})$`);
+      return (value) => regex.test(value ?? "");
+    },
+    minLength:
+      ({ minLength }) =>
+      (value) =>
+        (value?.length ?? 0) >= minLength,
+    maxLength:
+      ({ maxLength }) =>
+      (value) =>
+        (value?.length ?? 0) <= maxLength,
+  },
+  props,
+);
 
 const placeholder = useProvidedState(
   props.control.uischema.options?.placeholderProvider,
