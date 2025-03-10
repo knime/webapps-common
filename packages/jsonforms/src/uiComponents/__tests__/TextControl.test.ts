@@ -115,14 +115,30 @@ describe("TextControl.vue", () => {
 
   it("validates pattern if given", () => {
     const pattern = ".";
-    props.control.schema.pattern = pattern;
+    props.control.uischema.options!.pattern = pattern;
+    const patternErrorMessage = `The value has to match the pattern "${pattern}"`;
+    props.control.uischema.options!.patternErrorMessage = patternErrorMessage;
     const { onRegisterValidation } = mountJsonFormsControl(TextControl, {
       props,
     });
     const validator = onRegisterValidation.mock.calls[0][0];
-    expect(validator("aa").errors[0]).toBe(
-      `The value has to match the pattern "${pattern}"`,
-    );
-    expect(validator("b").errors).toStrictEqual([]);
+    expect(validator.value("aa").errors[0]).toBe(patternErrorMessage);
+    expect(validator.value("b").errors).toStrictEqual([]);
+  });
+
+  it.each([
+    ["minLength", "aa", "bbbbb"],
+    ["maxLength", "aaaaaa", "bbbbb"],
+  ])("validates %s if given", (key, invalidEx, validEx) => {
+    const length = 5;
+    props.control.uischema.options![key] = length;
+    const errorMessage = `${key} is ${length}`;
+    props.control.uischema.options![`${key}ErrorMessage`] = errorMessage;
+    const { onRegisterValidation } = mountJsonFormsControl(TextControl, {
+      props,
+    });
+    const validator = onRegisterValidation.mock.calls[0][0];
+    expect(validator.value(invalidEx).errors[0]).toBe(errorMessage);
+    expect(validator.value(validEx).errors).toStrictEqual([]);
   });
 });

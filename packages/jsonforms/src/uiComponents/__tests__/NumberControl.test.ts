@@ -85,9 +85,13 @@ describe("NumberControl.vue", () => {
     expect(changeValue).toHaveBeenCalledWith(42.0);
   });
 
-  it("rounds to minimum on focusout", () => {
+  it.each([
+    ["inclusive", false, 100],
+    ["exclusive", true, 100.1],
+  ])("rounds to %s minimum on focusout", async (_, exclusive, result) => {
     const minimum = 100;
     props.control.uischema.options!.min = minimum;
+    props.control.uischema.options!.minIsExclusive = exclusive;
     props.control.data = minimum - 1;
     const { wrapper, changeValue } = mountJsonFormsControlLabelContent(
       NumberControl,
@@ -95,13 +99,17 @@ describe("NumberControl.vue", () => {
         props,
       },
     );
-    wrapper.findComponent(NumberInput).vm.$emit("focusout");
-    expect(changeValue).toHaveBeenCalledWith(minimum);
+    await wrapper.findComponent(NumberControlBase).trigger("focusout");
+    expect(changeValue).toHaveBeenCalledWith(result);
   });
 
-  it("rounds to maximum on focusout", () => {
+  it.each([
+    ["inclusive", false, 100],
+    ["exclusive", true, 99.9],
+  ])("rounds to %s maximum on focusout", async (_, exclusive, result) => {
     const maximum = 100;
     props.control.uischema.options!.max = maximum;
+    props.control.uischema.options!.maxIsExclusive = exclusive;
     props.control.data = maximum + 1;
     const { wrapper, changeValue } = mountJsonFormsControlLabelContent(
       NumberControl,
@@ -109,53 +117,79 @@ describe("NumberControl.vue", () => {
         props,
       },
     );
-    wrapper.findComponent(NumberInput).vm.$emit("focusout");
-    expect(changeValue).toHaveBeenCalledWith(maximum);
+    await wrapper.findComponent(NumberControlBase).trigger("focusout");
+    expect(changeValue).toHaveBeenCalledWith(result);
   });
 
   it("sets the minimum via state provider", async () => {
     props.control.uischema.options!.minProvider = "someMinProviderID";
-    let provideMin: (value: number) => void;
+    let provideMin: (params: { value: number; errorMessage: string }) => void;
     const addStateProviderListener = vi.fn((_id, callback) => {
       provideMin = callback;
     });
     const { wrapper, onRegisterValidation } = mountJsonFormsControlLabelContent(
-      NumberControlBase,
+      NumberControl,
       {
         props,
         provide: { addStateProviderListener },
       },
     );
+    const errorMessage = "The value has to be at least 42";
     const registeredValidation = onRegisterValidation.mock.calls[0][0];
     expect(unref(registeredValidation)(0).errors).toStrictEqual([]);
-    provideMin!(42);
+    provideMin!({ value: 42, errorMessage });
     await flushPromises();
     expect(wrapper.findComponent(NumberInput).props().min).toBe(42);
-    expect(unref(registeredValidation)(0).errors).toStrictEqual([
-      "The value has to be at least 42",
-    ]);
+    expect(unref(registeredValidation)(0).errors).toStrictEqual([errorMessage]);
   });
 
   it("sets the maximum via state provider", async () => {
-    props.control.uischema.options!.maxProvider = "someMinProviderID";
-    let provideMax: (value: number) => void;
+    props.control.uischema.options!.maxProvider = "someMaxProviderID";
+    let provideMax: (params: { value: number; errorMessage: string }) => void;
     const addStateProviderListener = vi.fn((_id, callback) => {
       provideMax = callback;
     });
     const { wrapper, onRegisterValidation } = mountJsonFormsControlLabelContent(
-      NumberControlBase,
+      NumberControl,
       {
         props,
         provide: { addStateProviderListener },
       },
     );
+    const errorMessage = "The value has to be 42 at max";
     const registeredValidation = onRegisterValidation.mock.calls[0][0];
     expect(unref(registeredValidation)(0).errors).toStrictEqual([]);
-    provideMax!(42);
+    provideMax!({ value: 42, errorMessage });
     await flushPromises();
     expect(wrapper.findComponent(NumberInput).props().max).toBe(42);
     expect(unref(registeredValidation)(100).errors).toStrictEqual([
-      "The value has to be 42 at max",
+      errorMessage,
     ]);
   });
+
+  it.each([
+    ["inclusive", "min", false, 41, 42],
+    ["exclusive", "min", true, 42, 43],
+    ["inclusive", "max", false, 43, 42],
+    ["exclusive", "max", true, 42, 41],
+  ])(
+    "validates %s %s if given",
+    // eslint-disable-next-line max-params
+    (_, key, exclusive, invalidEx, validEx) => {
+      const length = 42;
+      const errorMessage = `${key} is ${length}`;
+      props.control.uischema.options![key] = length;
+      props.control.uischema.options![`${key}IsExclusive`] = exclusive;
+      props.control.uischema.options![`${key}ErrorMessage`] = errorMessage;
+      const { onRegisterValidation } = mountJsonFormsControlLabelContent(
+        NumberControl,
+        {
+          props,
+        },
+      );
+      const validator = onRegisterValidation.mock.calls[0][0];
+      expect(validator.value(invalidEx).errors[0]).toBe(errorMessage);
+      expect(validator.value(validEx).errors).toStrictEqual([]);
+    },
+  );
 });

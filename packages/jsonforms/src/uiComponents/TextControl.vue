@@ -13,16 +13,57 @@ import useProvidedState from "./composables/useProvidedState";
 
 const props = defineProps<VueControlProps<string | null>>();
 
-const schemaPattern = props.control.schema.pattern;
-if (typeof schemaPattern === "string") {
-  const pattern = new RegExp(`^(${schemaPattern})$`);
-  const validateAgainstPattern = (value: string | null): Messages => ({
-    errors:
-      value === null || typeof value === "undefined" || !pattern.test(value)
-        ? [`The value has to match the pattern "${schemaPattern}"`]
-        : [],
-  });
-  props.onRegisterValidation(validateAgainstPattern);
+const {
+  minLength,
+  maxLength,
+  pattern: optionPattern,
+  minLengthErrorMessage,
+  maxLengthErrorMessage,
+  patternErrorMessage,
+} = props.control.uischema.options || {};
+
+if (
+  typeof [minLength, maxLength, optionPattern].find(
+    (prop) => typeof prop !== "undefined",
+  ) !== "undefined"
+) {
+  const createErrors = ({
+    value,
+    minLength,
+    maxLength,
+    optionPattern,
+  }: {
+    value: string | null;
+    minLength?: number;
+    maxLength?: number;
+    optionPattern?: string;
+  }): Messages => {
+    const errors: string[] = [];
+    const valueLength = value?.length ?? 0;
+    if (typeof minLength === "number" && valueLength < minLength) {
+      errors.push(minLengthErrorMessage);
+    }
+    if (typeof maxLength === "number" && valueLength > maxLength) {
+      errors.push(maxLengthErrorMessage);
+    }
+    if (typeof optionPattern === "string") {
+      const pattern = new RegExp(`^(${optionPattern})$`);
+      if (value === null || !pattern.test(value)) {
+        errors.push(patternErrorMessage);
+      }
+    }
+    return { errors };
+  };
+  const validator = computed(
+    () => (value: string | null) =>
+      createErrors({
+        value,
+        minLength,
+        maxLength,
+        optionPattern,
+      }),
+  );
+  props.onRegisterValidation(validator);
 }
 
 const placeholder = useProvidedState(

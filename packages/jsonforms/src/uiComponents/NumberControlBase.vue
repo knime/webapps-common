@@ -8,21 +8,51 @@ import type { VueControlPropsForLabelContent } from "../higherOrderComponents/co
 
 import useProvidedState from "./composables/useProvidedState";
 
+type ProvidedState = {
+  value: number;
+  errorMessage: string;
+};
+
 const props = defineProps<
   VueControlPropsForLabelContent<number> & {
     type: "integer" | "double";
   }
 >();
 
+const DEFAULT_STEP_SIZE_INTEGER = 1;
+const DEFAULT_STEP_SIZE_DOUBLE = 0.1;
+const stepSize =
+  props.type === "integer"
+    ? DEFAULT_STEP_SIZE_INTEGER
+    : DEFAULT_STEP_SIZE_DOUBLE;
+
 const {
   min: constantMin,
   minProvider,
   max: constantMax,
   maxProvider,
+  minErrorMessage,
+  maxErrorMessage,
+  minIsExclusive,
+  maxIsExclusive,
 } = props.control.uischema.options || {};
 
-const min = useProvidedState(minProvider, constantMin);
-const max = useProvidedState(maxProvider, constantMax);
+const minStateDefault: ProvidedState = {
+  value: constantMin,
+  errorMessage: minErrorMessage,
+};
+const maxStateDefault: ProvidedState = {
+  value: constantMax,
+  errorMessage: maxErrorMessage,
+};
+
+const minState = useProvidedState(minProvider, minStateDefault);
+const maxState = useProvidedState(maxProvider, maxStateDefault);
+
+const respectsMin = (value: number, minimum: number) =>
+  minIsExclusive ? value > minimum : value >= minimum;
+const respectsMax = (value: number, maximum: number) =>
+  maxIsExclusive ? value < maximum : value <= maximum;
 
 if (
   typeof [minProvider, maxProvider, constantMin, constantMax].find(
@@ -31,18 +61,24 @@ if (
 ) {
   const createErrors = ({
     value,
-    minimum,
-    maximum,
+    minState,
+    maxState,
   }: {
     value: number;
-    minimum?: number;
-    maximum?: number;
+    minState?: ProvidedState;
+    maxState?: ProvidedState;
   }): Messages => {
-    if (typeof minimum === "number" && value < minimum) {
-      return { errors: [`The value has to be at least ${minimum}`] };
+    if (
+      typeof minState?.value === "number" &&
+      !respectsMin(value, minState.value)
+    ) {
+      return { errors: [minState.errorMessage] };
     }
-    if (typeof maximum === "number" && value > maximum) {
-      return { errors: [`The value has to be ${maximum} at max`] };
+    if (
+      typeof maxState?.value === "number" &&
+      !respectsMax(value, maxState.value)
+    ) {
+      return { errors: [maxState.errorMessage] };
     }
     return { errors: [] };
   };
@@ -50,8 +86,8 @@ if (
     () => (value: number) =>
       createErrors({
         value,
-        minimum: min.value,
-        maximum: max.value,
+        minState: minState.value,
+        maxState: maxState.value,
       }),
   );
   props.onRegisterValidation(minMaxValidator);
@@ -59,10 +95,20 @@ if (
 
 const onFocusOut = () => {
   const num = props.control.data;
-  if (typeof min.value === "number" && num < min.value) {
-    props.changeValue(min.value);
-  } else if (typeof max.value === "number" && num > max.value) {
-    props.changeValue(max.value);
+  const { value: min } = minState.value;
+  const { value: max } = maxState.value;
+  if (typeof min === "number" && !respectsMin(num, min)) {
+    if (minIsExclusive) {
+      props.changeValue(min + stepSize);
+    } else {
+      props.changeValue(min);
+    }
+  } else if (typeof max === "number" && !respectsMax(num, max)) {
+    if (maxIsExclusive) {
+      props.changeValue(max - stepSize);
+    } else {
+      props.changeValue(max);
+    }
   }
 };
 </script>
@@ -74,8 +120,8 @@ const onFocusOut = () => {
     :disabled="disabled"
     :model-value="control.data"
     :type="type"
-    :min="min"
-    :max="max"
+    :min="minState.value"
+    :max="maxState.value"
     :is-valid
     compact
     @update:model-value="changeValue"
