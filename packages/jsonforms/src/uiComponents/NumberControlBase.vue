@@ -3,10 +3,9 @@ import { computed } from "vue";
 
 import { NumberInput } from "@knime/components";
 
-import type { Messages } from "../higherOrderComponents/control/validation/types";
 import type { VueControlPropsForLabelContent } from "../higherOrderComponents/control/withLabel";
 
-import useProvidedState from "./composables/useProvidedState";
+import { useBuiltinValidation } from "./composables/useBuiltinValidations";
 
 const props = defineProps<
   VueControlPropsForLabelContent<number> & {
@@ -14,55 +13,61 @@ const props = defineProps<
   }
 >();
 
-const {
-  min: constantMin,
-  minProvider,
-  max: constantMax,
-  maxProvider,
-} = props.control.uischema.options || {};
+const DEFAULT_STEP_SIZE_INTEGER = 1;
+const DEFAULT_STEP_SIZE_DOUBLE = 0.1;
+const stepSize =
+  props.type === "integer"
+    ? DEFAULT_STEP_SIZE_INTEGER
+    : DEFAULT_STEP_SIZE_DOUBLE;
 
-const min = useProvidedState(minProvider, constantMin);
-const max = useProvidedState(maxProvider, constantMax);
+type BoundValidationParameters = {
+  isExclusive: boolean;
+};
 
-if (
-  typeof [minProvider, maxProvider, constantMin, constantMax].find(
-    (prop) => typeof prop !== "undefined",
-  ) !== "undefined"
-) {
-  const createErrors = ({
-    value,
-    minimum,
-    maximum,
-  }: {
-    value: number;
-    minimum?: number;
-    maximum?: number;
-  }): Messages => {
-    if (typeof minimum === "number" && value < minimum) {
-      return { errors: [`The value has to be at least ${minimum}`] };
-    }
-    if (typeof maximum === "number" && value > maximum) {
-      return { errors: [`The value has to be ${maximum} at max`] };
-    }
-    return { errors: [] };
-  };
-  const minMaxValidator = computed(
-    () => (value: number) =>
-      createErrors({
-        value,
-        minimum: min.value,
-        maximum: max.value,
-      }),
-  );
-  props.onRegisterValidation(minMaxValidator);
-}
+type MinValidationParameters = BoundValidationParameters & {
+  min: number;
+};
+
+type MaxValidationParameters = BoundValidationParameters & {
+  max: number;
+};
+
+const respectsMin =
+  ({ min, isExclusive }: MinValidationParameters) =>
+  (value: number) =>
+    isNaN(value) || (isExclusive ? value > min : value >= min);
+const respectsMax =
+  ({ max, isExclusive }: MaxValidationParameters) =>
+  (value: number) =>
+    isNaN(value) || (isExclusive ? value < max : value <= max);
+
+const validationParams = useBuiltinValidation(
+  {
+    min: respectsMin,
+    max: respectsMax,
+  },
+  props,
+);
+
+const minParams = computed(() => validationParams.value.min);
+const maxParams = computed(() => validationParams.value.max);
 
 const onFocusOut = () => {
   const num = props.control.data;
-  if (typeof min.value === "number" && num < min.value) {
-    props.changeValue(min.value);
-  } else if (typeof max.value === "number" && num > max.value) {
-    props.changeValue(max.value);
+  if (minParams.value && !respectsMin(minParams.value)(num)) {
+    const { min, isExclusive } = minParams.value;
+    if (isExclusive) {
+      props.changeValue(min + stepSize);
+    } else {
+      props.changeValue(min);
+    }
+  } else if (maxParams.value && !respectsMax(maxParams.value)(num)) {
+    const { max, isExclusive } = maxParams.value;
+    if (isExclusive) {
+      props.changeValue(max - stepSize);
+    } else {
+      props.changeValue(max);
+    }
   }
 };
 </script>
@@ -74,8 +79,8 @@ const onFocusOut = () => {
     :disabled="disabled"
     :model-value="control.data"
     :type="type"
-    :min="min"
-    :max="max"
+    :min="minParams?.min"
+    :max="maxParams?.max"
     :is-valid
     compact
     @update:model-value="changeValue"
