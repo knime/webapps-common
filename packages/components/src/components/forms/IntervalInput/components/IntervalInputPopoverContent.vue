@@ -208,7 +208,7 @@ const requestSavePopup = () => {
         :disabled="!isPopoverModelValid.valid"
         @click="requestSavePopup"
       >
-        Set duration
+        Set interval between instances
       </FunctionButton>
     </Tooltip>
   </div>
