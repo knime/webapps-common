@@ -130,7 +130,7 @@ const requestSavePopup = () => {
 
 <template>
   <span class="header">
-    <span class="input-title">Duration</span>
+    <span class="input-title">Interval</span>
     <ValueSwitch
       v-if="props.format === 'DATE_OR_TIME'"
       v-model="popoverUsedFormat"
@@ -208,7 +208,7 @@ const requestSavePopup = () => {
         :disabled="!isPopoverModelValid.valid"
         @click="requestSavePopup"
       >
-        Set duration
+        Set
       </FunctionButton>
     </Tooltip>
   </div>
