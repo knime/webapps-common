@@ -31,8 +31,7 @@ export class CachingSelectionService extends SelectionService {
     }
   }
 
-  // TODO: replace any
-  async initialSelection(): Promise<any> {
+  async initialSelection(): Promise<unknown> {
     const initialSelection = await super.initialSelection();
     if (initialSelection) {
       this.cachedSelection = new Set(initialSelection as string[]);
@@ -40,8 +39,7 @@ export class CachingSelectionService extends SelectionService {
     return Promise.resolve(initialSelection);
   }
 
-  // TODO: replace any
-  add(selection: string[]): Promise<any> {
+  add(selection: string[]): Promise<unknown> {
     this.addToChache(selection);
     return super.add(selection);
   }
@@ -52,8 +50,7 @@ export class CachingSelectionService extends SelectionService {
     });
   }
 
-  // TODO: replace any
-  remove(selection: string[]): Promise<any> {
+  remove(selection: string[]): Promise<unknown> {
     this.removeFromCache(selection);
     return super.remove(selection);
   }
@@ -64,8 +61,7 @@ export class CachingSelectionService extends SelectionService {
     });
   }
 
-  // TODO: replace any
-  replace(selection: string[]): Promise<any> {
+  replace(selection: string[]): Promise<unknown> {
     this.replaceCache(selection);
     return super.replace(selection);
   }

@@ -34,11 +34,9 @@ type MergePromises<T, S> =
  */
 type MergeReturnTypesOfTwo<F1, F2> = {
   [K in keyof F1 | keyof F2]: K extends keyof F1
-    ? // TODO: replace any
-      F1[K] extends (...args: any[]) => infer R1
+    ? F1[K] extends (...args: never[]) => infer R1
       ? K extends keyof F2
-        ? // TODO: replace any
-          F2[K] extends (...args: any[]) => infer R2
+        ? F2[K] extends (...args: never[]) => infer R2
           ? (...args: Parameters<F1[K]>) => MergePromises<R1, R2>
           : never
         : F1[K]

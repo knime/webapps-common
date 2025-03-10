@@ -8,8 +8,7 @@ const preventEvent = (event: Event) => {
 
 export type DropdownNavigationElement = {
   index: number;
-  // TODO: replace any
-  onClick: () => any;
+  onClick: () => unknown;
 };
 
 export type DropdownNavigationOptions = {

@@ -1,3 +1,4 @@
+import type { IdAndText } from "./ChoicesUiSchema";
 import type { Control } from "./Control";
 import type { AlertParams } from "./alert";
 
@@ -19,8 +20,9 @@ type registerWatcher = (params: {
   dependencies: string[];
 }) => Promise<() => void>;
 
-// TODO: replace any
-type getData = (params: unknown) => Promise<any>;
+type getData = (
+  params: unknown,
+) => Promise<{ result: IdAndText[]; state: string; message: string[] }>;
 
 /**
  * Types provided by the JsonFormsDialog.vue component
@@ -31,8 +33,9 @@ export interface Provided {
   trigger: (triggerId: unknown) => void;
   sendAlert: (params: AlertParams) => void;
   // To be removed (see JsonFormsDialog.vue)
-  // TODO: replace any
-  getPossibleValuesFromUiSchema: (control: Control) => Promise<any[]>;
+  getPossibleValuesFromUiSchema: (
+    control: Control,
+  ) => Promise<(object & { id: string; text: string })[]>;
   registerWatcher: registerWatcher;
   getData: getData;
 }

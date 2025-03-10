@@ -54,6 +54,7 @@ describe("JsonDataService", () => {
     it("fetches initialData if it's passed to constructor", async () => {
       const { jsonDataService } = constructJsonDataService();
       const response = await jsonDataService.initialData();
+      // @ts-expect-error 'extensionConfig.initialData' is possibly 'null' or 'undefined'
       expect(response).toStrictEqual(extensionConfig.initialData.result);
     });
 

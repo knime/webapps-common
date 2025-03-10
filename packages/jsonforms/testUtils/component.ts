@@ -19,11 +19,12 @@ export type ProvidedMethods = {
 };
 
 // TODO: replace any
-export type VueControlTestProps<C extends abstract new (...args: any) => any> =
-  Omit<
-    InstanceType<C>["$props"],
-    "handleChange" | "changeValue" | "onRegisterValidation"
-  >;
+export type VueControlTestProps<
+  C extends abstract new (...args: never[]) => any,
+> = Omit<
+  InstanceType<C>["$props"],
+  "handleChange" | "changeValue" | "onRegisterValidation"
+>;
 
 const getGlobal = ({
   provide,

@@ -135,6 +135,6 @@ export default async (
       normalPossibleValues = [];
     }
   }
-  // @ts-expect-error TODO: explain why error is expected
+  // @ts-expect-error Argument of type 'boolean | PossibleValue[] | undefined' is not assignable to parameter of type 'PossibleValue[]'
   return addSpecialColumns(normalPossibleValues, control);
 };
