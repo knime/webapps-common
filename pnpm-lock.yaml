@@ -183,8 +183,8 @@ importers:
         specifier: 'catalog:'
         version: 3.2.3
       prismjs:
-        specifier: 1.29.0
-        version: 1.29.0
+        specifier: 1.30.0
+        version: 1.30.0
       vue:
         specifier: 'catalog:'
         version: 3.4.27(typescript@5.4.5)
@@ -4038,8 +4038,8 @@ packages:
     engines: {node: '>=14'}
     hasBin: true
 
-  prismjs@1.29.0:
-    resolution: {integrity: sha512-Kx/1w86q/epKcmte75LNrEoT+lX8pBpavuAbvJWRXar7Hz8jrtF+e3vY751p0R8H9HdArwaCTNDDzHg/ScJK1Q==}
+  prismjs@1.30.0:
+    resolution: {integrity: sha512-DEvV2ZF2r2/63V+tK8hQvrR2ZGn10srHbXviTlcv7Kpzw8jWiNTqbVgjO3IY8RxrrOUF8VPMQQFysYYYv0YZxw==}
     engines: {node: '>=6'}
 
   prosemirror-changeset@2.2.1:
@@ -8538,7 +8538,7 @@ snapshots:
 
   prettier@3.3.2: {}
 
-  prismjs@1.29.0: {}
+  prismjs@1.30.0: {}
 
   prosemirror-changeset@2.2.1:
     dependencies:

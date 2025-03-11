@@ -25,7 +25,7 @@
     "@knime/utils": "workspace:*",
     "@vueuse/core": "catalog:",
     "consola": "catalog:",
-    "prismjs": "1.29.0",
+    "prismjs": "1.30.0",
     "vue": "catalog:",
     "vue-router": "4.1.6"
   },
