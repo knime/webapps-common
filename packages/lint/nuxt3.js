@@ -1,9 +1,10 @@
 import { createConfigForNuxt } from "@nuxt/eslint-config";
 
+import tempDisable from "./temporary-disable.js";
 import vue3Config from "./vue3.js";
 
 // nuxt provides factory function for config customization
-export default createConfigForNuxt(vue3Config, {
+export default await createConfigForNuxt(...vue3Config, {
   languageOptions: {
     globals: {
       createError: true,
@@ -17,4 +18,4 @@ export default createConfigForNuxt(vue3Config, {
       useRoute: true,
     },
   },
-});
+}).append(...tempDisable);

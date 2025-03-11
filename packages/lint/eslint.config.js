@@ -5,7 +5,7 @@ import baseConfig from "./base.js";
 export default [
   ...baseConfig,
   {
-    name: "root-lint",
+    name: "@knime/eslint-config/eslint-config",
     files: ["*.js"],
     languageOptions: {
       globals: {

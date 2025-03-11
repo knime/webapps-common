@@ -16,7 +16,7 @@ export default [
   eslint.configs.recommended, // eslint:recommended
   ...prettierOverrides,
   {
-    name: "baseConfig-all",
+    name: "@knime/eslint-config/base",
     files: ["**/*.js", "**/*.jsx", "**/*.cjs", "**/*.mjs"],
     plugins: {
       "unused-imports": unusedImports,
@@ -243,7 +243,7 @@ export default [
   },
   // overrrides
   {
-    name: "baseConfig-configfiles",
+    name: "@knime/eslint-config/base-configfiles",
     files: [
       "**/config.{js,ts,mjs,cjs}",
       "**/*.config.{js,ts,mjs,cjs}",
@@ -262,6 +262,7 @@ export default [
   },
   // eslint config uses esm style which requires file extensions and can't easily be reconfigured in the node environment
   {
+    name: "@knime/eslint-config/base-eslint-config-import-extensions",
     files: ["eslint.config.{js,mjs}"],
     rules: {
       "import/extensions": "off",

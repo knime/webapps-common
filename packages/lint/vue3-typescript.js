@@ -5,18 +5,15 @@ import {
 import importPlugin from "eslint-plugin-import-x";
 
 import prettierOverridesVue from "./prettierOverwrites-vue.js";
+import tempDisable from "./temporary-disable.js";
 import vue3Config from "./vue3.js";
-
-// console.log(
-//   vue3Config.find((config) => config.name?.includes("baseConfig-all")).files,
-// );
 
 // uses a utility function to modify given ESLint configs to work with Vue.js + Typescript
 export default defineConfigWithVueTs({
-  // since vue3config only extends baseconfig to include vue files this ruleset doesn't apply baseconfig rules to ts files
+  // extend baseconfig to also apply to ts files
   extends: [
     ...vue3Config.map((config) => {
-      if (config.name?.includes("baseConfig-all")) {
+      if (config.name?.includes("@knime/eslint-config/base")) {
         return {
           ...config,
           files: [
@@ -31,7 +28,8 @@ export default defineConfigWithVueTs({
       return config;
     }),
     vueTsConfigs.recommended,
-    prettierOverridesVue,
+    ...prettierOverridesVue,
+    ...tempDisable,
   ],
   plugins: {
     import: importPlugin,

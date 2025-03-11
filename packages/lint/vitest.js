@@ -1,8 +1,10 @@
 import vitest from "@vitest/eslint-plugin";
 
+import tempDisable from "./temporary-disable.js";
+
 export default [
   {
-    name: "vitest rules",
+    name: "@knime/eslint-config/vitest",
     files: ["**/__tests__/**/*.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
 
     plugins: {
@@ -49,4 +51,5 @@ export default [
       "vitest/padding-around-expect-groups": "off",
     },
   },
+  ...tempDisable,
 ];
