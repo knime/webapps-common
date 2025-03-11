@@ -3,11 +3,11 @@ import type {
   UserErrorAlert,
 } from "@knime/ui-extension-renderer/api";
 
-import type { InitialDataResponse } from "../services/types/initialDataTypes";
+import type { InitialDataResponse } from "../services/types/initialData";
 import {
   INTERNAL_ERROR_CODE,
   USER_ERROR_CODE,
-} from "../services/types/jsonRPCTypes";
+} from "../services/types/jsonRPC";
 
 export const initialDataResponseToAlert = (
   initialDataResponse: InitialDataResponse,

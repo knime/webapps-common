@@ -17,7 +17,7 @@ import {
   type JsonRpcOtherError,
   type JsonRpcUserError,
   USER_ERROR_CODE,
-} from "../types/jsonRPCTypes";
+} from "../types/jsonRPC";
 
 import { extensionConfig } from "./mocks";
 
@@ -28,7 +28,15 @@ describe("JsonDataService", () => {
     extensionConfig = defaultExtensionConfig,
   ) => {
     const apiLayer = {
-      callNodeDataService: vi.fn().mockResolvedValue({}),
+      callNodeDataService: vi.fn().mockImplementation(({ serviceType }) => {
+        if (serviceType === "data") {
+          return Promise.resolve({ result: { result: "data" } });
+        } else if (serviceType === "apply_data") {
+          return Promise.resolve({
+            result: JSON.stringify({ isApplied: true }),
+          });
+        }
+      }),
       publishData: vi.fn(),
       sendAlert: vi.fn(),
       getConfig: () => extensionConfig,
@@ -125,12 +133,15 @@ describe("JsonDataService", () => {
   });
 
   describe("service.applyData", () => {
-    let jsonDataService: JsonDataService, callNodeDataService: Mock;
+    let jsonDataService: JsonDataService,
+      callNodeDataService: Mock,
+      sendAlert: Mock;
 
     beforeEach(() => {
       const constructed = constructJsonDataService();
       jsonDataService = constructed.jsonDataService;
       callNodeDataService = constructed.callNodeDataService;
+      sendAlert = constructed.sendAlert;
     });
 
     afterEach(() => {
@@ -139,11 +150,42 @@ describe("JsonDataService", () => {
 
     it('calls the apply data service when "applyData" is called', async () => {
       const appliedData = { view: "123" };
-      await jsonDataService.applyData(appliedData);
+      const result = await jsonDataService.applyData(appliedData);
+      expect(result).toStrictEqual({ isApplied: true });
       const parameter = getFirstCallParameter(callNodeDataService);
       expect(parameter).toMatchObject({
         serviceType: "apply_data" satisfies DataServiceType,
         dataServiceRequest: JSON.stringify(appliedData),
+      });
+    });
+
+    it('sends warning alerts when "applyData" returns warning messages', async () => {
+      callNodeDataService.mockResolvedValueOnce({
+        result: JSON.stringify({
+          isApplied: true,
+          warningMessages: ["warning"],
+        }),
+      });
+      const appliedData = { view: "123" };
+      const result = await jsonDataService.applyData(appliedData);
+      expect(result).toStrictEqual({ isApplied: true });
+      expect(sendAlert).toHaveBeenCalledWith({
+        type: "warn",
+        warnings: [{ message: "warning" }],
+      });
+    });
+
+    it('sends error alerts when "applyData" returns an error', async () => {
+      callNodeDataService.mockResolvedValueOnce({
+        result: JSON.stringify({ isApplied: false, error: "error message" }),
+      });
+      const appliedData = { view: "123" };
+      const result = await jsonDataService.applyData(appliedData);
+      expect(result).toStrictEqual({ isApplied: false });
+      expect(sendAlert).toHaveBeenCalledWith({
+        type: "error",
+        message: "error message",
+        originalCode: USER_ERROR_CODE,
       });
     });
   });

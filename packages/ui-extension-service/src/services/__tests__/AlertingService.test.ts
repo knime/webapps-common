@@ -3,10 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import { setUpCustomEmbedderService } from "@knime/ui-extension-renderer/testing";
 
 import { AlertingService } from "..";
-import {
-  USER_ERROR_CODE,
-  USER_ERROR_CODE_BLOCKING,
-} from "../types/jsonRPCTypes";
+import { USER_ERROR_CODE, USER_ERROR_CODE_BLOCKING } from "../types/jsonRPC";
 
 describe("AlertingService", () => {
   const constructAlertingService = () => {

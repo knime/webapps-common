@@ -1,10 +1,7 @@
 import type { AlertType } from "@knime/ui-extension-renderer/api";
 
 import { AbstractService } from "./AbstractService";
-import {
-  USER_ERROR_CODE,
-  USER_ERROR_CODE_BLOCKING,
-} from "./types/jsonRPCTypes";
+import { USER_ERROR_CODE, USER_ERROR_CODE_BLOCKING } from "./types/jsonRPC";
 import type { AlertingServiceAPILayer } from "./types/serviceApiLayers";
 
 export type { AlertType };

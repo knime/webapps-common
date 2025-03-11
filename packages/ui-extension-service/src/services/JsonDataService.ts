@@ -1,10 +1,14 @@
-import type { DataServiceType } from "@knime/ui-extension-renderer/api";
+import {
+  type DataServiceType,
+  USER_ERROR_CODE,
+} from "@knime/ui-extension-renderer/api";
 
 import { createJsonRpcRequest, initialDataResponseToAlert } from "../utils";
 
 import { AbstractService } from "./AbstractService";
-import type { InitialDataResponse } from "./types/initialDataTypes";
-import type { JSONRPCError, JSONRPCResponse } from "./types/jsonRPCTypes";
+import type { ApplyDataResponse } from "./types/applyData";
+import type { InitialDataResponse } from "./types/initialData";
+import type { JSONRPCError, JSONRPCResponse } from "./types/jsonRPC";
 import type { JsonDataServiceAPILayer } from "./types/serviceApiLayers";
 /**
  * A utility class to interact with JsonDataServices implemented by a UI Extension node.
@@ -118,10 +122,24 @@ export class JsonDataService extends AbstractService<JsonDataServiceAPILayer> {
    * data to be applied/saved should be registered *prior* to invoking this method. If none is registered, a
    * default payload of "null" will be sent instead.
    *
-   * @returns {Promise} rejected or resolved depending on backend response.
+   * @returns a boolean whether the data was successfully applied.
    */
-  applyData(data: any) {
-    return this.callDataService("apply_data", JSON.stringify(data));
+  async applyData(data: any) {
+    const internalResult = JSON.parse(
+      (await this.callDataService("apply_data", JSON.stringify(data))).result,
+    ) satisfies ApplyDataResponse;
+    if (!internalResult.isApplied) {
+      this.handleError({
+        code: USER_ERROR_CODE,
+        message: internalResult.error,
+        data: {},
+      });
+      return { isApplied: false };
+    }
+    if (internalResult.warningMessages) {
+      this.handleWarnings(internalResult.warningMessages);
+    }
+    return { isApplied: true };
   }
 
   private handleError(error: JSONRPCError) {
