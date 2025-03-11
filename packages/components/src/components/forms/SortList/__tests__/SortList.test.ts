@@ -115,9 +115,9 @@ describe("SortList.vue", () => {
   });
 
   describe("moving items", () => {
-    const shallowMountSortList = () => shallowMount(SortList, { props });
+    const _shallowMountSortList = () => shallowMount(SortList, { props });
 
-    let wrapper: ReturnType<typeof shallowMountSortList>,
+    let wrapper: ReturnType<typeof _shallowMountSortList>,
       scrollUpIntoView: () => unknown,
       scrollDownIntoView: () => unknown,
       setCurrentKeyNavIndex: () => unknown;

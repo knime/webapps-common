@@ -9,9 +9,9 @@ import {
 } from "vite";
 import dts from "vite-plugin-dts";
 
-const LibraryBuilds = ["es", "iifeMin", "iifeDev"] as const;
+const _LibraryBuilds = ["es", "iifeMin", "iifeDev"] as const;
 
-type LibraryBuildTypes = (typeof LibraryBuilds)[number];
+type LibraryBuildTypes = (typeof _LibraryBuilds)[number];
 
 const terserOptions: Record<LibraryBuildTypes, TerserOptions> = {
   es: {},
