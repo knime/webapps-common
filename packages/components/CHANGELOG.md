@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.19.4
+
+### Patch Changes
+
+- 5f3ca36: Further improve wording of apply button in Duration picker
+
 ## 1.19.3
 
 ### Patch Changes
