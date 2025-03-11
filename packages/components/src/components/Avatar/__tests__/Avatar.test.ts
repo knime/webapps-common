@@ -38,6 +38,8 @@ describe("Avatar.vue", () => {
     expect(wrapper.attributes("href")).toBe(testUrl);
   });
 
+  // TODO: missing assertion
+  // eslint-disable-next-line vitest/expect-expect
   it("fallback to initials placeholder", () => {
     const wrapper = mount(Avatar, {
       props: {
