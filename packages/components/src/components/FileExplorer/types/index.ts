@@ -17,30 +17,30 @@ export type ItemIconRenderer = (
   item: FileExplorerItem,
 ) => FunctionalComponent<SVGAttributes>;
 
-export namespace FileExplorerContextMenu {
-  type DefaultOptions = "rename" | "delete";
+// export namespace FileExplorerContextMenu {
+type DefaultOptions = "rename" | "delete";
 
-  export type Anchor = {
-    item: FileExplorerItem;
-    index: number;
-    element: HTMLElement;
-  };
+export type Anchor = {
+  item: FileExplorerItem;
+  index: number;
+  element: HTMLElement;
+};
 
-  export type MenuItem = BaseMenuItem & {
-    id: DefaultOptions | Omit<string, DefaultOptions>;
-  };
+export type FileExplorerMenuItem = BaseMenuItem & {
+  id: DefaultOptions | Omit<string, DefaultOptions>;
+};
 
-  export type CreateDefaultMenuOption = (
-    item: FileExplorerItem,
-    customProps?: Partial<BaseMenuItem>,
-  ) => MenuItem;
+export type CreateDefaultMenuOption = (
+  item: FileExplorerItem,
+  customProps?: Partial<BaseMenuItem>,
+) => FileExplorerMenuItem;
 
-  export type ItemClickHandler = (menuItem: MenuItem) => void;
+export type ItemClickHandler = (menuItem: FileExplorerMenuItem) => void;
 
-  export type ItemClickPayload = {
-    contextMenuItem: MenuItem;
-    anchorItem: FileExplorerItem;
-    isDelete: boolean;
-    isRename: boolean;
-  };
-}
+export type ItemClickPayload = {
+  contextMenuItem: FileExplorerMenuItem;
+  anchorItem: FileExplorerItem;
+  isDelete: boolean;
+  isRename: boolean;
+};
+// }
