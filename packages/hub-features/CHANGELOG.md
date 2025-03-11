@@ -1,5 +1,16 @@
 # @knime/hub-features
 
+## 1.3.0
+
+### Minor Changes
+
+- e9beadc: Port VersionManager components
+
+### Patch Changes
+
+- Updated dependencies [6c99c22]
+  - @knime/components@1.20.0
+
 ## 1.2.25
 
 ### Patch Changes

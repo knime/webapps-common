@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.20.0
+
+### Minor Changes
+
+- 6c99c22: Add avatar component
+
 ## 1.19.4
 
 ### Patch Changes
