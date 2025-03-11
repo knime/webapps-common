@@ -21,6 +21,8 @@ export type HintComponentOptions = {
   hideButtons?: boolean;
   /** Source paths and type of the video */
   video?: VideoSource;
+  /** Image url for the hint */
+  image?: string;
   /** side defaults to bottom */
   side?: "top" | "right" | "bottom" | "left";
   /** alignment defaults to center */

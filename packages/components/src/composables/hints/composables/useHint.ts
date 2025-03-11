@@ -1,3 +1,4 @@
+/* eslint-disable no-undefined */
 import {
   type MaybeRef,
   type Ref,
@@ -34,7 +35,6 @@ type UseHintSetupOptions = {
   ) => Promise<boolean>;
 };
 
-// eslint-disable-next-line no-undefined
 const noop = () => undefined;
 
 const hintSetup: Record<string, UseHintSetupOptions> = {};
@@ -168,12 +168,10 @@ export const useHint = ({ hintSetupId = "default" } = {}) => {
     const {
       title,
       description,
-      // eslint-disable-next-line no-undefined
       linkText = undefined,
-      // eslint-disable-next-line no-undefined
       linkHref = undefined,
       video = [],
-      // eslint-disable-next-line no-undefined
+      image = undefined,
       referenceSelector: configuredSelector = undefined,
       hideButtons = false,
       align = "center",
@@ -196,6 +194,7 @@ export const useHint = ({ hintSetupId = "default" } = {}) => {
       linkText,
       linkHref,
       video,
+      image,
       hideButtons,
       onCompleteHint: () => {
         unWatchVisibility();

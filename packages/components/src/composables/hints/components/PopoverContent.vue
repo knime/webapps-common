@@ -10,6 +10,7 @@ interface Props {
   linkText?: string;
   linkHref?: string;
   video?: VideoSource;
+  image?: string;
   hideButtons?: boolean;
 }
 
@@ -37,6 +38,12 @@ const skipAll = () => {
         ><CloseIcon
       /></FunctionButton>
     </div>
+    <img
+      v-if="image"
+      :src="image"
+      :alt="`Image for hint ${title}`"
+      class="image"
+    />
     <AutoPlayVideo v-if="video && video.length > 0" with-border class="video">
       <source
         v-for="{ source, type } in video"
@@ -63,6 +70,8 @@ const skipAll = () => {
   padding: var(--space-16);
   min-width: 270px;
   position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
 h6 {

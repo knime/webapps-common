@@ -24,6 +24,7 @@ const getContent = (hint: HintComponentOptions) => {
     linkText: hint.linkText,
     hideButtons: hint.hideButtons,
     video: hint.video,
+    image: hint.image,
   };
 };
 

@@ -20,6 +20,8 @@ export interface HintConfiguration {
   linkHref?: string;
   /** Source paths and type of the video */
   video?: VideoSource;
+  /** Image url for the hint */
+  image?: string;
   /** Hide the skip all and got it buttons */
   hideButtons?: boolean;
   /** Hint ids that need to be shown before this one is shown */
