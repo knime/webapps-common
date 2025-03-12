@@ -1,7 +1,7 @@
 import { computed, onMounted, onUnmounted, ref } from "vue";
 import type { Editor } from "@tiptap/vue-3";
 
-import { navigatorUtils } from "@knime/utils";
+import { getMetaOrCtrlKey } from "@knime/utils";
 
 import type { LinkToolOptions } from "../utils/custom-link";
 
@@ -138,7 +138,7 @@ export const useLinkTool = ({
     if (!editor?.isFocused) {
       return;
     }
-    const ctrlPressed = event[navigatorUtils.getMetaOrCtrlKey()];
+    const ctrlPressed = event[getMetaOrCtrlKey()];
     if (ctrlPressed && event.key === "k") {
       onLinkToolClick();
     }
