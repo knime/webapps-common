@@ -27,6 +27,6 @@ export const isKeyWithoutModifiers = (
  *
  * @returns name of the primary modifier key for the current platform
  */
-export const getMetaOrCtrlKey = (): string => {
-  return navigatorUtils.getMetaOrCtrlKey();
+export const getMetaOrCtrlKey = (): "ctrlKey" | "metaKey" => {
+  return navigatorUtils.isMac() ? "metaKey" : "ctrlKey";
 };

@@ -15,8 +15,8 @@ afterEach(() => {
 vi.mock("@knime/utils", () => ({
   navigatorUtils: {
     isMac: vi.fn(),
-    getMetaOrCtrlKey: vi.fn(),
   },
+  getMetaOrCtrlKey: vi.fn(),
 }));
 
 describe("hotkeys", () => {
@@ -84,15 +84,12 @@ describe("hotkeys", () => {
   describe("getMetaOrCtrlKey", () => {
     it("should return 'metaKey' on macOS", () => {
       vi.mocked(navigatorUtils.isMac).mockReturnValue(true);
-      vi.mocked(navigatorUtils.getMetaOrCtrlKey).mockReturnValue("metaKey");
 
       expect(getMetaOrCtrlKey()).toBe("metaKey");
     });
 
     it("should return 'ctrlKey' on non-macOS platforms", () => {
       vi.mocked(navigatorUtils.isMac).mockReturnValue(false);
-      vi.mocked(navigatorUtils.getMetaOrCtrlKey).mockReturnValue("ctrlKey");
-
       expect(getMetaOrCtrlKey()).toBe("ctrlKey");
     });
   });

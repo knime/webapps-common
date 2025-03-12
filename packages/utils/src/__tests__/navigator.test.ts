@@ -7,7 +7,7 @@ import {
   vi,
 } from "vitest";
 
-import { getMetaOrCtrlKey, isMac, isWindows } from "../navigator";
+import { isMac, isWindows } from "../navigator";
 
 const SAMPLE_OUTPUT_USER_AGENT_MAC =
   "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:109.0) Gecko/20100101 Firefox/109.0";
@@ -30,11 +30,6 @@ describe("navigator", () => {
       expect(userAgentGetter).toHaveBeenCalled();
     });
 
-    it("returns metaKey when calling getMetaOrCtrlKey", () => {
-      expect(getMetaOrCtrlKey()).toBe("metaKey");
-      expect(userAgentGetter).toHaveBeenCalled();
-    });
-
     it("returns false when calling isWindows", () => {
       expect(isWindows()).toBeFalsy();
       expect(userAgentGetter).toHaveBeenCalled();
@@ -52,11 +47,6 @@ describe("navigator", () => {
 
     it("returns false when calling isMac", () => {
       expect(isMac()).toBeFalsy();
-      expect(userAgentGetter).toHaveBeenCalled();
-    });
-
-    it("returns metaKey when calling getMetaOrCtrlKey", () => {
-      expect(getMetaOrCtrlKey()).toBe("ctrlKey");
       expect(userAgentGetter).toHaveBeenCalled();
     });
 

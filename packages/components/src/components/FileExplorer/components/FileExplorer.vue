@@ -3,7 +3,7 @@
 import { computed, nextTick, ref, toRef, toRefs, watch } from "vue";
 import { useResizeObserver } from "@vueuse/core";
 
-import { navigatorUtils } from "@knime/utils";
+import { getMetaOrCtrlKey } from "@knime/utils";
 import {
   SameSizeManager,
   useVirtualLine,
@@ -502,7 +502,7 @@ const openFileOrEnterFolder = (item: FileExplorerItemType) => {
 };
 
 const handleEnterKey = (event: KeyboardEvent, item: FileExplorerItemType) => {
-  const ctrlOrMeta = navigatorUtils.getMetaOrCtrlKey();
+  const ctrlOrMeta = getMetaOrCtrlKey();
   if (event[ctrlOrMeta]) {
     return;
   }

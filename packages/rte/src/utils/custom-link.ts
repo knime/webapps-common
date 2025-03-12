@@ -2,7 +2,7 @@ import { getAttributes } from "@tiptap/core";
 import Link from "@tiptap/extension-link";
 import { Plugin, PluginKey } from "@tiptap/pm/state";
 
-import { navigatorUtils } from "@knime/utils";
+import { getMetaOrCtrlKey, navigatorUtils } from "@knime/utils";
 
 const buildUrlRegex = () => {
   const httpPrefixCheck = "(http://www\\.|https://www\\.|http://|https://)";
@@ -78,7 +78,7 @@ export const CustomLink = Link.extend({
           const attrs = getAttributes(view.state, "link");
           const link = (event.target as HTMLElement)?.closest("a");
 
-          const metaOrCtrlKeyPressed = event[navigatorUtils.getMetaOrCtrlKey()];
+          const metaOrCtrlKeyPressed = event[getMetaOrCtrlKey()];
 
           if (metaOrCtrlKeyPressed && link && attrs.href) {
             window.open(attrs.href, attrs.target);
