@@ -1,3 +1,5 @@
+import { getMetaOrCtrlKey as getMetaOrCtrlKeys } from "@knime/utils";
+
 /**
  *
  * @returns true when the platform of the user is Mac
@@ -16,5 +18,5 @@ export const getMetaOrCtrlKey = () => {
       "getMetaOrCtrlKey is deprecated on navigatorUtils. Please use hotkeys.ts instead.",
     );
   }
-  return isMac() ? "metaKey" : "ctrlKey";
+  return getMetaOrCtrlKeys();
 };
