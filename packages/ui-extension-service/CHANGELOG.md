@@ -1,5 +1,11 @@
 # @knime/ui-extension-service
 
+## 2.2.0
+
+### Minor Changes
+
+- 4ee61de: Enabled warning messages on apply
+
 ## 2.1.1
 
 ### Patch Changes
