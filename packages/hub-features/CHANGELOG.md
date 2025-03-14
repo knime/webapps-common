@@ -1,5 +1,11 @@
 # @knime/hub-features
 
+## 1.5.0
+
+### Minor Changes
+
+- 75dffab: Add useVersionsApi composable
+
 ## 1.4.0
 
 ### Minor Changes
