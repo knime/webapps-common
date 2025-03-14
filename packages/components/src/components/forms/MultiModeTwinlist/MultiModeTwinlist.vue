@@ -75,7 +75,7 @@ export default {
      * Hiding and disabling
      */
     showMode: {
-      default: false,
+      default: true,
       type: Boolean,
     },
     // enable search in case of manual selection

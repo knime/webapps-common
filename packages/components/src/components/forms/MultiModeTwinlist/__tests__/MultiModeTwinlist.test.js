@@ -224,6 +224,7 @@ describe("MultiModeMultiModeTwinlist.vue", () => {
       leftLabel: "Choose",
       rightLabel: "The value",
       size: 3,
+      showMode: false,
     };
 
     it("does not render the selection mode by default", () => {
@@ -320,6 +321,7 @@ describe("MultiModeMultiModeTwinlist.vue", () => {
           mode: "regex",
           withPatternLabel: true,
           patternLabel: "Pattern label",
+          showMode: false,
         },
       });
       expect(wrapper.findComponent(SearchInput).exists()).toBeTruthy();
@@ -504,6 +506,7 @@ describe("MultiModeMultiModeTwinlist.vue", () => {
           mode: "type",
           withTypesLabel: true,
           typesLabel: "Types label",
+          showMode: false,
         },
       });
       expect(wrapper.findComponent(Checkboxes).exists()).toBeTruthy();
