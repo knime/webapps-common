@@ -146,7 +146,6 @@ const onLabelLeave = () => {
   position: relative;
   background-color: var(--knime-white);
   display: flex;
-  justify-content: space-between;
   align-items: center;
   align-items: stretch;
   padding: 10px;
@@ -155,6 +154,8 @@ const onLabelLeave = () => {
 
   & .tooltip {
     display: flex;
+    justify-content: space-between;
+    width: 100%;
   }
 
   & p {
