@@ -1,5 +1,11 @@
 # @knime/hub-features
 
+## 1.4.0
+
+### Minor Changes
+
+- 14f573e: add useDownloadArtifact composable that can be used to download artifacts from the hub and returns a reactive state over ongoing downloads that are being prepared for download
+
 ## 1.3.1
 
 ### Patch Changes
