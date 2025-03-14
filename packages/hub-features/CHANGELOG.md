@@ -1,5 +1,11 @@
 # @knime/hub-features
 
+## 1.5.1
+
+### Patch Changes
+
+- 3f6c9c5: Fix VersionItem content width
+
 ## 1.5.0
 
 ### Minor Changes
