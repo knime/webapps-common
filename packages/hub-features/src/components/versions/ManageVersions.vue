@@ -18,7 +18,7 @@ import type {
 
 type ManageVersionsProps = {
   hasUnversionedChanges: boolean;
-  unversionedSavepoint?: ItemSavepoint & WithAvatar & WithLabels;
+  unversionedSavepoint?: (ItemSavepoint & WithAvatar & WithLabels) | null;
   currentVersion: NamedItemVersion["version"] | null;
   versionHistory: Array<NamedItemVersion & WithAvatar & WithLabels>;
   loading: boolean;

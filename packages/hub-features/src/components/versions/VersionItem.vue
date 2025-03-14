@@ -92,11 +92,11 @@ const onLabelLeave = () => {
 
 <template>
   <div>
-    <Tooltip ref="tooltip" :text="tooltipText">
-      <div
-        :class="['version-item-container', isSelected && 'selected']"
-        @click="toggleVersionSelection"
-      >
+    <div
+      :class="['version-item-container', isSelected && 'selected']"
+      @click="toggleVersionSelection"
+    >
+      <Tooltip ref="tooltip" class="tooltip" :text="tooltipText">
         <div class="left">
           <h6>
             {{ version.title }}
@@ -136,8 +136,8 @@ const onLabelLeave = () => {
             </nav>
           </div>
         </div>
-      </div>
-    </Tooltip>
+      </Tooltip>
+    </div>
   </div>
 </template>
 
@@ -152,6 +152,10 @@ const onLabelLeave = () => {
   padding: 10px;
   gap: 15px;
   transition: background-color 0.25s ease;
+
+  & .tooltip {
+    display: flex;
+  }
 
   & p {
     font-size: 11px;
