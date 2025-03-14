@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.21.0
+
+### Minor Changes
+
+- 02c95c8: Allow hints to also support images
+
 ## 1.20.0
 
 ### Minor Changes
