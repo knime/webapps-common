@@ -1,5 +1,5 @@
-<script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from "vue";
+<script setup lang="ts" generic="T">
+import { type Ref, computed, onBeforeUnmount, onMounted, ref } from "vue";
 import { set } from "lodash-es";
 import { v4 as uuidv4 } from "uuid";
 
@@ -18,18 +18,25 @@ import useHideOnNull from "./composables/useHideOnNull";
 import useProvidedState from "./composables/useProvidedState";
 import LoadingDropdown from "./loading/LoadingDropdown.vue";
 
+export type Maybe<T> = T | null | undefined;
+
 const props = withDefaults(
   defineProps<
-    VueControlProps<any> & {
+    VueControlProps<Maybe<T>> & {
       asyncInitialOptions?: Promise<IdAndText[]> | null;
-      controlDataToDropdownValue?: (data: any) => string;
-      dropdownValueToControlData?: (value: string | null) => any;
+      controlDataToDropdownValue?: (
+        data: Maybe<T>,
+      ) => string | null | undefined;
+      dropdownValueToControlData?: (value: string | null) => T;
     }
   >(),
   {
     asyncInitialOptions: null,
-    controlDataToDropdownValue: (data: string) => data,
-    dropdownValueToControlData: (value: string | null) => value,
+    /**
+     * We use string as default type.
+     */
+    controlDataToDropdownValue: (data: Maybe<T>) => (data as string) ?? "",
+    dropdownValueToControlData: (value: string | null) => value as T,
   },
 );
 
@@ -48,7 +55,10 @@ const options = withSpecialChoices(
   props.control,
 );
 
-const previousControlData = ref(props.control.data);
+const previousControlData: Ref<Maybe<T>> = ref();
+onMounted(() => {
+  previousControlData.value = props.control.data;
+});
 
 const getFirstValueFromDropdownOrNull = (result: IdAndText[]) => {
   return props.dropdownValueToControlData(
@@ -76,8 +86,8 @@ const { showCheckbox, showControl, checkboxProps } = useHideOnNull(
   },
 );
 
-const dropdownValue = computed(() =>
-  props.controlDataToDropdownValue(props.control.data),
+const dropdownValue = computed(
+  () => props.controlDataToDropdownValue(props.control.data) ?? "",
 );
 
 const choicesUpdateHandler = computed(

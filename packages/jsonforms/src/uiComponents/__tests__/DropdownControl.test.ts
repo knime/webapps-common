@@ -13,17 +13,20 @@ import { flushPromises } from "@vue/test-utils";
 import { Dropdown } from "@knime/components";
 
 import {
-  type VueControlTestProps,
+  type OmitCallbacks,
   getControlBase,
   mountJsonFormsControl,
 } from "../../../testUtils/component";
+import type { VueControlProps } from "../../higherOrderComponents";
 import type { IdAndText } from "../../types/ChoicesUiSchema";
 import type { Control } from "../../types/Control";
-import DropdownControl from "../DropdownControl.vue";
+import DropdownControl, { type Maybe } from "../DropdownControl.vue";
 
 describe("DropdownControl.vue", () => {
   let wrapper: VueWrapper,
-    props: VueControlTestProps<typeof DropdownControl>,
+    props: OmitCallbacks<VueControlProps<Maybe<string>>> & {
+      asyncInitialOptions?: Promise<IdAndText[]>;
+    },
     changeValue: Mock;
 
   const path = "test";

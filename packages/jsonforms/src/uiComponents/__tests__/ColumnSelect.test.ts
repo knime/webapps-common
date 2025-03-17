@@ -19,7 +19,6 @@ import {
 import type { PossibleValue } from "../../types/ChoicesUiSchema";
 import type { Control } from "../../types/Control";
 import ColumnSelect from "../ColumnSelect.vue";
-import DropdownControl from "../DropdownControl.vue";
 
 describe("ColumnSelect.vue", () => {
   let wrapper: VueWrapper,
@@ -112,7 +111,9 @@ describe("ColumnSelect.vue", () => {
     });
 
     it("updates compatible types on value change", () => {
-      const dropdownControl = wrapper.findComponent(DropdownControl);
+      const dropdownControl = wrapper.findComponent({
+        name: "DropdownControl",
+      });
       const dropdown = dropdownControl.findComponent(Dropdown);
       dropdown.vm.$emit("update:modelValue", "Universe_1_1");
       expect(changeValue).toHaveBeenNthCalledWith(2, {
@@ -122,7 +123,9 @@ describe("ColumnSelect.vue", () => {
     });
 
     it("sets empty compatible types on missing value", () => {
-      const dropdownControl = wrapper.findComponent(DropdownControl);
+      const dropdownControl = wrapper.findComponent({
+        name: "DropdownControl",
+      });
       const dropdown = dropdownControl.findComponent(Dropdown);
       dropdown.vm.$emit("update:modelValue", "I am Missing");
       expect(changeValue).toHaveBeenNthCalledWith(2, {
@@ -135,7 +138,8 @@ describe("ColumnSelect.vue", () => {
   describe("optionsGenerator", () => {
     it("optionsGenerator correctly transforms the data", async () => {
       expect(
-        await wrapper.getComponent(DropdownControl).props().asyncInitialOptions,
+        await wrapper.getComponent({ name: "DropdownControl" }).props()
+          .asyncInitialOptions,
       ).toEqual([
         expect.objectContaining({
           id: "Universe_0_0",
@@ -170,7 +174,8 @@ describe("ColumnSelect.vue", () => {
       });
 
       expect(
-        await wrapper.getComponent(DropdownControl).props().asyncInitialOptions,
+        await wrapper.getComponent({ name: "DropdownControl" }).props()
+          .asyncInitialOptions,
       ).toEqual([
         expect.objectContaining({
           id: "<none>",
@@ -213,9 +218,8 @@ describe("ColumnSelect.vue", () => {
       },
     });
     expect(() =>
-      wrapper.getComponent(DropdownControl).props().dropdownValueToControlData!(
-        "Value",
-      ),
+      wrapper.getComponent({ name: "DropdownControl" }).props()
+        .dropdownValueToControlData!("Value"),
     ).toThrowError("Must not convert data before column choices are fetched.");
   });
 
@@ -248,7 +252,8 @@ describe("ColumnSelect.vue", () => {
     ];
     provideChoices!(providedChoices);
     expect(
-      await wrapper.getComponent(DropdownControl).props().asyncInitialOptions,
+      await wrapper.getComponent({ name: "DropdownControl" }).props()
+        .asyncInitialOptions,
     ).toStrictEqual(providedChoices);
   });
 });

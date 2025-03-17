@@ -8,10 +8,10 @@ import type { PossibleValue } from "../types/ChoicesUiSchema";
 import { withSpecialChoices } from "../utils/getPossibleValuesFromUiSchema";
 import inject from "../utils/inject";
 
-import DropdownControl from "./DropdownControl.vue";
+import DropdownControl, { type Maybe } from "./DropdownControl.vue";
 import useProvidedState from "./composables/useProvidedState";
 
-type ColumnSelectValue = { selected: string | null } | undefined;
+type ColumnSelectValue = Maybe<{ selected: string | null }>;
 
 const props = defineProps<VueControlProps<ColumnSelectValue>>();
 
@@ -43,7 +43,7 @@ const toData = (value: string | null) => {
   return { selected: value, compatibleTypes };
 };
 
-const toValue = ({ selected }: any) => selected;
+const toValue = (data: ColumnSelectValue) => data?.selected ?? null;
 
 const updateData = () => {
   const initialData = props.control.data;

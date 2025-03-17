@@ -8,7 +8,6 @@ import {
   getControlBase,
   mountJsonFormsControl,
 } from "../../../testUtils/component";
-import DropdownControl from "../DropdownControl.vue";
 import OneOfDropdown from "../OneOfDropdown.vue";
 
 describe("OneOfDropdown.vue", () => {
@@ -64,7 +63,8 @@ describe("OneOfDropdown.vue", () => {
 
   it("computed dropdown options from oneof options", async () => {
     expect(
-      await wrapper.getComponent(DropdownControl).props().asyncInitialOptions,
+      await wrapper.getComponent({ name: "DropdownControl" }).props()
+        .asyncInitialOptions,
     ).toEqual([
       {
         id: "Universe_0_0",
