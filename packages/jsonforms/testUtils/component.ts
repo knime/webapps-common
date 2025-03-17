@@ -18,12 +18,13 @@ export type ProvidedMethods = {
   addStateProviderListener: Mock;
 };
 
-export type VueControlTestProps<
-  C extends abstract new (...args: never[]) => void,
-> = Omit<
-  InstanceType<C>["$props"],
+export type OmitCallbacks<T> = Omit<
+  T,
   "handleChange" | "changeValue" | "onRegisterValidation"
 >;
+
+export type VueControlTestProps<C extends abstract new (...args: any) => any> =
+  OmitCallbacks<InstanceType<C>["$props"]>;
 
 const getGlobal = ({
   provide,

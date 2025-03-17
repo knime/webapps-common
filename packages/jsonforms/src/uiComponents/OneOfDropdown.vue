@@ -2,9 +2,9 @@
 import type { VueControlProps } from "../higherOrderComponents/control/types";
 import { optionsMapper } from "../utils";
 
-import DropdownControl from "./DropdownControl.vue";
+import DropdownControl, { type Maybe } from "./DropdownControl.vue";
 
-const props = defineProps<VueControlProps<string | null>>();
+const props = defineProps<VueControlProps<Maybe<string>>>();
 const options = props.control.schema?.oneOf?.map(optionsMapper) ?? [];
 const asyncInitialOptions = Promise.resolve(options);
 </script>
