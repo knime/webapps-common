@@ -1,0 +1,1 @@
+# @knime/pnpm-audit-resolver

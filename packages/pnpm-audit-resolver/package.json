@@ -1,0 +1,30 @@
+{
+  "name": "@knime/pnpm-audit-resolver",
+  "version": "1.0.0",
+  "description": "Resolves audit issues be defining actions to it",
+  "homepage": "https://knime.github.io/webapps-common/",
+  "license": "GPL 3 and Additional Permissions according to Sec. 7 (SEE the file LICENSE)",
+  "author": "KNIME AG, Zurich, Switzerland",
+  "type": "module",
+  "scripts": {
+    "audit:resolve": "node src/index"
+  },
+  "main": "src/index.js",
+  "files": [
+    "src",
+    "CHANGELOG.md"
+  ],
+  "exports": {
+    ".": {
+      "import": "./src/index.js"
+    }
+  },
+  "bin": {
+    "audit-resolve": "./src/index.js"
+  },
+  "pnpm": {
+    "auditConfig": {
+      "ignoreGhsas": []
+    }
+  }
+}

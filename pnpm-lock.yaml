@@ -516,6 +516,8 @@ importers:
         specifier: 'catalog:'
         version: 3.3.2
 
+  packages/pnpm-audit-resolver: {}
+
   packages/rte:
     dependencies:
       '@knime/components':
