@@ -204,7 +204,7 @@ export default {
 
       /** Mimic stepping to nearest step with safe value rounding */
       let parsedVal = value + increment;
-      parsedVal = Math.round(parsedVal * 10) / 10; // eslint-disable-line no-magic-numbers
+      parsedVal = Math.round(parsedVal * 10) / 10;
 
       /**
        * All measures have been taken to ensure a valid value at this point, so if the last

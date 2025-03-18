@@ -33,7 +33,7 @@ export const fromString = (value: string): Date => {
     ];
 
     for (const format of otherFormats) {
-      const parsed = parse(value, format, new Date(1970, 0, 1)); // eslint-disable-line no-magic-numbers
+      const parsed = parse(value, format, new Date(1970, 0, 1));
       if (!isNaN(parsed.getTime())) {
         return parsed;
       }

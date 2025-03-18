@@ -99,6 +99,7 @@ export default {
     "toggle-inverse-search",
     "focus",
   ],
+  expose: ["focus"],
   data() {
     return {
       caseSensitiveSearch: this.initialCaseSensitiveSearch,
@@ -119,7 +120,6 @@ export default {
       return { ...defaultTooltips, ...this.tooltips };
     },
   },
-  expose: ["focus"],
   async mounted() {
     if (this.focusOnMount) {
       await nextTick();

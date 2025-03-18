@@ -277,7 +277,6 @@ export const useFileUpload = (options: UseFileUploadOptions = {}) => {
         const uploadPayload = await promise.retryPromise({
           fn: () => prepareUpload(parentId, enqueableFiles),
           excludeError: (error: FetchError) =>
-            // eslint-disable-next-line no-magic-numbers
             Boolean(error.statusCode && error.statusCode < 500),
           retryDelayMS: DEFAULT_RETRY_DELAY_MS,
         });

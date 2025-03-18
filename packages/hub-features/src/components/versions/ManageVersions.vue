@@ -42,7 +42,6 @@ const labelsEventBus = useEventBus("versionLabels");
 
 const closeLabelPopovers = throttle(() => {
   labelsEventBus.emit("versionLabelShowPopover");
-  // eslint-disable-next-line no-magic-numbers
 }, 10000); // Arbitrary delay to reduce overhead, is automatically reset @scrollend
 </script>
 

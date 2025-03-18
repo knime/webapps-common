@@ -18,8 +18,6 @@ export type WarningAlert = {
   warnings: WarningData[];
 };
 
-export type ErrorDetails = unknown;
-
 export type UserErrorAlert = {
   type: "error";
   code: UserErrorCode;

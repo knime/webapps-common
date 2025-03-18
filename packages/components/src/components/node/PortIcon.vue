@@ -49,10 +49,8 @@ export default {
       ];
 
       // y and d are chosen so the triangle (including strokeWidth) fits precisely in the 9x9 port
-      /* eslint-disable no-magic-numbers */
       const d = Math.sqrt(5) / 2;
       const y = d / 2 + 1 / 4;
-      /* eslint-enable no-magic-numbers */
 
       // move points towards the center of the triangle according to strokeWidth
       const { strokeWidth } = this;

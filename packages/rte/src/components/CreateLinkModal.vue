@@ -25,7 +25,6 @@ watch(
     editedUrl.value = props.url.value;
     setTimeout(() => {
       inputRef.value?.focus();
-      // eslint-disable-next-line no-magic-numbers
     }, 200);
   },
   { deep: true },

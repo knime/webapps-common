@@ -32,7 +32,6 @@
     "consola": "catalog:peer"
   },
   "devDependencies": {
-    "@knime/eslint-config": "workspace:*",
     "@vitejs/plugin-vue": "catalog:",
     "@vue/test-utils": "catalog:",
     "consola": "catalog:",

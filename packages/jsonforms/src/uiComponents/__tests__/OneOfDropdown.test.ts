@@ -59,8 +59,7 @@ describe("OneOfDropdown.vue", () => {
   });
 
   it("renders", () => {
-    // @ts-expect-error Property 'exists' does not exist on type
-    expect(wrapper.getComponent(Dropdown).exists()).toBe(true);
+    expect(wrapper.findComponent(Dropdown).exists()).toBe(true);
   });
 
   it("computed dropdown options from oneof options", async () => {

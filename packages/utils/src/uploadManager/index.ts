@@ -1,6 +1,5 @@
 import { AbortError, createAbortablePromise, retryPromise } from "../promise";
 
-// eslint-disable-next-line no-magic-numbers
 const CHUNK_SIZE = 50 * 1024 * 1024; // 50 MB per chunk
 
 const DEFAULT_RETRY_COUNT = 5;

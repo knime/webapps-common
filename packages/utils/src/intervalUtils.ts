@@ -52,7 +52,6 @@ const extractDurationFromRegexMatch = (
   negative: boolean,
   match: RegExpExecArray,
 ): Duration => {
-  // eslint-disable-next-line no-magic-numbers
   const milliseconds = parseInt(match[4]?.padEnd(3, "0") ?? "0", 10);
 
   return {
@@ -104,7 +103,6 @@ export const formatIntervalToISOIntervalString = (
   } else {
     output += `T${toFormat.interval.hours}H${toFormat.interval.minutes}M${toFormat.interval.seconds}.${toFormat.interval.milliseconds
       .toString()
-      // eslint-disable-next-line no-magic-numbers
       .padStart(3, "0")}S`;
   }
 
@@ -160,7 +158,7 @@ export const formatIntervalToHumanReadableIntervalString = (
       if (milliSecondsZero) {
         output += formatPart(toFormat.interval.seconds, "second");
       } else {
-        output += `${toFormat.interval.seconds}.${toFormat.interval.milliseconds.toString().padStart(3, "0")} seconds `; // eslint-disable-line no-magic-numbers
+        output += `${toFormat.interval.seconds}.${toFormat.interval.milliseconds.toString().padStart(3, "0")} seconds `;
       }
     }
   }

@@ -18,4 +18,10 @@ export default [
       },
     },
   },
+  {
+    files: ["packages/lint/**/*.js"],
+    rules: {
+      "no-magic-numbers": "off",
+    },
+  },
 ];
