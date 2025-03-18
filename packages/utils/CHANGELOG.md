@@ -1,5 +1,11 @@
 # @knime/utils
 
+## 1.3.2
+
+### Patch Changes
+
+- bb186d1: add isWindows check to navigator utils
+
 ## 1.3.1
 
 ### Patch Changes
