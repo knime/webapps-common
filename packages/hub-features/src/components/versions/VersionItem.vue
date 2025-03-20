@@ -21,7 +21,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  select: [version: NamedItemVersion["version"] | null];
+  select: [selectionStatus: boolean];
   delete: [];
   restore: [];
 }>();
@@ -50,11 +50,7 @@ const isDescriptionTruncated = computed(
 const isDescriptionExpanded = ref(false);
 
 const toggleVersionSelection = () => {
-  if (props.isSelected) {
-    emit("select", null);
-  } else {
-    emit("select", props.version.version);
-  }
+  emit("select", !props.isSelected);
 };
 
 const menuItems = computed(() =>

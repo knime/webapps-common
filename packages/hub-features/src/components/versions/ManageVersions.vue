@@ -61,7 +61,8 @@ const closeLabelPopovers = throttle(() => {
           class="changes"
         >
           <CurrentState
-            :has-edit-capability
+            :has-edit-capability="hasEditCapability"
+            :has-previous-version="versionHistory.length > 0"
             :is-selected="currentVersion === CURRENT_STATE_VERSION"
             :current-state-savepoint="unversionedSavepoint"
             @select="$emit('select', CURRENT_STATE_VERSION)"

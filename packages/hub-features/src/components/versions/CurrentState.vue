@@ -13,6 +13,7 @@ import type { ItemSavepoint, WithAvatar, WithLabels } from "./types";
 const props = defineProps<{
   isSelected: boolean;
   hasEditCapability: boolean;
+  hasPreviousVersion: boolean;
   currentStateSavepoint: ItemSavepoint & WithAvatar & WithLabels;
 }>();
 
@@ -23,7 +24,7 @@ const emit = defineEmits<{
 }>();
 
 const menuItems = computed(() => {
-  return props.hasEditCapability
+  return props.hasEditCapability && props.hasPreviousVersion
     ? [
         {
           text: "Discard",
@@ -69,7 +70,7 @@ const onMenuItemClick = (_: Event, item: (typeof menuItems.value)[number]) => {
           with-border
           compact
           class="create-button"
-          @click="$emit('createVersion')"
+          @click.stop="$emit('createVersion')"
         >
           Create version
         </Button>
