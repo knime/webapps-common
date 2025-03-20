@@ -1,6 +1,7 @@
 import { computed, ref } from "vue";
 import { FetchError, type FetchOptions } from "ofetch";
 
+import type { DownloadItem as DownloadItemExternal } from "@knime/components";
 import { sleep } from "@knime/utils";
 
 import { DEFAULT_API_BASE_URL } from "../common/constants";
@@ -30,13 +31,9 @@ type ItemVersion = number | "current-state" | "most-recent";
 /**
  * Tracks the state of each concurrent download.
  */
-type DownloadItem = {
-  downloadId: string;
+type DownloadItem = DownloadItemExternal & {
   itemId: string;
-  status: "READY" | "IN_PROGRESS" | "FAILED" | "CANCELLED";
   version?: ItemVersion;
-  downloadUrl?: string;
-  failureDetails?: string;
 };
 
 export type UseDownloadArtifactOptions = {
@@ -54,6 +51,9 @@ export type UseDownloadArtifactOptions = {
    */
   customFetchClientOptions?: FetchOptions;
 };
+
+const isAbortError = (error: unknown) =>
+  error instanceof DOMException && error.name === "AbortError";
 
 /**
  * This composable supports multiple concurrent downloads. Each time you call ```start```, the following behavior applies:
@@ -120,6 +120,17 @@ export const useDownloadArtifact = (
     );
   };
 
+  const openDownload = (downloadUrl: string) => {
+    const a = document.createElement("a");
+    a.target = "_blank";
+    a.href = downloadUrl;
+    a.download = "";
+    a.style.display = "none";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
   /**
    * Makes a request to the download status endpoint for the given download item.
    * Returns a boolean that is true if a terminal state has been reached (download is ready,
@@ -145,7 +156,8 @@ export const useDownloadArtifact = (
         downloadItems.value[downloadId].status = "READY";
         downloadItems.value[downloadId].downloadUrl =
           statusResponse.downloadUrl;
-        window.open(statusResponse.downloadUrl, "_parent");
+        // open download in a new tab
+        openDownload(statusResponse.downloadUrl);
         return true;
       } else if (statusResponse?.status === "FAILED") {
         let details = "Download failed";
@@ -157,10 +169,11 @@ export const useDownloadArtifact = (
     } catch (error: unknown) {
       consola.error("Error fetching status:", error);
       // https://developer.mozilla.org/en-US/docs/Web/API/AbortController/abort
-      const isAbortError =
-        error instanceof DOMException && error.name === "AbortError";
+      const isAborted =
+        isAbortError(error) ||
+        (error instanceof FetchError && isAbortError(error.cause));
 
-      if (!isAbortError) {
+      if (!isAborted) {
         downloadItems.value[downloadId].status = "FAILED";
         downloadItems.value[downloadId].failureDetails =
           error instanceof Error ? error.message : (error as string);
@@ -174,20 +187,28 @@ export const useDownloadArtifact = (
     itemId,
     downloadId,
     version,
+    name,
   }: {
     itemId: string;
     downloadId: string;
     version?: ItemVersion;
+    name: string;
   }) => {
     const controller = new AbortController();
     abortControllers[downloadId] = controller;
 
     const signal = controller.signal;
 
+    let itemName = `${name}`;
+    if (version) {
+      itemName += ` (${version})`;
+    }
+
     downloadItems.value[downloadId] = {
       itemId,
       ...(version && { version }),
       downloadId,
+      name: itemName,
       status: "IN_PROGRESS",
     };
 
@@ -226,8 +247,10 @@ export const useDownloadArtifact = (
   const start = async ({
     itemId,
     version,
+    name,
   }: {
     itemId: string;
+    name: string;
     version?: ItemVersion;
   }) => {
     try {
@@ -247,12 +270,13 @@ export const useDownloadArtifact = (
         downloadStatusResponse?.status === "READY" &&
         downloadStatusResponse?.downloadUrl
       ) {
-        window.open(downloadStatusResponse.downloadUrl, "_parent");
+        openDownload(downloadStatusResponse.downloadUrl);
       } else {
         await pollDownloadItem({
           itemId,
           version,
           downloadId,
+          name,
         });
       }
     } catch (error: unknown) {
@@ -313,5 +337,10 @@ export const useDownloadArtifact = (
      * Resets the state of the composable, clearing all downloads and controllers.
      */
     resetState,
+
+    /**
+     * Opens a download from the given url
+     */
+    openDownload,
   };
 };

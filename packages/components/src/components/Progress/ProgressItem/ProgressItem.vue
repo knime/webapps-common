@@ -100,6 +100,7 @@ const props = defineProps<ProgressItemProps>();
     gap: var(--space-4);
     flex-grow: 1;
     overflow: hidden;
+    justify-content: center;
 
     & .title {
       white-space: nowrap;

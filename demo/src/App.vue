@@ -104,6 +104,9 @@ const demoComponents = {
     UploadProgressPanel: defineAsyncComponent(
       () => import("./components/UploadProgressPanel.vue"),
     ),
+    DownloadProgressPanel: defineAsyncComponent(
+      () => import("./components/DownloadProgressPanel.vue"),
+    ),
     SkeletonItem: defineAsyncComponent(
       () => import("./components/SkeletonItem.vue"),
     ),

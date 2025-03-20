@@ -53,6 +53,7 @@ export * from "./forms";
 export * from "./node";
 export * from "./FileExplorer";
 export * from "./UploadProgressPanel";
+export * from "./DownloadProgressPanel";
 export * from "./Progress";
 
 export {

@@ -7,15 +7,9 @@ import {
   useDownloadArtifact,
 } from "../useDownloadArtifact";
 
-const windowMock = {
-  open: vi.fn(),
-};
-
-vi.stubGlobal("window", windowMock);
-
 const defaultItemId = "some-item-id";
 const defaultDownloadId = "some-download-id";
-const defaultDownloadUrl = "some-download-url";
+const defaultDownloadUrl = "https://some-download-url";
 
 const downloadResponse = {
   downloadId: defaultDownloadId,
@@ -34,6 +28,8 @@ const downloadFailedResponse = {
   status: "FAILED",
   statusMessage: "Oopsie",
 };
+
+const defaultItemName = "top-secret-file";
 
 const baseURL = "/_/api";
 
@@ -74,9 +70,20 @@ describe("useDownloadArtifact", () => {
     return useDownloadArtifact(options);
   };
 
+  const setupDownloadMock = () => {
+    const a = document.createElement("a");
+    const clickSpy = vi.spyOn(a, "click");
+    vi.spyOn(document, "createElement").mockImplementation(() => a);
+    return {
+      a,
+      clickSpy,
+    };
+  };
+
   it("downloads item that is ready immediately", async () => {
+    const { a, clickSpy } = setupDownloadMock();
     const { start } = setUp();
-    await start({ itemId: defaultItemId });
+    await start({ itemId: defaultItemId, name: defaultItemName });
     expect($ofetchMock).toHaveBeenNthCalledWith(
       1,
       `${baseURL}/repository/${defaultItemId}/artifact`,
@@ -96,14 +103,20 @@ describe("useDownloadArtifact", () => {
 
     expect($ofetchMock).toHaveBeenCalledTimes(2);
 
-    expect(windowMock.open).toHaveBeenCalledWith(defaultDownloadUrl, "_parent");
+    expect(a.href).toBe(`${defaultDownloadUrl}/`);
+    expect(a.target).toBe("_blank");
+    expect(a.style.display).toBe("none");
+    expect(clickSpy).toHaveBeenCalled();
+
+    vi.restoreAllMocks();
   });
 
   it("downloads item after polling", async () => {
+    const { a, clickSpy } = setupDownloadMock();
     const { start, downloadItems, totalItemsBeingZipped } = setUp({
       retriesUntilDownloadIsReady: 3,
     });
-    start({ itemId: defaultItemId });
+    start({ itemId: defaultItemId, name: defaultItemName });
     await flushPromises(); // initial two calls
 
     expect(downloadItems.value.length).toBe(1);
@@ -112,6 +125,7 @@ describe("useDownloadArtifact", () => {
       status: "IN_PROGRESS",
       downloadId: defaultDownloadId,
       itemId: defaultItemId,
+      name: defaultItemName,
     });
     expect(totalItemsBeingZipped.value).toBe(1);
 
@@ -123,22 +137,26 @@ describe("useDownloadArtifact", () => {
     await flushPromises();
 
     expect($ofetchMock).toHaveBeenCalledTimes(5);
-    expect(windowMock.open).toHaveBeenCalledWith(defaultDownloadUrl, "_parent");
 
     expect(downloadItem).toStrictEqual({
       status: "READY",
       downloadId: defaultDownloadId,
       downloadUrl: defaultDownloadUrl,
       itemId: defaultItemId,
+      name: defaultItemName,
     });
     expect(totalItemsBeingZipped.value).toBe(0);
+
+    expect(clickSpy).toHaveBeenCalled();
+    expect(a.href).toBe(`${defaultDownloadUrl}/`);
+    vi.restoreAllMocks();
   });
 
   it("cancels ongoing download", async () => {
     const { start, cancel, downloadItems } = setUp({
       retriesUntilDownloadIsReady: 3,
     });
-    start({ itemId: defaultItemId });
+    start({ itemId: defaultItemId, name: defaultItemName });
     await flushPromises(); // initial two calls
 
     cancel(defaultDownloadId);
@@ -151,6 +169,7 @@ describe("useDownloadArtifact", () => {
       downloadId: defaultDownloadId,
       itemId: defaultItemId,
       failureDetails: "Download was cancelled manually",
+      name: defaultItemName,
     });
   });
 
@@ -158,7 +177,7 @@ describe("useDownloadArtifact", () => {
     const { start, removeItem, downloadItems } = setUp({
       retriesUntilDownloadIsReady: 1,
     });
-    start({ itemId: defaultItemId });
+    start({ itemId: defaultItemId, name: defaultItemName });
     await flushPromises(); // initial two calls
 
     vi.runAllTimers(); // poll once
@@ -169,6 +188,7 @@ describe("useDownloadArtifact", () => {
       status: "READY",
       downloadId: defaultDownloadId,
       itemId: defaultItemId,
+      name: defaultItemName,
       downloadUrl: defaultDownloadUrl,
     });
 
@@ -179,12 +199,13 @@ describe("useDownloadArtifact", () => {
   });
 
   it("fails download after max retries", async () => {
+    consola.mockTypes(() => vi.fn());
     const { start, downloadItems } = setUp({
       retriesUntilDownloadIsReady: 10,
       options: { maxRetries: 3 },
     });
 
-    start({ itemId: defaultItemId });
+    start({ itemId: defaultItemId, name: defaultItemName });
     await flushPromises(); // initial two calls
 
     expect(downloadItems.value.length).toBe(1);
@@ -193,6 +214,7 @@ describe("useDownloadArtifact", () => {
       status: "IN_PROGRESS",
       downloadId: defaultDownloadId,
       itemId: defaultItemId,
+      name: defaultItemName,
     });
 
     vi.runAllTimers(); // polling the first time
@@ -207,6 +229,7 @@ describe("useDownloadArtifact", () => {
       downloadId: defaultDownloadId,
       itemId: defaultItemId,
       failureDetails: "Download timed out",
+      name: defaultItemName,
     });
   });
 
@@ -214,7 +237,7 @@ describe("useDownloadArtifact", () => {
     const { start, resetState, downloadItems } = setUp({
       retriesUntilDownloadIsReady: 1,
     });
-    start({ itemId: defaultItemId });
+    start({ itemId: defaultItemId, name: defaultItemName });
     await flushPromises(); // initial two calls
 
     vi.runAllTimers(); // poll once
@@ -226,6 +249,7 @@ describe("useDownloadArtifact", () => {
       downloadId: defaultDownloadId,
       itemId: defaultItemId,
       downloadUrl: defaultDownloadUrl,
+      name: defaultItemName,
     });
 
     resetState();
@@ -238,7 +262,9 @@ describe("useDownloadArtifact", () => {
       initialCallSucceeds: false,
     });
 
-    await expect(() => start({ itemId: defaultItemId })).rejects.toThrowError();
+    await expect(() =>
+      start({ itemId: defaultItemId, name: defaultItemName }),
+    ).rejects.toThrowError();
     expect(downloadItems.value.length).toBe(0);
   });
 
@@ -248,7 +274,7 @@ describe("useDownloadArtifact", () => {
       retriesUntilDownloadIsReady: 1,
     });
 
-    start({ itemId: defaultItemId });
+    start({ itemId: defaultItemId, name: defaultItemName });
     await flushPromises(); // initial two calls
 
     vi.runAllTimers(); // poll once
@@ -259,6 +285,7 @@ describe("useDownloadArtifact", () => {
       status: "FAILED",
       downloadId: defaultDownloadId,
       itemId: defaultItemId,
+      name: defaultItemName,
       failureDetails: `Download failed: ${downloadFailedResponse.statusMessage}`,
     });
   });

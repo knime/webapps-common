@@ -75,7 +75,7 @@ watch(toRef(props, "items"), (newItems, prevItems) => {
     @close="emit('close')"
   >
     <div class="upload-panel-content">
-      <ProgressList class="progress-list">
+      <ProgressList>
         <UploadProgressPanelItem
           v-for="item in items"
           :key="item.id"
@@ -106,7 +106,7 @@ watch(toRef(props, "items"), (newItems, prevItems) => {
 }
 
 .upload-panel-content {
-  max-height: 50vh;
+  max-height: 40vh;
   overflow-y: auto;
 }
 </style>
