@@ -9,7 +9,7 @@ import type {
 import { AbstractService } from "./AbstractService";
 import type { ColorServiceAPILayer } from "./types/serviceApiLayers";
 
-// TODO: UIEXT-858 Provide this default color via color model
+// TODO UIEXT-858 Provide this default color via color model
 const lightGray = "#D3D3D3";
 const darkGray = "#404040";
 
