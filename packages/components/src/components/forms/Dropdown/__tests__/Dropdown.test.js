@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { flushPromises, mount } from "@vue/test-utils";
-import { cloneDeep, isUndefined } from "lodash-es";
+import { cloneDeep, isUndefined } from "lodash-es"; // eslint-disable-line depend/ban-dependencies
 
 import DropdownIcon from "@knime/styles/img/icons/arrow-dropdown.svg";
 

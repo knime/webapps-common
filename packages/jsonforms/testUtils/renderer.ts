@@ -8,7 +8,7 @@ import type {
   TesterContext,
   UISchemaElement,
 } from "@jsonforms/core";
-import { maxBy } from "lodash-es";
+import { maxBy } from "lodash-es"; // eslint-disable-line depend/ban-dependencies
 
 import { type NamedRenderer, defaultRenderers } from "../src";
 

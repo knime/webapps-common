@@ -1,4 +1,4 @@
-/* eslint-disable no-process-exit */
+/* eslint-disable n/no-process-exit */
 /* eslint-disable no-console */
 import { readFile, writeFile } from "fs/promises";
 import { resolve } from "path";

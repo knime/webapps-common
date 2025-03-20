@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { computed, ref } from "vue";
-import { throttle } from "lodash-es";
+import { throttle } from "lodash-es"; // eslint-disable-line depend/ban-dependencies
 
 const ON_POINTER_MOVE_THROTTLE = 10;
 const HANDLE_PADDING = "2px";

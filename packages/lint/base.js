@@ -1,4 +1,5 @@
 import eslint from "@eslint/js";
+import * as depend from "eslint-plugin-depend";
 import importPlugin from "eslint-plugin-import-x";
 import nodeEslint from "eslint-plugin-n";
 import unusedImports from "eslint-plugin-unused-imports";
@@ -15,6 +16,7 @@ let languageOptions = {
 
 export default [
   eslint.configs.recommended, // eslint:recommended
+  depend.configs["flat/recommended"],
   ...prettierOverrides,
   {
     name: "@knime/eslint-config/global-ignores",
@@ -56,7 +58,6 @@ export default [
       "dot-notation": ["warn"],
       eqeqeq: "error",
       "func-name-matching": "warn",
-      "func-style": "warn",
       "lines-between-class-members": [
         "warn",
         "always",
@@ -107,18 +108,6 @@ export default [
       "no-proto": "error",
       "no-prototype-builtins": "off",
       "no-restricted-globals": ["error", "event", "fdescribe"],
-      "no-restricted-imports": [
-        "error",
-        {
-          patterns: [
-            {
-              group: ["lodash*", "!lodash-es"],
-              message:
-                "Please try using native functions (see https://github.com/you-dont-need/You-Dont-Need-Lodash-Underscore). If lodash is really needed, use 'lodash-es' package.",
-            },
-          ],
-        },
-      ],
       "no-restricted-syntax": ["warn", "WithStatement", "SequenceExpression"],
       "no-return-assign": "error",
       "no-return-await": "error",
@@ -129,11 +118,15 @@ export default [
       "no-template-curly-in-string": "warn",
       "no-throw-literal": "warn",
       "no-undef-init": "error",
-      "no-undefined": "error",
       "no-unmodified-loop-condition": "warn",
       "no-unneeded-ternary": "error",
       "no-unused-expressions": "warn",
-      "no-use-before-define": "error",
+      "no-use-before-define": [
+        "error",
+        {
+          functions: false,
+        },
+      ],
       "no-useless-call": "warn",
       "no-useless-catch": "off",
       "no-useless-computed-key": "error",

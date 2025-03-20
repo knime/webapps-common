@@ -1,4 +1,4 @@
-import { merge } from "lodash-es";
+import { merge } from "lodash-es"; // eslint-disable-line depend/ban-dependencies
 import { type FetchOptions, ofetch } from "ofetch";
 
 import { DEFAULT_API_BASE_URL } from "./constants";

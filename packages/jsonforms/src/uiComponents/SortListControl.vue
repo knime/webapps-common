@@ -4,7 +4,7 @@ export const DEFAULT_ANY_UNKNOWN_VALUES_ID = "<any unknown new column>";
 
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from "vue";
-import { indexOf } from "lodash-es";
+import { indexOf } from "lodash-es"; // eslint-disable-line depend/ban-dependencies
 
 import { Button, SortList } from "@knime/components";
 

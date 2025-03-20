@@ -1,6 +1,6 @@
 import { onMounted, ref } from "vue";
 import type { Ref } from "vue";
-import { merge } from "lodash-es";
+import { merge } from "lodash-es"; // eslint-disable-line depend/ban-dependencies
 
 export default function useAnimation(
   targetRef: Ref<HTMLElement | null>,

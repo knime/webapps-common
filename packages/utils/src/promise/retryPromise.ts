@@ -1,4 +1,3 @@
-/* eslint-disable func-style */
 import sleep from "../sleep";
 
 export const DEFAULT_RETRY_DELAY_MS = 0;

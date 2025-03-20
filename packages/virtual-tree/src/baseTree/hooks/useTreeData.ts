@@ -1,5 +1,3 @@
-/* eslint-disable no-use-before-define */
-/* eslint-disable func-style */
 import { BaseTreeNode } from "../baseTreeNode";
 import type { KeyNodeMap, TreeNodeOptions } from "../types";
 

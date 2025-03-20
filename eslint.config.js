@@ -20,6 +20,14 @@ export default [
   },
   {
     files: ["packages/lint/**/*.js"],
+    languageOptions: {
+      globals: {
+        ...Object.fromEntries(
+          Object.entries(globals.browser).map(([key]) => [key, "off"]),
+        ),
+        ...globals.node,
+      },
+    },
     rules: {
       "no-magic-numbers": "off",
     },

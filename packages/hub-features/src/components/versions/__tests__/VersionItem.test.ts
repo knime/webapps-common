@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { shallowMount } from "@vue/test-utils";
-import { cloneDeep } from "lodash-es";
+import { cloneDeep } from "lodash-es"; // eslint-disable-line depend/ban-dependencies
 
 import {
   LocalDateTime,

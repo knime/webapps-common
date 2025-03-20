@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { flushPromises, shallowMount } from "@vue/test-utils";
-import { find } from "lodash-es";
+import { find } from "lodash-es"; // eslint-disable-line depend/ban-dependencies
 
 import { Button, LocalDateTime, SubMenu } from "@knime/components";
 import MenuIcon from "@knime/styles/img/icons/menu-options.svg";

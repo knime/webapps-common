@@ -47,7 +47,6 @@ const tryParse = (error: FetchError): RFCError | FetchError => {
     status: error.statusCode as number,
     date: responseDate,
     requestId: error.response.headers.get("x-request-id") ?? "",
-    // eslint-disable-next-line no-undefined
     errorId: error.response.headers.get("x-error-id") ?? undefined,
   };
 

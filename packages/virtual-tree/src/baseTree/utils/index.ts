@@ -1,4 +1,3 @@
-/* eslint-disable func-style */
 import type { Data } from "./types";
 
 function omit<T extends Data, K extends string>(
