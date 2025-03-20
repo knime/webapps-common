@@ -2,7 +2,7 @@
 import { type Ref, computed, onMounted, ref } from "vue";
 import { useEventBus } from "@vueuse/core";
 import { autoUpdate, offset, useFloating } from "@floating-ui/vue";
-import { isEqual } from "lodash-es";
+import { isEqual } from "lodash-es"; // eslint-disable-line depend/ban-dependencies
 
 import { FunctionButton } from "@knime/components";
 import { truncateString } from "@knime/utils";

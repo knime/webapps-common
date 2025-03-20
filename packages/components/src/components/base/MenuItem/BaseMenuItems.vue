@@ -14,14 +14,13 @@ import {
   shift,
   useFloating,
 } from "@floating-ui/vue";
-import { uniqueId } from "lodash-es";
+import { uniqueId } from "lodash-es"; // eslint-disable-line depend/ban-dependencies
 
 import BaseMenuItem from "./BaseMenuItem.vue";
 import type { MenuItem } from "./MenuItems.vue";
 
 type ElementTemplateRef = HTMLElement | { $el: HTMLElement };
 
-// eslint-disable-next-line func-style
 function isNativeHTMLElement(
   element: ElementTemplateRef,
 ): element is HTMLElement {

@@ -1,5 +1,5 @@
 /* global RequestInit */
-import { merge } from "lodash-es";
+import { merge } from "lodash-es"; // eslint-disable-line depend/ban-dependencies
 
 import type { HubAvatarData } from "@knime/hub-features";
 import { VERSION_DEFAULT_LIMIT } from "@knime/hub-features/versions";

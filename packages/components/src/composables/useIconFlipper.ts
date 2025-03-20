@@ -1,4 +1,3 @@
-/* eslint-disable no-undefined */
 import { type CSSProperties, type Ref, computed } from "vue";
 
 type UseIconFlipperOptions = {

@@ -1,11 +1,9 @@
 import vitest from "@vitest/eslint-plugin";
 
-import tempDisable from "./temporary-disable.js";
-
 export default [
   {
     name: "@knime/eslint-config/vitest",
-    files: ["**/__tests__/**/*.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
+    files: ["**/{__tests__,test}/**/*.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
 
     plugins: {
       vitest,
@@ -14,6 +12,15 @@ export default [
     rules: {
       ...vitest.configs.recommended.rules,
       "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/ban-ts-comment": [
+        "error",
+        {
+          "ts-check": false,
+          "ts-expect-error": false,
+          "ts-ignore": true,
+          "ts-nocheck": true,
+        },
+      ],
       "no-magic-numbers": "off",
       "no-undefined": "off",
       "max-nested-callbacks": "off",
@@ -51,5 +58,4 @@ export default [
       "vitest/padding-around-expect-groups": "off",
     },
   },
-  ...tempDisable,
 ];
