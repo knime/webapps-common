@@ -145,7 +145,7 @@ type KnimeUiApiResponse = SomeKnimeUiApiResponse | NoneKnimeUiApiResponse;
 export type UIExtensionServiceAPILayer = {
   getResourceLocation: (path: string) => Promise<string>;
 
-  // TODO rename - UIEXT-1697
+  // TODO UIEXT-1697 rename
   callNodeDataService: (
     params: Identifiers & {
       extensionType: string;
@@ -167,7 +167,7 @@ export type UIExtensionServiceAPILayer = {
   imageGenerated: (image: string) => void;
 
   /**
-   * TODO Rename with UIEXT-1791
+   * TODO UIEXT-1791 Rename
    */
   publishData: (data: unknown) => void;
 

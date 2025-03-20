@@ -400,7 +400,7 @@ describe("DropdownControl.vue", () => {
     ];
     provideChoices!(providedChoices);
     /**
-     * TODO: UIEXT-1401 remove flushPromises here (see getPossibleValuesFromUiSchema)
+     * TODO UIEXT-1401 remove flushPromises here (see getPossibleValuesFromUiSchema)
      */
     await flushPromises();
     expect(

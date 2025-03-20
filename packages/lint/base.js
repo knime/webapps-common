@@ -4,6 +4,7 @@ import importPlugin from "eslint-plugin-import-x";
 import unusedImports from "eslint-plugin-unused-imports";
 import globals from "globals";
 
+import customTodo from "./custom-todo.js";
 import prettierOverrides from "./prettierOverwrites.js";
 
 const maxLines = 500;
@@ -17,6 +18,7 @@ export default [
   eslint.configs.recommended, // eslint:recommended
   depend.configs["flat/recommended"],
   ...prettierOverrides,
+  ...customTodo,
   {
     name: "@knime/eslint-config/global-ignores",
     ignores: [
