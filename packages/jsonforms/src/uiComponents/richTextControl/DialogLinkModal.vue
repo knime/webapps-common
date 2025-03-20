@@ -4,7 +4,7 @@
  * in order to enable displaying the modal as a native dialog modal.
  *
  * This is just a temporary workaround until the Modal component in webapps-common is itself based on a native dialog.
- * ( TODO: Remove and resolve properly with UIEXT-2148)
+ * ( TODO UIEXT-2148: Remove and resolve properly with UIEXT-2148)
  */
 import { type Ref, nextTick, ref, watch } from "vue";
 

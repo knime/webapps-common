@@ -70,7 +70,7 @@ describe("TimeControl", () => {
 
   it("sets labelForId", () => {
     expect(wrapper.getComponent(DateTimeInput).props().id).toBe(labelForId);
-    // TODO(UIEXT-2259): The id is set on the Date part that is not used here
+    // TODO UIEXT-2259: The id is set on the Date part that is not used here
   });
 
   it("calls changeValue when time input is changed", () => {

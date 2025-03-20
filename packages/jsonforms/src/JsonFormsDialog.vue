@@ -55,7 +55,7 @@ const onSettingsChanged = (changedData: { data: any }) => {
   emit("change", changedData);
 };
 
-// TODO (to be resolved with UIEXT-1673)
+// TODO UIEXT-1673 (to be resolved with UIEXT-1673)
 // @ts-expect-error the parent component NodeDialog in knime-core-ui still provides "registerWatcher", ...
 const provided: Provided = {
   trigger: (id) => emit("trigger", id),
