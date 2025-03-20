@@ -2,7 +2,7 @@ import type { SelectionEventPayload } from "./services/selection";
 
 export type KnownEventType =
   /**
-   * TODO: Rename DataEvent with UIEXT-1791
+   * TODO: UIEXT-1791 Rename DataEvent
    */
   | "DataEvent"
   | "SelectionEvent"

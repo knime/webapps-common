@@ -5,7 +5,6 @@ import {
 import importPlugin from "eslint-plugin-import-x";
 
 import prettierOverridesVue from "./prettierOverwrites-vue.js";
-import tempDisable from "./temporary-disable.js";
 import vue3Config from "./vue3.js";
 
 // uses a utility function to modify given ESLint configs to work with Vue.js + Typescript
@@ -29,7 +28,6 @@ export default defineConfigWithVueTs({
     }),
     vueTsConfigs.recommended,
     ...prettierOverridesVue,
-    ...tempDisable,
   ],
   plugins: {
     import: importPlugin,

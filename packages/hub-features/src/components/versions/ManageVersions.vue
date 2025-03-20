@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useEventBus } from "@vueuse/core";
-import { throttle } from "lodash-es";
+import { throttle } from "lodash-es"; // eslint-disable-line depend/ban-dependencies
 
 import { FunctionButton } from "@knime/components";
 import CloseIcon from "@knime/styles/img/icons/close.svg";

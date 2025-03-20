@@ -28,7 +28,7 @@ type AsyncAPI<A extends API> = {
  * @param handleMethodCall
  * @returns
  */
-// eslint-disable-next-line func-style
+
 function proxyMissingMethods<A extends API, T extends Record<string, unknown>>(
   obj: T,
   handleMethodCall: ProxyMethodFor<A>,

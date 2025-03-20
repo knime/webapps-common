@@ -281,7 +281,6 @@ export const getFirstFormat = (
   const firstFormat = DEFAULT_FORMATS.find(
     (format) => format.temporalType === type && format.category === category,
   );
-  // eslint-disable-next-line no-undefined
   if (firstFormat === undefined) {
     throw new Error("No formats available for the given type and category");
   }

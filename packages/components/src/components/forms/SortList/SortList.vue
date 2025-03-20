@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from "vue";
-import { indexOf, keyBy, partition } from "lodash-es";
+import { indexOf, keyBy, partition } from "lodash-es"; // eslint-disable-line depend/ban-dependencies
 
 import ArrowDownIcon from "@knime/styles/img/icons/arrow-down.svg";
 import ArrowDownloadIcon from "@knime/styles/img/icons/arrow-download.svg";

@@ -1,6 +1,6 @@
 import type { App, Plugin } from "vue";
 import { computed, getCurrentInstance, inject, provide, ref } from "vue";
-import { cloneDeep, uniqueId } from "lodash-es";
+import { cloneDeep, uniqueId } from "lodash-es"; // eslint-disable-line depend/ban-dependencies
 
 import type {
   Toast,
