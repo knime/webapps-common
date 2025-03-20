@@ -15,7 +15,7 @@ const props = defineProps<VueControlPropsForLabelContent<string>>();
 
 const richTextEditorElement = ref<{ $el: HTMLElement } | null>(null);
 /**
- * TODO: Remove and resolve properly with https://knime-com.atlassian.net/browse/UIEXT-1461-
+ * TODO UIEXT-1461: Remove and resolve properly with https://knime-com.atlassian.net/browse/UIEXT-1461-
  */
 const CloseDialogOnEscape = createOnEscapeExtension(() => {
   richTextEditorElement.value!.$el.focus();
