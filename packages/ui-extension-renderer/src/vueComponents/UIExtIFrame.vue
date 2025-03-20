@@ -3,7 +3,11 @@ import { type Ref, onMounted, ref } from "vue";
 
 import { setUpIframeEmbedderService } from "../logic/iframe/embedder";
 
-import { type PushEvent, type UIExtensionServiceAPILayer } from "./types";
+import {
+  type EventType,
+  type PushEvent,
+  type UIExtensionServiceAPILayer,
+} from "./types";
 
 const props = defineProps<{
   resourceLocation: string;
@@ -13,8 +17,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   serviceCreated: [
     service: {
-      // TODO: replace any
-      dispatchPushEvent: (event: PushEvent<any>) => void;
+      dispatchPushEvent: (event: PushEvent<EventType & unknown>) => void;
     },
   ];
 }>();

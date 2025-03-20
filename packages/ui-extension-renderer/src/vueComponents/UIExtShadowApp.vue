@@ -4,6 +4,7 @@ import { type StyleValue, markRaw, onMounted, ref } from "vue";
 import { setUpEmbedderService } from "../logic/embedder";
 
 import type {
+  EventType,
   PushEvent,
   UIExtensionService,
   UIExtensionServiceAPILayer,
@@ -24,8 +25,7 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits<{
   serviceCreated: [
     _service: {
-      // TODO: replace any
-      dispatchPushEvent: (event: PushEvent<any>) => void;
+      dispatchPushEvent: (event: PushEvent<EventType & unknown>) => void;
     },
   ];
 }>();

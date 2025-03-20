@@ -37,6 +37,7 @@ export class DefaultEventHandler
   private readonly callbacksMap = new MapOfArrays<
     EventType,
     // TODO: replace any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     PushEventListenerCallback<any>
   >();
 

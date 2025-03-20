@@ -25,12 +25,14 @@ export type VueControlTestProps<
   "handleChange" | "changeValue" | "onRegisterValidation"
 >;
 
+type RecordKeyTypes = string | number | symbol;
+
 const getGlobal = ({
   provide,
   stubs,
 }: {
   provide?: Partial<ProvidedMethods>;
-  stubs?: Record<string | number | symbol, unknown>;
+  stubs?: Record<RecordKeyTypes, unknown>;
 }) => ({
   provide: {
     sendAlert: provide?.sendAlert || vi.fn(),
@@ -58,7 +60,7 @@ export const mountJsonFormsControl = <D>(
       >
     >;
     provide?: Partial<ProvidedMethods>;
-    stubs?: Record<string | number | symbol, unknown>;
+    stubs?: Record<RecordKeyTypes, unknown>;
   },
 ) => {
   const handleChange = vi.fn();
@@ -96,7 +98,7 @@ export const mountJsonFormsControlLabelContent = <D>(
       >
     >;
     provide?: Partial<ProvidedMethods>;
-    stubs?: Record<string | number | symbol, unknown>;
+    stubs?: Record<RecordKeyTypes, unknown>;
   },
 ) => {
   const handleChange = vi.fn();
@@ -129,7 +131,7 @@ export const mountJsonFormsLayout = (
   }: {
     props: VueLayoutProps;
     provide?: Partial<ProvidedMethods>;
-    stubs?: Record<string | number | symbol, unknown>;
+    stubs?: Record<RecordKeyTypes, unknown>;
   },
 ) => {
   const wrapper = mount(component, {
@@ -160,11 +162,11 @@ export const mountJsonFormsRenderer = (
           >["layout"];
         };
     provide?: Partial<ProvidedMethods>;
-    stubs?: Record<string | number | symbol, unknown>;
+    stubs?: Record<RecordKeyTypes, unknown>;
   },
 ) =>
   mount(component, {
-    // TODO: replace any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     props: props as any,
     global: getGlobal({ provide, stubs }),
   });

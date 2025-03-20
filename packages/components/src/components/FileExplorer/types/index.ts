@@ -17,7 +17,6 @@ export type ItemIconRenderer = (
   item: FileExplorerItem,
 ) => FunctionalComponent<SVGAttributes>;
 
-// export namespace FileExplorerContextMenu {
 type DefaultOptions = "rename" | "delete";
 
 export type Anchor = {
