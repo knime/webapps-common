@@ -58,7 +58,9 @@ export const defineControl = <D>(
   });
 
 export const mapControls =
-  (mapper: (control: VueControl<any>, key: string) => VueControl<any>) =>
+  (
+    mapper: (control: VueControl<any>, key: string) => VueControl<any>, // eslint-disable-line @typescript-eslint/no-explicit-any
+  ) =>
   <T extends Record<string, VueControlRenderer>>(cs: T): T =>
     Object.entries(cs).reduce(
       (acc, [key, { control, name, tester, __asyncSetup }]) => {

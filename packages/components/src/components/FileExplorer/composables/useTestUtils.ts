@@ -10,7 +10,7 @@ type IntersectionObserverMockType = {
 
 // @ts-expect-error Property '__trigger__' is missing in type '(this: any, callback: (...args: any[]) => any) => void' but required in type 'IntersectionObserverMockType'.
 export const MockIntersectionObserver: IntersectionObserverMockType =
-  // TODO: replace any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   function MockIntersectionObserver(this: any, callback) {
     this.callbackRef = callback;
     this.element = null;

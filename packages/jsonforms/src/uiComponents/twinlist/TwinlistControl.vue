@@ -53,8 +53,9 @@ const props = withDefaults(
   },
 );
 
-// eslint-disable-next-line prefer-const
-let setManualFilterOnChange: (newData: TwinlistData["manualFilter"]) => void;
+let setManualFilterOnChange: (
+  newData: TwinlistData["manualFilter"],
+) => void = () => {};
 
 const onChangeTwinlist = (obj: PartialDeep<TwinlistData>) => {
   const newData = mergeDeep(props.control.data, obj) as TwinlistData;

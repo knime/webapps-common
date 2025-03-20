@@ -29,15 +29,18 @@ type Props = {
   /**
    * See ExtensionConfig.initialSharedData
    */
-  // TODO: replace any - tried UIExtensionAPILayer but seems to need some adjustment of withDefaults value
-  initialSharedData?: any;
+  initialSharedData?: {
+    result?: string | object;
+    userError?: object;
+    internalError?: object;
+  };
   isReporting?: boolean;
   isDialogLayout?: boolean;
   shadowAppStyle?: StyleValue | null;
 };
 
 const props = withDefaults(defineProps<Props>(), {
-  initialSharedData: null,
+  initialSharedData: () => ({}),
   shadowAppStyle: null,
 });
 

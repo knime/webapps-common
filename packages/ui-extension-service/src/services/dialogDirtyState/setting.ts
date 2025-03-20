@@ -58,8 +58,7 @@ export const createSetting =
     value: { initialValue: T; valueComparator?: SettingComparator<T> },
     modelOrView: "model" | "view",
   ) => {
-    // eslint-disable-next-line prefer-const
-    let dirtyStatesOnChange: () => void;
+    let dirtyStatesOnChange: () => void = () => {};
     const onChange = () => {
       dirtyStatesOnChange();
     };

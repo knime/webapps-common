@@ -23,7 +23,9 @@ interface ComponentData {
    * When the searchInput of this component is focussed then they shouldn't be closed either, which is why
    * it needs to be passed to the Multiselect component.
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   focusElement: any; // TODO - remove any type. Multiselect is not properly typed so when this value is passed as a prop the type-checker errors out
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   refocusElement: any; // TODO - remove any type. Multiselect is not properly typed so when this value is passed as a prop the type-checker errors out
   allPossibleItems: Array<PossibleValue>;
 }

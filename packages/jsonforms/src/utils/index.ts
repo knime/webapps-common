@@ -17,7 +17,7 @@ const isObject = (item: unknown) =>
 
 // Merge two objects deeply while overwriting only keys of obj1 if necessary. This can be used to alter the data
 // in the dialog settings in a more simple way for complex data structures.
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const mergeDeepUntyped = (obj1: any, obj2: any) => {
   const output = { ...obj1 };
   if (isObject(obj2)) {

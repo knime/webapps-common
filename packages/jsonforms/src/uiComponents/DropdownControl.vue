@@ -21,7 +21,6 @@ import LoadingDropdown from "./loading/LoadingDropdown.vue";
 export type Maybe<T> = T | null | undefined;
 
 const props = withDefaults(
-  // TODO: replace any
   defineProps<
     VueControlProps<Maybe<T>> & {
       asyncInitialOptions?: Promise<IdAndText[]> | null;

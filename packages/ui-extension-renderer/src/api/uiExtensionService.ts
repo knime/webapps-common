@@ -32,7 +32,7 @@ export type UIExtensionServiceConfig = Identifiers & {
   /**
    * optional initial data to provide directly to the UI Extension.
    */
-  initialData?: object & {
+  initialData?: {
     result?: string | object;
     userError?: object;
     internalError?: object;

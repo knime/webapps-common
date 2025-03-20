@@ -23,8 +23,9 @@ export type OmitCallbacks<T> = Omit<
   "handleChange" | "changeValue" | "onRegisterValidation"
 >;
 
-export type VueControlTestProps<C extends abstract new (...args: any) => any> =
-  OmitCallbacks<InstanceType<C>["$props"]>;
+export type VueControlTestProps<
+  C extends abstract new (...args: never[]) => void,
+> = OmitCallbacks<InstanceType<C>["$props"]>;
 
 const getGlobal = ({
   provide,
@@ -165,7 +166,7 @@ export const mountJsonFormsRenderer = (
   },
 ) =>
   mount(component, {
-    // TODO: replace any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     props: props as any,
     global: getGlobal({ provide, stubs }),
   });

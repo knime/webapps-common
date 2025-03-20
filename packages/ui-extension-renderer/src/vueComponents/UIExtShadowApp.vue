@@ -25,6 +25,7 @@ const emit = defineEmits<{
   serviceCreated: [
     _service: {
       // TODO: replace any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       dispatchPushEvent: (event: PushEvent<any>) => void;
     },
   ];

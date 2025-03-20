@@ -2,6 +2,7 @@ import { type PropType, defineComponent, ref } from "vue";
 import { mount } from "@vue/test-utils";
 
 // TODO: replace any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const mountComposable = <T extends (...args: any[]) => any>({
   composable,
   composableProps,

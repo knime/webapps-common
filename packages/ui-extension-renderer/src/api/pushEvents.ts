@@ -38,7 +38,8 @@ type MakePayloadOptionalIfUndefined<
 
 export type PushEvent<
   N extends EventType,
-  P = any, // TODO: replace any
+  // TODO: replace any
+  P = any, // eslint-disable-line @typescript-eslint/no-explicit-any
 > = MakePayloadOptionalIfUndefined<{
   eventType: N;
   payload: N extends keyof KnownPushEvents ? KnownPushEvents[N] : P;
