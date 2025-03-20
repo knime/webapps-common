@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, toRef, watch } from "vue";
-import { difference } from "lodash-es";
+import { difference } from "lodash-es"; // eslint-disable-line depend/ban-dependencies
 
 import Tag from "./Tag.vue";
 

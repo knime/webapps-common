@@ -8,7 +8,7 @@ import {
   setSeconds,
 } from "date-fns";
 import { format, utcToZonedTime, zonedTimeToUtc } from "date-fns-tz";
-import { map } from "lodash-es";
+import { map } from "lodash-es"; // eslint-disable-line depend/ban-dependencies
 import { DatePicker } from "v-calendar";
 
 import CalendarIcon from "@knime/styles/img/icons/calendar.svg";
