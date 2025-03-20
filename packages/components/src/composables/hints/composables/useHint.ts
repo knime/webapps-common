@@ -1,4 +1,3 @@
-/* eslint-disable no-undefined */
 import {
   type MaybeRef,
   type Ref,

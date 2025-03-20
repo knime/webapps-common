@@ -27,7 +27,6 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  // eslint-disable-next-line no-undefined
   loadData: undefined,
   selectable: true,
   expandedKeys: () => [],
@@ -94,7 +93,6 @@ const onTreeKeydown = ({ event, node }: KeydownEvent) => {
 };
 
 const domNodeId = (key?: NodeKey | null) =>
-  // eslint-disable-next-line no-undefined
   key ? `${props.idPrefix}_${key}` : undefined;
 
 const hasFocus = (treeNode: BaseTreeNode) => {
@@ -125,7 +123,6 @@ defineExpose({
   toggleExpand: (nodeKey: NodeKey, state?: boolean) =>
     baseTree.value?.toggleExpand(nodeKey, state),
   getSelectedTreeNode: () =>
-    // eslint-disable-next-line no-undefined
     props.selectable ? baseTree.value?.getSelectedNode() : undefined,
   /** trigger loadData function (prop) to load the children of the given nodeKey. Does not remove current children. */
   loadChildren: (nodeKey: NodeKey) => baseTree.value?.loadChildren(nodeKey),
