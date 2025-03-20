@@ -1,7 +1,7 @@
 <!-- eslint-disable class-methods-use-this -->
 <script setup lang="ts">
 import { computed, onMounted, watch, watchEffect } from "vue";
-import { isEqual } from "lodash-es";
+import { isEqual } from "lodash-es"; // eslint-disable-line depend/ban-dependencies
 
 import type { VueControlProps } from "../higherOrderComponents/control/types";
 import type { PossibleValue } from "../types/ChoicesUiSchema";

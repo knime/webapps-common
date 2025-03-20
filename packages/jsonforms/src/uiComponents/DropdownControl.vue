@@ -1,6 +1,6 @@
 <script setup lang="ts" generic="T">
 import { type Ref, computed, onBeforeUnmount, onMounted, ref } from "vue";
-import { set } from "lodash-es";
+import { set } from "lodash-es"; // eslint-disable-line depend/ban-dependencies
 import { v4 as uuidv4 } from "uuid";
 
 import { Checkbox } from "@knime/components";

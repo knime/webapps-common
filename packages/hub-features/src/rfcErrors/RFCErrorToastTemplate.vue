@@ -36,7 +36,6 @@ const dateFormatOptions = {
 } as const;
 
 const formattedDate = computed(() => {
-  // eslint-disable-next-line no-undefined
   const formatter = new Intl.DateTimeFormat(undefined, dateFormatOptions); // use default locale
   return formatter.format(props.date);
 });

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { compact } from "lodash-es";
+import { compact } from "lodash-es"; // eslint-disable-line depend/ban-dependencies
 
 import { LocalDateTime, SubMenu, Tooltip } from "@knime/components";
 import MenuIcon from "@knime/styles/img/icons/menu-options.svg";

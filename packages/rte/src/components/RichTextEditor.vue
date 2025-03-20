@@ -129,7 +129,6 @@ const isToolEnabled = (extensionName: keyof BaseExtensionsConfig) => {
 const getStarterKitExtensionConfig = (
   extensionName: keyof BaseExtensionsConfig,
 ): false | undefined | Partial<unknown> => {
-  // eslint-disable-next-line no-undefined
   return isToolEnabled(extensionName) ? undefined : false;
 };
 

@@ -168,7 +168,6 @@ export default {
   },
   data() {
     return {
-      // eslint-disable-next-line no-undefined
       activeDescendant: undefined,
     } as { activeDescendant: string | undefined };
   },
@@ -207,7 +206,6 @@ export default {
     },
     setActiveDescendant(id: string | null) {
       if (id === null) {
-        // eslint-disable-next-line no-undefined
         this.activeDescendant = undefined;
       } else {
         this.activeDescendant = id;

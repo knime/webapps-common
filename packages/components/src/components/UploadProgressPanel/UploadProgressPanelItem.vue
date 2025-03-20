@@ -67,8 +67,7 @@ const statusPill = computed<StatusPill>(() => {
   const tooltip =
     isFailed && props.item.failureDetails
       ? props.item.failureDetails
-      : // eslint-disable-next-line no-undefined
-        undefined;
+      : undefined;
 
   return { text, variant, icon, tooltip } satisfies StatusPill;
 });

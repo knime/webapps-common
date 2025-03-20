@@ -8,7 +8,6 @@ const methods: ConsoleMethod[] = ["log", "warn", "error", "info"];
  * @param f The function to run. Can be async.
  * @returns The original function's return value
  */
-// TODO: replace Function with fitting top type (...args: never[]) => unknown has unknown return type which makes problems in line 41
 export default (f: (...args: never[]) => unknown | Promise<unknown>) => {
   const originals = methods.map((method) => console[method]);
   methods.forEach((method) => {
