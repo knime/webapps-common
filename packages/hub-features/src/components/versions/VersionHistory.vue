@@ -36,7 +36,7 @@ defineEmits<{
         class="version-item"
         @delete="$emit('delete', itemVersion.version)"
         @restore="$emit('restore', itemVersion.version)"
-        @select="$emit('select', $event)"
+        @select="$emit('select', $event ? itemVersion.version : null)"
       />
       <NoVersionItem v-if="!loading && versionHistory.length === 0" />
     </div>
