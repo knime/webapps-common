@@ -100,6 +100,21 @@ export const useVersionsApi = ({
     });
   };
 
+  const restoreVersion = ({
+    projectItemId,
+    version,
+  }: {
+    projectItemId: string;
+    version: NamedItemVersion["version"];
+  }) => {
+    return doHubRequest(
+      `/repository/${projectItemId}/workingArea?fromVersion=${version}`,
+      {
+        method: "POST",
+      },
+    );
+  };
+
   const createVersion = ({
     projectItemId,
     title,
@@ -202,6 +217,7 @@ export const useVersionsApi = ({
     fetchPermissions,
     loadSavepointMetadata,
     deleteVersion,
+    restoreVersion,
     createVersion,
     getAvatar,
   };
