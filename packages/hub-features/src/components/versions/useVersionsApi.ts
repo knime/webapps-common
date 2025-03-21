@@ -2,7 +2,6 @@
 import { merge } from "lodash-es";
 
 import type { HubAvatarData } from "@knime/hub-features";
-import { VERSION_DEFAULT_LIMIT } from "@knime/hub-features/versions";
 import type {
   AssignedLabel,
   ItemSavepoint,
@@ -10,6 +9,7 @@ import type {
   WithAvatar,
   WithLabels,
 } from "@knime/hub-features/versions";
+import { VERSION_DEFAULT_LIMIT } from "@knime/hub-features/versions";
 
 type UseVersionsApiOptions = {
   baseUrl?: string;
@@ -84,6 +84,21 @@ export const useVersionsApi = ({ baseUrl }: UseVersionsApiOptions) => {
     return doHubRequest(`/repository/${projectItemId}/versions/${version}`, {
       method: "DELETE",
     });
+  };
+
+  const restoreVersion = ({
+    projectItemId,
+    version,
+  }: {
+    projectItemId: string;
+    version: NamedItemVersion["version"];
+  }) => {
+    return doHubRequest(
+      `/repository/${projectItemId}/workingArea?fromVersion=${version}`,
+      {
+        method: "POST",
+      },
+    );
   };
 
   const createVersion = ({
@@ -167,6 +182,7 @@ export const useVersionsApi = ({ baseUrl }: UseVersionsApiOptions) => {
     fetchItemSavepoints,
     loadSavepointMetadata,
     deleteVersion,
+    restoreVersion,
     createVersion,
     getAvatar,
   };
