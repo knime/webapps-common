@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /* eslint-disable max-lines */
-import { computed, nextTick, ref, toRef, toRefs, watch } from "vue";
+import { type Ref, computed, nextTick, ref, toRef, toRefs, watch } from "vue";
 import { useResizeObserver } from "@vueuse/core";
 
 import { getMetaOrCtrlKey } from "@knime/utils";
@@ -86,9 +86,10 @@ interface Props {
    */
   draggingAnimationMode?: "auto" | "manual" | "disabled";
   /**
-   * Pass in an html elements here which, when clicked, should not unset the current selection.
+   * Pass in html elements (or a singular element) here which, when clicked,
+   * should not unset the current selection.
    */
-  clickOutsideException?: HTMLElement | null;
+  clickOutsideException?: Ref<HTMLElement | null>[] | (HTMLElement | null);
   /**
    * Selected item ids
    */
@@ -107,7 +108,7 @@ const props = withDefaults(defineProps<Props>(), {
   disableSelection: false,
   disableDragging: false,
   draggingAnimationMode: "auto",
-  clickOutsideException: null,
+  clickOutsideException: () => [],
   selectedItemIds: () => [],
 });
 
@@ -148,6 +149,25 @@ const changeDirectory = (pathId: string) => {
 const virtualItemRefs = ref<InstanceType<typeof FileExplorerItem>[]>([]);
 const itemBack = ref<{ $el: HTMLElement } | null>(null);
 const table = ref<null | HTMLElement>(null);
+
+/**
+ * Coerce the clickOutsideException prop to an array of refs, regardless of whether
+ * it was originally a single ref, an array of refs, or null.
+ */
+const clickOutsideExceptions = computed<Ref<HTMLElement | null>[]>(() => {
+  let exceptions: Ref<HTMLElement | null>[];
+  if (props.clickOutsideException === null) {
+    exceptions = [];
+  } else if (Array.isArray(props.clickOutsideException)) {
+    exceptions = props.clickOutsideException;
+  } else {
+    exceptions = [
+      toRef(props, "clickOutsideException") as Ref<HTMLElement | null>,
+    ];
+  }
+
+  return exceptions;
+});
 
 /** Virtualization */
 const heightPerRow = computed(() => itemHeight + 2 /* item margin */);
@@ -510,7 +530,7 @@ const handleEnterKey = (event: KeyboardEvent, item: FileExplorerItemType) => {
 };
 
 useClickOutside({
-  targets: [table, toRef(props, "clickOutsideException")],
+  targets: [table, ...clickOutsideExceptions.value],
   callback: () => resetSelection(focusedIndex.value),
 });
 
