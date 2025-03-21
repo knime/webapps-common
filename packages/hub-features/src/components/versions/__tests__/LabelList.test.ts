@@ -212,10 +212,10 @@ describe("LabelList.vue", () => {
       const labels = findLabels();
 
       await labels.at(0)?.trigger("mouseover");
-      expect(wrapper.emitted("labelOver")).toBeTruthy();
+      expect(wrapper.emitted("labelOver")).toBeDefined();
 
       await labels.at(0)?.trigger("mouseleave");
-      expect(wrapper.emitted("labelLeave")).toBeTruthy();
+      expect(wrapper.emitted("labelLeave")).toBeDefined();
     });
 
     it("shows and populates popover on click on label", async () => {

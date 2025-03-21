@@ -11,12 +11,12 @@ import type { NamedItemVersion, WithAvatar, WithLabels } from "../types";
 
 const mockVersions: Array<NamedItemVersion & WithAvatar & WithLabels> = [
   {
-    author: "Max Mockmann",
+    author: "Max Mustermock",
     avatar: {
       kind: "account",
-      name: "Max Mockman",
+      name: "Max Mustermock",
     },
-    createdOn: new Date().toISOString(),
+    createdOn: "2025-11-11T11:11:00.000Z",
     labels: [
       {
         label: {
@@ -29,12 +29,12 @@ const mockVersions: Array<NamedItemVersion & WithAvatar & WithLabels> = [
     version: 2,
   },
   {
-    author: "Max Mockmann",
+    author: "Max Mustermock",
     avatar: {
       kind: "account",
-      name: "Max Mockman",
+      name: "Max Mustermock",
     },
-    createdOn: new Date().toISOString(),
+    createdOn: "2025-11-11T11:11:00.000Z",
     labels: [
       {
         label: {

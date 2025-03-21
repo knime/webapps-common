@@ -26,7 +26,7 @@ const mockVersion: NamedItemVersion & WithAvatar & WithLabels = {
     kind: "account",
     name: "Mira Mock",
   },
-  createdOn: new Date().toISOString(),
+  createdOn: "2025-11-11T11:11:00.000Z",
   labels: [],
   title: "Version 42 Title",
   version: 42,
@@ -211,7 +211,7 @@ describe("VersionItem.vue", () => {
         .findComponent(SubMenu)
         .vm.$emit("item-click", null, actionOption);
 
-      expect(wrapper.emitted(action)).toBeTruthy();
+      expect(wrapper.emitted(action)).toBeDefined();
     },
   );
 

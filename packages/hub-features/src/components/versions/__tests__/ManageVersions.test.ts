@@ -1,5 +1,4 @@
 import { describe, expect, it } from "vitest";
-import { nextTick } from "vue";
 import { shallowMount } from "@vue/test-utils";
 
 import { FunctionButton } from "@knime/components";
@@ -21,12 +20,12 @@ type Props = InstanceType<typeof ManageVersions>["$props"];
 
 const mockHistory: Array<NamedItemVersion & WithAvatar & WithLabels> = [
   {
-    author: "Max Mockmann",
+    author: "Max Mustermock",
     avatar: {
       kind: "account",
-      name: "Max Mockman",
+      name: "Max Mustermock",
     },
-    createdOn: new Date().toISOString(),
+    createdOn: "2025-11-11T11:11:00.000Z",
     labels: [
       {
         label: {
@@ -43,7 +42,7 @@ const mockHistory: Array<NamedItemVersion & WithAvatar & WithLabels> = [
 const mockSavepoint: ItemSavepoint & WithAvatar & WithLabels = {
   author: mockHistory[0].author,
   changes: [],
-  lastEditedOn: new Date().toISOString(),
+  lastEditedOn: "2025-11-11T11:11:00.000Z",
   savepointNumber: 1,
   avatar: mockHistory[0].avatar,
   labels: [],
@@ -98,7 +97,6 @@ describe("ManageVersions.vue", () => {
       const closeButton = wrapper.findComponent(FunctionButton);
       expect(closeButton.classes()).toContain("close");
       await closeButton.vm.$emit("click");
-      await nextTick();
       expect(wrapper.emitted()).toEqual({ close: [[]] });
     });
 

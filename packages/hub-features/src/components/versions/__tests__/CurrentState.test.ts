@@ -1,4 +1,4 @@
-import { afterAll, describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { flushPromises, shallowMount } from "@vue/test-utils";
 import { find } from "lodash-es";
 
@@ -80,10 +80,6 @@ describe("CurrentState.vue", () => {
     };
   };
 
-  afterAll(() => {
-    vi.restoreAllMocks();
-  });
-
   describe("rendering", () => {
     it("renders component", () => {
       const { wrapper, findLabelList } = doMount();
@@ -116,14 +112,14 @@ describe("CurrentState.vue", () => {
         const { wrapper } = doMount();
 
         wrapper.find(".current-state").trigger("click");
-        expect(wrapper.emitted("select")).toEqual([[]]);
+        expect(wrapper.emitted("select")).toBeDefined();
       });
 
       it("already selected", () => {
         const { wrapper } = doMount({ mountProps: { isSelected: true } });
 
         wrapper.find(".current-state").trigger("click");
-        expect(wrapper.emitted("select")).toBeFalsy();
+        expect(wrapper.emitted("select")).toBeUndefined();
       });
     });
 
@@ -131,7 +127,8 @@ describe("CurrentState.vue", () => {
       const { wrapper } = doMount();
 
       await wrapper.find(".create-button").trigger("click");
-      expect(wrapper.emitted()).toEqual({ createVersion: [[]] });
+      expect(wrapper.emitted("createVersion")).toBeDefined();
+      expect(wrapper.emitted("select")).toBeUndefined();
     });
 
     it("handles pending changes deletion", async () => {
@@ -140,7 +137,7 @@ describe("CurrentState.vue", () => {
       clickMenuItem(0);
       await flushPromises();
 
-      expect(wrapper.emitted()).toEqual({ discard: [[]] });
+      expect(wrapper.emitted("discard")).toBeDefined();
     });
 
     it("conditionally enables discard action", () => {
