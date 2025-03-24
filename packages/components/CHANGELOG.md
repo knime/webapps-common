@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.22.0
+
+### Minor Changes
+
+- ef010ff: added DownloadProgressPanel, added name input argument to useDownloadArtifact.start
+
 ## 1.21.1
 
 ### Patch Changes

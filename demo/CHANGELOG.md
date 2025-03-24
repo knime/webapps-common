@@ -1,5 +1,19 @@
 # demo
 
+## 1.4.0
+
+### Minor Changes
+
+- ef010ff: added DownloadProgressPanel, added name input argument to useDownloadArtifact.start
+
+### Patch Changes
+
+- Updated dependencies [ef010ff]
+  - @knime/hub-features@1.6.0
+  - @knime/components@1.22.0
+  - @knime/rich-text-editor@1.3.33
+  - @knime/virtual-tree@1.3.33
+
 ## 1.3.20
 
 ### Patch Changes
