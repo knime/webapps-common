@@ -685,12 +685,14 @@ thead {
   position: absolute;
   height: 1px;
   width: 1px;
+
+  /* move far far enough outside view, just in case */
+  left: -10000px;
   overflow: hidden;
   white-space: nowrap; /* added line */
 }
 
 table,
-thead,
 tbody {
   display: block;
   width: 100%;
