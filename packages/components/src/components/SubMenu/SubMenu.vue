@@ -114,6 +114,10 @@ export default {
       type: Object as PropType<Partial<MenuItemsProps>>,
       default: () => ({}) as Partial<MenuItemsProps>,
     },
+    compact: {
+      type: Boolean,
+      default: false,
+    },
   },
   emits: ["item-click", "toggle", "open", "close"],
   setup(props) {
@@ -234,6 +238,7 @@ export default {
       :aria-expanded="String(expanded)"
       :disabled="disabled"
       :active="expanded"
+      :compact="compact"
       @click.stop="toggleMenu"
     >
       <slot :expanded="expanded" />
