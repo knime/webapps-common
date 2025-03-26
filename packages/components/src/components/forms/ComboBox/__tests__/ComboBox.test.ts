@@ -19,8 +19,10 @@ const possibleValues = [
   },
 ];
 
+type ComponentProps = InstanceType<typeof ComboBox>["$props"];
+
 const doMount = (
-  dynamicProps?: Record<string, any>,
+  dynamicProps?: Partial<ComponentProps>,
   options?: { attachTo: HTMLElement },
 ) =>
   mount(ComboBox, {
@@ -136,6 +138,12 @@ describe("ComboBox.vue", () => {
       isValid: false,
       errorMessage: "One or more of the selected items is invalid.",
     });
+  });
+
+  it("restricts the max characters per item", () => {
+    const wrapper = doMount({ maxCharactersPerItem: 5 });
+
+    expect(wrapper.find("input").attributes("maxlength")).toBe("5");
   });
 
   describe("focussing", () => {
@@ -283,6 +291,7 @@ describe("ComboBox.vue", () => {
     it("does not create repeated tags", async () => {
       const wrapper = doMount({
         allowNewValues: true,
+        // @ts-expect-error - autobind event handler, passed as a prop to make it work, but that doesn't exist
         "onUpdate:modelValue": async (modelValue: string[]) => {
           await wrapper.setProps({ modelValue });
         },

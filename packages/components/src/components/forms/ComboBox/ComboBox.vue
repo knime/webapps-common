@@ -93,6 +93,11 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+
+    maxCharactersPerItem: {
+      type: Number,
+      default: null,
+    },
   },
 
   emits: {
@@ -334,6 +339,7 @@ export default defineComponent({
             class="search-input"
             type="text"
             :style="inputWidth"
+            :maxlength="maxCharactersPerItem"
             @focus="onInputFocus"
             @input="onInput"
             @keydown.enter.prevent="onEnter"

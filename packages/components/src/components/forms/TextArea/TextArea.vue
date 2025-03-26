@@ -61,6 +61,7 @@ export default {
 <template>
   <div :class="{ disabled }">
     <textarea
+      v-bind="$attrs"
       :id="id"
       ref="input"
       :name="name"
