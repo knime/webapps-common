@@ -8,7 +8,7 @@ import {
   it,
   vi,
 } from "vitest";
-import { type Slot, h, shallowRef } from "vue";
+import { type Slot, h, nextTick, shallowRef } from "vue";
 import { ref } from "vue";
 import { VueWrapper, mount } from "@vue/test-utils";
 import { useEditor } from "@tiptap/vue-3";
@@ -28,6 +28,7 @@ vi.mock("../../composables/useLinkTool", () => ({
 
 // mock for editor's isActive function. declared separately due to mock hoisting via vi.mock
 const mockEditorIsActive = vi.fn();
+const mockCharacterCount = ref(0);
 
 export const createMockEditor = (params: any) => {
   const actionNames = [
@@ -82,6 +83,11 @@ export const createMockEditor = (params: any) => {
     },
     view: { state: { selection: { from: 5 } } },
     params,
+    storage: {
+      characterCount: {
+        characters: () => mockCharacterCount.value,
+      },
+    },
   });
 };
 
@@ -108,13 +114,22 @@ describe("RichTextEditor.vue", () => {
     modelValue: "<p>Hello world</p>",
   };
 
+  type ComponentProps = InstanceType<typeof RichTextEditor>["$props"];
+  type MountOpts = {
+    props?: Partial<ComponentProps>;
+    slots?: {
+      customToolbar?: any;
+      linkModal?: any;
+    };
+  };
+
   const doMount = ({
     props = {},
     slots = {
       customToolbar: null,
       linkModal: null,
     },
-  } = {}) => {
+  }: MountOpts = {}) => {
     const _slots = {
       ...(slots.customToolbar ? { customToolbar: slots.customToolbar } : {}),
       ...(slots.linkModal ? { linkModal: slots.linkModal } : {}),
@@ -162,7 +177,7 @@ describe("RichTextEditor.vue", () => {
       }),
     );
 
-    expect(mockEditor.value.params.extensions.length).toBe(6);
+    expect(mockEditor.value.params.extensions.length).toBe(7);
     expect(wrapper.classes("with-border")).toBeTruthy();
     expect(wrapper.classes("disabled")).toBeFalsy();
   });
@@ -347,6 +362,48 @@ describe("RichTextEditor.vue", () => {
     await wrapper.setProps({ editable: true });
 
     expect(mockEditor.value.commands.focus).toHaveBeenCalled();
+  });
+
+  describe("character limit", () => {
+    afterEach(() => {
+      mockCharacterCount.value = 0;
+    });
+
+    it("should show limit counter when user has 100 chars or less left", async () => {
+      const { wrapper } = doMount();
+
+      expect(wrapper.find(".character-count").exists()).toBe(false);
+
+      mockCharacterCount.value = 500;
+      await nextTick();
+      expect(wrapper.find(".character-count").exists()).toBe(false);
+
+      mockCharacterCount.value = 900;
+      await nextTick();
+      expect(wrapper.find(".character-count").exists()).toBe(true);
+    });
+
+    it("should default to 200 when char limit is too low", async () => {
+      const { wrapper } = doMount({
+        props: {
+          characterLimit: 20,
+        },
+      });
+
+      expect(wrapper.find(".character-count").exists()).toBe(false);
+
+      mockCharacterCount.value = 10;
+      await nextTick();
+      expect(wrapper.find(".character-count").exists()).toBe(false);
+
+      mockCharacterCount.value = 18;
+      await nextTick();
+      expect(wrapper.find(".character-count").exists()).toBe(false);
+
+      mockCharacterCount.value = 100;
+      await nextTick();
+      expect(wrapper.find(".character-count").exists()).toBe(true);
+    });
   });
 
   describe("tool interactions", () => {
@@ -630,7 +687,6 @@ describe("RichTextEditor.vue", () => {
           h(getScopedComponent, { scope: props });
 
         const { wrapper } = doMount({
-          // @ts-expect-error Type '(props: any) => VNode<RendererNode, RendererElement, { [key: string]: any; }>' is not assignable to type 'null'.
           slots: { customToolbar },
           props: {
             baseExtensions: { all: true },
@@ -659,7 +715,6 @@ describe("RichTextEditor.vue", () => {
         const linkModal = (props: any) =>
           h(getScopedComponent, { scope: props });
         const { wrapper } = doMount({
-          // @ts-expect-error Type '(props: any) => VNode<RendererNode, RendererElement, { [key: string]: any; }>' is not assignable to type 'null'.
           slots: { linkModal },
           props: {
             baseExtensions: { link: true },

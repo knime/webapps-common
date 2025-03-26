@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, toRefs, useSlots, watch } from "vue";
+import CharacterCount from "@tiptap/extension-character-count";
 import UnderLine from "@tiptap/extension-underline";
 import StarterKit from "@tiptap/starter-kit";
 import { type AnyExtension, EditorContent, useEditor } from "@tiptap/vue-3";
@@ -72,6 +73,19 @@ interface Props {
    * @param url
    */
   linkToolOptions?: LinkToolOptions;
+  /**
+   * Max number of allowed characters in the editor. When the user has 100 characters
+   * or less left, then a visual counter will be displayed to the user.
+   *
+   * Notes:
+   * - Defaults to 1000 and cannot be under 200
+   * - When a number less than 200 is supplied, the editor will fallback to 200
+   * - This prop is *intentionally* **not** reactive. This is because this acts
+   *   as a configuration that is given to the editor upon usage rather than a
+   *   dynamic value. Having an increasingly changing value defeats
+   *   the purpose of having a limit
+   */
+  characterLimit?: number;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -101,7 +115,14 @@ const props = withDefaults(defineProps<Props>(), {
   withBorder: true,
   disabled: false,
   linkToolOptions: () => defaultLinkToolOptions,
+  characterLimit: 1000,
 });
+
+// we need to define a minimum amount for a character limit so that we
+// can make static calculations for the character counter and show it
+// only when the user has 100 chars or less left
+const MIN_CHARACTER_LIMIT = 200;
+const hardCharacterLimit = Math.max(props.characterLimit, MIN_CHARACTER_LIMIT);
 
 const slots = useSlots();
 const {
@@ -167,6 +188,9 @@ const extensions = [
     : []),
 
   CustomHardBreak,
+  CharacterCount.configure({
+    limit: hardCharacterLimit,
+  }),
 
   ...customExtensions.value,
 ];
@@ -207,6 +231,26 @@ watch(modelValue, (_value) => {
 
   editor.value.commands.setContent(_value);
 });
+
+const usedCharactersPercentage = computed(() => {
+  if (!editor.value) {
+    // eslint-disable-next-line no-undefined
+    return undefined;
+  }
+
+  return Math.round(
+    (100 / hardCharacterLimit) *
+      editor.value.storage.characterCount.characters(),
+  );
+});
+
+const shouldShowCharacterCounter = computed(
+  // () => usedCharactersPercentage.value && usedCharactersPercentage.value >= 85,
+  () =>
+    editor.value &&
+    hardCharacterLimit - editor.value.storage.characterCount.characters() <=
+      100,
+);
 
 watch(
   [editable, disabled],
@@ -283,6 +327,28 @@ const hasTools = computed(() => Object.keys(props.baseExtensions).length);
       :editor="editor"
       :class="{ editable: editable && !disabled }"
     />
+
+    <div v-if="editor && shouldShowCharacterCounter" class="character-count">
+      <svg class="progress-counter" height="16" width="16" viewBox="0 0 20 20">
+        <circle r="10" cx="10" cy="10" fill="#e9ecef" />
+        <circle
+          r="5"
+          cx="10"
+          cy="10"
+          fill="transparent"
+          stroke="currentColor"
+          stroke-width="10"
+          :stroke-dasharray="`calc(${usedCharactersPercentage} * 31.4 / 100) 31.4`"
+          transform="rotate(-90) translate(-20)"
+        />
+        <circle r="6" cx="10" cy="10" fill="white" />
+      </svg>
+
+      <span>
+        {{ editor.storage.characterCount.characters() }} /
+        {{ hardCharacterLimit }} characters
+      </span>
+    </div>
   </div>
 </template>
 
@@ -294,6 +360,9 @@ const hasTools = computed(() => Object.keys(props.baseExtensions).length);
   --rich-text-editor-font-size: 13px;
   --rich-text-editor-small-font-size: 7px;
   --rich-text-editor-padding: 10px;
+
+  position: relative;
+  isolation: isolate;
 
   &.with-border {
     border: 1px solid var(--knime-stone-gray);
@@ -372,6 +441,26 @@ const hasTools = computed(() => Object.keys(props.baseExtensions).length);
 
   & :deep(.small-text) {
     font-size: var(--rich-text-editor-small-font-size);
+  }
+}
+
+/* Character count */
+.character-count {
+  pointer-events: none;
+  z-index: 1;
+  position: absolute;
+  bottom: 0;
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  justify-content: flex-end;
+  padding: 2px;
+  color: var(--knime-masala);
+  font-size: 10px;
+
+  & .progress-counter {
+    background: transparent;
   }
 }
 </style>
