@@ -13,6 +13,10 @@ const COLORS = {
   },
 } as const;
 
+const toKebabCase = (str: string) => {
+  return str.replace(/([A-Z])/g, "-$1").toLowerCase();
+};
+
 /**
  * Apply styles to given element
  */
@@ -21,8 +25,10 @@ const applyStyles = (
   styles: Partial<CSSStyleDeclaration>,
 ): void => {
   Object.entries(styles).forEach(([property, value]) => {
-    // @ts-expect-error Element implicitly has an 'any' type because index expression is not of type 'number'.
-    element.style[property] = value;
+    if (!value) {
+      return;
+    }
+    element.style.setProperty(toKebabCase(property), value.toString());
   });
 };
 
