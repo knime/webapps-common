@@ -1,5 +1,13 @@
 # @knime/hub-features
 
+## 1.6.1
+
+### Patch Changes
+
+- b4fbdb4: Miscellaneous VersionManager internal component fix
+- Updated dependencies [4cc131a]
+  - @knime/components@1.22.1
+
 ## 1.6.0
 
 ### Minor Changes

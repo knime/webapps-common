@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.22.1
+
+### Patch Changes
+
+- 4cc131a: fix TS errors
+
 ## 1.22.0
 
 ### Minor Changes
