@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.23.0
+
+### Minor Changes
+
+- 9ccf905: Allow button in SubMenu to be compact
+
 ## 1.22.2
 
 ### Patch Changes
