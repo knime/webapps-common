@@ -87,8 +87,8 @@ describe("SingleSelectControl", () => {
     expect(
       wrapper.findComponent(LoadingDropdown).props("possibleValues"),
     ).toEqual([
-      { id: "__special__first", text: "First" },
-      { id: "__special__second", text: "Second" },
+      { id: "__special__first", text: "First", isSpecial: true },
+      { id: "__special__second", text: "Second", isSpecial: true },
       { id: "__regular__aRegularChoice", text: "A Regular Choice" },
     ]);
   });

@@ -177,12 +177,17 @@ export default {
           <Dropdown
             v-model="selected"
             aria-label="A List"
-            :possible-values="
-              Array.from({ length: 1000 }, (_v, i) => ({
+            :possible-values="[
+              {
+                id: 'specialOption',
+                text: 'Some special option',
+                isSpecial: true,
+              },
+              ...Array.from({ length: 1000 }, (_v, i) => ({
                 id: `Id ${i}`,
                 text: `Option ${i}`,
-              }))
-            "
+              })),
+            ]"
           />
         </div>
         <div class="grid-item-5">
