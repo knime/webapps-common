@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.22.2
+
+### Patch Changes
+
+- 93103f5: fix issue with thead element inside FileExplorer spanning whole page and causing an html overflow
+
 ## 1.22.1
 
 ### Patch Changes
