@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.6.10
+
+### Patch Changes
+
+- e3f1f94: Improve validation in Number/TextInputControl
+
 ## 1.6.9
 
 ### Patch Changes
