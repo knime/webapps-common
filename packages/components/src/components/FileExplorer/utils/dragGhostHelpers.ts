@@ -28,7 +28,10 @@ const applyStyles = (
     if (!value) {
       return;
     }
-    element.style.setProperty(toKebabCase(property), value.toString());
+    element.style.setProperty(
+      toKebabCase(property.toString()),
+      value.toString(),
+    );
   });
 };
 
