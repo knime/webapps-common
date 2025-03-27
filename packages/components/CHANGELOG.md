@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.24.0
+
+### Minor Changes
+
+- 8582dc1: add character limits to ComboBox. Allow transparent attribute binding to TextArea (e.g to enable passing attrs like maxlength)
+
 ## 1.23.0
 
 ### Minor Changes
