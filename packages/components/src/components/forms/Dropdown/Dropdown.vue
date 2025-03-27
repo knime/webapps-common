@@ -20,6 +20,7 @@ interface PossibleValue {
   slotData?: {
     [K in keyof any]: string | number | boolean;
   };
+  isSpecial?: boolean;
 }
 
 let count = 0;
@@ -551,6 +552,7 @@ export default {
               noselect: true,
               empty: item.text.trim() === '',
               'has-option-template': hasOptionTemplate,
+              special: item.isSpecial,
             }"
             :aria-selected="isCurrentValue(item.id)"
             @mouseenter="updateCandidate(item.id)"
@@ -783,6 +785,10 @@ export default {
       & :slotted(svg) {
         stroke: var(--theme-dropdown-foreground-color-hover);
       }
+    }
+
+    &.special {
+      font-style: italic;
     }
   }
 
