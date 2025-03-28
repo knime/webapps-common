@@ -32,7 +32,8 @@
   "scripts": {
     "type-check": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
     "test:unit": "TZ='Europe/Berlin' vitest",
-    "build": "vite build"
+    "build": "vite build",
+    "build-watch": "vite build --minify=false --watch"
   },
   "dependencies": {
     "@floating-ui/vue": "catalog:",
