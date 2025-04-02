@@ -1,6 +1,6 @@
 {
   "name": "@knime/jsonforms",
-  "version": "1.6.10",
+  "version": "1.7.0",
   "description": "Internal JSON Forms integration for frontend KNIME projects",
   "homepage": "https://knime.github.io/webapps-common/",
   "license": "GPL 3 and Additional Permissions according to Sec. 7 (SEE the file LICENSE)",

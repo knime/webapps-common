@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.24.1
+
+### Patch Changes
+
+- 803a5b9: Changed default for showMode to true in MultiModeTwinlist
+
 ## 1.24.0
 
 ### Minor Changes

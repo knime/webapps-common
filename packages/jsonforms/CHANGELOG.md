@@ -1,5 +1,17 @@
 # @knime/json-forms
 
+## 1.7.0
+
+### Minor Changes
+
+- 28e1942: Introduce SingleSelection jsonforms control. Therefore remove special choices handling from other choices controls.
+
+### Patch Changes
+
+- Updated dependencies [803a5b9]
+  - @knime/components@1.24.1
+  - @knime/rich-text-editor@1.4.1
+
 ## 1.6.10
 
 ### Patch Changes
