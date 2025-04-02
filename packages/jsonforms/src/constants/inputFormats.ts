@@ -24,6 +24,7 @@ export const inputFormats = {
   interval: "interval",
   dateTimeFormatWithType: "dateTimeFormatWithType",
   dateTimeFormat: "dateTimeFormat",
+  dynamicInput: "dynamicInput",
 } as const;
 
 // union type of the values of the inputFormats object:
