@@ -5,8 +5,10 @@ import type { HubAvatarData } from "@knime/hub-features";
 import { VERSION_DEFAULT_LIMIT } from "@knime/hub-features/versions";
 import type {
   AssignedLabel,
+  ItemPermission,
   ItemSavepoint,
   NamedItemVersion,
+  RepositoryItem,
   WithAvatar,
   WithLabels,
 } from "@knime/hub-features/versions";
@@ -38,6 +40,13 @@ export const useVersionsApi = ({ baseUrl }: UseVersionsApiOptions) => {
     });
     const response = await doHubRequest(path, requestOptions);
     return response.json();
+  };
+
+  const fetchRepositoryItem = ({ itemId }: { itemId: string }) => {
+    return doHubRequestJson(
+      `/repository/${itemId}`,
+      {},
+    ) as Promise<RepositoryItem>;
   };
 
   const fetchVersions = ({
@@ -161,10 +170,34 @@ export const useVersionsApi = ({ baseUrl }: UseVersionsApiOptions) => {
     }>;
   };
 
+  const fetchPermissions = async ({
+    itemId,
+  }: {
+    itemId: string;
+  }): Promise<ItemPermission[]> => {
+    const masonControlsMap = {
+      "knime:delete": "DELETE",
+      edit: "EDIT",
+      "knime:configuration": "CONFIGURATION",
+      "knime:move": "MOVE",
+      "knime:copy": "COPY",
+    } as const;
+
+    const repositoryItem = await fetchRepositoryItem({
+      itemId,
+    });
+    return Object.keys(repositoryItem["@controls"])
+      .filter((control) => control in masonControlsMap)
+      .map(
+        (control) => masonControlsMap[control as keyof typeof masonControlsMap],
+      );
+  };
+
   return {
     fetchVersions,
     fetchResourceLabels,
     fetchItemSavepoints,
+    fetchPermissions,
     loadSavepointMetadata,
     deleteVersion,
     createVersion,
