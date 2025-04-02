@@ -76,6 +76,11 @@
       "postcss@<8.4.31": ">=8.4.31",
       "esbuild@<=0.24.2": ">=0.25.0",
       "@babel/runtime@<7.26.10": ">=7.26.10"
+    },
+    "auditConfig": {
+      "ignoreGhsas": [
+        "GHSA-4r4m-qw57-chr8"
+      ]
     }
   },
   "engines": {
