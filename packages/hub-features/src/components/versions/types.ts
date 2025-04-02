@@ -12,6 +12,26 @@ export type NamedItemVersion = {
   createdOn: string;
 };
 
+interface MasonControl {
+  [key: string]: {
+    href: string;
+    method: string;
+    accept?: string[];
+    encoding?: string;
+    title?: string;
+  };
+}
+
+export type RepositoryItem = {
+  path: string;
+  id: string;
+  type: string;
+  owner: string;
+  author: string;
+  createdOn: string;
+  "@controls": Array<MasonControl>;
+};
+
 export type AssignedLabel = {
   labelId: string;
   message?: string;
@@ -43,3 +63,10 @@ export type ItemSavepoint = {
   itemVersionId?: string; // UUID
   changes: Array<ItemChange>;
 };
+
+export type ItemPermission =
+  | "DELETE"
+  | "EDIT"
+  | "CONFIGURATION"
+  | "MOVE"
+  | "COPY";
