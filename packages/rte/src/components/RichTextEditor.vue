@@ -233,7 +233,6 @@ watch(modelValue, (_value) => {
 
 const usedCharactersPercentage = computed(() => {
   if (!editor.value) {
-    // eslint-disable-next-line no-undefined
     return undefined;
   }
 

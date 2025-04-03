@@ -222,7 +222,7 @@ export default {
      */
     emptyStateComponent: {
       default: null,
-      type: Object,
+      type: Object as PropType<Record<string, unknown> | null>,
     },
     /**
      * Controls the size of the list.
