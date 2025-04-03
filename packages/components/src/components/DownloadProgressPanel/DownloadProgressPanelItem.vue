@@ -5,7 +5,7 @@ import CircleCheck from "@knime/styles/img/icons/circle-check.svg";
 import CircleClose from "@knime/styles/img/icons/circle-close.svg";
 import CloseIcon from "@knime/styles/img/icons/close.svg";
 import DownloadIcon from "@knime/styles/img/icons/cloud-download.svg";
-import FolderIcon from "@knime/styles/img/icons/folder.svg";
+import KnarFileIcon from "@knime/styles/img/icons/file-knar.svg";
 import TrashIcon from "@knime/styles/img/icons/trash.svg";
 
 import FunctionButton from "../Buttons/FunctionButton.vue";
@@ -65,7 +65,7 @@ const isRemovable = computed(
     :status-pill="statusPill"
   >
     <template #prepend>
-      <FolderIcon />
+      <KnarFileIcon />
     </template>
 
     <template #actions>

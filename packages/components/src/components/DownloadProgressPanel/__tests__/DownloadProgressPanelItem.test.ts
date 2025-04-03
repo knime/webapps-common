@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { mount } from "@vue/test-utils";
 
-import FolderIcon from "@knime/styles/img/icons/folder.svg";
+import KnarFileIcon from "@knime/styles/img/icons/file-knar.svg";
 
 import ProgressItem from "../../Progress/ProgressItem/ProgressItem.vue";
 import DownloadProgressPanelItem from "../DownloadProgressPanelItem.vue";
@@ -48,7 +48,7 @@ describe("DownloadProgressPanelItem.vue", () => {
     const wrapper = doMount();
     const progressItem = wrapper.findComponent(ProgressItem);
     expect(progressItem.exists()).toBe(true);
-    expect(wrapper.findComponent(FolderIcon).exists()).toBe(true);
+    expect(wrapper.findComponent(KnarFileIcon).exists()).toBe(true);
   });
 
   it.each(["ready", "zipping", "cancelled", "failed"] as const)(
