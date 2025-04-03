@@ -36,17 +36,22 @@ export class DefaultEventHandler
 {
   private readonly callbacksMap = new MapOfArrays<
     EventType,
-    // TODO: replace any
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    PushEventListenerCallback<any>
+    PushEventListenerCallback<EventType>
   >();
 
   addPushEventListener<T extends EventType>(
     eventType: EventType,
     callback: PushEventListenerCallback<T>,
   ): () => void {
-    this.callbacksMap.add(eventType, callback);
-    return () => this.callbacksMap.removeFrom(eventType, callback);
+    this.callbacksMap.add(
+      eventType,
+      callback as PushEventListenerCallback<EventType>,
+    );
+    return () =>
+      this.callbacksMap.removeFrom(
+        eventType,
+        callback as PushEventListenerCallback<EventType>,
+      );
   }
 
   dispatchPushEvent<T extends EventType>(event: PushEvent<T>) {

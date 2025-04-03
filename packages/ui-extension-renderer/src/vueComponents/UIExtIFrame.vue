@@ -17,7 +17,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   serviceCreated: [
     service: {
-      dispatchPushEvent: (event: PushEvent<EventType & unknown>) => void;
+      dispatchPushEvent: (event: PushEvent<EventType>) => void;
     },
   ];
 }>();

@@ -34,7 +34,9 @@ export class IframeAddEventListener implements AddPushEventListener {
       if (event.eventType !== eventType) {
         return;
       }
-      callback(event.payload);
+      // TODO: replace any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      callback(event.payload as any);
     };
 
     this.contentWindow.addEventListener("message", handler);

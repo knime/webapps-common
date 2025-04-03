@@ -68,7 +68,11 @@ const serviceAPILayer = computed(() => {
 const onServiceCreated = (service: {
   dispatchPushEvent: (event: PushEvent<EventType>) => void;
 }) => {
-  deregisterOldService = props.apiLayer.registerPushEventService(service);
+  deregisterOldService = props.apiLayer.registerPushEventService(
+    service as {
+      dispatchPushEvent: <T extends EventType>(event: PushEvent<T>) => void;
+    },
+  );
 };
 
 const showMessageFromNodeInfo = (nodeInfo: ExtensionConfig["nodeInfo"]) => {
