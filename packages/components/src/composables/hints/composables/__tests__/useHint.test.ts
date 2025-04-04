@@ -16,6 +16,7 @@ vi.mock("../useHintState", () => {
   const isAllSkippedMock = { value: false };
   const setSkipAllMock = vi.fn();
   const currentlyVisibleHintMock = { value: null };
+  const isInitializedMock = { value: true };
   const setCurrentlyVisibleHintMock = vi.fn();
   const useHintState = vi.fn().mockReturnValue({
     initialize: initializeMock,
@@ -26,6 +27,7 @@ vi.mock("../useHintState", () => {
     setSkipAll: setSkipAllMock,
     currentlyVisibleHint: currentlyVisibleHintMock,
     setCurrentlyVisibleHint: setCurrentlyVisibleHintMock,
+    isInitialized: isInitializedMock,
   });
   return {
     useHintState,
@@ -37,6 +39,7 @@ vi.mock("../useHintState", () => {
     setSkipAllMock,
     currentlyVisibleHintMock,
     setCurrentlyVisibleHintMock,
+    isInitializedMock,
   };
 });
 
@@ -71,6 +74,8 @@ describe("useHint", () => {
     useHintState.isAllSkippedMock.value = false;
     // @ts-expect-error Property 'currentlyVisibleHintMock' does not exist on type
     useHintState.currentlyVisibleHintMock.value = null;
+    // @ts-expect-error Property 'isInitializedMock' does not exist on type
+    useHintState.isInitializedMock.value = true;
   });
 
   const doMount = ({
@@ -540,5 +545,25 @@ describe("useHint", () => {
 
     expect(showHintMock).not.toHaveBeenCalled();
     expect(closeHintMock).not.toHaveBeenCalled();
+  });
+
+  it("does not show hint if hint state is not initialized", () => {
+    const hintKey = "myHint";
+    // @ts-expect-error Property 'isInitializedMock' does not exist on type
+    useHintState.isInitializedMock.value = false;
+
+    const { getComposableResult, showHintMock } = doMount({
+      hintKey,
+      hintAlreadyCompleted: false,
+      skipAllHints: false,
+    });
+
+    const { createHint } = getComposableResult();
+    createHint({
+      hintId: hintKey,
+      isVisibleCondition: ref(true),
+    });
+
+    expect(showHintMock).not.toHaveBeenCalled();
   });
 });

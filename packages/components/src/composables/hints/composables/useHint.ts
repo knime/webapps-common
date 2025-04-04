@@ -82,6 +82,7 @@ export const useHint = ({ hintSetupId = "default" } = {}) => {
 
   const {
     initialize,
+    isInitialized,
     completeHint,
     completeHintWithoutVisibility,
     isCompleted,
@@ -107,7 +108,7 @@ export const useHint = ({ hintSetupId = "default" } = {}) => {
   };
 
   const checkHintVisibilityConstraints = (hintId: string) => {
-    if (isAllSkipped.value) {
+    if (isAllSkipped.value || !isInitialized.value) {
       return false;
     }
 
