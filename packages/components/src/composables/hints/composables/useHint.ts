@@ -220,11 +220,17 @@ export const useHint = ({ hintSetupId = "default" } = {}) => {
     );
     unWatchVisibility = watch(
       isVisible,
-      (value) => {
-        if (value) {
+      (newVal, oldVal) => {
+        if (newVal && !oldVal) {
           setCurrentlyVisibleHint(hintId);
           showHint(hintId);
           destroyHintCallbacks.unshift(() => closeHint(hintId));
+        } else if (!newVal && oldVal) {
+          // close the hint if it's no longer visible
+          if (currentlyVisibleHint.value === hintId) {
+            setCurrentlyVisibleHint(null);
+          }
+          closeHint(hintId);
         }
       },
       { immediate: true },
