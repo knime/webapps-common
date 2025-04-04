@@ -1,5 +1,14 @@
 # @knime/components
 
+## 1.24.2
+
+### Patch Changes
+
+- 6e1501f: add knar file icon
+- Updated dependencies [6e1501f]
+  - @knime/styles@1.4.0
+  - @knime/utils@1.3.3
+
 ## 1.24.1
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @knime/styles
 
+## 1.4.0
+
+### Minor Changes
+
+- 6e1501f: add knar file icon
+
 ## 1.3.1
 
 ### Patch Changes
