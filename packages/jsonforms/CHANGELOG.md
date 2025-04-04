@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.8.0
+
+### Minor Changes
+
+- 4997656: Rename format and renderer from typedNameFilter to typedStringFilter
+
 ## 1.7.0
 
 ### Minor Changes
