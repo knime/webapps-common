@@ -2,11 +2,11 @@ import { describe, expect, it } from "vitest";
 
 import { determineRenderer } from "../../../../testUtils";
 
-describe("TypedNameFilter", () => {
+describe("TypedStringFilter", () => {
   const schema = {
     type: "object",
     properties: {
-      typedNameFilter: {
+      typedStringFilter: {
         type: "object",
         properties: {
           selected: {

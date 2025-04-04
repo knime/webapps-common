@@ -313,7 +313,7 @@ export const dialogInitialData = {
             type: "Control",
             scope: "#/properties/view/properties/frequencyColumns",
             options: {
-              format: "typedNameFilter",
+              format: "typedStringFilter",
               possibleValues: [
                 {
                   id: "Cluster_Membership",
@@ -464,7 +464,7 @@ export const expectedRenderers = [
   },
   {
     scope: "#/properties/view/properties/frequencyColumns",
-    component: "TypedNameFilter",
+    component: "TypedStringFilter",
   },
   {
     scope: "#/properties/view/properties/simpleTwinlist",

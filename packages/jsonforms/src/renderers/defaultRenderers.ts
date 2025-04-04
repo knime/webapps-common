@@ -33,14 +33,14 @@ import { sortListRenderer } from "./sortListRenderer";
 import { textAreaRenderer } from "./textAreaRenderer";
 import { textMessageRenderer } from "./textMessageRenderer";
 import { simpleTwinlistRenderer, twinlistRenderer } from "./twinlistRenderer";
-import { typedNameFilterRenderer } from "./typedNameFilterRenderer";
+import { typedStringFilterRenderer } from "./typedStringFilterRenderer";
 import { valueSwitchRenderer } from "./valueSwitchRenderer";
 import { verticalLayoutRenderer } from "./verticalLayoutRenderer";
 import { zonedDateTimeRenderer } from "./zonedDateTimeRenderer";
 
 export const controls = {
   checkboxesRenderer,
-  typedNameFilterRenderer,
+  typedStringFilterRenderer,
   comboBoxRenderer,
   dateTimeRenderer,
   dateTimeFormatPickerRenderer,

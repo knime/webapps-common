@@ -5,15 +5,15 @@ import { inputFormats, priorityRanks } from "../constants";
 import { hasFormat } from "../constants/inputFormats";
 import { withLabel } from "../higherOrderComponents/control/withLabel";
 
-const TypedNameFilter = defineAsyncComponent(
-  () => import("../uiComponents/twinlist/TypedNameFilter.vue"),
+const TypedStringFilter = defineAsyncComponent(
+  () => import("../uiComponents/twinlist/TypedStringFilter.vue"),
 );
 
-export const typedNameFilterRenderer = withLabel({
-  name: "TypedNameFilter",
-  control: TypedNameFilter,
+export const typedStringFilterRenderer = withLabel({
+  name: "TypedStringFilter",
+  control: TypedStringFilter,
   tester: rankWith(
     priorityRanks.default,
-    and(isControl, hasFormat(inputFormats.typedNameFilter)),
+    and(isControl, hasFormat(inputFormats.typedStringFilter)),
   ),
 });

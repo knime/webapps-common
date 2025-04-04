@@ -2,11 +2,11 @@ import { describe, expect, it } from "vitest";
 
 import { determineRenderer } from "../../../../testUtils";
 
-describe("TypedNameFilter", () => {
+describe("TypedStringFilter", () => {
   const schema = {
     type: "object",
     properties: {
-      typedNameFilter: {
+      typedStringFilter: {
         type: "object",
         properties: {
           selected: {
@@ -30,15 +30,15 @@ describe("TypedNameFilter", () => {
     },
   };
 
-  it("typedNameFilter with options", () => {
+  it("typedStringFilter with options", () => {
     const uiSchema = {
       type: "Control",
-      scope: "#/properties/typedNameFilter",
+      scope: "#/properties/typedStringFilter",
       options: {
-        format: "typedNameFilter",
+        format: "typedStringFilter",
       },
     };
 
-    expect(determineRenderer(uiSchema, schema)).toBe("TypedNameFilter");
+    expect(determineRenderer(uiSchema, schema)).toBe("TypedStringFilter");
   });
 });
