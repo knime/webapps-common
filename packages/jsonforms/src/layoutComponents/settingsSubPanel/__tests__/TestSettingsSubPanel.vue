@@ -5,7 +5,7 @@ export const contentId = "test-content";
 
 <script setup lang="ts">
 import SettingsSubPanel, {
-  type Props as SettingsSubPanelProps,
+  type SettingsSubPanelProps,
 } from "../SettingsSubPanel.vue";
 
 export interface Props {

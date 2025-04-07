@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { inject, ref, watch } from "vue";
+import { computed, inject, ref, watch } from "vue";
 
 import { SideDrawer } from "@knime/components";
 
@@ -7,12 +7,16 @@ import Form from "../Form.vue";
 
 import SidePanelBackArrow from "./SettingsSubPanelBackArrow.vue";
 
-export interface Props {
+export type SettingsSubPanelProps = {
   showBackArrow?: boolean;
-}
+  hideButtonsWhenExpanded?: boolean;
+  backgroundColorOverride?: string;
+};
 
-withDefaults(defineProps<Props>(), {
-  showBackArrow: false,
+const props = withDefaults(defineProps<SettingsSubPanelProps>(), {
+  showBackArrow: true,
+  hideButtonsWhenExpanded: false,
+  backgroundColorOverride: "var(--knime-porcelain)",
 });
 
 const isExpanded = ref(false);
@@ -29,26 +33,35 @@ const setSubPanelExpanded: () => {} = inject("setSubPanelExpanded")!;
 
 watch(
   isExpanded,
-  // @ts-expect-error expected 0 arguments
-  (isExpanded) => setSubPanelExpanded({ isExpanded }),
+  (isExpanded) =>
+    // @ts-expect-error expected 0 arguments
+    props.hideButtonsWhenExpanded && setSubPanelExpanded({ isExpanded }),
 );
-// @ts-expect-error expression not callable
-const subSettingsPanels = inject("getPanelsContainer")!()! as HTMLElement;
+const subSettingsPanels = computed<HTMLElement>(() => {
+  // @ts-expect-error not callable
+  return inject(
+    props.hideButtonsWhenExpanded
+      ? "getPanelsContainer"
+      : "getSideDrawerTeleportDest",
+  )!()! as HTMLElement;
+});
+
+const styleOverrides = computed(() => ({
+  width: "100%",
+  position: "absolute" as const,
+  backgroundColor: props.backgroundColorOverride,
+}));
 </script>
 
 <template>
   <slot name="expand-button" :expand="expand" />
-  <Teleport :disabled="!isExpanded" :to="subSettingsPanels">
-    <SideDrawer
-      :is-expanded="isExpanded"
-      class="side-drawer"
-      :style-overrides="{ width: '100%', position: 'absolute' }"
-    >
+  <Teleport :to="subSettingsPanels">
+    <SideDrawer :is-expanded class="side-drawer" :style-overrides>
       <div class="side-drawer-content">
+        <SidePanelBackArrow v-if="showBackArrow" @click="close" />
         <div class="main-content">
           <Form>
             <template #default>
-              <SidePanelBackArrow v-if="showBackArrow" @click="close" />
               <slot />
             </template>
           </Form>
@@ -78,5 +91,13 @@ const subSettingsPanels = inject("getPanelsContainer")!()! as HTMLElement;
     flex: 0 0 auto;
     height: fit-content;
   }
+}
+</style>
+
+<style lang="postcss">
+/* Adjust the z-index of the side drawer to fix dialogue popovers */
+* {
+  --z-index-common-side-drawer: 3;
+  --z-index-common-mobile-side-drawer: 3;
 }
 </style>

@@ -19,7 +19,9 @@ describe("SettingsSubPanel", () => {
     setSubPanelExpanded = vi.fn();
     props = {
       onApply,
-      settingsSubPanelConfig: {},
+      settingsSubPanelConfig: {
+        hideButtonsWhenExpanded: true,
+      },
     };
   });
 

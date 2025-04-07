@@ -7,7 +7,10 @@ const emit = defineEmits(["click"]);
 
 <template>
   <div class="flex-horizontal">
-    <FunctionButton class="arrow-left-button" @click="() => emit('click')"
+    <FunctionButton
+      primary
+      class="arrow-left-button"
+      @click="() => emit('click')"
       ><ArrowLeft
     /></FunctionButton>
     <span class="spacer" />
@@ -19,7 +22,8 @@ const emit = defineEmits(["click"]);
 .flex-horizontal {
   display: flex;
   align-items: center;
-  margin: 10px 0;
+  padding: 10px;
+  background-color: var(--knime-gray-ultra-light);
 
   & .spacer {
     border: 0.4pt solid var(--knime-silver-sand);

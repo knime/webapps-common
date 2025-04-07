@@ -95,6 +95,8 @@ defineExpose({
 
 <template>
   <div class="dialog">
+    <!-- Here so that the SettingsSubPanel can teleport somewhere sensible -->
+    <slot name="sideDrawerDest" />
     <div ref="subPanels" />
     <Suspense>
       <Form>

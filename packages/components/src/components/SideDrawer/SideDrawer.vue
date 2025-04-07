@@ -3,24 +3,30 @@
  * Expandable sideDrawer component displaying arbitrary components as content.
  */
 export default {};
+
+export type StyleOverrides = {
+  position: "fixed" | "absolute";
+  width: string;
+  backgroundColor: string;
+};
+
+const DEFAULT_STYLES = {
+  position: "fixed",
+  width: "500px",
+  backgroundColor: "var(--knime-porcelain)",
+} as const;
 </script>
 
 <script setup lang="ts">
-type StyleOverrides = {
-  position: "fixed" | "absolute";
-  width: string;
-};
-
 withDefaults(
   defineProps<{
     isExpanded?: boolean;
-    styleOverrides?: StyleOverrides;
+    styleOverrides?: Partial<StyleOverrides>;
   }>(),
   {
     isExpanded: false,
     styleOverrides: () => ({
-      position: "fixed",
-      width: "500px",
+      ...DEFAULT_STYLES,
     }),
   },
 );
@@ -32,8 +38,12 @@ withDefaults(
       v-if="isExpanded"
       class="side-drawer"
       :style="{
-        '--position-common-side-drawer': styleOverrides.position,
-        '--width-common-side-drawer': styleOverrides.width,
+        '--position-common-side-drawer':
+          styleOverrides.position ?? DEFAULT_STYLES.position,
+        '--width-common-side-drawer':
+          styleOverrides.width ?? DEFAULT_STYLES.width,
+        '--background-color-common-side-drawer':
+          styleOverrides.backgroundColor ?? DEFAULT_STYLES.backgroundColor,
       }"
     >
       <div class="content">
@@ -63,7 +73,10 @@ withDefaults(
   right: 0;
   bottom: 0;
   box-shadow: -3px 0 7px 0 var(--knime-gray-dark-semi);
-  background: var(--knime-porcelain);
+  background: var(
+    --background-color-common-side-drawer,
+    var(--knime-porcelain)
+  );
   z-index: var(--z-index-common-side-drawer, 60);
 
   @media only screen and (width <= 900px) {

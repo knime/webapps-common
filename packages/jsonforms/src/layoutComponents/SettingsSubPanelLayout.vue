@@ -14,11 +14,14 @@ defineProps<VueLayoutProps>();
 </script>
 
 <template>
-  <SettingsSubPanel show-back-arrow>
+  <SettingsSubPanel
+    show-back-arrow
+    background-color-override="var(--knime-gray-ultra-light"
+  >
     <template #expand-button="{ expand }">
       <SectionHeading :title-text="layout.uischema.label">
         <template #right-buttons>
-          <FunctionButton class="set-button" @click="expand">
+          <FunctionButton compact class="set-button" @click="expand">
             <span>Set</span>
             <NextIcon />
           </FunctionButton>
@@ -45,6 +48,8 @@ defineProps<VueLayoutProps>();
 
 <style lang="postcss" scoped>
 .set-button {
-  height: 30px;
+  & span {
+    margin: 0 var(--space-4);
+  }
 }
 </style>
