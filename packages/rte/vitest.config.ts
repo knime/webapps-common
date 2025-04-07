@@ -7,7 +7,6 @@ import svgLoader from "vite-svg-loader";
 import { svgoConfig } from "@knime/styles/config/svgo.config";
 
 export default defineProject({
-  // @ts-expect-error No overload matches this call.
   plugins: [vue(), svgLoader({ svgoConfig })],
   test: {
     environment: "jsdom",

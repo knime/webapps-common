@@ -21,7 +21,7 @@ catalog:
   prettier: 3.3.2
   stylelint: 16.14.1
   typescript: ^5.4.5
-  vite: 5.4.15
+  vite: 5.4.17
   vite-plugin-dts: 4.3.0
   vite-plugin-css-injected-by-js: ^3.5.1
   vite-svg-loader: 5.1.0

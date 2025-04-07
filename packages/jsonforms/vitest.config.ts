@@ -41,7 +41,6 @@ const getReportDirectory = (mode: "integration" | "unit") => {
   }
 };
 
-// @ts-expect-error No overload matches this call.
 export default defineConfig(({ mode }) => {
   const testMode = mode === "integration" ? "integration" : "unit";
 
