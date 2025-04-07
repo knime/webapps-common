@@ -1,5 +1,11 @@
 # @knime/eslint-config
 
+## 9.0.1
+
+### Patch Changes
+
+- 525c7a5: fix config file extension of base config and replace some deprecated rules in the base config
+
 ## 9.0.0
 
 ### Major Changes
