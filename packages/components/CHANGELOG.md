@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.25.0
+
+### Minor Changes
+
+- 2d42337: add useAutoCloseOnCompletion composable that can be used with upload/download panel
+
 ## 1.24.2
 
 ### Patch Changes
