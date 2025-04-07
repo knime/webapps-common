@@ -32,7 +32,7 @@
 
   ```js
   ...config.map((conf) => {
-      if (conf.name?.includes("@knime/eslint-config/<config>")) {
+      if (conf.name && conf.name === "@knime/eslint-config/<config>") {
         return {
           ...conf,
           files: [...conf.files, "*.ts", "*.tsx", "*.mts", "*.cts", "*.vue"],

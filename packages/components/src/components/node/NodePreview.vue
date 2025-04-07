@@ -85,12 +85,14 @@ export default {
       const portSize = 9;
       const bgSize = 32;
 
+      /* eslint-disable no-magic-numbers */
       let spacing = 1;
       if (total === 2) {
         spacing = 12;
       } else if (total === 3) {
         spacing = 1.5;
       }
+      /* eslint-enable no-magic-numbers */
 
       const totalHeight = total * portSize + (total - 1) * spacing;
       const delta = (bgSize - totalHeight) / 2;

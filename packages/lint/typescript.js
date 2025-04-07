@@ -7,7 +7,7 @@ import baseConfig from "./base.js";
 export default [
   // extend baseConfig files to include ts files
   ...baseConfig.map((config) => {
-    if (config.name?.includes("@knime/eslint-config/base")) {
+    if (config.name && config.name === "@knime/eslint-config/base") {
       return {
         ...config,
         files: [...config.files, "**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts"],

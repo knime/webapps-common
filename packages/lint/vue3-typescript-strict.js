@@ -1,4 +1,4 @@
-import knimeVue3TS from "vue3-typescript.js";
+import knimeVue3TS from "./vue3-typescript.js";
 
 export default [
   ...knimeVue3TS,

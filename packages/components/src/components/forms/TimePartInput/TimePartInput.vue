@@ -152,6 +152,7 @@ export default {
       if (isNaN(value) || (!value && value !== 0) || value < 0) {
         return value;
       }
+      // eslint-disable-next-line no-magic-numbers
       const strValue = value.toString(10);
       return this.minDigits < 1
         ? strValue
@@ -174,6 +175,7 @@ export default {
         this.localValue = "";
       } else {
         // use parsed value and convert back to string to remove leading zeros etc.
+        // eslint-disable-next-line no-magic-numbers
         const inputLength = inputNum.toString(10).length;
         // skip empty values (they become NaN which is 3 long)
         if (rawValue === "") {
@@ -233,7 +235,7 @@ export default {
 
       /** Mimic stepping to nearest step with safe value rounding */
       let parsedVal = value + increment;
-      parsedVal = Math.round(parsedVal * 10) / 10;
+      parsedVal = Math.round(parsedVal * 10) / 10; // eslint-disable-line no-magic-numbers
 
       /**
        * All measures have been taken to ensure a valid value at this point, so if the last

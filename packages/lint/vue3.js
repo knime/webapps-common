@@ -6,7 +6,7 @@ import prettierOverridesVue from "./prettierOverwrites-vue.js";
 export default [
   // extend baseConfig files to include vue files
   ...baseConfig.map((config) => {
-    if (config.name?.includes("@knime/eslint-config/base")) {
+    if (config.name && config.name === "@knime/eslint-config/base") {
       return {
         ...config,
         files: [...config.files, "**/*.vue"],

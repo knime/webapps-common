@@ -1,5 +1,6 @@
 import eslint from "@eslint/js";
 import importPlugin from "eslint-plugin-import-x";
+import nodeEslint from "eslint-plugin-n";
 import unusedImports from "eslint-plugin-unused-imports";
 import globals from "globals";
 
@@ -32,6 +33,7 @@ export default [
     plugins: {
       "unused-imports": unusedImports,
       import: importPlugin,
+      n: nodeEslint,
     },
     languageOptions: {
       ...languageOptions,
@@ -55,7 +57,6 @@ export default [
       eqeqeq: "error",
       "func-name-matching": "warn",
       "func-style": "warn",
-      "handle-callback-err": ["warn", "^err(or)?$"],
       "lines-between-class-members": [
         "warn",
         "always",
@@ -77,7 +78,6 @@ export default [
       "no-array-constructor": "warn",
       "no-async-promise-executor": "off",
       "no-bitwise": "warn",
-      "no-buffer-constructor": "error",
       "no-console": "error",
       "no-duplicate-imports": "error",
       "no-empty-function": ["error", { allow: ["arrowFunctions"] }],
@@ -102,12 +102,8 @@ export default [
       "no-negated-condition": "error",
       "no-nested-ternary": "warn",
       "no-new-func": "warn",
-      "no-new-object": "error",
-      "no-new-require": "error",
       "no-new-wrappers": "error",
-      "no-path-concat": "warn",
-      "no-process-env": "error",
-      "no-process-exit": "warn",
+      "no-object-constructor": "error",
       "no-proto": "error",
       "no-prototype-builtins": "off",
       "no-restricted-globals": ["error", "event", "fdescribe"],
@@ -243,6 +239,12 @@ export default [
           ignoreDeclarationSort: true, // prevents conflict with import/order
         },
       ],
+      "n/handle-callback-err": ["warn", "^err(or)?$"],
+      "n/no-deprecated-api": "error",
+      "n/no-new-require": "error",
+      "n/no-path-concat": "warn",
+      "n/no-process-env": "error",
+      "n/no-process-exit": "warn",
     },
   },
   // overrrides
@@ -256,7 +258,7 @@ export default [
     rules: {
       camelcase: "off",
       "no-magic-numbers": "off",
-      "no-process-env": "off",
+      "n/no-process-env": "off",
     },
     languageOptions: {
       globals: {

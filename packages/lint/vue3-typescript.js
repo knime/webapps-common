@@ -13,7 +13,7 @@ export default defineConfigWithVueTs({
   // extend baseconfig to also apply to ts files
   extends: [
     ...vue3Config.map((config) => {
-      if (config.name?.includes("@knime/eslint-config/base")) {
+      if (config.name && config.name === "@knime/eslint-config/base") {
         return {
           ...config,
           files: [

@@ -1,3 +1,4 @@
+/* eslint-disable no-magic-numbers */
 import type { UIExtensionServiceConfig } from "@knime/ui-extension-renderer/api";
 
 export const extensionConfig: UIExtensionServiceConfig = {

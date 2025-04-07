@@ -422,6 +422,7 @@ const openContextMenu = (
   } else {
     const rect = element.getBoundingClientRect();
 
+    // eslint-disable-next-line no-magic-numbers
     contextMenuPos.value.x = rect.x + rect.width * 0.8;
     contextMenuPos.value.y = rect.y + rect.height / 2;
   }
