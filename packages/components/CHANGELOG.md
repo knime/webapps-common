@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.25.1
+
+### Patch Changes
+
+- a5c359f: add forgotten export for useAutoCloseOnCompletion composable
+
 ## 1.25.0
 
 ### Minor Changes
