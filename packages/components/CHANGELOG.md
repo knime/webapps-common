@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.25.2
+
+### Patch Changes
+
+- e177076: fix(hints): auto-close hints when visibility becomes false after remote state sync
+
 ## 1.25.1
 
 ### Patch Changes
