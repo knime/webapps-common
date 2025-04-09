@@ -1,5 +1,13 @@
 # @knime/hub-features
 
+## 1.7.1
+
+### Patch Changes
+
+- Updated dependencies [dea510f]
+  - @knime/components@1.25.3
+  - @knime/utils@1.4.0
+
 ## 1.7.0
 
 ### Minor Changes

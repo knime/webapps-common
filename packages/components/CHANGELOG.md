@@ -1,5 +1,13 @@
 # @knime/components
 
+## 1.25.3
+
+### Patch Changes
+
+- dea510f: Moved getMetaOrCtrlKey from navigator util to hotkeys util
+- Updated dependencies [dea510f]
+  - @knime/utils@1.4.0
+
 ## 1.25.2
 
 ### Patch Changes

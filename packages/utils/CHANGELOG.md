@@ -1,5 +1,11 @@
 # @knime/utils
 
+## 1.4.0
+
+### Minor Changes
+
+- dea510f: Moved getMetaOrCtrlKey from navigator util to hotkeys util
+
 ## 1.3.3
 
 ### Patch Changes
