@@ -1,15 +1,12 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 
 import { useVersionsApi } from "../useVersionsApi";
 
-const mockBaseUrl = "http://mock-api.com";
+const mockBaseUrl = "http://mock-api.test";
 
 describe("useVersionsApi", () => {
-  const mockFetch = vi.fn();
-
   beforeEach(() => {
-    global.fetch = mockFetch;
-    mockFetch.mockReset();
+    globalThis.$ofetchMock.mockRestore();
   });
 
   it("should fetch permissions for a given itemId", async () => {
@@ -25,14 +22,12 @@ describe("useVersionsApi", () => {
       },
     };
 
-    mockFetch.mockResolvedValueOnce({
-      json: () => Promise.resolve(mockRepositoryItem),
-    });
+    $ofetchMock.mockResolvedValueOnce(mockRepositoryItem);
 
     const { fetchPermissions } = useVersionsApi({ baseUrl: mockBaseUrl });
     const permissions = await fetchPermissions({ itemId });
 
-    expect(mockFetch).toHaveBeenCalledWith(
+    expect($ofetchMock).toHaveBeenCalledWith(
       `${mockBaseUrl}/repository/${itemId}`,
       expect.any(Object),
     );
@@ -47,7 +42,7 @@ describe("useVersionsApi", () => {
   });
 
   it("should throw an error if the fetch fails", async () => {
-    mockFetch.mockRejectedValueOnce(new Error("Network error"));
+    $ofetchMock.mockRejectedValueOnce(new Error("Network error"));
 
     const { fetchPermissions } = useVersionsApi({ baseUrl: mockBaseUrl });
 

@@ -43,7 +43,7 @@ type UseFileUploadOptions = {
  * It is a multi-step process which is described as follows:
  *
  * Step 1:
- * First we need to prepare an upload. The items will will be uploaded to a `parent` container
+ * First we need to prepare an upload. The items will be uploaded to a `parent` container
  * identified by its id. Then, for each file we want to upload, we must provide paths relative
  * to the parent that identify each file. Example:
  *  ```

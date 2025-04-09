@@ -1,7 +1,6 @@
-/* global RequestInit */
-import { merge } from "lodash-es";
+import { FetchError, type FetchOptions } from "ofetch";
 
-import type { HubAvatarData } from "@knime/hub-features";
+import { type HubAvatarData, rfcErrors } from "@knime/hub-features";
 import { VERSION_DEFAULT_LIMIT } from "@knime/hub-features/versions";
 import type {
   AssignedLabel,
@@ -13,40 +12,47 @@ import type {
   WithLabels,
 } from "@knime/hub-features/versions";
 
+import { DEFAULT_API_BASE_URL } from "../../common/constants";
+import { getFetchClient } from "../../common/ofetchClient";
+
 type UseVersionsApiOptions = {
   baseUrl?: string;
+  customFetchClientOptions?: FetchOptions;
 };
 
-export const useVersionsApi = ({ baseUrl }: UseVersionsApiOptions) => {
-  const doHubRequest = (path: string, requestOptions: RequestInit = {}) => {
-    const res = `${baseUrl}${path}`;
-    consola.trace(`useVersionsApi::fetching '${res}'`, requestOptions);
+export const useVersionsApi = ({
+  baseUrl,
+  customFetchClientOptions,
+}: UseVersionsApiOptions) => {
+  const $ofetch = getFetchClient(customFetchClientOptions);
 
-    const defaults = {
+  const doHubRequest = (path: string, fetchOptions?: FetchOptions) => {
+    const res = `${baseUrl ?? DEFAULT_API_BASE_URL}${path}`;
+    const defaults: FetchOptions = {
       method: "GET",
     };
-    return fetch(res, {
-      ...defaults,
-      ...requestOptions,
-    });
-  };
 
-  const doHubRequestJson = async (
-    path: string,
-    requestOptions: RequestInit = {},
-  ) => {
-    merge(requestOptions, {
-      headers: { "Content-Type": "application/json" as const },
-    });
-    const response = await doHubRequest(path, requestOptions);
-    return response.json();
+    try {
+      consola.trace("useVersionsApi::calling", {
+        path: res,
+        options: fetchOptions,
+      });
+
+      return $ofetch(res, {
+        ...defaults,
+        ...fetchOptions,
+      });
+    } catch (error) {
+      if (error instanceof FetchError) {
+        throw rfcErrors.tryParse(error);
+      }
+
+      throw error;
+    }
   };
 
   const fetchRepositoryItem = ({ itemId }: { itemId: string }) => {
-    return doHubRequestJson(
-      `/repository/${itemId}`,
-      {},
-    ) as Promise<RepositoryItem>;
+    return doHubRequest(`/repository/${itemId}`) as Promise<RepositoryItem>;
   };
 
   const fetchVersions = ({
@@ -62,7 +68,7 @@ export const useVersionsApi = ({ baseUrl }: UseVersionsApiOptions) => {
       path += "?limit=-1";
     }
 
-    return doHubRequestJson(path) as Promise<{
+    return doHubRequest(path) as Promise<{
       totalCount: number;
       versions: Array<NamedItemVersion>;
     }>;
@@ -75,9 +81,8 @@ export const useVersionsApi = ({ baseUrl }: UseVersionsApiOptions) => {
     resourceType: "savepoint";
     resourceId: string;
   }) => {
-    return doHubRequestJson(
+    return doHubRequest(
       `/validation/validation/resources/${resourceType}/${resourceId}/labels`,
-      {},
     ).catch(() => ({ assignedLabels: [] })) as Promise<{
       assignedLabels: Array<AssignedLabel>;
     }>;
@@ -104,7 +109,7 @@ export const useVersionsApi = ({ baseUrl }: UseVersionsApiOptions) => {
     title: string;
     description: string;
   }): Promise<NamedItemVersion> => {
-    return doHubRequestJson(`/repository/${projectItemId}/versions`, {
+    return doHubRequest(`/repository/${projectItemId}/versions`, {
       method: "POST",
       body: JSON.stringify({
         title,
@@ -118,14 +123,11 @@ export const useVersionsApi = ({ baseUrl }: UseVersionsApiOptions) => {
   }: {
     accountName: string;
   }): Promise<HubAvatarData> => {
-    const accountInfo = await doHubRequestJson(
-      `/accounts/name/${accountName}`,
-      {
-        headers: {
-          Prefer: "representation=minimal",
-        },
+    const accountInfo = await doHubRequest(`/accounts/name/${accountName}`, {
+      headers: {
+        Prefer: "representation=minimal",
       },
-    );
+    });
 
     return {
       kind: accountInfo.type === "TEAM" ? "group" : "account",
@@ -134,7 +136,7 @@ export const useVersionsApi = ({ baseUrl }: UseVersionsApiOptions) => {
         url: accountInfo.avatarUrl,
         altText: `${accountInfo.realName ?? accountInfo.name} profile image`,
       },
-    } satisfies HubAvatarData;
+    };
   };
 
   const loadSavepointMetadata = async (
@@ -160,7 +162,7 @@ export const useVersionsApi = ({ baseUrl }: UseVersionsApiOptions) => {
     itemId: string;
     limit?: number;
   }) => {
-    return doHubRequestJson(
+    return doHubRequest(
       `/repository/${itemId}/savepoints?limit=${
         limit ?? VERSION_DEFAULT_LIMIT
       }`,
