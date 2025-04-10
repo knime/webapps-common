@@ -1,4 +1,5 @@
 @import "@knime/styles/css";
+@import "@knime/components/styles";
 @import "./prism-theme-knime";
 
 :root {

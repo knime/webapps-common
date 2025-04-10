@@ -26,9 +26,9 @@ definitions:
           - pnpm install
           - pnpm run ci:lint-format
           - pnpm run build:ui-extension-service # temporary build step to enable type-check for ui-extension-renderer
+          - pnpm run build:packages # need to build before type-checking as some packages include types in the build
           - pnpm run type-check
           - pnpm run coverage
-          - pnpm run build:packages
           - pnpm run build:demo
           - pnpm run audit
           - pipe: sonarsource/sonarcloud-scan:2.0.0

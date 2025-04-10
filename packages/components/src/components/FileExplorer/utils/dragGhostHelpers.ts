@@ -13,10 +13,6 @@ const COLORS = {
   },
 } as const;
 
-const toKebabCase = (str: string) => {
-  return str.replace(/([A-Z])/g, "-$1").toLowerCase();
-};
-
 /**
  * Apply styles to given element
  */
@@ -25,13 +21,8 @@ const applyStyles = (
   styles: Partial<CSSStyleDeclaration>,
 ): void => {
   Object.entries(styles).forEach(([property, value]) => {
-    if (!value) {
-      return;
-    }
-    element.style.setProperty(
-      toKebabCase(property.toString()),
-      value.toString(),
-    );
+    // @ts-expect-error no implicit any
+    element.style[property] = value;
   });
 };
 

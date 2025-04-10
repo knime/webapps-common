@@ -17,7 +17,8 @@
   "sideEffects": false,
   "exports": {
     ".": {
-      "import": "./src/index.ts"
+      "import": "./dist/knime-components.js",
+      "types": "./dist/index.d.ts"
     },
     "./date-time-input": {
       "import": "./src/components/forms/DateTimeInput/index.ts"
@@ -25,11 +26,14 @@
     "./js": {
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
-    }
+    },
+    "./styles": "./dist/knime-components.css"
   },
   "scripts": {
     "type-check": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
-    "test:unit": "TZ='Europe/Berlin' vitest"
+    "test:unit": "TZ='Europe/Berlin' vitest",
+    "build": "vite build",
+    "build-watch": "vite build --minify=false --watch"
   },
   "dependencies": {
     "@floating-ui/vue": "catalog:",
@@ -58,9 +62,11 @@
     "@vitejs/plugin-vue": "catalog:",
     "@vue/test-utils": "catalog:",
     "consola": "catalog:",
+    "postcss": "8.4.5",
     "vite": "catalog:",
     "vite-plugin-css-injected-by-js": "catalog:",
     "vite-svg-loader": "catalog:",
+    "vite-plugin-dts": "catalog:",
     "vue-tsc": "catalog:"
   },
   "engines": {
