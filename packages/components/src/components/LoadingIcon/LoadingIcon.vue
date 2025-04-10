@@ -1,6 +1,7 @@
 <script lang="ts" setup>
-import { svgWithTitle } from "@knime/components";
 import ReloadIcon from "@knime/styles/img/icons/reload.svg";
+
+import svgWithTitle from "../SvgWithTitle/svgWithTitle";
 
 const ReloadIconWithTitle = svgWithTitle(ReloadIcon, "Loading…");
 </script>

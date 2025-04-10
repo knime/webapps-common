@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import { AutoPlayVideo, Button, FunctionButton } from "@knime/components";
 import CloseIcon from "@knime/styles/img/icons/close.svg";
 
+import { AutoPlayVideo, Button, FunctionButton } from "../../../components";
 import type { VideoSource } from "../types";
 
 interface Props {
