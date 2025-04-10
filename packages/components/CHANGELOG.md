@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.25.4
+
+### Patch Changes
+
+- 751cb18: Allow to override background colour of SideDrawer.vue via props
+
 ## 1.25.3
 
 ### Patch Changes

@@ -1,5 +1,21 @@
 # @knime/json-forms
 
+## 1.8.6
+
+### Patch Changes
+
+- 751cb18: Styling changes for Settings Sub Panel
+
+  - back button header is now sticky
+  - back button is now yellow
+  - background now matches main node dialogue
+  - apply/discard buttons are visible when sub panel is open
+  - button to open side drawer is now more compact
+
+- Updated dependencies [751cb18]
+  - @knime/components@1.25.4
+  - @knime/rich-text-editor@1.4.7
+
 ## 1.8.5
 
 ### Patch Changes
