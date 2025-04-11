@@ -20,6 +20,12 @@ type registerWatcher = (params: {
 
 type getData = (params: any) => Promise<any>;
 
+type executeCustomValidation<T> = (
+  id: any,
+  value: T,
+  callback: (message: string | null) => void,
+) => void;
+
 /**
  * Types provided by the JsonFormsDialog.vue component
  */
@@ -30,4 +36,5 @@ export interface Provided {
   // To be removed (see JsonFormsDialog.vue)
   registerWatcher: registerWatcher;
   getData: getData;
+  executeCustomValidation: executeCustomValidation<any>;
 }

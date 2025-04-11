@@ -1,5 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
+import { nextTick } from "vue";
 import { VueWrapper, mount } from "@vue/test-utils";
+
+import { InputField } from "@knime/components";
 
 import JsonFormsDialog from "../../../../../JsonFormsDialog.vue";
 import { controls, layouts, toRenderers } from "../../../../../renderers";
@@ -8,6 +11,7 @@ describe("validation", () => {
   const mountJsonFormsDialog = async (data: {
     stringWithPattern?: string;
     doubleWithMinimum?: number;
+    stringWithCustomValidation?: string;
   }) => {
     const wrapper = mount(JsonFormsDialog, {
       props: {
@@ -17,6 +21,7 @@ describe("validation", () => {
           properties: {
             stringWithPattern: { type: "string" },
             doubleWithMinimum: { type: "number" },
+            stringWithCustomValidation: { type: "string" },
           },
         },
         uischema: {
@@ -52,6 +57,13 @@ describe("validation", () => {
                 format: "number",
               },
             },
+            {
+              type: "Control",
+              scope: "#/properties/stringWithCustomValidation",
+              options: {
+                customValidationHandler: "customValidationHandlerId",
+              },
+            },
           ],
         },
         renderers: toRenderers(
@@ -59,6 +71,12 @@ describe("validation", () => {
           [controls.textRenderer, controls.numberRenderer],
           [layouts.verticalLayoutFallbackRenderer],
         ),
+        onExecuteCustomValidation: (
+          id: string,
+          value: any,
+          callback: Function,
+        ) =>
+          callback(`Custom validation executed for ${id} with value ${value}`),
       },
       attachTo: document.body,
     }) as VueWrapper;
@@ -74,5 +92,19 @@ describe("validation", () => {
   it("validates number controls", async () => {
     const wrapper = await mountJsonFormsDialog({ doubleWithMinimum: -1 });
     expect(wrapper.text()).toContain("The value has to be at least 1");
+  });
+
+  it("executes custom validation for text controls", async () => {
+    vi.useFakeTimers();
+    const wrapper = await mountJsonFormsDialog({
+      stringWithCustomValidation: "abc",
+    });
+    const inputField = wrapper.findAllComponents(InputField).at(1);
+    inputField?.vm.$emit("update:modelValue", "abcd");
+    vi.runAllTimers(); // skip debounce behavior
+    await nextTick(); // wait until messages are updated and rendered
+    expect(wrapper.text()).toContain(
+      "Custom validation executed for customValidationHandlerId with value abcd",
+    );
   });
 });
