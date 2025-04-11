@@ -13,7 +13,7 @@ export const checkboxesTester: Tester = (uischema, schema, context) => {
   return isAnyOf && uischema.options?.format === inputFormats.checkboxes;
 };
 
-export const checkboxesRenderer = withLabel({
+export const checkboxesRenderer = withLabel()({
   name: "CheckboxesControl" as const,
   control: CheckboxesControl,
   tester: rankWith(priorityRanks.default, checkboxesTester),

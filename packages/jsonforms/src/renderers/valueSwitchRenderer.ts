@@ -9,7 +9,7 @@ const ValueSwitchControl = defineAsyncComponent(
   () => import("../uiComponents/ValueSwitchControl.vue"),
 );
 
-export const valueSwitchRenderer = withLabel({
+export const valueSwitchRenderer = withLabel()({
   name: "ValueSwitchControl",
   control: ValueSwitchControl,
   tester: rankWith(

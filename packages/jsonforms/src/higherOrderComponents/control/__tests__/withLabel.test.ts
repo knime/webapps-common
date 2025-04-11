@@ -49,7 +49,7 @@ describe("withLabel", () => {
     tester: () => 1,
   };
 
-  const testControlRenderer = withLabel(testControlLabelContentRenderer);
+  const testControlRenderer = withLabel()(testControlLabelContentRenderer);
 
   const mountTestControlRenderer = () =>
     mount(testControlRenderer.control, {

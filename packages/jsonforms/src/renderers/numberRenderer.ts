@@ -9,7 +9,7 @@ const NumberControl = defineAsyncComponent(
   () => import("../uiComponents/NumberControl.vue"),
 );
 
-export const numberRenderer = withLabel({
+export const numberRenderer = withLabel()({
   name: "NumberControl",
   control: NumberControl,
   tester: rankWith(

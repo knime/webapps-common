@@ -13,7 +13,7 @@ const DateTimeFormatPickerWithTypeControl = defineAsyncComponent(
   () => import("../uiComponents/DateTimeFormatPickerWithTypeControl.vue"),
 );
 
-export const dateTimeFormatPickerRenderer = withLabel({
+export const dateTimeFormatPickerRenderer = withLabel()({
   name: "DateTimeFormatPickerControl",
   control: DateTimeFormatPickerControl,
   tester: rankWith(
@@ -22,7 +22,7 @@ export const dateTimeFormatPickerRenderer = withLabel({
   ),
 });
 
-export const dateTimeFormatPickerWithTypeRenderer = withLabel({
+export const dateTimeFormatPickerWithTypeRenderer = withLabel()({
   name: "DateTimeFormatPickerWithTypeControl",
   control: DateTimeFormatPickerWithTypeControl,
   tester: rankWith(

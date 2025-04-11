@@ -9,7 +9,7 @@ const IntervalControl = defineAsyncComponent(
   () => import("../uiComponents/IntervalControl.vue"),
 );
 
-export const intervalRenderer = withLabel({
+export const intervalRenderer = withLabel()({
   name: "IntervalControl",
   control: IntervalControl,
   tester: rankWith(

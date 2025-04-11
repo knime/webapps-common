@@ -9,7 +9,7 @@ const TypedStringFilter = defineAsyncComponent(
   () => import("../uiComponents/twinlist/TypedStringFilter.vue"),
 );
 
-export const typedStringFilterRenderer = withLabel({
+export const typedStringFilterRenderer = withLabel()({
   name: "TypedStringFilter",
   control: TypedStringFilter,
   tester: rankWith(

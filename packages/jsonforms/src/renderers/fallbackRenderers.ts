@@ -28,7 +28,7 @@ const AnyOfTwinlist = defineAsyncComponent(
 );
 
 export const fallbackControlRenderers = {
-  oneOfDropdownRenderer: withLabel({
+  oneOfDropdownRenderer: withLabel()({
     name: "OneOfDropdown",
     control: OneOfDropdown,
     tester: rankWith(priorityRanks.fallback, isOneOfControl),
@@ -39,7 +39,7 @@ export const fallbackControlRenderers = {
   },
   textRenderer,
   checkboxRenderer,
-  anyOfTwinlistRenderer: withLabel({
+  anyOfTwinlistRenderer: withLabel()({
     name: "AnyOfTwinlist",
     control: AnyOfTwinlist,
     tester: rankWith(priorityRanks.fallback, isAnyOfControl),

@@ -9,7 +9,7 @@ const TimeControl = defineAsyncComponent({
   loader: () => import("../uiComponents/TimeControl.vue"),
 });
 
-export const localTimeRenderer = withLabel({
+export const localTimeRenderer = withLabel()({
   name: "TimeControl",
   control: TimeControl,
   tester: rankWith(

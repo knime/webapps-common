@@ -9,7 +9,7 @@ const NameFilter = defineAsyncComponent(
   () => import("../uiComponents/twinlist/NameFilter.vue"),
 );
 
-export const nameFilterRenderer = withLabel({
+export const nameFilterRenderer = withLabel()({
   name: "NameFilter",
   control: NameFilter,
   tester: rankWith(

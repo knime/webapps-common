@@ -9,7 +9,7 @@ const DateTimeControl = defineAsyncComponent({
   loader: () => import("../uiComponents/DateTimeControl.vue"),
 });
 
-export const dateTimeRenderer = withLabel({
+export const dateTimeRenderer = withLabel()({
   name: "DateTimeControl",
   control: DateTimeControl,
   tester: rankWith(priorityRanks.default, hasFormat(inputFormats.dateTime)),

@@ -9,7 +9,7 @@ const RadioControl = defineAsyncComponent(
   () => import("../uiComponents/RadioControl.vue"),
 );
 
-export const radioRenderer = withLabel({
+export const radioRenderer = withLabel()({
   name: "RadioControl",
   control: RadioControl,
   tester: rankWith(

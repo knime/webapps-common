@@ -1,13 +1,24 @@
 <script setup lang="ts">
 import ErrorLine from "./ErrorLine.vue";
 
-defineProps<{
-  errors: Array<string>;
-}>();
+withDefaults(
+  defineProps<{
+    errors: Array<string>;
+    fill?: boolean;
+  }>(),
+  {
+    fill: false,
+  },
+);
 </script>
 
 <template>
-  <div :class="['error-message-wrapper', { 'with-error': errors.length > 0 }]">
+  <div
+    :class="[
+      'error-message-wrapper',
+      { 'with-error': errors.length > 0, fill },
+    ]"
+  >
     <slot />
     <ErrorLine
       v-for="(error, index) in errors"
@@ -22,8 +33,11 @@ defineProps<{
 .error-message-wrapper {
   display: flex;
   flex-direction: column;
-  flex: 1;
   gap: var(--error-message-vertical-padding);
+
+  &.fill {
+    flex: 1;
+  }
 
   &.with-error {
     /**

@@ -9,7 +9,7 @@ const IntegerControl = defineAsyncComponent(
   () => import("../uiComponents/IntegerControl.vue"),
 );
 
-export const integerRenderer = withLabel({
+export const integerRenderer = withLabel()({
   name: "IntegerControl",
   control: IntegerControl,
   tester: rankWith(

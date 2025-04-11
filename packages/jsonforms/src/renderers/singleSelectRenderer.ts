@@ -9,7 +9,7 @@ const SingleSelectControl = defineAsyncComponent(
   () => import("../uiComponents/SingleSelectControl.vue"),
 );
 
-export const singleSelectRenderer = withLabel({
+export const singleSelectRenderer = withLabel()({
   name: "SingleSelectControl",
   control: SingleSelectControl,
   tester: rankWith(priorityRanks.default, hasFormat(inputFormats.singleSelect)),

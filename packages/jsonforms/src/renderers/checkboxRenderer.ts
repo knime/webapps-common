@@ -8,7 +8,7 @@ const CheckboxControl = defineAsyncComponent(
   () => import("../uiComponents/CheckboxControl.vue"),
 );
 
-export const checkboxRenderer = withErrorMessage({
+export const checkboxRenderer = withErrorMessage()({
   name: "CheckboxControl",
   control: CheckboxControl,
   tester: rankWith(priorityRanks.fallback, isBooleanControl),

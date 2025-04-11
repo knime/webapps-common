@@ -11,7 +11,7 @@ const ZonedDateTimeControl = defineAsyncComponent({
 export const hasZonedDateTimeFormat = (uischema: UISchemaElement) =>
   uischema.options?.format === inputFormats.zonedDateTime;
 
-export const zonedDateTimeRenderer = withLabel({
+export const zonedDateTimeRenderer = withLabel()({
   name: "ZonedDateTimeControl",
   control: ZonedDateTimeControl,
   tester: rankWith(priorityRanks.default, hasZonedDateTimeFormat),

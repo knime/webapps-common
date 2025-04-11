@@ -4,11 +4,7 @@ import { computed, h, ref } from "vue";
 import LabeledControl from "./LabeledControl.vue";
 import { addErrorMessageToVNode } from "./errorMessage/withErrorMessage";
 import type { PropsToComponent, VueControl, VueControlProps } from "./types";
-import {
-  type SpecialControlRenderer,
-  defineControl,
-  handleAsyncComponents,
-} from "./util";
+import { defineControl, handleAsyncComponents } from "./util";
 
 export type VueControlPropsForLabelContent<D> = Omit<
   VueControlProps<D>,
@@ -51,7 +47,7 @@ const addLabelToComponent =
                 labelForId,
               });
               setControlElement(vnode);
-              return addErrorMessageToVNode(vnode, props);
+              return addErrorMessageToVNode({ fill })(vnode, props);
             },
             buttons: ({ hover }: { hover: boolean }) => {
               if (!slots.buttons) {
@@ -68,7 +64,5 @@ const addLabelToComponent =
       };
     });
 
-export const withLabel = <D>(
-  renderer: SpecialControlRenderer<VueControlThatRequiresLabelWrapper<D>>,
-  config: { fill: boolean } = { fill: false },
-) => handleAsyncComponents(addLabelToComponent(config))(renderer);
+export const withLabel = (config: { fill: boolean } = { fill: false }) =>
+  handleAsyncComponents(addLabelToComponent(config));
