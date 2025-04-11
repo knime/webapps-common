@@ -23,8 +23,17 @@ export const controlToRenderer = (
       const processedProps = useJsonFormsControl(props as ControlProps);
       const isVisible = computed(() => processedProps.control.value.visible);
       const data = computed(() => processedProps.control.value.data);
-      const { messages, isValid, onRegisterValidation } = useValidation({
+      const options = computed(
+        () => processedProps.control.value.uischema.options || {},
+      );
+      const {
+        messages,
+        isValid,
+        onRegisterValidation,
+        performCustomValidationDebounced,
+      } = useValidation({
         data,
+        options,
       });
       await (asyncSetup || getAsyncSetupMethod(component))?.();
       return () =>
@@ -35,11 +44,13 @@ export const controlToRenderer = (
                 handleChange: processedProps.handleChange,
                 control: processedProps.control.value as any,
                 disabled: !processedProps.control.value.enabled,
-                changeValue: (newValue: any) =>
+                changeValue: (newValue: any) => {
                   processedProps.handleChange(
                     processedProps.control.value.path,
                     newValue,
-                  ),
+                  );
+                  performCustomValidationDebounced(newValue);
+                },
                 isValid: isValid.value,
                 messages: messages.value,
                 onRegisterValidation,

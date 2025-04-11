@@ -30,6 +30,11 @@ const emit = defineEmits<{
   change: [{ data: any }];
   alert: [alert: AlertParams];
   stateProviderListener: [id: any, callback: (value: any) => void];
+  executeCustomValidation: [
+    id: any,
+    value: any,
+    callback: (message: string | null) => void,
+  ];
 }>();
 
 const exposedMethodSource = "EXPOSED_METHOD";
@@ -58,6 +63,8 @@ const provided: Provided = {
   addStateProviderListener: (id, callback) =>
     emit("stateProviderListener", id, callback),
   sendAlert: (alert) => emit("alert", alert),
+  executeCustomValidation: (id, value, callback) =>
+    emit("executeCustomValidation", id, value, callback),
 };
 
 Object.entries(provided).forEach(([key, value]) => provide(key, value));
