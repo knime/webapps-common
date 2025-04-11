@@ -23,7 +23,12 @@ export const controlToRenderer = (
       const processedProps = useJsonFormsControl(props as ControlProps);
       const isVisible = computed(() => processedProps.control.value.visible);
       const data = computed(() => processedProps.control.value.data);
-      const { messages, isValid, onRegisterValidation } = useValidation({
+      const {
+        messages,
+        isValid,
+        onRegisterValidation,
+        onRegisterCustomValidationMessages,
+      } = useValidation({
         data,
       });
       await (asyncSetup || getAsyncSetupMethod(component))?.();
@@ -43,6 +48,7 @@ export const controlToRenderer = (
                 isValid: isValid.value,
                 messages: messages.value,
                 onRegisterValidation,
+                onRegisterCustomValidationMessages,
               },
               ctx.slots,
             )

@@ -45,6 +45,12 @@ export const controlProps = {
     type: Function as PropType<VueControlProps<any>["onRegisterValidation"]>,
     required: true,
   },
+  onRegisterCustomValidationMessages: {
+    type: Function as PropType<
+      VueControlProps<any>["onRegisterCustomValidationMessages"]
+    >,
+    required: true,
+  },
 };
 
 export const defineControl = <D>(

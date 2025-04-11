@@ -16,4 +16,5 @@ export type ValidationSettings<D> = {
   isValid: boolean;
   messages: Messages;
   onRegisterValidation: (validation: ValidationMethod<D>) => void;
+  onRegisterCustomValidationMessages: (validationMessage: Messages) => void;
 };

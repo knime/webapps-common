@@ -4,14 +4,18 @@ import type { Messages, ValidationMethod } from "./types";
 
 export const useValidation = <T = any>({ data }: { data: Ref<T> }) => {
   const validationMethods: ValidationMethod<T>[] = reactive([]);
+  const customValidationMessages: Messages[] = reactive([]);
   const onRegisterValidation = (validationMethod: ValidationMethod<T>) =>
     validationMethods.push(validationMethod);
+  const onRegisterCustomValidationMessages = (validationMessage: Messages) => {
+    customValidationMessages.push(validationMessage);
+  };
   const validationMessages = computed(() =>
     validationMethods.map((method) => unref(method)?.(data.value)),
   );
 
   const combinedMessages = computed<Messages>(() => ({
-    errors: validationMessages.value.flatMap(
+    errors: [...validationMessages.value, ...customValidationMessages].flatMap(
       ({ errors } = { errors: [] }) => errors,
     ),
   }));
@@ -22,5 +26,6 @@ export const useValidation = <T = any>({ data }: { data: Ref<T> }) => {
     messages: combinedMessages,
     isValid,
     onRegisterValidation,
+    onRegisterCustomValidationMessages,
   };
 };
