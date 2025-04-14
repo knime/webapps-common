@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.9.0
+
+### Minor Changes
+
+- 5c08536: Add fill prop to ErrorMessages renderer wrapper component.
+
 ## 1.8.6
 
 ### Patch Changes
