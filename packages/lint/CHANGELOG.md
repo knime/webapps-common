@@ -1,5 +1,11 @@
 # @knime/eslint-config
 
+## 9.0.2
+
+### Patch Changes
+
+- ac73e72: Relax ts-expect-error for tests & include test util files
+
 ## 9.0.1
 
 ### Patch Changes
