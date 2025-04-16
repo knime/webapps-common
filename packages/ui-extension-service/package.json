@@ -26,7 +26,7 @@
     "@types/color-convert": "2.0.3",
     "@types/uuid": "9.0.8",
     "flush-promises": "1.0.2",
-    "npm-run-all": "catalog:",
+    "npm-run-all2": "catalog:",
     "rimraf": "6.0.1",
     "typescript": "catalog:",
     "vite": "catalog:",
