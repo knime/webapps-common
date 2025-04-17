@@ -1,5 +1,14 @@
 # @knime/json-forms
 
+## 1.9.1
+
+### Patch Changes
+
+- 549a7f8: Introduce mulitple click away exceptions in file explorer
+- Updated dependencies [549a7f8]
+  - @knime/components@1.26.0
+  - @knime/rich-text-editor@1.4.8
+
 ## 1.9.0
 
 ### Minor Changes

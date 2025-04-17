@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.26.0
+
+### Minor Changes
+
+- 549a7f8: Introduce mulitple click away exceptions in file explorer
+
 ## 1.25.4
 
 ### Patch Changes
