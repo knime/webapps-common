@@ -89,26 +89,26 @@ export const useVersionsApi = ({
   };
 
   const deleteVersion = ({
-    projectItemId,
+    itemId,
     version,
   }: {
-    projectItemId: string;
+    itemId: string;
     version: NamedItemVersion["version"];
   }) => {
-    return doHubRequest(`/repository/${projectItemId}/versions/${version}`, {
+    return doHubRequest(`/repository/${itemId}/versions/${version}`, {
       method: "DELETE",
     });
   };
 
   const restoreVersion = ({
-    projectItemId,
+    itemId,
     version,
   }: {
-    projectItemId: string;
+    itemId: string;
     version: NamedItemVersion["version"];
   }) => {
     return doHubRequest(
-      `/repository/${projectItemId}/workingArea?fromVersion=${version}`,
+      `/repository/${itemId}/workingArea?fromVersion=${version}`,
       {
         method: "POST",
       },
@@ -116,15 +116,15 @@ export const useVersionsApi = ({
   };
 
   const createVersion = ({
-    projectItemId,
+    itemId,
     title,
     description,
   }: {
-    projectItemId: string;
+    itemId: string;
     title: string;
     description: string;
   }): Promise<NamedItemVersion> => {
-    return doHubRequest(`/repository/${projectItemId}/versions`, {
+    return doHubRequest(`/repository/${itemId}/versions`, {
       method: "POST",
       body: JSON.stringify({
         title,
