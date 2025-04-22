@@ -158,7 +158,8 @@ type PopoverAssertion = {
   isOpen: () => void;
   isClosed: () => void;
   isFirstFormat: (expectedFormat: string) => void;
-  isSelected: (index: 0 | 1) => void;
+  isHighlighted: (index: 0 | 1) => void;
+  isApplied: (index: 0 | 1) => void;
   isInputValue: (expectedValue: string) => void;
 };
 
@@ -173,7 +174,7 @@ type PopoverControl = {
   arrowUp: () => Promise<void>;
   enter: () => Promise<void>;
   selectFormat: (index: 0 | 1) => Promise<void>;
-  doubleClickFirstFormat: () => Promise<void>;
+  clickFirstFormat: () => Promise<void>;
   assert: PopoverAssertion;
 };
 
@@ -216,9 +217,13 @@ export const doMountWithPopover = async (
     isInputValue: (expectedValue: string) => {
       expect(wrapper.find("input").element.value).toBe(expectedValue);
     },
-    isSelected: (index: 0 | 1) => {
+    isHighlighted: (index: 0 | 1) => {
       const allFormats = wrapper.findAll(".single-format");
-      expect(allFormats[index].classes()).toContain("selected");
+      expect(allFormats[index].classes()).toContain("highlighted");
+    },
+    isApplied: (index: 0 | 1) => {
+      const allFormats = wrapper.findAll(".single-format");
+      expect(allFormats[index].classes()).toContain("applied");
     },
   };
 
@@ -268,8 +273,8 @@ export const doMountWithPopover = async (
         .find(".formats-container")
         .trigger("keydown", { key: "Enter" });
     },
-    doubleClickFirstFormat: async () => {
-      await wrapper.findAll(".single-format")[0].trigger("dblclick");
+    clickFirstFormat: async () => {
+      await wrapper.findAll(".single-format")[0].trigger("click");
     },
   };
 };
@@ -281,7 +286,7 @@ export const getFirstFormat = (
   const firstFormat = DEFAULT_FORMATS.find(
     (format) => format.temporalType === type && format.category === category,
   );
-  // eslint-disable-next-line no-undefined
+
   if (firstFormat === undefined) {
     throw new Error("No formats available for the given type and category");
   }

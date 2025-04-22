@@ -1,4 +1,4 @@
-import { type Ref, ref } from "vue";
+import { type Ref, readonly, ref } from "vue";
 
 const preventEvent = (event: Event) => {
   event.preventDefault();
@@ -48,7 +48,7 @@ type DropdownNavigationOutput = {
   /**
    * current index of the current element. -1 if no element is selected
    */
-  currentIndex: Ref<number | null>;
+  currentIndex: Readonly<Ref<number | null>>;
   /**
    * unsets the current element and its index
    */
@@ -57,6 +57,10 @@ type DropdownNavigationOutput = {
    * callback to be triggered on keydown
    */
   onKeydown: (event: KeyboardEvent) => void;
+  /**
+   * sets the current element and its index
+   */
+  setElement: (item: DropdownNavigationElement) => void;
 };
 
 export default ({
@@ -140,5 +144,10 @@ export default ({
     }
   };
 
-  return { onKeydown, currentIndex, resetNavigation };
+  return {
+    onKeydown,
+    currentIndex: readonly(currentIndex),
+    resetNavigation,
+    setElement,
+  };
 };

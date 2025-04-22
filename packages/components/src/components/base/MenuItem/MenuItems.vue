@@ -145,6 +145,7 @@ const {
   currentIndex,
   onKeydown: onDropdownNavigationKeydown,
   resetNavigation,
+  setElement: setSelectedMenuItem,
 } = useDropdownNavigation({
   disableSpaceToClick: props.disableSpaceToClick,
   getNextElement,
@@ -152,7 +153,13 @@ const {
 });
 
 const focusIndex = (index: number = 0) => {
-  currentIndex.value = index;
+  const { onClick } = baseMenuItems.value?.getEnabledListItems()[index] ?? {
+    onClick: () => {},
+  };
+  setSelectedMenuItem({
+    index,
+    onClick,
+  });
 };
 
 const setOpenSubmenuIndex = (index: number) => {

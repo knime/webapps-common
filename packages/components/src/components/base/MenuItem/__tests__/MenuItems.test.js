@@ -1,15 +1,17 @@
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
-import { defineComponent, ref } from "vue";
+import { defineComponent, readonly, ref } from "vue";
 import { mount, shallowMount } from "@vue/test-utils";
 
 import useDropdownNavigation from "../../../../composables/useDropdownNavigation";
 import BaseMenuItems from "../BaseMenuItems.vue";
 import MenuItems from "../MenuItems.vue";
 
+const currentIndex = ref(1);
 const dropdownNavigation = {
-  currentIndex: ref(1),
+  currentIndex: readonly(currentIndex),
   resetNavigation: vi.fn(),
   onKeydown: vi.fn(),
+  setElement: vi.fn(({ index }) => (currentIndex.value = index)),
 };
 vi.mock("../../../../composables/useDropdownNavigation", () => ({
   default: vi.fn(() => dropdownNavigation),
@@ -214,7 +216,7 @@ describe("MenuItems.vue", () => {
       expect(wrapper.findAllComponents(MenuItems).length).toBe(0);
       expect(wrapper.find(".sub-menu-indicator").exists()).toBe(true);
       // fake keyboard selection/focus
-      dropdownNavigation.currentIndex.value = 0;
+      dropdownNavigation.setElement({ index: 0 });
       // open
       await wrapper
         .findAll(".list-item")
@@ -245,7 +247,7 @@ describe("MenuItems.vue", () => {
       expect(wrapper.findAllComponents(MenuItems).length).toBe(0);
       expect(wrapper.find(".sub-menu-indicator").exists()).toBe(true);
       // fake keyboard selection/focus
-      dropdownNavigation.currentIndex.value = 0;
+      dropdownNavigation.setElement({ index: 0 });
       // open
       await wrapper
         .findAll(".list-item")

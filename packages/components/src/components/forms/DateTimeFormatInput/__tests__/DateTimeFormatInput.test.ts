@@ -11,6 +11,14 @@ import {
   getFirstFormat,
 } from "./DateTimeFormatInputTestUtils";
 
+// This component is EXTREMELY broken in test environments,
+// so we just replace with its children.
+vi.mock("focus-trap-vue", () => ({
+  FocusTrap: {
+    template: "<template><slot /></template>",
+  },
+}));
+
 describe("DateTimeFormatInput", () => {
   beforeEach(() => {
     // mock scrollIntoView so it doesn't crash in tests
@@ -106,19 +114,11 @@ describe("DateTimeFormatInput", () => {
       popover.assert.isFirstFormat(getFirstFormat("DATE", "STANDARD"));
     });
 
-    it("clicking a format marks it as selected", async () => {
-      const popover = await doMountWithPopover();
-
-      await popover.selectFormat(0);
-
-      popover.assert.isSelected(0);
-    });
-
-    it("commits a format on double-click", async () => {
+    it("commits a format on click", async () => {
       const popover = await doMountWithPopover("DATE", "STANDARD");
       popover.assert.numberOfFormats(2);
 
-      await popover.doubleClickFirstFormat();
+      await popover.clickFirstFormat();
 
       popover.assert.isClosed();
       popover.assert.isInputValue(getFirstFormat("DATE", "STANDARD"));

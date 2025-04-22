@@ -4,10 +4,12 @@ import {
   computed,
   nextTick,
   onMounted,
+  onUnmounted,
   reactive,
   ref,
   watch,
 } from "vue";
+import { FocusTrap } from "focus-trap-vue";
 
 import { useDropdownNavigation } from "../../../../composables";
 import LoadingIcon from "../../../LoadingIcon/LoadingIcon.vue";
@@ -71,7 +73,14 @@ const typesToDisplayInValueSwitch = computed<ValueSwitchItem[]>(() => [
   },
 ]);
 
-const selectedFormat = ref<string | null>(null);
+const currentlyAppliedFormat = ref<{
+  format: string;
+  index: number;
+  category: FormatCategory;
+  temporalType: FormatDateType;
+} | null>(null);
+
+const currentlyHighlightedFormat = ref<string | null>(null);
 const selectedFormatStandard = ref<FormatCategory>("RECENT");
 
 // this can be updated from outside sometimes, hence watcher
@@ -79,7 +88,7 @@ const selectedFormatType = ref<FormatDateType>(props.selectedType);
 watch(
   () => props.selectedType,
   (newSelectedType) => {
-    selectedFormatType.value = newSelectedType;
+    currentlyHighlightedFormat.value = newSelectedType;
   },
 );
 
@@ -114,7 +123,12 @@ const formatWithExampleToModel = (
   };
 };
 
-const { currentIndex, onKeydown, resetNavigation } = useDropdownNavigation({
+const {
+  currentIndex: currentlyHighlightedFormatIndex,
+  onKeydown,
+  resetNavigation,
+  setElement: setHighlightedElement,
+} = useDropdownNavigation({
   keepOpenedOnTab: true,
   getFirstElement: () => {
     const index = 0;
@@ -194,10 +208,30 @@ const scrollIntoView = (element: HTMLElement) => {
 };
 
 /**
+ * Only if the format is included in the currently applicable formats. Otherwise is a no-op.
+ */
+const scrollToFormat = (format: string) => {
+  const element =
+    allFormatListItemRefs[
+      `${format}-${selectedFormatStandard.value}-${selectedFormatType.value}`
+    ];
+  if (element) {
+    scrollIntoView(element);
+  }
+};
+
+/**
  * Select the given format, highlighting it in the menu. If the temporalType or category
  * are provided, first switch to them. It will also scroll to the selected format.
+ *
+ * Note that this doesn't change the applied format, which is the one that is currently
+ * set in the text field input in the parent component. Only the highlighted one, which is
+ * the one that will be applied upon pressing enter/space.
+ *
+ * This isn't needed by the keyboard navigation, but is needed when the value switches are
+ * used to change the type or standard, or on mount.
  */
-const selectFormat = async (
+const highlightAndScrollToFormat = async (
   format: string,
   temporalType?: FormatDateType,
   category?: FormatCategory,
@@ -209,46 +243,61 @@ const selectFormat = async (
   await nextTick();
 
   // scroll to the selected format
-  selectedFormat.value = format;
-  const element =
-    allFormatListItemRefs[
-      `${format}-${selectedFormatStandard.value}-${selectedFormatType.value}`
-    ];
-  if (element) {
-    scrollIntoView(element);
-  }
+  currentlyHighlightedFormat.value = format;
+  scrollToFormat(format);
 
   // also need to select the format in the list
-  const index = applicableFormats.value!.findIndex(
+  const newHighlightedIndex = applicableFormats.value!.findIndex(
     (applicableFormat) => applicableFormat.format === format,
   );
-  currentIndex.value = index;
-};
-
-const focusFormatContainer = async () => {
-  await nextTick();
-  formatContainerRef.value?.focus();
+  // If we don't do this, we get inconsistent initial state, which prevents
+  // the user pressing space/enter before they select a format.
+  setHighlightedElement({
+    index: newHighlightedIndex,
+    onClick: () =>
+      emit(
+        "commit",
+        formatWithExampleToModel(applicableFormats.value![newHighlightedIndex]),
+      ),
+  });
 };
 
 // Require this watcher to get the scrolling to work when using the arrow keys
 // to navigate the list.
-watch(currentIndex, (newIndex) => {
+watch(currentlyHighlightedFormatIndex, (newIndex) => {
   if (newIndex === null) {
     return;
   }
 
-  const format = applicableFormats.value![newIndex];
-  selectFormat(format.format, format.temporalType, format.category);
+  const format = applicableFormats.value?.[newIndex]?.format;
+  if (format) {
+    scrollToFormat(format);
+  }
 });
 
 watch([selectedFormatType, selectedFormatStandard], () => {
-  // unselect the format when the type or standard changes
-  selectedFormat.value = null;
-  resetNavigation();
+  // unselect the format when the type or standard changes. However,
+  // if we change the switches s.t. the applied format is visible, we
+  // just highlight the applied format again. Otherwise, deselect everything.
+  if (
+    selectedFormatType.value === currentlyAppliedFormat.value?.temporalType &&
+    selectedFormatStandard.value === currentlyAppliedFormat.value?.category
+  ) {
+    highlightAndScrollToFormat(
+      currentlyAppliedFormat.value.format,
+      currentlyAppliedFormat.value.temporalType,
+      currentlyAppliedFormat.value.category,
+    );
+  } else {
+    currentlyHighlightedFormat.value = null;
+    resetNavigation();
+  }
 });
 
 const isMounted = ref(false);
-onMounted(() => {
+onMounted(async () => {
+  // Sort through and select the first format that matches the currently applied format.
+
   if (!props.allFormats) {
     return;
   }
@@ -276,82 +325,100 @@ onMounted(() => {
 
   // select the first format if it's available
   if (sortedFormats.length > 0) {
-    selectFormat(
-      sortedFormats[0].format,
-      sortedFormats[0].temporalType,
-      sortedFormats[0].category,
+    const format = sortedFormats[0].format;
+    const temporalType = sortedFormats[0].temporalType;
+    const category = sortedFormats[0].category;
+
+    await highlightAndScrollToFormat(format, temporalType, category);
+
+    const index = applicableFormats.value!.findIndex(
+      (applicableFormat) => applicableFormat.format === format,
     );
+
+    currentlyAppliedFormat.value = {
+      format,
+      index,
+      category,
+      temporalType,
+    };
   }
 
-  focusFormatContainer();
-  setTimeout(() => {
-    isMounted.value = true;
-  }, 0);
+  nextTick(() => (isMounted.value = true));
 });
+
+onUnmounted(() => (isMounted.value = false));
 </script>
 
 <template>
-  <div class="popover">
-    <ValueSwitch
-      v-if="showTypeSwitch"
-      id="selectedFormatType"
-      v-model="selectedFormatType"
-      compact
-      :possible-values="typesToDisplayInValueSwitch"
-      class="filter-switch"
-    />
-    <ValueSwitch
-      id="selectedFormatStandard"
-      v-model="selectedFormatStandard"
-      compact
-      :possible-values="categoriesToDisplayInValueSwitch"
-      class="filter-switch"
-    />
-    <div
-      id="dateFormats"
-      ref="formatContainerRef"
-      class="formats-container"
-      :style="{ '--formats-container-border-width': BORDER_WIDTH + 'px' }"
-      tabindex="0"
-      role="menu"
-      @keydown="onKeydown"
-      @keydown.tab="(e: KeyboardEvent) => e.shiftKey || emit('cancel')"
-    >
-      <div v-if="applicableFormats === null" class="no-formats-available">
-        <LoadingIcon class="loading-spinner" />
-      </div>
-      <div
-        v-else-if="applicableFormats.length === 0"
-        class="no-formats-available"
-      >
-        No formats available
-      </div>
-      <template v-else>
+  <FocusTrap
+    v-model:active="isMounted"
+    :initial-focus="() => formatContainerRef ?? false"
+  >
+    <div class="popover">
+      <ValueSwitch
+        v-if="showTypeSwitch"
+        id="selectedFormatType"
+        ref="typeSwitchRef"
+        v-model="selectedFormatType"
+        compact
+        :possible-values="typesToDisplayInValueSwitch"
+        class="filter-switch"
+      />
+      <ValueSwitch
+        id="selectedFormatStandard"
+        ref="standardSwitchRef"
+        v-model="selectedFormatStandard"
+        compact
+        :possible-values="categoriesToDisplayInValueSwitch"
+        class="filter-switch"
+      />
+      <div class="formats-container-border-host">
         <div
-          v-for="(format, index) in applicableFormats"
-          :key="createFormatListItemKey(format)"
-          :ref="createFormatListItemRef(format)"
-          :class="{ selected: index === currentIndex }"
-          class="single-format"
-          role="menuitem"
-          @click="
-            () => {
-              currentIndex = index;
-              formatContainerRef?.focus();
-            }
-          "
-          @dblclick="() => emit('commit', formatWithExampleToModel(format))"
+          id="dateFormats"
+          ref="formatContainerRef"
+          class="formats-container"
+          :style="{ '--formats-container-border-width': BORDER_WIDTH + 'px' }"
+          tabindex="0"
+          role="menu"
+          @keydown="onKeydown"
         >
-          <span class="format-pattern">
-            {{ format.format }}
-          </span>
-          <span class="format-preview">
-            {{ format.example }}
-          </span>
+          <div v-if="applicableFormats === null" class="no-formats-available">
+            <LoadingIcon class="loading-spinner" />
+          </div>
+          <div
+            v-else-if="applicableFormats.length === 0"
+            class="no-formats-available"
+          >
+            No formats available
+          </div>
+          <template v-else>
+            <div
+              v-for="(format, index) in applicableFormats"
+              :key="createFormatListItemKey(format)"
+              :ref="createFormatListItemRef(format)"
+              :class="{
+                highlighted: index === currentlyHighlightedFormatIndex,
+                applied:
+                  index === currentlyAppliedFormat?.index &&
+                  format.category === currentlyAppliedFormat.category &&
+                  format.temporalType === currentlyAppliedFormat.temporalType,
+              }"
+              class="single-format"
+              role="menuitem"
+              @click="() => emit('commit', formatWithExampleToModel(format))"
+            >
+              <span class="format-pattern">
+                {{ format.format }}
+              </span>
+              <span class="format-preview">
+                {{ format.example }}
+              </span>
+            </div>
+          </template>
         </div>
-      </template>
+      </div>
     </div>
-  </div>
+  </FocusTrap>
 </template>
 
 <style lang="postcss" scoped>
@@ -368,13 +435,27 @@ onMounted(() => {
   color: var(--knime-masala);
 }
 
+.formats-container-border-host {
+  position: relative;
+  outline: none;
+
+  &:focus-within::after {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    border: 1px solid var(--knime-cornflower);
+    pointer-events: none;
+  }
+}
+
 .formats-container {
   border: var(--formats-container-border-width) solid var(--knime-silver-sand);
   height: 200px;
-  overflow-y: auto;
+  overflow: hidden auto;
   display: flex;
   flex-direction: column;
   width: 100%;
+  outline: none;
 
   & .no-formats-available {
     font-style: italic;
@@ -397,10 +478,6 @@ onMounted(() => {
     flex-direction: column;
     cursor: pointer;
     flex: 0;
-
-    &:hover:not(.selected) {
-      background-color: var(--knime-porcelain);
-    }
 
     & .format-preview,
     & .format-pattern {
@@ -426,6 +503,25 @@ onMounted(() => {
       color: var(--knime-stone-gray);
       font-size: 14px;
       min-height: 20px;
+    }
+
+    &.applied {
+      background-color: var(--knime-masala);
+
+      & .format-pattern {
+        color: var(--knime-white);
+      }
+
+      & .format-preview {
+        color: var(--knime-porcelain);
+      }
+    }
+
+    &:hover,
+    &.highlighted {
+      &:not(.applied) {
+        background-color: var(--knime-porcelain);
+      }
     }
 
     &.selected {
