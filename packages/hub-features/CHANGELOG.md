@@ -1,5 +1,11 @@
 # @knime/hub-features
 
+## 1.7.4
+
+### Patch Changes
+
+- df25c75: switch to ofetch and improve error handling
+
 ## 1.7.3
 
 ### Patch Changes
