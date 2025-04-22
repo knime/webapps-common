@@ -1,5 +1,11 @@
 # @knime/hub-features
 
+## 1.8.0
+
+### Minor Changes
+
+- add restoreVersion to versionsApi
+
 ## 1.7.4
 
 ### Patch Changes
