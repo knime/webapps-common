@@ -11,7 +11,7 @@ describe("validation", () => {
   const mountJsonFormsDialog = async (data: {
     stringWithPattern?: string;
     doubleWithMinimum?: number;
-    stringWithCustomValidation?: string;
+    stringWithExternalValidation?: string;
   }) => {
     const wrapper = mount(JsonFormsDialog, {
       props: {
@@ -21,7 +21,7 @@ describe("validation", () => {
           properties: {
             stringWithPattern: { type: "string" },
             doubleWithMinimum: { type: "number" },
-            stringWithCustomValidation: { type: "string" },
+            stringWithExternalValidation: { type: "string" },
           },
         },
         uischema: {
@@ -59,24 +59,24 @@ describe("validation", () => {
             },
             {
               type: "Control",
-              scope: "#/properties/stringWithCustomValidation",
+              scope: "#/properties/stringWithExternalValidation",
               options: {
-                customValidationHandler: "customValidationHandlerId",
+                externalValidationHandler: "externalValidationHandlerId",
               },
             },
           ],
         },
-        renderers: toRenderers(
-          [],
-          [controls.textRenderer, controls.numberRenderer],
-          [layouts.verticalLayoutFallbackRenderer],
-        ),
-        onExecuteCustomValidation: (
-          id: string,
-          value: any,
-          callback: Function,
-        ) =>
-          callback(`Custom validation executed for ${id} with value ${value}`),
+        renderers: toRenderers({
+          renderers: [],
+          controls: [controls.textRenderer, controls.numberRenderer],
+          layouts: [layouts.verticalLayoutFallbackRenderer],
+          config: {
+            performExternalValidation: (id: string, value: unknown) =>
+              Promise.resolve(
+                `External validation executed for ${id} with value ${value}`,
+              ),
+          },
+        }),
       },
       attachTo: document.body,
     }) as VueWrapper;
@@ -94,17 +94,18 @@ describe("validation", () => {
     expect(wrapper.text()).toContain("The value has to be at least 1");
   });
 
-  it("executes custom validation for text controls", async () => {
+  it("executes external validation for text controls", async () => {
     vi.useFakeTimers();
     const wrapper = await mountJsonFormsDialog({
-      stringWithCustomValidation: "abc",
+      stringWithExternalValidation: "abc",
     });
     const inputField = wrapper.findAllComponents(InputField).at(1);
     inputField?.vm.$emit("update:modelValue", "abcd");
     vi.runAllTimers(); // skip debounce behavior
-    await nextTick(); // wait until messages are updated and rendered
+    await nextTick(); // wait for combined messages to be updated
+    await nextTick(); // wait until the DOM is updated
     expect(wrapper.text()).toContain(
-      "Custom validation executed for customValidationHandlerId with value abcd",
+      "External validation executed for externalValidationHandlerId with value abcd",
     );
   });
 });

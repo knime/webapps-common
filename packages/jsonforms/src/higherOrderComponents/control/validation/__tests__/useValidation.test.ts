@@ -1,32 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { type Ref, computed, ref } from "vue";
-import { mount } from "@vue/test-utils";
+import { type Ref, computed, nextTick, ref } from "vue";
 
 import type { Messages } from "../types";
-
-import UseValidationTestComponent from "./UseValidationTestComponent.vue";
-
-const mountUseValidationTestComponent = ({
-  data,
-  options,
-  executeCustomValidation = vi.fn(),
-}: {
-  data: Ref<any>;
-  options: Ref<Record<string, any>>;
-  executeCustomValidation?: Function;
-}) => {
-  return mount(UseValidationTestComponent, {
-    props: {
-      data,
-      options,
-    },
-    global: {
-      provide: {
-        executeCustomValidation,
-      },
-    },
-  });
-};
+import { useValidation } from "../useValidation";
 
 describe("useValidation", () => {
   let data: Ref<boolean>, options: Ref<Record<string, any>>;
@@ -43,45 +19,46 @@ describe("useValidation", () => {
     });
 
   it("has empty initial state", () => {
-    const wrapper = mountUseValidationTestComponent({ data, options });
-    expect(wrapper.vm.isValid).toBe(true);
-    expect(wrapper.vm.messages.errors).toStrictEqual([]);
+    const { isValid, messages } = useValidation({ data, options });
+    expect(isValid.value).toBe(true);
+    expect(messages.value.errors).toStrictEqual([]);
   });
 
   it("updates messages when registering a validation method", () => {
-    const wrapper = mountUseValidationTestComponent({ data, options });
-    wrapper.vm.onRegisterValidation(
-      invalidatingValidatorWithMessage("Must be true"),
-    );
-    expect(wrapper.vm.isValid).toBe(false);
-    expect(wrapper.vm.messages.errors).toStrictEqual(["Must be true"]);
+    const { isValid, messages, onRegisterValidation } = useValidation({
+      data,
+      options,
+    });
+    onRegisterValidation(invalidatingValidatorWithMessage("Must be true"));
+    expect(isValid.value).toBe(false);
+    expect(messages.value.errors).toStrictEqual(["Must be true"]);
   });
 
   it("is able to combine multiple validator messages", () => {
-    const wrapper = mountUseValidationTestComponent({ data, options });
-    wrapper.vm.onRegisterValidation(
-      invalidatingValidatorWithMessage("Must be true"),
-    );
-    wrapper.vm.onRegisterValidation(
-      invalidatingValidatorWithMessage("Must be true!!"),
-    );
-    expect(wrapper.vm.isValid).toBe(false);
-    expect(wrapper.vm.messages.errors).toStrictEqual([
+    const { isValid, messages, onRegisterValidation } = useValidation({
+      data,
+      options,
+    });
+    onRegisterValidation(invalidatingValidatorWithMessage("Must be true"));
+    onRegisterValidation(invalidatingValidatorWithMessage("Must be true!!"));
+    expect(isValid.value).toBe(false);
+    expect(messages.value.errors).toStrictEqual([
       "Must be true",
       "Must be true!!",
     ]);
   });
 
   it("updates on data change", () => {
-    const wrapper = mountUseValidationTestComponent({ data, options });
-    wrapper.vm.onRegisterValidation(
-      invalidatingValidatorWithMessage("Must be true"),
-    );
-    expect(wrapper.vm.isValid).toBe(false);
-    expect(wrapper.vm.messages.errors).toStrictEqual(["Must be true"]);
+    const { isValid, messages, onRegisterValidation } = useValidation({
+      data,
+      options,
+    });
+    onRegisterValidation(invalidatingValidatorWithMessage("Must be true"));
+    expect(isValid.value).toBe(false);
+    expect(messages.value.errors).toStrictEqual(["Must be true"]);
     data.value = true;
-    expect(wrapper.vm.isValid).toBe(true);
-    expect(wrapper.vm.messages.errors).toStrictEqual([]);
+    expect(isValid.value).toBe(true);
+    expect(messages.value.errors).toStrictEqual([]);
   });
 
   it("allows adding computed validators that can change", () => {
@@ -89,96 +66,110 @@ describe("useValidation", () => {
     const validator = computed(() => (value: boolean) => ({
       errors: validValue.value === value ? [] : ["Some error"],
     }));
-    const wrapper = mountUseValidationTestComponent({ data, options });
-    wrapper.vm.onRegisterValidation(validator);
-    expect(wrapper.vm.isValid).toBe(true);
+    const { isValid, onRegisterValidation } = useValidation({ data, options });
+    onRegisterValidation(validator);
+    expect(isValid.value).toBe(true);
     validValue.value = true;
-    expect(wrapper.vm.isValid).toBe(false);
+    expect(isValid.value).toBe(false);
   });
 
-  describe("with custom validation", () => {
-    const executeCustomValidation = vi.fn((_id, value, callback) => {
-      callback(value === false ? "CustomVal: Must be true" : null);
-    });
+  describe("with external validation", () => {
+    const performExternalValidation = vi.fn((_id, value) =>
+      Promise.resolve(value === false ? "ExternalVal: Must be true" : null),
+    );
+    const externalValidationHandlerId1 = "externalValidationHandlerId1";
 
     beforeEach(() => {
-      options.value.customValidationHandler = "customValidationHandlerId1";
+      options.value.externalValidationHandler = externalValidationHandlerId1;
     });
 
-    it("is able to combine messages of validation methods and custom validations", () => {
+    it("is able to combine messages of validation methods and external validations", async () => {
+      const {
+        onRegisterValidation,
+        performExternalValidationDebounced,
+        messages,
+      } = useValidation({ data, options, performExternalValidation });
+      onRegisterValidation(invalidatingValidatorWithMessage("Must be true"));
+
       vi.useFakeTimers();
-      const wrapper = mountUseValidationTestComponent({
-        data,
-        options,
-        executeCustomValidation,
-      });
-      wrapper.vm.onRegisterValidation(
-        invalidatingValidatorWithMessage("Must be true"),
-      );
-      wrapper.vm.performCustomValidationDebounced(false);
+      performExternalValidationDebounced(false);
       vi.runAllTimers();
-      expect(wrapper.vm.messages.errors).toStrictEqual([
+
+      await nextTick();
+      expect(messages.value.errors).toStrictEqual([
         "Must be true",
-        "CustomVal: Must be true",
+        "ExternalVal: Must be true",
       ]);
     });
 
-    it("removes not applicable messages", () => {
+    it("removes not applicable messages", async () => {
       vi.useFakeTimers();
-      const wrapper = mountUseValidationTestComponent({
+      const { performExternalValidationDebounced, messages } = useValidation({
         data,
         options,
-        executeCustomValidation,
+        performExternalValidation,
       });
 
-      wrapper.vm.performCustomValidationDebounced(false);
+      performExternalValidationDebounced(false);
       vi.runAllTimers();
-      expect(wrapper.vm.messages.errors).toStrictEqual([
-        "CustomVal: Must be true",
+
+      await nextTick();
+      expect(messages.value.errors).toStrictEqual([
+        "ExternalVal: Must be true",
       ]);
 
-      wrapper.vm.performCustomValidationDebounced(true);
+      performExternalValidationDebounced(true);
       vi.runAllTimers();
-      expect(wrapper.vm.messages.errors).toStrictEqual([]);
+      await nextTick();
+      expect(messages.value.errors).toStrictEqual([]);
     });
 
-    it("debounces custom validation execution", () => {
+    it("debounces external validation execution", async () => {
       vi.useFakeTimers();
-      const wrapper = mountUseValidationTestComponent({
+      const { performExternalValidationDebounced, messages } = useValidation({
         data,
         options,
-        executeCustomValidation,
+        performExternalValidation,
       });
 
-      wrapper.vm.performCustomValidationDebounced(false);
+      performExternalValidationDebounced(false);
       vi.advanceTimersByTime(200);
-      expect(wrapper.vm.messages.errors).toStrictEqual([]);
-      wrapper.vm.performCustomValidationDebounced(true);
+      await nextTick();
+      expect(messages.value.errors).toStrictEqual([]);
+
+      performExternalValidationDebounced(true);
       vi.advanceTimersByTime(200);
-      expect(wrapper.vm.messages.errors).toStrictEqual([]);
-      wrapper.vm.performCustomValidationDebounced(false);
+      await nextTick();
+      expect(messages.value.errors).toStrictEqual([]);
+
+      performExternalValidationDebounced(false);
       vi.runAllTimers();
-      expect(wrapper.vm.messages.errors).toStrictEqual([
-        "CustomVal: Must be true",
+      await nextTick();
+      expect(messages.value.errors).toStrictEqual([
+        "ExternalVal: Must be true",
       ]);
     });
 
-    it("is able to combine messages of different custom validations", () => {
+    it("is able to combine messages of different external validations", async () => {
       vi.useFakeTimers();
-      const executeCustomValidation = vi.fn((_id, value, callback) => {
-        callback(`Message for value: ${value}`);
-      });
-      const wrapper = mountUseValidationTestComponent({
+      const performExternalValidation = vi.fn((_id, value) =>
+        Promise.resolve(`Message for value: ${value}`),
+      );
+      const { performExternalValidationDebounced, messages } = useValidation({
         data,
         options,
-        executeCustomValidation,
+        performExternalValidation,
       });
-      wrapper.vm.performCustomValidationDebounced(false);
+
+      performExternalValidationDebounced(false);
       vi.runAllTimers();
-      options.value.customValidationHandler = "customValidationHandlerId2";
-      wrapper.vm.performCustomValidationDebounced(true);
+
+      options.value.externalValidationHandler = "externalValidationHandlerId2";
+      performExternalValidationDebounced(true);
       vi.runAllTimers();
-      expect(wrapper.vm.messages.errors).toStrictEqual([
+
+      await nextTick();
+      expect(messages.value.errors).toStrictEqual([
         "Message for value: false",
         "Message for value: true",
       ]);

@@ -30,11 +30,11 @@ const jsonFormsDialogPropsWithTextControl = {
       },
     },
   },
-  renderers: toRenderers(
-    [],
-    [controls.textRenderer],
-    [layouts.verticalLayoutRenderer],
-  ),
+  renderers: toRenderers({
+    renderers: [],
+    controls: [controls.textRenderer],
+    layouts: [layouts.verticalLayoutRenderer],
+  }),
 };
 
 export const mountJsonFormsDialog = () =>

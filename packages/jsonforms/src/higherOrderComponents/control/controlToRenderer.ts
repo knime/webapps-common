@@ -9,15 +9,23 @@ import type { ParameterizedComponent, RendererParams } from "../types";
 import { getAsyncSetupMethod } from "../utils";
 
 import type { VueControl } from "./types";
+import type { PerformExternalValidation } from "./validation/types";
 import { useValidation } from "./validation/useValidation";
 
 /**
  * The last transformation step, since JSONForms expects renderers with core params.
  */
-export const controlToRenderer = (
-  component: VueControl<any>,
-  asyncSetup?: () => Promise<void>,
-): ParameterizedComponent<RendererParams> =>
+export const controlToRenderer = ({
+  component,
+  asyncSetup,
+  config = {},
+}: {
+  component: VueControl<any>;
+  asyncSetup?: () => Promise<void>;
+  config?: {
+    performExternalValidation?: PerformExternalValidation<unknown>;
+  };
+}): ParameterizedComponent<RendererParams> =>
   defineComponent(
     async (props, ctx) => {
       const processedProps = useJsonFormsControl(props as ControlProps);
@@ -30,10 +38,11 @@ export const controlToRenderer = (
         messages,
         isValid,
         onRegisterValidation,
-        performCustomValidationDebounced,
+        performExternalValidationDebounced,
       } = useValidation({
         data,
         options,
+        performExternalValidation: config?.performExternalValidation,
       });
       await (asyncSetup || getAsyncSetupMethod(component))?.();
       return () =>
@@ -49,7 +58,7 @@ export const controlToRenderer = (
                     processedProps.control.value.path,
                     newValue,
                   );
-                  performCustomValidationDebounced(newValue);
+                  performExternalValidationDebounced(newValue);
                 },
                 isValid: isValid.value,
                 messages: messages.value,

@@ -17,3 +17,8 @@ export type ValidationSettings<D> = {
   messages: Messages;
   onRegisterValidation: (validation: ValidationMethod<D>) => void;
 };
+
+export type PerformExternalValidation<D> = (
+  id: string,
+  value: D,
+) => Promise<string | null>;

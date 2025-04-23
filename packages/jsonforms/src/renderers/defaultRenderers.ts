@@ -1,5 +1,6 @@
 import { controlToRenderer } from "../higherOrderComponents/control/controlToRenderer";
 import type { VueControlRenderer } from "../higherOrderComponents/control/types";
+import type { PerformExternalValidation } from "../higherOrderComponents/control/validation/types";
 import { layoutToRenderer } from "../higherOrderComponents/layout/layoutToRenderer";
 import type { VueLayoutRenderer } from "../higherOrderComponents/layout/types";
 import type { NamedRenderer } from "../higherOrderComponents/types";
@@ -78,17 +79,29 @@ export const layouts = {
   ...fallbackLayoutRenderers,
 } satisfies Record<string, VueLayoutRenderer>;
 
-export const toRenderers = (
-  renderers: NamedRenderer[],
-  controls: VueControlRenderer[],
-  layouts: VueLayoutRenderer[],
-): readonly NamedRenderer[] =>
+export const toRenderers = ({
+  renderers,
+  controls,
+  layouts,
+  config = {},
+}: {
+  renderers: NamedRenderer[];
+  controls: VueControlRenderer[];
+  layouts: VueLayoutRenderer[];
+  config?: {
+    performExternalValidation?: PerformExternalValidation<unknown>;
+  };
+}): readonly NamedRenderer[] =>
   Object.freeze([
     ...renderers,
     ...controls.map(({ name, tester, control, __asyncSetup }) => ({
       name,
       tester,
-      renderer: controlToRenderer(control, __asyncSetup),
+      renderer: controlToRenderer({
+        component: control,
+        asyncSetup: __asyncSetup,
+        config,
+      }),
     })),
     ...layouts.map(({ name, tester, layout, __asyncSetup }) => ({
       name,
@@ -97,8 +110,8 @@ export const toRenderers = (
     })),
   ]);
 
-export const defaultRenderers: readonly NamedRenderer[] = toRenderers(
-  [],
-  Object.values(controls),
-  Object.values(layouts),
-);
+export const defaultRenderers: readonly NamedRenderer[] = toRenderers({
+  renderers: [],
+  controls: Object.values(controls),
+  layouts: Object.values(layouts),
+});

@@ -1,62 +1,69 @@
 import { type Ref, computed, reactive, unref } from "vue";
 import { debounce } from "lodash-es";
 
-import inject from "../../../utils/inject";
+import type {
+  Messages,
+  PerformExternalValidation,
+  ValidationMethod,
+} from "./types";
 
-import type { Messages, ValidationMethod } from "./types";
-
-const CUSTOM_VALIDATION_DEBOUNCE = 500;
+const EXTERNAL_VALIDATION_DEBOUNCE = 500;
 
 export const useValidation = <T = any>({
   data,
   options,
+  performExternalValidation,
 }: {
   data: Ref<T>;
   options: Ref<Record<string, any>>;
+  performExternalValidation?: PerformExternalValidation<unknown>;
 }) => {
-  const hasCustomValidationHandler = computed(() =>
-    Boolean(options.value?.customValidationHandler),
+  const hasExternalValidationHandler = computed(() =>
+    Boolean(options.value?.externalValidationHandler),
   );
-  const executeCustomValidation = inject("executeCustomValidation");
 
   const validationMethods: ValidationMethod<T>[] = reactive([]);
-  const customValidations: Record<string, string> = reactive({});
+  const externalValidations: Record<string, string> = reactive({});
   const onRegisterValidation = (validationMethod: ValidationMethod<T>) =>
     validationMethods.push(validationMethod);
-  const setCustomValidationMessage = (
+  const setExternalValidationMessage = (
     validationId: string,
     validationMessage: string | null,
   ) => {
     if (validationMessage === null) {
-      delete customValidations[validationId];
+      delete externalValidations[validationId];
     } else {
-      customValidations[validationId] = validationMessage;
+      externalValidations[validationId] = validationMessage;
     }
   };
 
-  const performCustomValidation = (value: T) => {
-    if (hasCustomValidationHandler.value) {
-      const customValidationHandler = options.value.customValidationHandler;
-      executeCustomValidation(
-        customValidationHandler,
+  const performExternalValidationIfAvailable = async (value: T) => {
+    if (
+      hasExternalValidationHandler.value &&
+      typeof performExternalValidation === "function"
+    ) {
+      const externalValidationHandler = options.value.externalValidationHandler;
+      const extValidationResult = await performExternalValidation(
+        externalValidationHandler,
         value,
-        (error: string | null) => {
-          setCustomValidationMessage(customValidationHandler, error);
-        },
+      );
+      setExternalValidationMessage(
+        externalValidationHandler,
+        extValidationResult,
       );
     }
   };
 
-  const performCustomValidationDebounced = debounce((value: T) => {
-    performCustomValidation(value);
-  }, CUSTOM_VALIDATION_DEBOUNCE);
+  const performExternalValidationDebounced = debounce((value: T) => {
+    performExternalValidationIfAvailable(value);
+  }, EXTERNAL_VALIDATION_DEBOUNCE);
 
   const validationMessages = computed(() =>
     validationMethods.map((method) => unref(method)?.(data.value)),
   );
 
-  const customValidationMessages = computed(() =>
-    Object.values(customValidations),
+  const externalValidationMessages = computed(() =>
+    Object.values(externalValidations),
   );
 
   const combinedMessages = computed<Messages>(() => ({
@@ -64,7 +71,7 @@ export const useValidation = <T = any>({
       ...validationMessages.value.flatMap(
         ({ errors } = { errors: [] }) => errors,
       ),
-      ...customValidationMessages.value,
+      ...externalValidationMessages.value,
     ],
   }));
 
@@ -74,6 +81,6 @@ export const useValidation = <T = any>({
     messages: combinedMessages,
     isValid,
     onRegisterValidation,
-    performCustomValidationDebounced,
+    performExternalValidationDebounced,
   };
 };

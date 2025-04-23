@@ -42,7 +42,11 @@ describe("hide on null", () => {
           scope: "#/properties/setting",
           ...(hideOnNull ? { options: { hideOnNull } } : {}),
         },
-        renderers: toRenderers([], [controls.textRenderer], []),
+        renderers: toRenderers({
+          renderers: [],
+          controls: [controls.textRenderer],
+          layouts: [],
+        }),
       },
       attachTo: document.body,
     }) as VueWrapper;
