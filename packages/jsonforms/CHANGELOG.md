@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.9.2
+
+### Patch Changes
+
+- 5ba617c: Move teleport destination from slot to div
+
 ## 1.9.1
 
 ### Patch Changes
