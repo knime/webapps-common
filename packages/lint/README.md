@@ -56,6 +56,32 @@ export default = [
 ];
 ```
 
+### Linting for TypeScript
+
+Eslint Configs for TS projects export a function which takes the path to a tsconfig as an optional argument. Supplying a tsconfig will give you a config that extends the base TS config with some typed rules. Configs that make use of this are:
+
+- `typescript.js`
+- `vue3-typescript.js`
+- `nuxt3.js`
+
+If you want to make use of typed linting it might make sense to create a separate `tsconfig.eslint.json` which only includes files that should get linted and be as small and focused as possible.
+
+Note for the Nuxt3 Config: The config uses `createConfigForNuxt` which returns a composer. This means in you project you have to await the result to get the config. A Nuxt config could look like this:
+
+```js
+import createKnimeNuxtConfig from "@knime/eslint-config/nuxt3.js"
+
+export default = [
+  ...(await createKnimeNuxtConfig()),
+  {
+    globals: {
+      consola: true,
+    }
+  },
+  // [...]
+];
+```
+
 ## Using Stylelint in your project
 
 The following code block should give an understanding of a commonly used setup in your `.stylelintrc` file:
