@@ -1,7 +1,10 @@
 import { type Mock, beforeEach, describe, expect, it, vi } from "vitest";
+import { ref } from "vue";
 import { VueWrapper, flushPromises, mount } from "@vue/test-utils";
 
 import { FunctionButton, SideDrawer } from "@knime/components";
+
+import { subPanelDestInjectionKey } from "../SettingsSubPanel.vue";
 
 import TestSettingsSubPanel, {
   type Props as TestComponentProps,
@@ -31,7 +34,7 @@ describe("SettingsSubPanel", () => {
       global: {
         provide: {
           setSubPanelExpanded,
-          getPanelsContainer: () => "body",
+          [subPanelDestInjectionKey as symbol]: ref("body"),
         },
       },
     });

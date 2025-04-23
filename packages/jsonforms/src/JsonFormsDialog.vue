@@ -12,6 +12,7 @@ import { JsonForms } from "@jsonforms/vue";
 
 import type { NamedRenderer } from "./higherOrderComponents/types";
 import Form from "./layoutComponents/Form.vue";
+import { provideSideDrawerTeleportDest } from "./layoutComponents/settingsSubPanel/SettingsSubPanel.vue";
 import LoadingDialog from "./loading/LoadingDialog.vue";
 import type { AlertParams } from "./types/alert";
 import type { Provided } from "./types/provided";
@@ -91,13 +92,15 @@ defineExpose({
     }
   },
 });
+
+const subPanelTeleportDest = ref<HTMLElement | null>(null);
+provideSideDrawerTeleportDest(subPanelTeleportDest);
 </script>
 
 <template>
   <div class="dialog">
     <!-- Here so that the SettingsSubPanel can teleport somewhere sensible -->
-    <slot name="sideDrawerDest" />
-    <div ref="subPanels" />
+    <div ref="subPanelTeleportDest" />
     <Suspense>
       <Form>
         <slot name="top" />

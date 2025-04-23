@@ -1,6 +1,25 @@
-<script setup lang="ts">
-import { computed, inject, ref, watch } from "vue";
+<script lang="ts">
+import {
+  type InjectionKey,
+  type Ref,
+  computed,
+  inject,
+  provide,
+  ref,
+  watch,
+} from "vue";
+/**
+ * Exported for tests
+ */
+export const subPanelDestInjectionKey: InjectionKey<Ref<HTMLElement | null>> =
+  Symbol("subPanelDestInjectionKey");
 
+export const provideSideDrawerTeleportDest = (
+  subPanelTeleportDest: Ref<HTMLElement | null>,
+) => provide(subPanelDestInjectionKey, subPanelTeleportDest);
+</script>
+
+<script setup lang="ts">
 import { SideDrawer } from "@knime/components";
 
 import Form from "../Form.vue";
@@ -37,14 +56,8 @@ watch(
     // @ts-expect-error expected 0 arguments
     props.hideButtonsWhenExpanded && setSubPanelExpanded({ isExpanded }),
 );
-const subSettingsPanels = computed<HTMLElement>(() => {
-  // @ts-expect-error not callable
-  return inject(
-    props.hideButtonsWhenExpanded
-      ? "getPanelsContainer"
-      : "getSideDrawerTeleportDest",
-  )!()! as HTMLElement;
-});
+
+const subSettingsPanels = inject(subPanelDestInjectionKey)!;
 
 const styleOverrides = computed(() => ({
   width: "100%",
