@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.9.3
+
+### Patch Changes
+
+- 87fadf9: Provide sub settings panel destination in control tests
+
 ## 1.9.2
 
 ### Patch Changes
