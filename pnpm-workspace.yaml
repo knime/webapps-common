@@ -14,7 +14,7 @@ catalog:
   "@vueuse/core": ~10.11.1
   "@vueuse/shared": ~10.11.1
   consola: 3.2.3
-  eslint: 9.22.0
+  eslint: 9.29.0
   lodash-es: 4.17.21
   npm-run-all2: ^7.0.2
   globals: ^16.0.0

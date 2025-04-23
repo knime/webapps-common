@@ -1,0 +1,388 @@
+{
+  "packages/components/src/components/Buttons/FunctionButton.vue": {
+    "vue/block-lang": {
+      "count": 1
+    }
+  },
+  "packages/components/src/components/Collapser/Collapser.vue": {
+    "vue/block-lang": {
+      "count": 1
+    }
+  },
+  "packages/components/src/components/Description/Description.vue": {
+    "vue/block-lang": {
+      "count": 1
+    }
+  },
+  "packages/components/src/components/DonutChart/DonutChart.vue": {
+    "vue/block-lang": {
+      "count": 1
+    }
+  },
+  "packages/components/src/components/Error/Error.vue": {
+    "vue/block-lang": {
+      "count": 1
+    }
+  },
+  "packages/components/src/components/FileExplorer/components/FileExplorerItem.vue": {
+    "@typescript-eslint/no-floating-promises": {
+      "count": 3
+    }
+  },
+  "packages/components/src/components/FileExplorer/components/__tests__/FileExplorer.test.ts": {
+    "@typescript-eslint/no-floating-promises": {
+      "count": 29
+    }
+  },
+  "packages/components/src/components/FileExplorer/components/__tests__/FileExplorerItem.test.ts": {
+    "@typescript-eslint/no-floating-promises": {
+      "count": 6
+    }
+  },
+  "packages/components/src/components/FileLink/FileLink.vue": {
+    "vue/block-lang": {
+      "count": 1
+    }
+  },
+  "packages/components/src/components/FileSelector/FileSelector.vue": {
+    "vue/block-lang": {
+      "count": 1
+    }
+  },
+  "packages/components/src/components/IdleReadyButton/IdleReadyButton.vue": {
+    "vue/block-lang": {
+      "count": 1
+    }
+  },
+  "packages/components/src/components/LocalDateTime/LocalDateTime.vue": {
+    "vue/block-lang": {
+      "count": 1
+    }
+  },
+  "packages/components/src/components/Messages/Message.vue": {
+    "vue/block-lang": {
+      "count": 1
+    }
+  },
+  "packages/components/src/components/Messages/MessageLink.vue": {
+    "vue/block-lang": {
+      "count": 1
+    }
+  },
+  "packages/components/src/components/Messages/MessageTitle.vue": {
+    "vue/block-lang": {
+      "count": 1
+    }
+  },
+  "packages/components/src/components/Messages/Messages.vue": {
+    "vue/block-lang": {
+      "count": 1
+    }
+  },
+  "packages/components/src/components/OpenSourceCredits/OpenSourceCredits.vue": {
+    "vue/block-lang": {
+      "count": 1
+    }
+  },
+  "packages/components/src/components/StyleListItem/StyledListItem.vue": {
+    "vue/block-lang": {
+      "count": 1
+    }
+  },
+  "packages/components/src/components/TabBar/TabBar.vue": {
+    "vue/block-lang": {
+      "count": 1
+    }
+  },
+  "packages/components/src/components/Tooltip/Tooltip.vue": {
+    "vue/block-lang": {
+      "count": 1
+    }
+  },
+  "packages/components/src/components/UploadProgressPanel/__tests__/useUploadManager.test.ts": {
+    "@typescript-eslint/no-floating-promises": {
+      "count": 1
+    }
+  },
+  "packages/components/src/components/base/MenuItem/MenuItems.vue": {
+    "@typescript-eslint/no-floating-promises": {
+      "count": 1
+    }
+  },
+  "packages/components/src/components/base/Message/BaseMessage.vue": {
+    "vue/block-lang": {
+      "count": 1
+    }
+  },
+  "packages/components/src/components/forms/Checkbox/Checkbox.vue": {
+    "vue/block-lang": {
+      "count": 1
+    }
+  },
+  "packages/components/src/components/forms/Checkboxes/Checkboxes.vue": {
+    "vue/block-lang": {
+      "count": 1
+    }
+  },
+  "packages/components/src/components/forms/ComboBox/__tests__/ComboBox.test.ts": {
+    "@typescript-eslint/no-floating-promises": {
+      "count": 2
+    }
+  },
+  "packages/components/src/components/forms/DateTimeFormatInput/components/DateTimeFormatPickerPopover.vue": {
+    "@typescript-eslint/no-floating-promises": {
+      "count": 2
+    }
+  },
+  "packages/components/src/components/forms/DateTimeInput/DateTimeInput.vue": {
+    "vue/block-lang": {
+      "count": 1
+    }
+  },
+  "packages/components/src/components/forms/Dropdown/Dropdown.vue": {
+    "@typescript-eslint/no-floating-promises": {
+      "count": 2
+    }
+  },
+  "packages/components/src/components/forms/Fieldset/Fieldset.vue": {
+    "vue/block-lang": {
+      "count": 1
+    }
+  },
+  "packages/components/src/components/forms/InputField/InputField.vue": {
+    "vue/block-lang": {
+      "count": 1
+    }
+  },
+  "packages/components/src/components/forms/Label/Label.vue": {
+    "vue/block-lang": {
+      "count": 1
+    }
+  },
+  "packages/components/src/components/forms/ListBox/ListBox.vue": {
+    "vue/block-lang": {
+      "count": 1
+    }
+  },
+  "packages/components/src/components/forms/Multiselect/Multiselect.vue": {
+    "vue/block-lang": {
+      "count": 1
+    }
+  },
+  "packages/components/src/components/forms/RadioButtons/RadioButtons.vue": {
+    "vue/block-lang": {
+      "count": 1
+    }
+  },
+  "packages/components/src/components/forms/RadioButtons/__tests__/BaseRadioButtons.test.ts": {
+    "@typescript-eslint/no-floating-promises": {
+      "count": 1
+    }
+  },
+  "packages/components/src/components/forms/SearchInput/SearchInput.vue": {
+    "vue/block-lang": {
+      "count": 1
+    }
+  },
+  "packages/components/src/components/forms/SortList/SortList.vue": {
+    "@typescript-eslint/no-floating-promises": {
+      "count": 1
+    }
+  },
+  "packages/components/src/components/forms/TextArea/TextArea.vue": {
+    "vue/block-lang": {
+      "count": 1
+    }
+  },
+  "packages/components/src/components/forms/TimePartInput/TimePartInput.vue": {
+    "vue/block-lang": {
+      "count": 1
+    }
+  },
+  "packages/components/src/components/forms/ToggleSwitch/ToggleSwitch.vue": {
+    "vue/block-lang": {
+      "count": 1
+    }
+  },
+  "packages/components/src/components/node/DialogOptions.vue": {
+    "vue/block-lang": {
+      "count": 1
+    }
+  },
+  "packages/components/src/components/node/NodeFeatureList.vue": {
+    "vue/block-lang": {
+      "count": 1
+    }
+  },
+  "packages/components/src/components/node/NodePreview.vue": {
+    "vue/block-lang": {
+      "count": 1
+    }
+  },
+  "packages/components/src/components/node/NodeTorsoNormal.vue": {
+    "vue/block-lang": {
+      "count": 1
+    }
+  },
+  "packages/components/src/components/node/PortGroup.vue": {
+    "vue/block-lang": {
+      "count": 1
+    }
+  },
+  "packages/components/src/components/node/PortIcon.vue": {
+    "vue/block-lang": {
+      "count": 1
+    }
+  },
+  "packages/components/src/components/node/PortsList.vue": {
+    "vue/block-lang": {
+      "count": 1
+    }
+  },
+  "packages/components/src/components/node/ViewsList.vue": {
+    "vue/block-lang": {
+      "count": 1
+    }
+  },
+  "packages/components/src/components/transitions/ExpandTransition.vue": {
+    "vue/block-lang": {
+      "count": 1
+    }
+  },
+  "packages/components/src/composables/hints/components/__tests__/PopoverContent.test.ts": {
+    "@typescript-eslint/no-floating-promises": {
+      "count": 3
+    }
+  },
+  "packages/components/src/composables/hints/composables/useHint.ts": {
+    "@typescript-eslint/no-floating-promises": {
+      "count": 1
+    }
+  },
+  "packages/components/src/composables/hints/composables/useHintState.ts": {
+    "@typescript-eslint/no-floating-promises": {
+      "count": 1
+    }
+  },
+  "packages/hub-features/src/components/versions/__tests__/CurrentState.test.ts": {
+    "@typescript-eslint/no-floating-promises": {
+      "count": 2
+    }
+  },
+  "packages/hub-features/src/components/versions/__tests__/LabelList.test.ts": {
+    "@typescript-eslint/no-floating-promises": {
+      "count": 1
+    }
+  },
+  "packages/hub-features/src/rfcErrors/RFCErrorToastTemplate.vue": {
+    "@typescript-eslint/no-floating-promises": {
+      "count": 1
+    }
+  },
+  "packages/hub-features/src/useDownloadArtifact/__tests__/useDownloadArtifact.test.ts": {
+    "@typescript-eslint/no-floating-promises": {
+      "count": 6
+    }
+  },
+  "packages/hub-features/src/useFileUpload/__tests__/useFileUpload.test.ts": {
+    "@typescript-eslint/no-floating-promises": {
+      "count": 15
+    },
+    "@typescript-eslint/no-misused-promises": {
+      "count": 1
+    }
+  },
+  "packages/hub-features/src/useFileUpload/useFileUpload.ts": {
+    "@typescript-eslint/no-floating-promises": {
+      "count": 1
+    }
+  },
+  "packages/jsonforms/src/JsonFormsDialog.vue": {
+    "@typescript-eslint/no-misused-promises": {
+      "count": 1
+    }
+  },
+  "packages/jsonforms/src/higherOrderComponents/control/validation/useValidation.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    },
+    "@typescript-eslint/no-floating-promises": {
+      "count": 1
+    }
+  },
+  "packages/jsonforms/src/layoutComponents/LayoutComponentWrapper.vue": {
+    "vue/block-lang": {
+      "count": 1
+    }
+  },
+  "packages/jsonforms/src/uiComponents/composables/useHideOnNull.ts": {
+    "@typescript-eslint/no-floating-promises": {
+      "count": 1
+    }
+  },
+  "packages/jsonforms/src/uiComponents/richTextControl/DialogLinkModal.vue": {
+    "@typescript-eslint/no-floating-promises": {
+      "count": 1
+    }
+  },
+  "packages/licenses/src/collect-packages.js": {
+    "depend/ban-dependencies": {
+      "count": 1
+    }
+  },
+  "packages/rte/src/components/__tests__/CreateLinkModal.test.ts": {
+    "@typescript-eslint/no-floating-promises": {
+      "count": 5
+    }
+  },
+  "packages/styles/colors/generateCSS.ts": {
+    "@typescript-eslint/no-floating-promises": {
+      "count": 1
+    }
+  },
+  "packages/ui-extension-renderer/src/logic/iframe/embedder.ts": {
+    "@typescript-eslint/no-floating-promises": {
+      "count": 1
+    }
+  },
+  "packages/ui-extension-renderer/src/vueComponents/Popover.vue": {
+    "vue/block-lang": {
+      "count": 1
+    }
+  },
+  "packages/ui-extension-service/src/iframe/__tests__/iframe.test.ts": {
+    "@typescript-eslint/no-floating-promises": {
+      "count": 1
+    }
+  },
+  "packages/ui-extension-service/src/services/DialogService.ts": {
+    "@typescript-eslint/no-floating-promises": {
+      "count": 1
+    }
+  },
+  "packages/ui-extension-service/src/services/__tests__/CachingSelectionService.test.ts": {
+    "@typescript-eslint/no-floating-promises": {
+      "count": 3
+    }
+  },
+  "packages/ui-extension-service/src/services/__tests__/JSONDataService.test.ts": {
+    "@typescript-eslint/no-floating-promises": {
+      "count": 3
+    }
+  },
+  "packages/utils/src/__tests__/sleep.test.ts": {
+    "@typescript-eslint/no-floating-promises": {
+      "count": 1
+    }
+  },
+  "packages/virtual-tree/src/baseTree/BaseTree.vue": {
+    "@typescript-eslint/no-misused-promises": {
+      "count": 1
+    }
+  },
+  "packages/virtual-tree/src/components/__tests__/Tree.test.ts": {
+    "@typescript-eslint/no-floating-promises": {
+      "count": 2
+    }
+  }
+}

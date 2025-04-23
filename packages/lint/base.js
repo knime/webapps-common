@@ -1,9 +1,10 @@
 import eslint from "@eslint/js";
-import * as depend from "eslint-plugin-depend";
+import depend from "eslint-plugin-depend";
 import importPlugin from "eslint-plugin-import-x";
 import nodeEslint from "eslint-plugin-n";
 import unusedImports from "eslint-plugin-unused-imports";
 import globals from "globals";
+import jsoncParser from "jsonc-eslint-parser";
 
 import customTodo from "./custom-todo.js";
 import prettierOverrides from "./prettierOverwrites.js";
@@ -18,6 +19,16 @@ let languageOptions = {
 export default [
   eslint.configs.recommended, // eslint:recommended
   depend.configs["flat/recommended"],
+  {
+    name: "@knime/eslint-config/depend-package.json",
+    files: ["package.json"],
+    languageOptions: {
+      parser: jsoncParser,
+    },
+    rules: {
+      "depend/ban-dependencies": "error",
+    },
+  },
   ...prettierOverrides,
   ...customTodo,
   {

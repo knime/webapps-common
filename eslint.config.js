@@ -1,13 +1,20 @@
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
 import globals from "globals";
 
 import knimeVitest from "@knime/eslint-config/vitest.js";
-import knimeVue3TS from "@knime/eslint-config/vue3-typescript.js";
+import createKnimeVueTSConfig from "@knime/eslint-config/vue3-typescript.js";
+
+// get absolute path to tsconfig so that ide and cli both work
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const tsconfigPath = path.resolve(__dirname, "tsconfig.eslint.json");
 
 export default [
   {
     ignores: ["demo/*"],
   },
-  ...knimeVue3TS,
+  ...createKnimeVueTSConfig(tsconfigPath),
   ...knimeVitest,
   {
     languageOptions: {
