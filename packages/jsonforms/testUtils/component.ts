@@ -1,5 +1,5 @@
 import { type Mock, vi } from "vitest";
-import { type Component, type ExtractPropTypes } from "vue";
+import { type Component, type ExtractPropTypes, ref } from "vue";
 import { flushPromises, mount } from "@vue/test-utils";
 import * as jsonformsVueModule from "@jsonforms/vue";
 
@@ -11,6 +11,7 @@ import type {
   VueLayout,
   VueLayoutProps,
 } from "../src/higherOrderComponents";
+import { subPanelDestInjectionKey } from "../src/layoutComponents/settingsSubPanel/SettingsSubPanel.vue";
 
 export type ProvidedMethods = {
   sendAlert: Mock;
@@ -24,7 +25,7 @@ export type VueControlTestProps<C extends abstract new (...args: any) => any> =
     "handleChange" | "changeValue" | "onRegisterValidation"
   >;
 
-const getGlobal = ({
+export const getGlobal = ({
   provide,
   stubs,
 }: {
@@ -35,6 +36,7 @@ const getGlobal = ({
     sendAlert: provide?.sendAlert || vi.fn(),
     addStateProviderListener: provide?.addStateProviderListener || vi.fn(),
     trigger: provide?.trigger || vi.fn(),
+    [subPanelDestInjectionKey as symbol]: ref("body"),
     ...provide,
   },
   stubs: {
