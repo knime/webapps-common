@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.10.0
+
+### Minor Changes
+
+- 9ba6782: Add option to perform external validations to renderers
+
 ## 1.9.4
 
 ### Patch Changes
