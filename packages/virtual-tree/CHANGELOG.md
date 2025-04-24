@@ -1,5 +1,12 @@
 # @knime/virtual-tree
 
+## 1.3.46
+
+### Patch Changes
+
+- Updated dependencies [e88dcfd]
+  - @knime/components@1.27.0
+
 ## 1.3.45
 
 ### Patch Changes

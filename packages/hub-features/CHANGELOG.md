@@ -1,5 +1,12 @@
 # @knime/hub-features
 
+## 1.8.1
+
+### Patch Changes
+
+- Updated dependencies [e88dcfd]
+  - @knime/components@1.27.0
+
 ## 1.8.0
 
 ### Minor Changes

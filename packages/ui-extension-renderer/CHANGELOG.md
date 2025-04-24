@@ -1,5 +1,12 @@
 # @knime/ui-extension-renderer
 
+## 2.0.38
+
+### Patch Changes
+
+- Updated dependencies [e88dcfd]
+  - @knime/components@1.27.0
+
 ## 2.0.37
 
 ### Patch Changes

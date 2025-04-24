@@ -1,5 +1,15 @@
 # demo
 
+## 1.4.16
+
+### Patch Changes
+
+- Updated dependencies [e88dcfd]
+  - @knime/components@1.27.0
+  - @knime/hub-features@1.8.1
+  - @knime/rich-text-editor@1.4.9
+  - @knime/virtual-tree@1.3.46
+
 ## 1.4.15
 
 ### Patch Changes
