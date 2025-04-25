@@ -12,7 +12,7 @@ const emit = defineEmits<{
 const versionName = ref("");
 const versionDescription = ref("");
 
-const descriptionEditor = ref<InstanceType<typeof TextArea>>(null);
+const descriptionEditor = ref<InstanceType<typeof TextArea> | null>(null);
 
 onMounted(() => {
   useTextareaAutosize({

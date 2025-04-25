@@ -35,8 +35,7 @@ describe("BaseRadioButtons.vue", () => {
       },
     });
 
-    // right now depends on the position of the test
-    expect(wrapper.find("input").attributes("name")).toBe("wc-radio-2");
+    expect(wrapper.find("input").attributes("name")).toBe("RadioButtons-v-0");
 
     wrapper = mount(BaseRadioButtons, {
       props: {
@@ -53,21 +52,25 @@ describe("BaseRadioButtons.vue", () => {
   });
 
   it("renders unique name attributes", () => {
-    const wrapper1 = mount(BaseRadioButtons, {
-      props: {
-        possibleValues,
+    const wrapper = mount({
+      template: `
+        <div>
+          <BaseRadioButtons :possibleValues="possibleValues" />
+          <BaseRadioButtons :possibleValues="possibleValues" />
+        </div>
+      `,
+      components: {
+        BaseRadioButtons,
       },
-    }) as VueWrapper<any>;
-    const wrapper2 = mount(BaseRadioButtons, {
-      props: {
-        possibleValues,
+      data() {
+        return {
+          possibleValues,
+        };
       },
     }) as VueWrapper<any>;
 
-    expect(wrapper1.vm.count).not.toBe(wrapper2.vm.count);
-    expect(wrapper1.find("input").attributes().name).not.toBe(
-      wrapper2.find("input").attributes().name,
-    );
+    const radioButtons = wrapper.findAllComponents(BaseRadioButtons);
+    expect(radioButtons[0].props().name).not.toBe(radioButtons[1].props());
   });
 
   it("renders selected value", () => {

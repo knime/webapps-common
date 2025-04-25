@@ -1,5 +1,13 @@
 <script lang="ts">
-import { type PropType, computed, nextTick, ref, toRefs, watch } from "vue";
+import {
+  type PropType,
+  computed,
+  nextTick,
+  ref,
+  toRefs,
+  useId,
+  watch,
+} from "vue";
 import { OnClickOutside } from "@vueuse/components";
 import { isEmpty } from "lodash-es";
 
@@ -23,7 +31,6 @@ interface PossibleValue {
   isSpecial?: boolean;
 }
 
-let count = 0;
 const KEY_DOWN = "ArrowDown";
 const KEY_UP = "ArrowUp";
 const KEY_HOME = "Home";
@@ -45,7 +52,7 @@ export default {
     id: {
       type: String,
       default() {
-        return `Dropdown-${count++}`;
+        return `Dropdown-${useId()}`;
       },
     },
     modelValue: {

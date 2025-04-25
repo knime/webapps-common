@@ -1,5 +1,5 @@
 <script>
-let labelForId = 0;
+import { useId } from "vue";
 /**
  * Default label component
  * It provides a `labelForId` property that can be used via slot prop destructuring to associate it with a form element
@@ -50,6 +50,11 @@ export default {
     },
   },
   emits: ["labelForId"],
+  data() {
+    return {
+      labelForId: useId(),
+    };
+  },
   computed: {
     labelFor() {
       if (this.generateId) {
@@ -66,10 +71,6 @@ export default {
     isLarge() {
       return this.large || this.largeLabels;
     },
-  },
-  beforeCreate() {
-    labelForId += 1;
-    this.labelForId = labelForId;
   },
   mounted() {
     this.$emit("labelForId", this.labelFor);

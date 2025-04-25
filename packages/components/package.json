@@ -54,9 +54,9 @@
     "vue": "catalog:peer"
   },
   "devDependencies": {
+    "@types/color-hash": "^2.0.0",
     "@vitejs/plugin-vue": "catalog:",
     "@vue/test-utils": "catalog:",
-    "@types/color-hash": "^2.0.0",
     "consola": "catalog:",
     "vite": "catalog:",
     "vite-plugin-css-injected-by-js": "catalog:",

@@ -1,5 +1,6 @@
 <script>
-let count = 0;
+import { useId } from "vue";
+
 const KEY_DOWN = 40;
 const KEY_UP = 38;
 const KEY_HOME = 36;
@@ -11,7 +12,7 @@ export default {
     id: {
       type: String,
       default() {
-        return `ListBox-${count++}`;
+        return `ListBox-${useId()}`;
       },
     },
     modelValue: {

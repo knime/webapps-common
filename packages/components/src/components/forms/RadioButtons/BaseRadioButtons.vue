@@ -1,7 +1,6 @@
 <script lang="ts">
 import { type PropType, defineComponent } from "vue";
-
-let count = 0;
+import { useId } from "vue";
 
 export type BaseRadioButtonItem = {
   id: string;
@@ -23,7 +22,9 @@ export default defineComponent({
     },
     name: {
       type: String,
-      default: null,
+      default() {
+        return `RadioButtons-${useId()}`;
+      },
     },
     disabled: {
       default: false,
@@ -43,17 +44,6 @@ export default defineComponent({
     },
   },
   emits: ["update:modelValue"],
-  computed: {
-    inputName() {
-      // @ts-expect-error Property 'count' does not exist on type
-      return this.name || `wc-radio-${this.count}`;
-    },
-  },
-  beforeCreate() {
-    count += 1;
-    // @ts-expect-error Property 'count' does not exist on type
-    this.count = count;
-  },
   methods: {
     onInput($event: Event) {
       const value = ($event.target as HTMLInputElement).value;
@@ -78,7 +68,7 @@ export default defineComponent({
         ref="input"
         :checked="modelValue === item.id"
         :value="item.id"
-        :name="inputName"
+        :name="name"
         :disabled="disabled || item.disabled"
         type="radio"
         @change="onInput"

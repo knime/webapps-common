@@ -6,10 +6,10 @@ export default {
   props: {
     modelValue: {
       default: "",
-      type: [Number, String],
+      type: [Number, String, null],
     },
     id: {
-      type: String,
+      type: [String, null],
       default: null,
     },
     name: {

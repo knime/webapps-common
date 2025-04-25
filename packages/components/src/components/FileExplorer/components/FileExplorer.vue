@@ -596,7 +596,7 @@ useResizeObserver(containerProps.ref, containerProps.onScroll);
           :is-dragging-enabled="!disableDragging"
           @dragstart="onDragStart($event, renderedIndices[vIndex])"
           @dragenter="onDragEnter($event, renderedIndices[vIndex])"
-          @dragover="onDragOver"
+          @dragover="onDragOver($event)"
           @dragleave="onDragLeave($event, renderedIndices[vIndex])"
           @dragend="forwardEmit('dragend', onDragEnd($event, item))"
           @drag="forwardEmit('drag', onDrag($event, item))"
