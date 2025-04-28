@@ -11,6 +11,7 @@ export type FileExplorerItem<T = Record<string, any>> = {
   canBeRenamed: boolean;
   canBeDeleted: boolean;
   meta?: T;
+  disabled?: boolean;
 };
 
 export type ItemIconRenderer = (

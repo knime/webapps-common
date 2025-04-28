@@ -24,6 +24,7 @@ describe("FileExplorerItem.vue", () => {
     isSelected: false,
     isDragging: false,
     isRenameActive: false,
+    disabled: false,
   };
 
   const doMount = ({ props = {} } = {}) => {

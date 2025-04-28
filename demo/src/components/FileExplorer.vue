@@ -83,6 +83,45 @@ const items = [
     canBeRenamed: true,
     canBeDeleted: false,
   },
+  {
+    id: "6",
+    name: "File 4 (disabled)",
+    meta: {
+      type: "Component",
+    },
+    isDirectory: false,
+    isOpenableFile: false,
+    isOpen: false,
+    canBeRenamed: false,
+    canBeDeleted: false,
+    disabled: true,
+  },
+  {
+    id: "7",
+    name: "File 5 (not disabled)",
+    meta: {
+      type: "Component",
+    },
+    isDirectory: false,
+    isOpenableFile: false,
+    isOpen: false,
+    canBeRenamed: true,
+    canBeDeleted: true,
+    disabled: false,
+  },
+  {
+    id: "8",
+    name: "File 6 (disabled)",
+    meta: {
+      type: "Component",
+    },
+    isDirectory: false,
+    isOpenableFile: false,
+    isOpen: false,
+    canBeRenamed: false,
+    canBeDeleted: false,
+    disabled: true,
+  },
 ];
 
 const options = reactive({

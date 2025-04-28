@@ -15,6 +15,7 @@ type UseFocusableMultiSelectionOptions = UseMultiSelectionOptions & {
   numberOfItems: Ref<number>;
   startIndex: Ref<number>;
   disabled?: boolean;
+  skippedIndices?: Ref<number[]>;
 };
 
 export type UseFocusableMultiSelectionReturn = {
@@ -35,11 +36,16 @@ export const useFocusableMultiSelection = (
 
   const focusedIndex = ref<number>(INVALID_INDEX);
 
+  const skippedIndices = computed(() => options.skippedIndices?.value ?? []);
+
   const isSelected = (index: number) =>
+    !skippedIndices.value.includes(index) &&
     multiSelectionService.isItemSelected(multiSelectionState.value, index);
 
   const selectedIndexes = computed(() =>
-    multiSelectionService.getSelectedIndexes(multiSelectionState.value),
+    multiSelectionService
+      .getSelectedIndexes(multiSelectionState.value)
+      .filter((index) => !skippedIndices.value.includes(index)),
   );
 
   const isMultipleSelectionActive = (index: number) =>
@@ -125,6 +131,56 @@ export const useFocusableMultiSelection = (
     clickItem(index);
   };
 
+  const unskippedIndices = computed(() => {
+    const allIndices = Array.from(
+      { length: options.numberOfItems.value },
+      (_, i) => i,
+    );
+    if (skippedIndices.value.length) {
+      return allIndices.filter((i) => !skippedIndices.value.includes(i));
+    }
+    return allIndices;
+  });
+
+  const nextNonSkippedIndex = (
+    startIndex: number,
+    increment: number,
+  ): number => {
+    if (unskippedIndices.value.length === 0 || increment === 0) {
+      return startIndex;
+    }
+    const targetIndex = startIndex + increment;
+    if (increment < 0) {
+      return (
+        unskippedIndices.value.findLast((val) => val <= targetIndex) ??
+        unskippedIndices.value[0]
+      );
+    } else {
+      return (
+        unskippedIndices.value.find((val) => val >= targetIndex) ??
+        unskippedIndices.value.at(-1)!
+      );
+    }
+  };
+
+  /**
+   * In case we cannot navigate further in the direction of the increment, we return -1.
+   */
+  const nextNonSkippedIndexOrMinusOne = (
+    startIndex: number,
+    increment: number,
+  ) => {
+    if (startIndex === -1 && increment < 0) {
+      return -1;
+    }
+    const nextIndex = nextNonSkippedIndex(startIndex, increment);
+    if (increment < 0 && nextIndex === startIndex) {
+      return -1;
+    } else {
+      return nextIndex;
+    }
+  };
+
   const handleKeyboardNavigation = (event: KeyboardEvent | null) => {
     if (!event) {
       return;
@@ -150,30 +206,45 @@ export const useFocusableMultiSelection = (
     }
 
     const index = Math.max(focusedIndex.value, options.startIndex.value);
-    const lastIndex = options.numberOfItems.value - 1;
 
     switch (event.key) {
       case "ArrowUp":
-        handleSelectionClick(index - 1, event, false);
+        handleSelectionClick(
+          nextNonSkippedIndexOrMinusOne(index, -1),
+          event,
+          false,
+        );
         break;
       case "PageUp":
-        handleSelectionClick(Math.max(index - PAGE_SIZE, 0), event, false);
+        handleSelectionClick(
+          nextNonSkippedIndex(index, -PAGE_SIZE),
+          event,
+          false,
+        );
         break;
       case "PageDown":
         handleSelectionClick(
-          Math.min(index + PAGE_SIZE, lastIndex),
+          nextNonSkippedIndex(index, PAGE_SIZE),
           event,
           false,
         );
         break;
       case "End":
-        handleSelectionClick(lastIndex, event, false);
+        handleSelectionClick(
+          nextNonSkippedIndex(index, Infinity),
+          event,
+          false,
+        );
         break;
       case "Home":
-        handleSelectionClick(0, event, false);
+        handleSelectionClick(
+          nextNonSkippedIndex(index, -Infinity),
+          event,
+          false,
+        );
         break;
       case "ArrowDown":
-        handleSelectionClick(index + 1, event, false);
+        handleSelectionClick(nextNonSkippedIndex(index, 1), event, false);
         break;
       case "Enter":
         if (event[metaOrCtrl] && !options.singleSelectionOnly.value) {

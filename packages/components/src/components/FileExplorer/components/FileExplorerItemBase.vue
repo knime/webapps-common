@@ -13,6 +13,11 @@ export default defineComponent({
       type: Boolean,
       required: true,
     },
+
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
   },
 });
 </script>
@@ -23,6 +28,7 @@ export default defineComponent({
     :class="{
       selected: !isDragging && isSelected,
       dragging: isDragging && isSelected,
+      disabled,
     }"
     data-test-id="file-explorer-item"
   >
@@ -58,7 +64,7 @@ export default defineComponent({
   border: 1px solid var(--item-bg-color);
   font-size: var(--item-font-size);
 
-  &:hover {
+  &:hover:not(.disabled) {
     box-shadow: var(--shadow-elevation-1);
   }
 

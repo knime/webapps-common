@@ -217,6 +217,11 @@ const multiSelection = useFocusableMultiSelection({
   numberOfItems: computed(() => props.items.length),
   startIndex: computed(() => (itemBack.value ? -1 : 0)),
   disabled: props.disableSelection,
+  skippedIndices: computed(() =>
+    props.items
+      .map((item, index) => (item.disabled ? index : -1))
+      .filter((index) => index !== -1),
+  ),
 });
 const {
   multiSelectionState,
@@ -244,7 +249,8 @@ const selectItems = (itemIds: string[]) => {
   // look up item indices
   const itemIndices = itemIds
     .map((id) => props.items.findIndex((item) => item.id === id))
-    .filter((index) => index !== -1);
+    .filter((index) => index !== -1)
+    .filter((index) => !props.items[index].disabled);
 
   // exactly the 'itemIds'-items are already selected
   if (
@@ -503,6 +509,10 @@ const onItemClick = (
   event: MouseEvent,
   index: number,
 ) => {
+  if (item.disabled) {
+    return;
+  }
+
   if (renamedItemId.value !== item.id) {
     handleSelectionClick(index, event);
   }
@@ -587,6 +597,7 @@ useResizeObserver(containerProps.ref, containerProps.onScroll);
           :class="{
             'keyboard-focus': keyPressedUntilMouseClick,
           }"
+          :disabled="item.disabled ?? false"
           :item="item"
           :title="item.name"
           :is-dragging="isDragging"

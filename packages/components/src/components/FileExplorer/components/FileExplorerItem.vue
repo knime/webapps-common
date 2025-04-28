@@ -17,6 +17,7 @@ interface Props {
   isSelected: boolean;
   isDragging: boolean;
   isRenameActive: boolean;
+  disabled: boolean;
   isDraggingEnabled?: boolean;
 }
 
@@ -106,9 +107,13 @@ const onRenameSubmit = (keyupEvent: KeyboardEvent, isClickAway = false) => {
   <FileExplorerItemBase
     ref="baseItem"
     class="file-explorer-item"
+    :class="{
+      disabled,
+    }"
     :is-dragging="isDragging"
     :is-selected="isSelected"
     :draggable="isDraggingEnabled && !isRenameActive"
+    :disabled
     @dragstart="!isRenameActive && emit('dragstart', $event)"
     @dragenter="!isRenameActive && emit('dragenter', $event)"
     @dragover="emit('dragover', $event)"
@@ -193,6 +198,24 @@ const onRenameSubmit = (keyupEvent: KeyboardEvent, isClickAway = false) => {
     }
   }
 
+  &.disabled {
+    pointer-events: none;
+
+    & .item-content {
+      color: var(--knime-masala-semi);
+    }
+
+    & .item-icon {
+      & :slotted(svg) {
+        stroke: var(--knime-masala-semi);
+      }
+    }
+  }
+
+  &:not(.disabled) .item-content {
+    color: var(--knime-masala);
+  }
+
   & .item-error {
     font-size: 13px;
     line-height: 1.5;
@@ -205,12 +228,8 @@ const onRenameSubmit = (keyupEvent: KeyboardEvent, isClickAway = false) => {
     white-space: normal;
   }
 
-  &:not(.selected, .dragging, .dragging-over) .item-content {
-    color: var(--knime-masala);
-
-    &.light {
-      background-color: var(--knime-white);
-    }
+  &:not(.selected, .dragging, .dragging-over) .item-content.light {
+    background-color: var(--knime-white);
   }
 
   & td.rename-active {
