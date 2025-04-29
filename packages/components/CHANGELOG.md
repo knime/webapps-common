@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.28.0
+
+### Minor Changes
+
+- 7b84a54: Change id generation in input components from global counter to useId
+
 ## 1.27.0
 
 ### Minor Changes
