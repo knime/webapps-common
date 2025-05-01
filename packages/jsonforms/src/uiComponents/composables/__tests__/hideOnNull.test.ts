@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { ref } from "vue";
 
 import useHideOnNull from "../useHideOnNull";
@@ -12,26 +12,21 @@ describe("hideOnNull", () => {
     } = {},
   ) => {
     const { hideOnNull = false, data, disabled = false } = params;
-    return useHideOnNull(
-      {
-        control: {
-          uischema: hideOnNull
-            ? {
-                options: {
-                  hideOnNull,
-                },
-              }
-            : {},
-          data,
-        } as any,
-        disabled: ref(disabled),
-        controlElement: ref(null),
-      },
-      {
-        setDefault: () => {},
-        setNull: () => {},
-      },
-    );
+    return useHideOnNull({
+      control: ref({
+        uischema: hideOnNull
+          ? {
+              options: {
+                hideOnNull,
+              },
+            }
+          : {},
+        data,
+      }) as any,
+      changeValue: vi.fn(),
+      disabled: ref(disabled),
+      controlElement: ref(null),
+    });
   };
 
   it("sets showCheckbox to false per default", () => {

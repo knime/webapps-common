@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { ref } from "vue";
 
-import { Checkbox, InputField } from "@knime/components";
+import { InputField } from "@knime/components";
 
-import LabeledControl from "../higherOrderComponents/control/LabeledControl.vue";
-import ErrorMessages from "../higherOrderComponents/control/errorMessage/ErrorMessages.vue";
-import type { VueControlProps } from "../higherOrderComponents/control/types";
+import type {
+  VueControlExposed,
+  VueControlPropsForLabelContent,
+} from "../higherOrderComponents/control/withLabel";
 
 import { useBuiltinValidation } from "./composables/useBuiltinValidations";
-import useHideOnNull from "./composables/useHideOnNull";
 import useProvidedState from "./composables/useProvidedState";
 
-const props = defineProps<VueControlProps<string | null>>();
+const props = defineProps<VueControlPropsForLabelContent<string | null>>();
 
 type ValidationParameters = {
   pattern: { pattern: string };
@@ -42,51 +42,21 @@ const placeholder = useProvidedState(
   props.control.uischema.options?.placeholder ?? "",
 );
 
-const controlElement = ref<null | HTMLElement>(null);
-const { showCheckbox, showControl, checkboxProps } = useHideOnNull(
-  {
-    control: computed(() => props.control),
-    disabled: computed(() => props.disabled),
-    controlElement,
-  },
-  {
-    setDefault: () => props.changeValue(""),
-    setNull: () => props.changeValue(null),
-  },
-);
+const inputField = ref<InstanceType<typeof InputField> | null>(null);
+defineExpose<VueControlExposed>({
+  focus: () => inputField.value?.focus(),
+});
 </script>
 
 <template>
-  <LabeledControl
-    :label="control.label"
-    :hide-control-header="control.uischema.options?.hideControlHeader"
-  >
-    <template #before-label>
-      <Checkbox v-if="showCheckbox" v-bind="checkboxProps" />
-    </template>
-    <template #default="{ labelForId }">
-      <ErrorMessages v-if="showControl" :errors="messages.errors">
-        <InputField
-          :id="labelForId"
-          ref="controlElement"
-          :placeholder="placeholder"
-          :model-value="control.data"
-          :disabled="disabled"
-          :is-valid
-          compact
-          @update:model-value="changeValue"
-        />
-      </ErrorMessages>
-    </template>
-    <template #icon>
-      <slot name="icon" />
-    </template>
-    <template #buttons="{ hover }">
-      <slot
-        name="buttons"
-        :hover="hover"
-        :control-h-t-m-l-element="controlElement"
-      />
-    </template>
-  </LabeledControl>
+  <InputField
+    :id="labelForId"
+    ref="inputField"
+    :placeholder="placeholder"
+    :model-value="control.data"
+    :disabled="disabled"
+    :is-valid
+    compact
+    @update:model-value="changeValue"
+  />
 </template>

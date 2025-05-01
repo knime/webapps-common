@@ -5,15 +5,13 @@ import { Checkbox, InputField } from "@knime/components";
 
 import JsonFormsDialog from "../../../../JsonFormsDialog.vue";
 import { controls, toRenderers } from "../../../../renderers";
-import TextControl from "../../../TextControl.vue";
 
 describe("hide on null", () => {
   let wrapper: VueWrapper;
 
-  const findCheckbox = (wrapper: VueWrapper) => {
-    const textInput = wrapper.findComponent(TextControl);
-    return textInput.findComponent(Checkbox);
-  };
+  const findCheckbox = (wrapper: VueWrapper) => wrapper.findComponent(Checkbox);
+
+  const defaultValue = "default value";
 
   const mountJsonFormsDialog = async (
     {
@@ -40,7 +38,9 @@ describe("hide on null", () => {
         uischema: {
           type: "Control",
           scope: "#/properties/setting",
-          ...(hideOnNull ? { options: { hideOnNull } } : {}),
+          ...(hideOnNull
+            ? { options: { hideOnNull, default: defaultValue } }
+            : {}),
         },
         renderers: toRenderers({
           renderers: [],
@@ -69,7 +69,7 @@ describe("hide on null", () => {
     expect(checkbox.props().modelValue).toBe(false);
   });
 
-  it("sets the value to a string value and sets focus to input element when checking the checkbox", async () => {
+  it("sets the value to the default value and sets focus to input element when checking the checkbox", async () => {
     await mountJsonFormsDialog({
       initialData: null,
       hideOnNull: true,
@@ -79,6 +79,9 @@ describe("hide on null", () => {
     // @ts-expect-error Object is of type 'unknown'
     expect(wrapper.emitted("change")[1][0].data.setting).not.toBeNull();
     await flushPromises();
+    expect(wrapper.findComponent(InputField).props()).toMatchObject({
+      modelValue: defaultValue,
+    });
     expect(document.activeElement).toBe(
       wrapper.findComponent(InputField).find("input").element,
     );

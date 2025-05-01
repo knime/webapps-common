@@ -16,7 +16,7 @@ import { Dropdown } from "@knime/components";
 import {
   type VueControlTestProps,
   getControlBase,
-  mountJsonFormsControl,
+  mountJsonFormsControlLabelContent,
 } from "../../../testUtils/component";
 import type { IdAndText } from "../../types/ChoicesUiSchema";
 import DropdownControl from "../DropdownControl.vue";
@@ -27,6 +27,7 @@ describe("DropdownControl.vue", () => {
     changeValue: Mock;
 
   const path = "test";
+  const labelForId = "labelForId";
 
   beforeEach(async () => {
     props = {
@@ -64,9 +65,9 @@ describe("DropdownControl.vue", () => {
       },
       disabled: false,
       isValid: false,
-      messages: { errors: [] },
+      labelForId,
     };
-    const component = await mountJsonFormsControl(DropdownControl, {
+    const component = await mountJsonFormsControlLabelContent(DropdownControl, {
       props,
     });
     wrapper = component.wrapper;
@@ -82,7 +83,7 @@ describe("DropdownControl.vue", () => {
   });
 
   it("sets labelForId", () => {
-    expect(wrapper.getComponent(Dropdown).props().id).toBeDefined();
+    expect(wrapper.getComponent(Dropdown).props().id).toBe(labelForId);
   });
 
   it("calls handleChange when input is changed", () => {
@@ -101,7 +102,7 @@ describe("DropdownControl.vue", () => {
 
   it("sets placeholder text correctly if possible values are not yet available", async () => {
     delete props.control.uischema.options!.possibleValues;
-    const { wrapper } = mountJsonFormsControl(DropdownControl, {
+    const { wrapper } = mountJsonFormsControlLabelContent(DropdownControl, {
       props,
     });
     await flushPromises();
@@ -110,7 +111,7 @@ describe("DropdownControl.vue", () => {
 
   it("sets placeholder text correctly if possible values are empty", async () => {
     props.control.uischema.options!.possibleValues = [];
-    const { wrapper } = mountJsonFormsControl(DropdownControl, {
+    const { wrapper } = mountJsonFormsControlLabelContent(DropdownControl, {
       props,
     });
     await flushPromises();
@@ -121,7 +122,7 @@ describe("DropdownControl.vue", () => {
 
   it("sets placeholder text correctly if there are possible values present", async () => {
     props.control.data = "";
-    const { wrapper } = mountJsonFormsControl(DropdownControl, {
+    const { wrapper } = mountJsonFormsControlLabelContent(DropdownControl, {
       props,
     });
     await flushPromises();
@@ -137,9 +138,12 @@ describe("DropdownControl.vue", () => {
 
   it("disables dropdown when there are no possible values", async () => {
     props.control.uischema.options!.possibleValues = [];
-    const { wrapper } = await mountJsonFormsControl(DropdownControl, {
-      props,
-    });
+    const { wrapper } = await mountJsonFormsControlLabelContent(
+      DropdownControl,
+      {
+        props,
+      },
+    );
     await flushPromises();
     expect(wrapper.findComponent(Dropdown).vm.disabled).toBeTruthy();
   });
@@ -152,7 +156,7 @@ describe("DropdownControl.vue", () => {
     const addStateProviderListener = vi.fn((_id, callback) => {
       provideChoices = callback;
     });
-    const { wrapper } = mountJsonFormsControl(DropdownControl, {
+    const { wrapper } = mountJsonFormsControlLabelContent(DropdownControl, {
       props,
       provide: { addStateProviderListener },
     });

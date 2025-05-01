@@ -15,15 +15,16 @@ import { InputField } from "@knime/components";
 import {
   type VueControlTestProps,
   getControlBase,
-  mountJsonFormsControl,
+  mountJsonFormsControlLabelContent,
 } from "../../../testUtils/component";
-import LabeledControl from "../../higherOrderComponents/control/LabeledControl.vue";
 import TextControl from "../TextControl.vue";
 
 describe("TextControl.vue", () => {
   let props: VueControlTestProps<typeof TextControl>,
     wrapper: VueWrapper,
     changeValue: Mock;
+
+  const labelForId = "labelForId";
 
   beforeEach(async () => {
     props = {
@@ -47,10 +48,10 @@ describe("TextControl.vue", () => {
       },
       disabled: false,
       isValid: false,
-      messages: { errors: [] },
+      labelForId,
     };
 
-    const component = await mountJsonFormsControl(TextControl, {
+    const component = await mountJsonFormsControlLabelContent(TextControl, {
       props,
     });
     wrapper = component.wrapper;
@@ -62,12 +63,11 @@ describe("TextControl.vue", () => {
   });
 
   it("renders", () => {
-    expect(wrapper.findComponent(LabeledControl).exists()).toBe(true);
     expect(wrapper.findComponent(InputField).exists()).toBe(true);
   });
 
   it("sets labelForId", () => {
-    expect(wrapper.getComponent(InputField).props().id).toBeDefined();
+    expect(wrapper.getComponent(InputField).props().id).toBe(labelForId);
   });
 
   it("calls handleChange when text input is changed", () => {
@@ -84,13 +84,9 @@ describe("TextControl.vue", () => {
     );
   });
 
-  it("sets correct label", () => {
-    expect(wrapper.find("label").text()).toBe(props.control.label);
-  });
-
   it("sets correct placeholder text", () => {
     props.control.uischema.options!.placeholder = "Bond";
-    const { wrapper } = mountJsonFormsControl(TextControl, {
+    const { wrapper } = mountJsonFormsControlLabelContent(TextControl, {
       props,
     });
     expect(wrapper.findComponent(InputField).props("placeholder")).toBe("Bond");
@@ -104,7 +100,7 @@ describe("TextControl.vue", () => {
       providePlaceholder = callback;
     });
 
-    const { wrapper } = mountJsonFormsControl(TextControl, {
+    const { wrapper } = mountJsonFormsControlLabelContent(TextControl, {
       props,
       provide: { addStateProviderListener },
     });
@@ -123,9 +119,12 @@ describe("TextControl.vue", () => {
         errorMessage: patternErrorMessage,
       },
     ];
-    const { onRegisterValidation } = mountJsonFormsControl(TextControl, {
-      props,
-    });
+    const { onRegisterValidation } = mountJsonFormsControlLabelContent(
+      TextControl,
+      {
+        props,
+      },
+    );
     const validator = onRegisterValidation.mock.calls[0][0];
     expect(validator("aa").errors[0]).toBe(patternErrorMessage);
     expect(validator("b").errors).toStrictEqual([]);
@@ -144,9 +143,12 @@ describe("TextControl.vue", () => {
         errorMessage,
       },
     ];
-    const { onRegisterValidation } = mountJsonFormsControl(TextControl, {
-      props,
-    });
+    const { onRegisterValidation } = mountJsonFormsControlLabelContent(
+      TextControl,
+      {
+        props,
+      },
+    );
     const validator = onRegisterValidation.mock.calls[0][0];
     expect(validator(invalidEx).errors[0]).toBe(errorMessage);
     expect(validator(validEx).errors).toStrictEqual([]);

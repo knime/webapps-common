@@ -1,5 +1,8 @@
-import type { RendererNode, VNode } from "vue";
-import { computed, h, ref } from "vue";
+import { computed, h, ref, toRef } from "vue";
+
+import { Checkbox } from "@knime/components";
+
+import useHideOnNull from "../../uiComponents/composables/useHideOnNull";
 
 import LabeledControl from "./LabeledControl.vue";
 import { addErrorMessageToVNode } from "./errorMessage/withErrorMessage";
@@ -17,19 +20,27 @@ export type VueControlThatRequiresLabelWrapper<D> = PropsToComponent<
   VueControlPropsForLabelContent<D>
 >;
 
+export type VueControlExposed = {
+  focus?: () => void;
+};
+
 const addLabelToComponent =
   ({ fill }: { fill: boolean } = { fill: false }) =>
   <D>(control: VueControlThatRequiresLabelWrapper<D>): VueControl<D> =>
     defineControl((props, { slots }) => {
-      const controlRef = ref<RendererNode | null>(null);
-      const setControlElement = (vnode: VNode) => {
-        if (!controlRef.value) {
-          controlRef.value = vnode.el;
-        }
-      };
+      const controlRef = ref<({ $el: HTMLElement } & VueControlExposed) | null>(
+        null,
+      );
       const hideControlHeader = computed(
         () => props.control.uischema.options?.hideControlHeader,
       );
+
+      const { checkboxProps, showCheckbox, showControl } = useHideOnNull({
+        control: toRef(props, "control"),
+        controlElement: controlRef,
+        changeValue: props.changeValue as (value: unknown) => void,
+        disabled: toRef(props, "disabled"),
+      });
       return () => {
         if (hideControlHeader.value) {
           return h(control, { ...props, labelForId: "" });
@@ -41,12 +52,17 @@ const addLabelToComponent =
             fill,
           },
           {
+            "before-label": () =>
+              showCheckbox.value ? h(Checkbox, checkboxProps.value) : null,
             default: ({ labelForId }: { labelForId: string }) => {
+              if (!showControl.value) {
+                return null;
+              }
               const vnode = h(control, {
                 ...props,
                 labelForId,
+                ref: controlRef,
               });
-              setControlElement(vnode);
               return addErrorMessageToVNode({ fill })(vnode, props);
             },
             buttons: ({ hover }: { hover: boolean }) => {
