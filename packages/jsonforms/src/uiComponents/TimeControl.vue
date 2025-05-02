@@ -8,6 +8,11 @@ import { localTimeUtils } from "../utils/localTimeUtils";
 
 const props = defineProps<VueControlPropsForLabelContent<string>>();
 const model = computed(() => localTimeUtils.fromString(props.control.data));
+const options = computed(() => props.control.uischema.options);
+
+const showMilliseconds = computed(
+  () => options.value?.showMilliseconds ?? true,
+);
 </script>
 
 <template>
@@ -19,7 +24,8 @@ const model = computed(() => localTimeUtils.fromString(props.control.data));
     :disabled="disabled"
     :show-date="false"
     :show-time="true"
-    :show-milliseconds="true"
+    :show-seconds="options?.showSeconds"
+    :show-milliseconds="showMilliseconds"
     :is-valid
     @update:model-value="
       (newValue) => changeValue(localTimeUtils.toString(newValue))
