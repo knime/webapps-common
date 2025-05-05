@@ -24,6 +24,8 @@ export const inputFormats = {
   interval: "interval",
   dateTimeFormatWithType: "dateTimeFormatWithType",
   dateTimeFormat: "dateTimeFormat",
+  multiSelectListBox: "multiSelectListBox",
+  singleSelectListBox: "singleSelectListBox",
 } as const;
 
 // union type of the values of the inputFormats object:

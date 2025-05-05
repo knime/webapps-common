@@ -22,6 +22,7 @@ import { integerRenderer } from "./integerRenderer";
 import { intervalRenderer } from "./intervalRenderer";
 import { localDateRenderer } from "./localDateRenderer";
 import { localTimeRenderer } from "./localTimeRenderer";
+import { multiSelectListBoxRenderer } from "./multiSelectListBoxRenderer";
 import { nameFilterRenderer } from "./nameFilterRenderer";
 import { numberRenderer } from "./numberRenderer";
 import { radioRenderer } from "./radioRenderer";
@@ -29,6 +30,7 @@ import { richTextRenderer } from "./richTextRenderer";
 import { sectionLayoutRenderer } from "./sectionLayoutRenderer";
 import { settingsSubPanelLayoutRenderer } from "./sectionSubPanelLayoutRenderer";
 import { simpleButtonRenderer } from "./simpleButtonRenderer";
+import { singleSelectListBoxRenderer } from "./singleSelectListBoxRenderer";
 import { singleSelectRenderer } from "./singleSelectRenderer";
 import { sortListRenderer } from "./sortListRenderer";
 import { textAreaRenderer } from "./textAreaRenderer";
@@ -50,11 +52,13 @@ export const controls = {
   intervalRenderer,
   localDateRenderer,
   localTimeRenderer,
+  multiSelectListBoxRenderer,
   nameFilterRenderer,
   numberRenderer,
   radioRenderer,
   richTextRenderer,
   simpleTwinlistRenderer,
+  singleSelectListBoxRenderer,
   sortListRenderer,
   textAreaRenderer,
   twinlistRenderer,
