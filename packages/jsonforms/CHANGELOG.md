@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.10.3
+
+### Patch Changes
+
+- ca96677: Add support to hide seconds and milliseconds to time renderers
+
 ## 1.10.2
 
 ### Patch Changes
