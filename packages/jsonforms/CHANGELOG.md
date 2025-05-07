@@ -1,5 +1,14 @@
 # @knime/json-forms
 
+## 1.10.4
+
+### Patch Changes
+
+- 3818fbf: Add JSONForms controls for single and multi selection list
+- Updated dependencies [9757f66]
+  - @knime/components@1.28.2
+  - @knime/rich-text-editor@1.4.12
+
 ## 1.10.3
 
 ### Patch Changes

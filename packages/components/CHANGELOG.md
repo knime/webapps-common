@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.28.2
+
+### Patch Changes
+
+- 9757f66: Add disabled state for ListBox component
+
 ## 1.28.1
 
 ### Patch Changes

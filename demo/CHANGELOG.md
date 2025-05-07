@@ -1,5 +1,16 @@
 # demo
 
+## 1.4.19
+
+### Patch Changes
+
+- 9757f66: Add disabled state for ListBox component
+- Updated dependencies [9757f66]
+  - @knime/components@1.28.2
+  - @knime/hub-features@1.8.4
+  - @knime/rich-text-editor@1.4.12
+  - @knime/virtual-tree@1.3.49
+
 ## 1.4.18
 
 ### Patch Changes
