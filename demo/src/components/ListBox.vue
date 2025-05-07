@@ -144,7 +144,78 @@ export default {
             ]"
           />
         </div>
+
         <div class="grid-item-2">selected id: {{ selected }}</div>
+      </div>
+      <div class="grid-container">
+        <div class="grid-item-5">
+          Disabled:
+          <ListBox
+            v-model="selected"
+            aria-label="A limited list"
+            disabled
+            :is-valid="false"
+            :size="3"
+            :possible-values="[
+              {
+                id: 'foo',
+                text: 'Foo',
+              },
+              {
+                id: 'bar',
+                text: 'Bar',
+              },
+              {
+                id: 'bar2',
+                text: 'Bar 2',
+              },
+              {
+                id: 'bar3',
+                text: 'Bar 3',
+              },
+              {
+                id: 'bar4',
+                text: 'Bar 4',
+              },
+              {
+                id: 'bar5',
+                text: 'Bar 5',
+              },
+              {
+                id: 'bar6',
+                text: 'Bar 6',
+              },
+              {
+                id: 'bar7',
+                text: 'Bar 7',
+              },
+              {
+                id: 'bar8',
+                text: 'Bar 8',
+              },
+              {
+                id: 'bar9',
+                text: 'Bar 9',
+              },
+              {
+                id: 'bar10',
+                text: 'Bar 10',
+              },
+              {
+                id: 'bar11',
+                text: 'Bar 11',
+              },
+              {
+                id: 'bar12',
+                text: 'Bar 12',
+              },
+              {
+                id: 'baz',
+                text: 'Baz',
+              },
+            ]"
+          />
+        </div>
       </div>
     </section>
     <section>

@@ -30,9 +30,7 @@ export default {
     return {
       codeExample,
       selected: [],
-      disabledSelected: [],
       selected2: [],
-      disabledSelected2: [],
       bottomValueSymbol: Symbol("bottom value"),
     };
   },
@@ -94,7 +92,7 @@ export default {
       <div class="grid-container">
         <div class="grid-item-6">
           <MultiselectListBox
-            v-model="disabledSelected"
+            v-model="selected"
             :size="4"
             aria-label="Disabled..."
             :possible-values="[
@@ -134,7 +132,7 @@ export default {
             disabled
           />
         </div>
-        <div class="grid-item-6">selected ids: {{ disabledSelected }}</div>
+        <div class="grid-item-6">selected ids: {{ selected }}</div>
       </div>
       <div class="grid-container">
         <div class="grid-item-12">
@@ -199,7 +197,7 @@ export default {
       <div class="grid-container">
         <div class="grid-item-6">
           <MultiselectListBox
-            v-model="disabledSelected2"
+            v-model="selected2"
             :size="4"
             aria-label="Disabled..."
             with-bottom-value
@@ -244,7 +242,7 @@ export default {
             disabled
           />
         </div>
-        <div class="grid-item-6">selected ids: {{ disabledSelected2 }}</div>
+        <div class="grid-item-6">selected ids: {{ selected2 }}</div>
       </div>
     </section>
     <section>

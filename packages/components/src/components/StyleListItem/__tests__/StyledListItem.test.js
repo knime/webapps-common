@@ -24,6 +24,8 @@ describe("StyledListItem.vue", () => {
     expect(wrapper.emitted("mousedown")[0]).toBeDefined();
     option.trigger("mousemove");
     expect(wrapper.emitted("mousemove")[0]).toBeDefined();
+    option.trigger("focus");
+    expect(wrapper.emitted("focus")[0]).toBeDefined();
   });
 
   it("trims text", () => {

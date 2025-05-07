@@ -1,6 +1,8 @@
 <script>
 import { useId } from "vue";
 
+import StyledListItem from "../../StyleListItem/StyledListItem.vue";
+
 const KEY_DOWN = 40;
 const KEY_UP = 38;
 const KEY_HOME = 36;
@@ -8,6 +10,9 @@ const KEY_END = 35;
 
 export default {
   name: "ListBox",
+  components: {
+    StyledListItem,
+  },
   props: {
     id: {
       type: String,
@@ -60,6 +65,10 @@ export default {
           (item) => item.hasOwnProperty("id") && item.hasOwnProperty("text"),
         );
       },
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
     },
   },
   emits: ["update:modelValue"],
@@ -115,6 +124,9 @@ export default {
       return this.modelValue === candidate;
     },
     setSelected(value, index) {
+      if (this.disabled) {
+        return;
+      }
       consola.trace("ListBox setSelected on", value);
       this.selectedIndex = index;
 
@@ -137,6 +149,9 @@ export default {
       }
     },
     onArrowDown() {
+      if (this.disabled) {
+        return;
+      }
       const next = this.selectedIndex + 1;
       if (next >= this.selectableValues.length) {
         return;
@@ -145,6 +160,9 @@ export default {
       this.scrollToCurrent();
     },
     onArrowUp() {
+      if (this.disabled) {
+        return;
+      }
       const next = this.selectedIndex - 1;
       if (next < 0) {
         return;
@@ -153,16 +171,25 @@ export default {
       this.scrollToCurrent();
     },
     onEndKey() {
+      if (this.disabled) {
+        return;
+      }
       const next = this.selectableValues.length - 1;
       this.setSelected(this.selectableValues[next].id, next);
       this.$refs.ul.scrollTop = this.$refs.ul.scrollHeight;
     },
     onHomeKey() {
+      if (this.disabled) {
+        return;
+      }
       const next = 0;
       this.setSelected(this.selectableValues[next].id, next);
       this.$refs.ul.scrollTop = 0;
     },
     handleKeyDown(e) {
+      if (this.disabled) {
+        return;
+      }
       /* NOTE: we use a single keyDown method because @keydown.up bindings are not testable. */
       if (e.keyCode === KEY_DOWN) {
         this.onArrowDown();
@@ -210,37 +237,39 @@ export default {
 </script>
 
 <template>
-  <div :class="['list-box', { invalid: !isValid }]">
+  <div :class="['list-box', { invalid: !isValid, disabled }]">
     <ul
       :id="id"
       ref="ul"
       role="listbox"
-      tabindex="0"
+      :tabindex="disabled ? -1 : 0"
       :aria-label="ariaLabel"
       :style="ulSizeStyle"
       :aria-activedescendant="generateOptionId(getCurrentItem())"
       @keydown="handleKeyDown"
     >
-      <li
+      <StyledListItem
         v-for="(item, index) of selectableValues"
         :id="generateOptionId(item)"
         :key="`listbox-${item.id}`"
         ref="options"
-        role="option"
         :style="{ 'line-height': `${optionLineHeight}px` }"
+        :text="item.text"
         :title="item.text"
         :class="{
           focused: isCurrentValue(item.id),
           noselect: true,
-          invalid: item.invalid,
           empty: item.text.trim() === '',
         }"
         :aria-selected="isCurrentValue(item.id)"
-        @click="setSelected(item.id, index)"
-        @focus="setSelected(item.id, index)"
-      >
-        {{ item.text }}
-      </li>
+        :line-height="optionLineHeight"
+        :selected="isCurrentValue(item.id)"
+        :invalid="item.invalid"
+        :special="item.special"
+        :disabled="disabled"
+        @click="!disabled && setSelected(item.id, index)"
+        @focus="!disabled && setSelected(item.id, index)"
+      />
     </ul>
   </div>
 </template>
@@ -249,6 +278,10 @@ export default {
 .list-box {
   position: relative;
   isolation: isolate;
+
+  &.disabled {
+    opacity: 0.5;
+  }
 
   &.invalid::after {
     content: "";
@@ -272,44 +305,6 @@ export default {
     &:focus {
       outline: none;
       border-color: var(--knime-masala);
-    }
-  }
-
-  & [role="option"] {
-    display: block;
-    padding: 0 10px;
-    line-height: 22px;
-    position: relative;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-    background-color: var(--theme-dropdown-background-color);
-    color: var(--theme-dropdown-foreground-color);
-    cursor: pointer;
-
-    &.empty {
-      white-space: pre-wrap;
-    }
-
-    &:hover {
-      background: var(--theme-dropdown-background-color-hover);
-      color: var(--theme-dropdown-foreground-color-hover);
-    }
-
-    &.focused {
-      background: var(--theme-dropdown-background-color-selected);
-      color: var(--theme-dropdown-foreground-color-selected);
-    }
-
-    /* invalid values */
-
-    &.invalid {
-      color: var(--theme-color-error);
-
-      &.focused {
-        background: var(--theme-color-error);
-        color: var(--theme-dropdown-foreground-color-selected);
-      }
     }
   }
 

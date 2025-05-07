@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
+import { nextTick } from "vue";
 import { mount } from "@vue/test-utils";
 
 import ListBox from "./ListBox.vue";
@@ -88,8 +89,7 @@ describe("ListBox.vue", () => {
     expect(wrapper.vm.validate().isValid).toBe(true);
   });
 
-  // TODO fix failing tests
-  it.skip("renders invalid value", async () => {
+  it("renders invalid value", async () => {
     let modelValue = "non-valid";
     const wrapper = mount(ListBox, {
       props: {
@@ -97,6 +97,7 @@ describe("ListBox.vue", () => {
         modelValue,
       },
     });
+    await nextTick();
 
     let options = wrapper.findAll("li[role=option]");
     const selectableValues = [{ id: modelValue }, ...props.possibleValues];
@@ -121,7 +122,7 @@ describe("ListBox.vue", () => {
     });
   });
 
-  it.skip("puts invalid class only on invalid values", () => {
+  it("puts invalid class only on invalid values", async () => {
     let modelValue = "just-not-valid";
     const wrapper = mount(ListBox, {
       props: {
@@ -129,6 +130,7 @@ describe("ListBox.vue", () => {
         modelValue,
       },
     });
+    await nextTick();
 
     let options = wrapper.findAll("li[role=option]");
     const selectableValues = [{ id: modelValue }, ...props.possibleValues];

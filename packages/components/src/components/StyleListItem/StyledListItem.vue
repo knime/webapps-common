@@ -37,6 +37,7 @@ export default {
     "dblclick-exact",
     "dblclick-shift",
     "click",
+    "focus",
   ],
 };
 </script>
@@ -59,6 +60,7 @@ export default {
     }"
     :aria-selected="selected"
     @click="$emit('click', $event)"
+    @focus="$emit('focus', $event)"
     @dblclick.shift="$emit('dblclick-shift')"
     @dblclick.exact="$emit('dblclick-exact')"
     @mousedown="$emit('mousedown', $event)"
@@ -90,21 +92,9 @@ export default {
     cursor: unset;
   }
 
-  &:not(.disabled) {
-    &:hover {
-      background: var(--theme-dropdown-background-color-hover);
-      color: var(--theme-dropdown-foreground-color-hover);
-    }
-
-    &:focus {
-      background: var(--theme-dropdown-background-color-focus);
-      color: var(--theme-dropdown-foreground-color-focus);
-    }
-
-    &.selected {
-      background: var(--theme-dropdown-background-color-selected);
-      color: var(--theme-dropdown-foreground-color-selected);
-    }
+  &.selected {
+    background: var(--theme-dropdown-background-color-selected);
+    color: var(--theme-dropdown-foreground-color-selected);
   }
 
   /* invalid values */
@@ -114,6 +104,18 @@ export default {
     &.selected {
       background: var(--theme-color-error);
       color: var(--theme-dropdown-foreground-color-selected);
+    }
+  }
+
+  &:not(.disabled, .selected) {
+    &:hover {
+      background: var(--theme-dropdown-background-color-hover);
+      color: var(--theme-dropdown-foreground-color-hover);
+    }
+
+    &:focus {
+      background: var(--theme-dropdown-background-color-focus);
+      color: var(--theme-dropdown-foreground-color-focus);
     }
   }
 
