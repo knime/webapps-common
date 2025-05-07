@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.11.0
+
+### Minor Changes
+
+- 7e559e2: Introduce a general mechanism for optional widgets
+
 ## 1.10.4
 
 ### Patch Changes
