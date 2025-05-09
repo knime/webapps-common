@@ -1,5 +1,5 @@
 import { defineAsyncComponent } from "vue";
-import { and, isOneOfControl, rankWith } from "@jsonforms/core";
+import { rankWith } from "@jsonforms/core";
 
 import { inputFormats, priorityRanks } from "../constants";
 import { hasFormat } from "../constants/inputFormats";
@@ -12,8 +12,5 @@ const RadioControl = defineAsyncComponent(
 export const radioRenderer = withLabel()({
   name: "RadioControl",
   control: RadioControl,
-  tester: rankWith(
-    priorityRanks.default,
-    and(isOneOfControl, hasFormat(inputFormats.radio)),
-  ),
+  tester: rankWith(priorityRanks.default, hasFormat(inputFormats.radio)),
 });

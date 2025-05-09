@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { type Ref, computed, onMounted, ref } from "vue";
+import { type Ref, computed, onMounted, ref, toRef } from "vue";
 
 import { RadioButtons, ValueSwitch } from "@knime/components";
 
 import type { VueControlPropsForLabelContent } from "../higherOrderComponents/control/withLabel";
 import { type IdAndText } from "../types/ChoicesUiSchema";
 import { optionsMapper } from "../utils";
+
+import { usePossibleValues } from "./composables/usePossibleValues";
 
 const props = defineProps<
   VueControlPropsForLabelContent<string> & {
@@ -28,11 +30,19 @@ const uiComponent = computed(() =>
   props.type === "valueSwitch" ? ValueSwitch : RadioButtons,
 );
 
-const options: Ref<PossiblyDisabledOption[] | null | undefined> = ref(null);
+const staticOptions: Ref<PossiblyDisabledOption[] | null | undefined> =
+  ref(null);
+
+const { possibleValues } = usePossibleValues(toRef(props, "control"));
+
+const options = computed(() =>
+  (staticOptions.value ?? possibleValues.value)?.map(disableOption),
+);
+
 onMounted(() => {
-  options.value = props.control?.schema?.oneOf
-    ?.map(optionsMapper)
-    .map(disableOption);
+  staticOptions.value = props.control?.schema?.oneOf
+    ? props.control.schema.oneOf.map(optionsMapper)
+    : null;
 });
 </script>
 
