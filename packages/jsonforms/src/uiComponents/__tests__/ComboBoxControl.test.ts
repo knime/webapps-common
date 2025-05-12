@@ -79,16 +79,30 @@ describe("ComboBoxControl.vue", () => {
     expect(wrapper.getComponent(ComboBox).attributes().id).toBe(labelForId);
   });
 
-  it("correctly transforms the data into possible values", () => {
+  it("sets correct initial value", () => {
+    expect(wrapper.findComponent(ComboBox).props().modelValue).toStrictEqual(
+      props.control.data,
+    );
     expect(wrapper.findComponent(ComboBox).props().possibleValues).toEqual(
       props.control.uischema.options!.possibleValues,
     );
   });
 
-  it("sets correct initial value", () => {
-    expect(wrapper.findComponent(ComboBox).props().modelValue).toStrictEqual(
-      props.control.data,
-    );
+  it("correctly transforms the data into possible values if none are given", () => {
+    delete props.control.uischema.options!.possibleValues;
+    const { wrapper } = mountJsonFormsControlLabelContent(ComboBoxControl, {
+      props,
+    });
+    expect(wrapper.findComponent(ComboBox).props().possibleValues).toEqual([
+      {
+        id: "id_1",
+        text: "id_1",
+      },
+      {
+        id: "id_3",
+        text: "id_3",
+      },
+    ]);
   });
 
   it("calls changeValue when ComboBox's value changes", () => {

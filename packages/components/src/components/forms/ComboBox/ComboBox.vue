@@ -447,6 +447,8 @@ export default defineComponent({
 
         & .remove-tag-button {
           padding: 2px;
+          width: unset;
+          height: unset;
 
           & :deep(svg) {
             --icon-size: 10;

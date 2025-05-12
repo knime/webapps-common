@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, toRef } from "vue";
+import { computed, toRef } from "vue";
 
 import { ComboBox } from "@knime/components";
 
@@ -9,15 +9,7 @@ import { usePossibleValues } from "./composables/usePossibleValues";
 
 const props = defineProps<VueControlPropsForLabelContent<string[]>>();
 
-const selectedIds = ref([] as string[]);
-const loaded = ref(false);
-
 const { possibleValues } = usePossibleValues(toRef(props, "control"));
-
-onMounted(() => {
-  selectedIds.value = props.control.data;
-  loaded.value = true;
-});
 
 const noPossibleValuesPresent = computed(
   () => possibleValues.value === null || possibleValues.value.length === 0,
@@ -33,13 +25,16 @@ const isDisabled = computed(
         (see https://github.com/vuejs/vue/issues/2169)
       -->
   <ComboBox
-    v-if="loaded"
     :id="labelForId"
     :allow-new-values="noPossibleValuesPresent ? ('' as any) : false"
     :aria-label="control.label"
     :disabled="isDisabled"
-    :possible-values="possibleValues ?? []"
-    :model-value="selectedIds"
+    :possible-values="
+      noPossibleValuesPresent
+        ? control.data.map((id) => ({ id, text: id }))
+        : possibleValues!
+    "
+    :model-value="control.data"
     :is-valid
     compact
     @update:model-value="(newValue: any[]) => changeValue(newValue)"
