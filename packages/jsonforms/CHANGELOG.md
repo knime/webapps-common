@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.11.1
+
+### Patch Changes
+
+- 6d351f6: Enable possibleValues in RadioButton renderer ui schema"
+
 ## 1.11.0
 
 ### Minor Changes
