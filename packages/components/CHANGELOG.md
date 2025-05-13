@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.28.3
+
+### Patch Changes
+
+- 33f0fa5: Fix remove tag button size in ComboBox
+
 ## 1.28.2
 
 ### Patch Changes

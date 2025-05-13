@@ -1,5 +1,14 @@
 # @knime/json-forms
 
+## 1.11.2
+
+### Patch Changes
+
+- 33f0fa5: Fix combobox control value updates
+- Updated dependencies [33f0fa5]
+  - @knime/components@1.28.3
+  - @knime/rich-text-editor@1.4.13
+
 ## 1.11.1
 
 ### Patch Changes
