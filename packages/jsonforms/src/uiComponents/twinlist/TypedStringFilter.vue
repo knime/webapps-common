@@ -17,5 +17,6 @@ const options = computed(() => props.control.uischema.options!);
     show-unknown-values
     :unknown-values-text="options.unknownValuesText"
     :empty-state-label="options.emptyStateLabel"
+    :twinlist-size="props.control.uischema.options?.twinlistSize"
   />
 </template>

@@ -94,4 +94,44 @@ describe("CheckboxesControl.vue", () => {
       props.control.data,
     );
   });
+
+  it("uses possible values if anyOf is not given", async () => {
+    delete props.control.schema.anyOf;
+    props.control.uischema.options!.possibleValues = [
+      { id: "PVal 1", text: "PVal 1" },
+      { id: "PVal 2", text: "PVal 2" },
+    ];
+    const { wrapper } = await mountJsonFormsControlLabelContent(
+      CheckboxesControl,
+      {
+        props,
+      },
+    );
+    expect(
+      wrapper.findComponent(Checkboxes).props().possibleValues,
+    ).toStrictEqual([
+      { id: "PVal 1", text: "PVal 1" },
+      { id: "PVal 2", text: "PVal 2" },
+    ]);
+  });
+
+  it("favors anyOf over possible values", async () => {
+    props.control.uischema.options!.possibleValues = [
+      { id: "PVal 1", text: "PVal 1" },
+      { id: "PVal 2", text: "PVal 2" },
+    ];
+    const { wrapper } = await mountJsonFormsControlLabelContent(
+      CheckboxesControl,
+      {
+        props,
+      },
+    );
+    expect(
+      wrapper.findComponent(Checkboxes).props().possibleValues,
+    ).toStrictEqual([
+      { id: "ADDED", text: "Added" },
+      { id: "UPDATED", text: "Modified" },
+      { id: "REMOVED", text: "Deleted" },
+    ]);
+  });
 });

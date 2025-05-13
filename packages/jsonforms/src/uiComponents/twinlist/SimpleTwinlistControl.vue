@@ -14,5 +14,9 @@ const { possibleValues } = usePossibleValues(control);
 </script>
 
 <template>
-  <TwinlistControlBase v-bind="props" :possible-values />
+  <TwinlistControlBase
+    v-bind="props"
+    :possible-values
+    :twinlist-size="props.control.uischema.options?.twinlistSize"
+  />
 </template>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
+import { type Ref, computed, onMounted, ref, toRef } from "vue";
 
 import { Checkboxes } from "@knime/components";
 
@@ -7,15 +7,22 @@ import type { VueControlPropsForLabelContent } from "../higherOrderComponents/co
 import type { IdAndText } from "../types/ChoicesUiSchema";
 import { optionsMapper } from "../utils";
 
+import { usePossibleValues } from "./composables/usePossibleValues";
+
 const props = defineProps<VueControlPropsForLabelContent<string[]>>();
 
 const alignment = computed(
   () => props.control.uischema.options?.checkboxLayout,
 );
 
-const options = ref(null as null | IdAndText[]);
+const staticOptions: Ref<IdAndText[] | null> = ref(null);
+
+const { possibleValues } = usePossibleValues(toRef(props, "control"));
+
+const options = computed(() => staticOptions.value ?? possibleValues.value);
+
 onMounted(() => {
-  options.value = props.control.schema.anyOf
+  staticOptions.value = props.control.schema.anyOf
     ? props.control.schema.anyOf.map(optionsMapper)
     : null;
 });
