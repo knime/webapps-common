@@ -115,6 +115,12 @@ export const useVersionsApi = ({
     );
   };
 
+  const discardUnversionedChanges = ({ itemId }: { itemId: string }) => {
+    return doHubRequest(`/repository/${itemId}/workingArea`, {
+      method: "DELETE",
+    });
+  };
+
   const createVersion = ({
     itemId,
     title,
@@ -218,6 +224,7 @@ export const useVersionsApi = ({
     loadSavepointMetadata,
     deleteVersion,
     restoreVersion,
+    discardUnversionedChanges,
     createVersion,
     getAvatar,
   };
