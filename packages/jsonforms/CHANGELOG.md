@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.11.3
+
+### Patch Changes
+
+- 82700c9: Enable possibleValues in Checkboxes renderer
+
 ## 1.11.2
 
 ### Patch Changes
