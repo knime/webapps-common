@@ -67,6 +67,7 @@ export default {
         ["foo", "bar", "baz"],
         [],
         [],
+        [],
       ],
       possibleValues: POSSIBLE_VALUES,
       possibleValuesWithDisabled: POSSIBLE_VALUES_WITH_DISABLED,
@@ -189,6 +190,18 @@ export default {
             :possible-values="possibleValues"
             :size-visible-options="2"
             compact
+          />
+        </div>
+        <div class="grid-item-3">selected ids: {{ selected[5] }}</div>
+      </div>
+      <br />
+      <div class="grid-container">
+        <div class="grid-item-3">disabled mode</div>
+        <div class="grid-item-5">
+          <Multiselect
+            v-model="selected[6]"
+            :possible-values="possibleValues"
+            disabled
           />
         </div>
         <div class="grid-item-3">selected ids: {{ selected[5] }}</div>

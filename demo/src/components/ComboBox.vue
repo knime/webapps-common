@@ -30,7 +30,7 @@ export default {
   data() {
     return {
       codeExample,
-      selected: [[], [], [], ["Missing"], [], []],
+      selected: [[], [], [], ["Missing"], [], [], ["bar", "baz", "foo"]],
       values: [
         { id: "foo", text: "Foo" },
         { id: "bar", text: "Bar" },
@@ -122,6 +122,14 @@ export default {
             close-dropdown-on-selection
             compact
           />
+        </div>
+        <div class="grid-item-3">selected-ids: {{ selected[6] }}</div>
+      </div>
+      <br />
+      <div class="grid-container">
+        <div class="grid-item-3">Disabled mode</div>
+        <div class="grid-item-6">
+          <ComboBox v-model="selected[6]" :possible-values="values" disabled />
         </div>
         <div class="grid-item-3">selected-ids: {{ selected[5] }}</div>
       </div>

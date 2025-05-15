@@ -127,6 +127,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
   },
   emits: ["update:modelValue", "focusOutside"],
   setup() {
@@ -260,7 +264,7 @@ export default {
     },
     /* Handle arrow key "up" events. */
     onUp() {
-      if (document.activeElement === this.$refs.toggle) {
+      if (this.activeElement === this.$refs.toggle) {
         return;
       }
       this.getNextElement(-1).focus();
@@ -275,7 +279,7 @@ export default {
      */
     onFocusOut() {
       setTimeout(() => {
-        if (!this.focusElements.includes(document.activeElement)) {
+        if (!this.focusElements.includes(this.activeElement)) {
           this.closeOptions(false);
           if (this.useCustomListBox) {
             this.$emit("focusOutside");
@@ -315,7 +319,10 @@ export default {
 <template>
   <div
     ref="multiselect"
-    :class="['multiselect', { collapsed, invalid: !isValid, compact }]"
+    :class="[
+      'multiselect',
+      { collapsed, invalid: !isValid, compact, disabled },
+    ]"
     @keydown.esc="closeOptionsAndStop"
     @keydown.up.stop.prevent="onUp"
     @keydown.down.stop.prevent="onDown"
@@ -327,7 +334,7 @@ export default {
       <div
         ref="toggle"
         role="button"
-        tabindex="0"
+        :tabindex="disabled ? -1 : 0"
         :class="{ placeholder: !modelValue.length }"
         @click="toggle"
         @keydown.space.prevent="toggle"
@@ -358,6 +365,11 @@ export default {
 .multiselect {
   position: relative;
   background-color: var(--knime-white);
+
+  &.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
 
   & label {
     &:focus-within {

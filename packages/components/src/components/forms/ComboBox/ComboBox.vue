@@ -98,6 +98,10 @@ export default defineComponent({
       type: Number,
       default: null,
     },
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
   },
 
   emits: {
@@ -301,6 +305,7 @@ export default defineComponent({
     :close-dropdown-on-selection="closeDropdownOnSelection"
     :is-valid="isValid"
     :compact="compact"
+    :disabled
     @focus-outside="onFocusOutside"
     @update:model-value="updateSelectedIds"
   >
@@ -308,7 +313,7 @@ export default defineComponent({
       <div
         ref="listBox"
         class="summary-input-icon-wrapper"
-        tabindex="0"
+        :tabindex="disabled ? -1 : 0"
         @keydown.enter.prevent.self="focusInput"
       >
         <div
@@ -328,6 +333,7 @@ export default defineComponent({
             <FunctionButton
               class="remove-tag-button"
               :compact="compact"
+              :disabled
               @click.stop="removeTag(id)"
             >
               <CloseIcon class="remove-tag-button-icon" />
@@ -340,6 +346,7 @@ export default defineComponent({
             type="text"
             :style="inputWidth"
             :maxlength="maxCharactersPerItem"
+            :disabled
             @focus="onInputFocus"
             @input="onInput"
             @keydown.enter.prevent="onEnter"
@@ -353,6 +360,7 @@ export default defineComponent({
             ref="removeAllTags"
             class="remove-all-tags-button"
             :compact="compact"
+            :disabled
             @click.stop="removeAllTags"
           >
             <CloseIcon />
