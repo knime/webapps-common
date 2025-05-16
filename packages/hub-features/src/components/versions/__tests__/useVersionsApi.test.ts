@@ -24,11 +24,13 @@ describe("useVersionsApi", () => {
 
     $ofetchMock.mockResolvedValueOnce(mockRepositoryItem);
 
-    const { fetchPermissions } = useVersionsApi({ baseUrl: mockBaseUrl });
+    const { fetchPermissions } = useVersionsApi({
+      customFetchClientOptions: { baseURL: mockBaseUrl },
+    });
     const permissions = await fetchPermissions({ itemId });
 
     expect($ofetchMock).toHaveBeenCalledWith(
-      `${mockBaseUrl}/repository/${itemId}`,
+      `/repository/${itemId}`,
       expect.any(Object),
     );
 
@@ -44,7 +46,9 @@ describe("useVersionsApi", () => {
   it("should throw an error if the fetch fails", async () => {
     $ofetchMock.mockRejectedValueOnce(new Error("Network error"));
 
-    const { fetchPermissions } = useVersionsApi({ baseUrl: mockBaseUrl });
+    const { fetchPermissions } = useVersionsApi({
+      customFetchClientOptions: { baseURL: mockBaseUrl },
+    });
 
     await expect(fetchPermissions({ itemId: "someId" })).rejects.toThrow(
       "Network error",

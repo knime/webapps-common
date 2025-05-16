@@ -36,6 +36,7 @@ defineEmits<{
   delete: [version: NamedItemVersion["version"]];
   restore: [version: NamedItemVersion["version"]];
   select: [version: NamedItemVersion["version"]];
+  discardCurrentState: [];
 }>();
 
 const labelsEventBus = useEventBus("versionLabels");
@@ -68,6 +69,7 @@ const closeLabelPopovers = throttle(() => {
             :current-state-savepoint="unversionedSavepoint"
             @select="$emit('select', CURRENT_STATE_VERSION)"
             @create-version="$emit('create')"
+            @discard="$emit('discardCurrentState')"
           />
         </div>
       </div>
