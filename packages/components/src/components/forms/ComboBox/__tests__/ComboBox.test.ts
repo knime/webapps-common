@@ -146,6 +146,24 @@ describe("ComboBox.vue", () => {
     expect(wrapper.find("input").attributes("maxlength")).toBe("5");
   });
 
+  it("disables the multiselect by prop", () => {
+    const wrapper = doMount({
+      disabled: true,
+      modelValue: [possibleValues[0].id],
+    });
+    expect(wrapper.findComponent(Multiselect).props("disabled")).toBeTruthy();
+    expect(
+      wrapper.find(".remove-tag-button").attributes("disabled"),
+    ).toBeDefined();
+    expect(
+      wrapper.find(".remove-all-tags-button").attributes("disabled"),
+    ).toBeDefined();
+    expect(wrapper.find(".search-input").attributes("disabled")).toBeDefined();
+    expect(
+      wrapper.find(".summary-input-icon-wrapper").attributes("tabindex"),
+    ).toBe("-1");
+  });
+
   describe("focussing", () => {
     it("opens the multiselect when the input gets focussed and updates focus options", async () => {
       const wrapper = doMount({}, { attachTo: document.body });

@@ -114,6 +114,12 @@ describe("Multiselect.vue", () => {
     expect(closeOptionsMock).toHaveBeenCalledWith();
   });
 
+  it("sets disabled class and tabindex to -1 by prop", () => {
+    const wrapper = doMount({}, { disabled: true });
+    expect(wrapper.classes()).toContain("disabled");
+    expect(wrapper.find("[role='button']").attributes("tabindex")).toBe("-1");
+  });
+
   it("toggles properly", () => {
     const wrapper = doMount();
     expect(wrapper.vm.collapsed).toBe(true);
