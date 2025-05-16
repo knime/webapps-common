@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.28.4
+
+### Patch Changes
+
+- 04ed897: Add disabled state for ComboBox and MultiSelect
+
 ## 1.28.3
 
 ### Patch Changes

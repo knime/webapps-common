@@ -1,5 +1,14 @@
 # @knime/json-forms
 
+## 1.11.4
+
+### Patch Changes
+
+- 04ed897: Add disabled state for ComboBox and MultiSelect
+- Updated dependencies [04ed897]
+  - @knime/components@1.28.4
+  - @knime/rich-text-editor@1.4.14
+
 ## 1.11.3
 
 ### Patch Changes
