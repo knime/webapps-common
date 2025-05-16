@@ -1,5 +1,12 @@
 # @knime/hub-features
 
+## 1.9.0
+
+### Minor Changes
+
+- 53ebfdc: Improve useVersionsAPI baseURL handling
+- 73f42a2: Hub API: Added "discardUnversionedChanges"
+
 ## 1.8.5
 
 ### Patch Changes
