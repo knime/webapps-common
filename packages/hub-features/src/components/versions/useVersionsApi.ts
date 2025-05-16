@@ -16,29 +16,29 @@ import { DEFAULT_API_BASE_URL } from "../../common/constants";
 import { getFetchClient } from "../../common/ofetchClient";
 
 type UseVersionsApiOptions = {
-  baseUrl?: string;
   customFetchClientOptions?: FetchOptions;
 };
 
 export const useVersionsApi = ({
-  baseUrl,
   customFetchClientOptions,
 }: UseVersionsApiOptions) => {
-  const $ofetch = getFetchClient(customFetchClientOptions);
+  const { baseURL = DEFAULT_API_BASE_URL, ...otherCustomOptions } =
+    customFetchClientOptions ?? {};
+
+  const $ofetch = getFetchClient({ baseURL, ...otherCustomOptions });
 
   const doHubRequest = (path: string, fetchOptions?: FetchOptions) => {
-    const res = `${baseUrl ?? DEFAULT_API_BASE_URL}${path}`;
     const defaults: FetchOptions = {
       method: "GET",
     };
 
     try {
       consola.trace("useVersionsApi::calling", {
-        path: res,
+        path,
         options: fetchOptions,
       });
 
-      return $ofetch(res, {
+      return $ofetch(path, {
         ...defaults,
         ...fetchOptions,
       });
