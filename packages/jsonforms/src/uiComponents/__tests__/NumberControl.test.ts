@@ -88,14 +88,12 @@ describe("NumberControl.vue", () => {
     ["exclusive", true, 100.1],
   ])("rounds to %s minimum on focusout", async (_, exclusive, result) => {
     const minimum = 100;
-    props.control.uischema.options!.validations = [
-      {
-        id: "min",
+    props.control.uischema.options!.validation = {
+      min: {
         parameters: { min: minimum, isExclusive: exclusive },
         errorMessage: `The value has to be at least ${minimum}.`,
       },
-    ];
-    props.control.uischema.options!.minIsExclusive = exclusive;
+    };
     props.control.data = minimum - 1;
     const { wrapper, changeValue } = mountJsonFormsControlLabelContent(
       NumberControl,
@@ -112,13 +110,12 @@ describe("NumberControl.vue", () => {
     ["exclusive", true, 99.9],
   ])("rounds to %s maximum on focusout", async (_, exclusive, result) => {
     const maximum = 100;
-    props.control.uischema.options!.validations = [
-      {
-        id: "max",
+    props.control.uischema.options!.validation = {
+      max: {
         parameters: { max: maximum, isExclusive: exclusive },
         errorMessage: `The value has to be ${maximum} at max.`,
       },
-    ];
+    };
     props.control.data = maximum + 1;
     const { wrapper, changeValue } = mountJsonFormsControlLabelContent(
       NumberControl,
@@ -131,9 +128,8 @@ describe("NumberControl.vue", () => {
   });
 
   it("sets the minimum via state provider", async () => {
-    props.control.uischema.options!.validationProviders = ["someMinProviderID"];
+    props.control.uischema.providedOptions = ["validation.min"];
     let provideMin: (params: {
-      id: string;
       parameters: { min: number; isExclusive: boolean };
       errorMessage: string;
     }) => void;
@@ -151,7 +147,6 @@ describe("NumberControl.vue", () => {
     const registeredValidation = onRegisterValidation.mock.calls[0][0];
     expect(unref(registeredValidation)).toBeNull();
     provideMin!({
-      id: "min",
       parameters: { min: 42, isExclusive: false },
       errorMessage,
     });
@@ -161,9 +156,8 @@ describe("NumberControl.vue", () => {
   });
 
   it("sets the maximum via state provider", async () => {
-    props.control.uischema.options!.validationProviders = ["someMaxProviderID"];
+    props.control.uischema.providedOptions = ["validation.max"];
     let provideMax: (params: {
-      id: string;
       parameters: { max: number; isExclusive: boolean };
       errorMessage: string;
     }) => void;
@@ -181,7 +175,6 @@ describe("NumberControl.vue", () => {
     const registeredValidation = onRegisterValidation.mock.calls[0][0];
     expect(unref(registeredValidation)).toBeNull();
     provideMax!({
-      id: "max",
       parameters: { max: 42, isExclusive: false },
       errorMessage,
     });
@@ -203,13 +196,12 @@ describe("NumberControl.vue", () => {
     (_, key, exclusive, invalidEx, validEx) => {
       const value = 42;
       const errorMessage = `${key} is ${value}`;
-      props.control.uischema.options!.validations = [
-        {
-          id: key,
+      props.control.uischema.options!.validation = {
+        [key]: {
           parameters: { [key]: value, isExclusive: exclusive },
           errorMessage,
         },
-      ];
+      };
       const { onRegisterValidation } = mountJsonFormsControlLabelContent(
         NumberControl,
         {

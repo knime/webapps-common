@@ -15,7 +15,7 @@ import Form from "./layoutComponents/Form.vue";
 import { provideSideDrawerTeleportDest } from "./layoutComponents/settingsSubPanel/SettingsSubPanel.vue";
 import LoadingDialog from "./loading/LoadingDialog.vue";
 import type { AlertParams } from "./types/alert";
-import type { Provided } from "./types/provided";
+import type { Provided, StateProviderLocation } from "./types/provided";
 import "./assets/main.css";
 
 defineProps<{
@@ -30,7 +30,10 @@ const emit = defineEmits<{
   trigger: [id: any];
   change: [{ data: any }];
   alert: [alert: AlertParams];
-  stateProviderListener: [id: any, callback: (value: any) => void];
+  stateProviderListener: [
+    identifier: StateProviderLocation & { [key: string]: unknown },
+    callback: (value: any) => void,
+  ];
 }>();
 
 const exposedMethodSource = "EXPOSED_METHOD";
@@ -56,8 +59,8 @@ const onSettingsChanged = (changedData: { data: any }) => {
 // @ts-expect-error the parent component NodeDialog in knime-core-ui still provides "registerWatcher", ...
 const provided: Provided = {
   trigger: (id) => emit("trigger", id),
-  addStateProviderListener: (id, callback) =>
-    emit("stateProviderListener", id, callback),
+  addStateProviderListener: (identifier, callback) =>
+    emit("stateProviderListener", identifier, callback),
   sendAlert: (alert) => emit("alert", alert),
 };
 

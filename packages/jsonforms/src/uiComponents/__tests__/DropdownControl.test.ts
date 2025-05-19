@@ -149,8 +149,7 @@ describe("DropdownControl.vue", () => {
   });
 
   it("uses choicesProvider if present", async () => {
-    const choicesProvider = "myChoicesProvider";
-    props.control.uischema.options!.choicesProvider = choicesProvider;
+    props.control.uischema.providedOptions = ["possibleValues"];
 
     let provideChoices: (choices: IdAndText[]) => void;
     const addStateProviderListener = vi.fn((_id, callback) => {
@@ -161,7 +160,10 @@ describe("DropdownControl.vue", () => {
       provide: { addStateProviderListener },
     });
     expect(addStateProviderListener).toHaveBeenCalledWith(
-      { id: choicesProvider },
+      {
+        providedOptionName: "possibleValues",
+        scope: "#/properties/view/properties/yAxisColumn",
+      },
       expect.anything(),
     );
     const providedChoices = [

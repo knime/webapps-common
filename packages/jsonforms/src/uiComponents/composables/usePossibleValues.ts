@@ -2,6 +2,7 @@ import { type Ref, computed } from "vue";
 
 import type {
   ChoicesUiSchema,
+  ChoicesUiSchemaWithProvidedOptions,
   IdAndText,
   IncludedExcludedLabelOptions,
 } from "../../types/ChoicesUiSchema";
@@ -11,15 +12,12 @@ import useProvidedState from "./useProvidedState";
 export const usePossibleValues = <
   SpecialChoicesProps extends Record<string, any> = {},
 >(
-  control: Ref<{ uischema: ChoicesUiSchema<SpecialChoicesProps> }>,
+  control: Ref<{
+    uischema: ChoicesUiSchemaWithProvidedOptions<SpecialChoicesProps>;
+  }>,
 ) => {
-  const choicesProvider = computed(
-    () => control.value.uischema.options?.choicesProvider,
-  );
-  const possibleValues = useProvidedState(
-    choicesProvider,
-    control.value.uischema.options?.possibleValues ?? null,
-  );
+  const uischema = computed(() => control.value.uischema);
+  const possibleValues = useProvidedState(uischema, "possibleValues");
   return { possibleValues };
 };
 

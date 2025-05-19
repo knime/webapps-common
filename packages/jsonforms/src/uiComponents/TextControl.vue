@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref } from "vue";
 
 import { InputField } from "@knime/components";
 
@@ -9,7 +9,15 @@ import type {
 } from "../higherOrderComponents/control/withLabel";
 
 import { useBuiltinValidation } from "./composables/useBuiltinValidations";
-import useProvidedState from "./composables/useProvidedState";
+import useProvidedState, {
+  type UiSchemaWithProvidedOptions,
+} from "./composables/useProvidedState";
+
+type TextControlOptions = {
+  placeholder?: string;
+};
+
+type TextControlUiSchema = UiSchemaWithProvidedOptions<TextControlOptions>;
 
 const props = defineProps<VueControlPropsForLabelContent<string | null>>();
 
@@ -37,10 +45,8 @@ useBuiltinValidation<ValidationParameters, string | null>(
   props,
 );
 
-const placeholder = useProvidedState(
-  props.control.uischema.options?.placeholderProvider,
-  props.control.uischema.options?.placeholder ?? "",
-);
+const uischema = computed(() => props.control.uischema as TextControlUiSchema);
+const placeholder = useProvidedState(uischema, "placeholder", "");
 
 const inputField = ref<InstanceType<typeof InputField> | null>(null);
 defineExpose<VueControlExposed>({

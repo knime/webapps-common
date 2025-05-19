@@ -93,7 +93,7 @@ describe("TextControl.vue", () => {
   });
 
   it("sets correct placeholder from provider", async () => {
-    props.control.uischema.options!.placeholderProvider = "somePlaceholderID";
+    props.control.uischema.providedOptions = ["placeholder"];
 
     let providePlaceholder: (placeholder: string) => void;
     const addStateProviderListener = vi.fn((_id, callback) => {
@@ -112,13 +112,12 @@ describe("TextControl.vue", () => {
   it("validates pattern if given", () => {
     const pattern = ".";
     const patternErrorMessage = `The value has to match the pattern "${pattern}"`;
-    props.control.uischema.options!.validations = [
-      {
-        id: "pattern",
+    props.control.uischema.options!.validation = {
+      pattern: {
         parameters: { pattern },
         errorMessage: patternErrorMessage,
       },
-    ];
+    };
     const { onRegisterValidation } = mountJsonFormsControlLabelContent(
       TextControl,
       {
@@ -136,13 +135,12 @@ describe("TextControl.vue", () => {
   ])("validates %s if given", (key, invalidEx, validEx) => {
     const length = 5;
     const errorMessage = `${key} is ${length}`;
-    props.control.uischema.options!.validations = [
-      {
-        id: key,
+    props.control.uischema.options!.validation = {
+      [key]: {
         parameters: { [key]: length },
         errorMessage,
       },
-    ];
+    };
     const { onRegisterValidation } = mountJsonFormsControlLabelContent(
       TextControl,
       {

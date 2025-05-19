@@ -1,7 +1,18 @@
 import type { AlertParams } from "./alert";
 
+export type StateProviderLocation = (
+  | {
+      id: string;
+    }
+  | {
+      scope: string;
+    }
+) & {
+  providedOptionName: string;
+};
+
 type addStateProviderListener<T> = (
-  id: any,
+  identifier: StateProviderLocation & { [key: string]: unknown },
   callback: (data: T) => void,
 ) => void;
 

@@ -57,3 +57,4 @@ export {
 };
 
 export * from "./DateTimeFormatInput";
+export { type AllowedIntervalFormatsType } from "./IntervalInput/utils/types";

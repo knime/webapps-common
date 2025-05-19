@@ -31,29 +31,27 @@ describe("validation", () => {
               type: "Control",
               scope: "#/properties/stringWithPattern",
               options: {
-                validations: [
-                  {
-                    id: "pattern",
-                    parameters: { value: "." },
+                validation: {
+                  pattern: {
+                    parameters: { pattern: "." },
                     errorMessage: "The value has to match the pattern '.'",
                   },
-                ],
+                },
               },
             },
             {
               type: "Control",
               scope: "#/properties/doubleWithMinimum",
               options: {
-                validations: [
-                  {
-                    id: "min",
+                validation: {
+                  min: {
                     parameters: {
-                      value: 1,
+                      min: 1,
                       isExclusive: false,
                     },
                     errorMessage: "The value has to be at least 1",
                   },
-                ],
+                },
                 format: "number",
               },
             },

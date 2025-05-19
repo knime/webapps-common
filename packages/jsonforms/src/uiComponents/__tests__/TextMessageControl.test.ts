@@ -19,13 +19,14 @@ describe("TextMessageControl.vue", () => {
         ...getControlBase("test"),
         data: undefined,
         schema: {},
+        // @ts-expect-error text message control does not have a scope but the id instead
         uischema: {
+          id: "#/properties/view/properties/authenticationManagedByText",
           type: "Control",
-          scope: "#/properties/view/properties/authenticationManagedByText",
           options: {
             format: "textMessage",
-            messageProvider: "someMessageProviderID",
           },
+          providedOptions: ["message"],
         },
       },
       disabled: false,

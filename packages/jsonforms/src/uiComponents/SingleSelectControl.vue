@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, toRef } from "vue";
 
 import type { VueControlPropsForLabelContent } from "../higherOrderComponents";
 import type { IdAndText } from "../types/ChoicesUiSchema";
 
-import useProvidedState from "./composables/useProvidedState";
+import { usePossibleValues } from "./composables/usePossibleValues";
 import LoadingDropdown from "./loading/LoadingDropdown.vue";
 
 type SingleSelectValue =
@@ -16,17 +16,12 @@ type SingleSelectValue =
 
 const props = defineProps<VueControlPropsForLabelContent<SingleSelectValue>>();
 
-const choicesProvider = computed<string>(
-  () => props.control.uischema.options!.choicesProvider,
-);
-
 const specialChoices = computed<IdAndText[]>(
   () => props.control.uischema.options!.specialChoices,
 );
 
-const regularChoices = useProvidedState<null | IdAndText[]>(
-  choicesProvider,
-  null,
+const { possibleValues: regularChoices } = usePossibleValues(
+  toRef(props, "control"),
 );
 
 const specialPrefix = "__special__" as const;

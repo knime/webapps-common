@@ -11,6 +11,10 @@ import type { ValidationSettings } from "./validation/types";
 export type VueControlProps<D> = {
   control: {
     data: D;
+    uischema: {
+      providedOptions?: string[];
+      id?: string;
+    };
   } & Omit<ReturnType<typeof useJsonFormsControl>["control"]["value"], "data">;
   handleChange: (path: string, value: any) => void;
   changeValue: (newValue: D) => void;

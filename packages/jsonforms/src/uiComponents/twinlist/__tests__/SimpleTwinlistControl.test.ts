@@ -120,8 +120,7 @@ describe("SimpleTwinlistControl.vue", () => {
   });
 
   it("uses choicesProvider if present", async () => {
-    const choicesProvider = "myChoicesProvider";
-    props.control.uischema.options!.choicesProvider = choicesProvider;
+    props.control.uischema.providedOptions = ["possibleValues"];
     delete props.control.uischema.options!.possibleValues;
 
     let provideChoices: (choices: IdAndText[]) => void;
@@ -132,7 +131,7 @@ describe("SimpleTwinlistControl.vue", () => {
       provide: { addStateProviderListener },
     });
     expect(addStateProviderListener).toHaveBeenCalledWith(
-      { id: choicesProvider },
+      { providedOptionName: "possibleValues", scope: "#/properties/test" },
       expect.anything(),
     );
     const providedChoices = [

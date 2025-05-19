@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 import {
   type Mock,
   afterEach,
@@ -496,8 +495,7 @@ describe("TwinlistControl.vue", () => {
   });
 
   it("uses choicesProvider if present", async () => {
-    const choicesProvider = "myChoicesProvider";
-    props.control.uischema.options!.choicesProvider = choicesProvider;
+    props.control.uischema.providedOptions = ["possibleValues"];
 
     let provideChoices: (choices: unknown) => void;
     const addStateProviderListener = vi.fn((_id, callback) => {
@@ -507,7 +505,7 @@ describe("TwinlistControl.vue", () => {
       provide: { addStateProviderListener },
     });
     expect(addStateProviderListener).toHaveBeenCalledWith(
-      { id: choicesProvider },
+      { providedOptionName: "possibleValues", scope: "#/properties/test" },
       expect.anything(),
     );
     const providedChoices = [

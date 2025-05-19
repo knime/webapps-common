@@ -96,8 +96,7 @@ describe("IntervalControl.vue", () => {
   });
 
   it("uses format from provider in options", async () => {
-    const intervalTypeProvider = "myProvider";
-    props.control.uischema.options!.intervalTypeProvider = intervalTypeProvider;
+    props.control.uischema.providedOptions = ["intervalType"];
     let provideIntervalType: (intervalType: string) => void;
     const addStateProviderListener = vi.fn((_id, callback) => {
       provideIntervalType = callback;
@@ -107,7 +106,10 @@ describe("IntervalControl.vue", () => {
       provide: { addStateProviderListener },
     });
     expect(addStateProviderListener).toHaveBeenCalledWith(
-      { id: intervalTypeProvider },
+      {
+        providedOptionName: "intervalType",
+        scope: "#/properties/view/properties/maxRows",
+      },
       expect.anything(),
     );
     expect(wrapper.getComponent(IntervalInput).props()).toMatchObject({

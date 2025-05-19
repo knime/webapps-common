@@ -91,8 +91,7 @@ describe("DateTimeFormatPickerControl.vue", () => {
   });
 
   it("uses format from provider in options", async () => {
-    const formatTypeProvider = "myProvider";
-    props.control.uischema.options!.formatProvider = formatTypeProvider;
+    props.control.uischema.providedOptions = ["dateTimeFormats"];
     let provideFormats: (formats: FormatWithExample[]) => void;
     const addStateProviderListener = vi.fn((_id, callback) => {
       provideFormats = callback;
@@ -105,7 +104,10 @@ describe("DateTimeFormatPickerControl.vue", () => {
       },
     );
     expect(addStateProviderListener).toHaveBeenCalledWith(
-      { id: formatTypeProvider },
+      {
+        providedOptionName: "dateTimeFormats",
+        scope: "#/properties/view/properties/maxRows",
+      },
       expect.anything(),
     );
     expect(wrapper.getComponent(DateTimeFormatInput).props()).toMatchObject({

@@ -1,9 +1,13 @@
 <script setup lang="ts">
+import { computed } from "vue";
+
 import { InlineMessage, type InlineMessageVariant } from "@knime/components";
 
 import type { VueControlProps } from "../higherOrderComponents/control/types";
 
-import useProvidedState from "./composables/useProvidedState";
+import useProvidedState, {
+  type UiSchemaWithProvidedOptions,
+} from "./composables/useProvidedState";
 
 interface Message {
   title: string;
@@ -11,11 +15,18 @@ interface Message {
   type: string;
 }
 
+type TextMessageOptions = {
+  message: Message;
+};
+
 const props = defineProps<VueControlProps<undefined>>();
-const message = useProvidedState<Message | undefined | null>(
-  props.control.uischema.options?.messageProvider,
-  null,
+
+const uischema = computed(
+  () =>
+    props.control.uischema as UiSchemaWithProvidedOptions<TextMessageOptions>,
 );
+
+const message = useProvidedState(uischema, "message");
 </script>
 
 <template>

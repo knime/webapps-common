@@ -12,7 +12,16 @@ import LabeledControl from "../higherOrderComponents/control/LabeledControl.vue"
 import ErrorMessages from "../higherOrderComponents/control/errorMessage/ErrorMessages.vue";
 import type { VueControlProps } from "../higherOrderComponents/control/types";
 
-import useProvidedState from "./composables/useProvidedState";
+import useProvidedState, {
+  type UiSchemaWithProvidedOptions,
+} from "./composables/useProvidedState";
+
+type SortListControlOptions = {
+  possibleValues?: { id: string; text: string; special?: true }[];
+};
+
+type SortListControlUiSchema =
+  UiSchemaWithProvidedOptions<SortListControlOptions>;
 
 const props = withDefaults(
   defineProps<
@@ -28,12 +37,15 @@ const props = withDefaults(
 );
 
 const data = computed(() => props.control.data);
-const choicesProvider = computed(
-  () => props.control.uischema.options!.choicesProvider,
+const uischema = computed(
+  () => props.control.uischema as SortListControlUiSchema,
 );
-const possibleValues = useProvidedState<
-  { id: string; text: string; special?: true }[]
->(choicesProvider, props.control.uischema.options!.possibleValues ?? []);
+
+const possibleValues = useProvidedState(
+  uischema,
+  "possibleValues",
+  [] as SortListControlOptions["possibleValues"],
+);
 
 const possibleValuesWithUnknownValues = computed(() =>
   possibleValues.value.concat({

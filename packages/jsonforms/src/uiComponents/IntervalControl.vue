@@ -1,18 +1,34 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-import { IntervalInput } from "@knime/components";
+import {
+  type AllowedIntervalFormatsType,
+  IntervalInput,
+} from "@knime/components";
 
 import type { VueControlPropsForLabelContent } from "../higherOrderComponents/control/withLabel";
 
-import useProvidedState from "./composables/useProvidedState";
+import useProvidedState, {
+  type UiSchemaWithProvidedOptions,
+} from "./composables/useProvidedState";
+
+type IntervalControlOptions = {
+  intervalType?: AllowedIntervalFormatsType;
+};
+
+type IntervalControlUiSchema =
+  UiSchemaWithProvidedOptions<IntervalControlOptions>;
 
 const props = defineProps<VueControlPropsForLabelContent<string>>();
 
-const options = computed(() => props.control.uischema.options);
-const format = useProvidedState<"DATE" | "TIME" | "DATE_OR_TIME">(
-  computed(() => options.value?.intervalTypeProvider),
-  options.value?.intervalType ?? "DATE_OR_TIME",
+const uischema = computed(
+  () => props.control.uischema as IntervalControlUiSchema,
+);
+
+const intervalType = useProvidedState(
+  uischema,
+  "intervalType",
+  "DATE_OR_TIME" as AllowedIntervalFormatsType,
 );
 </script>
 
@@ -22,7 +38,7 @@ const format = useProvidedState<"DATE" | "TIME" | "DATE_OR_TIME">(
     compact
     :disabled="disabled"
     :model-value="control.data"
-    :format="format"
+    :format="intervalType"
     @update:model-value="changeValue"
   />
 </template>

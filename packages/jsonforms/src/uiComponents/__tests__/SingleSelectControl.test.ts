@@ -31,7 +31,6 @@ describe("SingleSelectControl", () => {
           type: "Control",
           scope: "#/properties/test",
           options: {
-            choicesProvider: "myChoicesProvider",
             specialChoices: [
               {
                 id: "first",
@@ -43,6 +42,7 @@ describe("SingleSelectControl", () => {
               },
             ],
           },
+          providedOptions: ["possibleValues"],
         },
       },
       disabled: false,

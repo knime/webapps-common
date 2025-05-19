@@ -11,27 +11,34 @@ import {
 
 import type { VueControlPropsForLabelContent } from "../higherOrderComponents/control/withLabel";
 
-import useProvidedState from "./composables/useProvidedState";
+import useProvidedState, {
+  type UiSchemaWithProvidedOptions,
+} from "./composables/useProvidedState";
+
+type DateTimeFormatPickerWithTypeControlOptions = {
+  allowedFormats?: FormatDateType[];
+  dateTimeFormats: FormatWithExample[];
+};
+
+type DateTimeFormatPickerControlUiSchema =
+  UiSchemaWithProvidedOptions<DateTimeFormatPickerWithTypeControlOptions>;
 
 const props =
   defineProps<VueControlPropsForLabelContent<DateTimeFormatModel>>();
 
-const options = computed(() => {
-  return props.control.uischema.options;
-});
+const uischema = computed(
+  () => props.control.uischema as DateTimeFormatPickerControlUiSchema,
+);
 
-const allowedFormats = computed<FormatDateType[]>(() => {
-  return options.value?.allowedFormats;
-});
+const options = computed(() => uischema.value.options);
+
+const allowedFormats = computed(() => options.value?.allowedFormats);
 
 // TODO: take the initial value from the control and put it
 // into the recents if it is not already there. For this you
 // will need to check its validity and generate an example,
 // using backend communication.
-const allBaseFormats = useProvidedState<FormatWithExample[] | null>(
-  computed(() => options.value?.formatProvider),
-  null,
-);
+const allBaseFormats = useProvidedState(uischema, "dateTimeFormats");
 
 // TODO: Listen to the 'committed' event of the DateTimeFormatInput.
 

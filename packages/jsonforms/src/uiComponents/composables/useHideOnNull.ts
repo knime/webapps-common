@@ -2,7 +2,16 @@ import { type Ref, computed, nextTick, unref, watch } from "vue";
 
 import { type Control } from "../../types/Control";
 
-import useProvidedState from "./useProvidedState";
+import useProvidedState, {
+  type UiSchemaWithProvidedOptions,
+} from "./useProvidedState";
+
+type UseHideOnNullOptions = {
+  hideOnNull?: boolean;
+  default?: unknown;
+};
+
+type UseHideOnNullUiSchema = UiSchemaWithProvidedOptions<UseHideOnNullOptions>;
 
 export default ({
   control,
@@ -15,16 +24,15 @@ export default ({
   changeValue: (value: unknown) => void;
   controlElement: Ref<{ focus?: () => void } | null>;
 }) => {
+  const uischema = computed(
+    () => unref(control).uischema as UseHideOnNullUiSchema,
+  );
+
   const hideOnNull = computed(
-    () => unref(control).uischema?.options?.hideOnNull ?? false,
+    () => uischema.value?.options?.hideOnNull ?? false,
   );
-  const defaultProvider = computed(
-    () => control.value.uischema.options?.defaultProvider,
-  );
-  const defaultValue = useProvidedState(
-    defaultProvider,
-    control.value.uischema.options?.default,
-  );
+
+  const defaultValue = useProvidedState(uischema, "default");
 
   const isNull = computed(
     () =>

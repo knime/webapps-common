@@ -1,11 +1,13 @@
-import { type Ref, computed } from "vue";
+import { type Ref, computed, toRef } from "vue";
 
 import type {
   VueControlProps,
   VueControlPropsForLabelContent,
 } from "../../higherOrderComponents";
 
-import useProvidedState from "./useProvidedState";
+import useProvidedState, {
+  type UiSchemaWithProvidedOptions,
+} from "./useProvidedState";
 
 /**
  * @type {P} - parameters for the validation
@@ -26,39 +28,68 @@ export type Validators<T, S> = {
  * @type {T} - type defining the available built-in validations by id-param pairs
  */
 export type BuiltinValidation<T, K extends keyof T> = {
-  id: K;
   parameters: T[K];
   errorMessage: string;
 };
 
 /**
- * A list of built-in validations typed to T.
+ * An object of built-in validations typed to T.
  * @type {T} - type defining the available built-in validations by id-param pairs
  */
-export type BuiltinValidations<T> = Array<
-  {
-    [K in keyof T]: BuiltinValidation<T, K>;
-  }[keyof T]
+export type BuiltinValidations<T> = Record<
+  keyof T,
+  BuiltinValidation<T, keyof T>
 >;
 
-const extractValidations = <T>(
-  options: { validations?: BuiltinValidations<T> } = {},
-) => options.validations ?? [];
+type ProvidedBuiltinValidations<T> = Record<
+  keyof T,
+  Ref<BuiltinValidation<T, keyof T> | null>
+>;
 
-const extractProvidedValidations = <T>(
-  options: { validationProviders?: string[] } = {},
-) =>
-  (options.validationProviders ?? []).map((provider) =>
-    useProvidedState<BuiltinValidation<T, keyof T> | null>(provider, null),
+type ValidationOptions<T> = {
+  validation?: BuiltinValidations<T>;
+};
+
+type ValidationUiSchema<T> = UiSchemaWithProvidedOptions<ValidationOptions<T>>;
+
+const extractValidations = <T>(options: ValidationOptions<T> = {}) =>
+  options.validation || null;
+
+const extractProvidedValidationOptionId = (providedValidationOption: string) =>
+  providedValidationOption.replace(/^validation\./, "");
+
+const extractProvidedValidations = <T extends Record<string, unknown>>(
+  uischema: ValidationUiSchema<T>,
+) => {
+  const providedValidationOptions = (uischema.providedOptions ?? []).filter(
+    (providedOption) => providedOption.startsWith("validation."),
   );
+  if (providedValidationOptions.length === 0) {
+    return null;
+  }
+  return providedValidationOptions.reduce(
+    (acc, providedOption) => ({
+      ...acc,
+      [extractProvidedValidationOptionId(providedOption)]: useProvidedState(
+        toRef(uischema) as Ref<ValidationUiSchema<T>>,
+        // @ts-expect-error - the valid provided options cannot be inferred
+        providedOption,
+      ),
+    }),
+    {} as ProvidedBuiltinValidations<T>,
+  );
+};
+
+const getTypedObjectEntries = <T extends Record<string, unknown>>(obj: T) =>
+  Object.entries(obj) as [keyof T, T[keyof T]][];
 
 const getValidationMethod = <T, S>(
   validations: BuiltinValidations<T>,
   validators: Validators<T, S>,
 ) => {
-  const validationMethods = validations.map(
-    ({ id, parameters, errorMessage }) => ({
-      validate: validators[id](parameters),
+  const validationMethods = getTypedObjectEntries(validations).map(
+    ([key, { parameters, errorMessage }]) => ({
+      validate: validators[key](parameters),
       errorMessage,
     }),
   );
@@ -71,37 +102,40 @@ const getValidationMethod = <T, S>(
 
 const getProvidedValidationMethod = <T, S>(
   validationInput: BuiltinValidation<T, keyof T> | null,
+  key: keyof T,
   validators: Validators<T, S>,
 ) => {
   if (validationInput === null) {
     return null;
   }
-  return getValidationMethod([validationInput], validators);
+  return getValidationMethod(
+    {
+      [key]: validationInput,
+    } as BuiltinValidations<T>,
+    validators,
+  );
 };
 
 const registerValidationMethods = <T, S>(
-  validations: BuiltinValidations<T>,
-  providedValidations: Ref<BuiltinValidation<T, keyof T> | null>[],
+  validations: BuiltinValidations<T> | null,
+  providedValidations: ProvidedBuiltinValidations<T> | null,
   validators: Validators<T, S>,
   onRegisterValidation: VueControlProps<S>["onRegisterValidation"],
 ) => {
-  if (validations.length) {
+  if (validations) {
     const validationMethod = getValidationMethod(validations, validators);
     onRegisterValidation(validationMethod);
   }
-  if (providedValidations.length) {
-    const validationMethods = providedValidations.map((validation) =>
-      computed(() => getProvidedValidationMethod(validation.value, validators)),
+  if (providedValidations) {
+    const validationMethods = getTypedObjectEntries(providedValidations).map(
+      ([key, validation]) =>
+        computed(() =>
+          getProvidedValidationMethod(validation.value, key, validators),
+        ),
     );
     validationMethods.forEach(onRegisterValidation);
   }
 };
-
-type ProvidedBuiltinValidation<T> = Array<
-  {
-    [K in keyof T]: Ref<BuiltinValidation<T, K> | null>;
-  }[keyof T]
->;
 
 /**
  * Regardless of whether validations are provided via options or via state providers,
@@ -111,26 +145,32 @@ const combineValidations = <T>({
   validations,
   providedValidations,
 }: {
-  validations: BuiltinValidations<T>;
-  providedValidations: ProvidedBuiltinValidation<T>;
+  validations: BuiltinValidations<T> | null;
+  providedValidations: ProvidedBuiltinValidations<T> | null;
 }): Ref<Partial<T>> => {
-  const constantValidations = validations.reduce(
-    (acc, validation) => ({ ...acc, [validation.id]: validation.parameters }),
+  const constantValidations = getTypedObjectEntries(validations || {}).reduce(
+    (acc, [key, { parameters }]) => ({ ...acc, [key]: parameters }),
     {},
   );
-  return computed(() =>
-    providedValidations
-      .map((providedValidation) => providedValidation.value)
-      .filter((val) => val !== null)
+  return computed(() => {
+    if (providedValidations === null) {
+      return constantValidations;
+    }
+    return getTypedObjectEntries(providedValidations)
+      .map(([key, providedValidation]) => ({
+        key,
+        providedValidation: providedValidation.value,
+      }))
+      .filter(({ providedValidation }) => providedValidation !== null)
       .reduce(
-        (acc, validation) => ({
+        (acc, { key, providedValidation }) => ({
           ...acc,
-          // @ts-expect-error - we know that validation is not null here
-          [validation.id]: validation.parameters,
+          // @ts-expect-error - we know that providedValidation is not null here
+          [key]: providedValidation.parameters,
         }),
         constantValidations,
-      ),
-  );
+      );
+  });
 };
 
 /**
@@ -145,13 +185,14 @@ const combineValidations = <T>({
  * @type {T} - type defining the available built-in validations by id-param pairs
  * @type {S} - type of the value to validate, i.e. the type of the data of the control
  */
-export const useBuiltinValidation = <T, S>(
+export const useBuiltinValidation = <T extends Record<string, unknown>, S>(
   validators: Validators<T, S>,
   props: VueControlProps<S> | VueControlPropsForLabelContent<S>,
 ): Ref<Partial<T>> => {
-  const options = props.control.uischema.options;
-  const validations = extractValidations<T>(options);
-  const providedValidations = extractProvidedValidations<T>(options);
+  const { uischema } = props.control;
+  const { options } = uischema as ValidationUiSchema<T>;
+  const validations = extractValidations(options);
+  const providedValidations = extractProvidedValidations<T>(uischema);
   registerValidationMethods(
     validations,
     providedValidations,
