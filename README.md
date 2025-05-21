@@ -18,21 +18,16 @@ Please see the [published packages on npm](https://www.npmjs.com/search?q=%40kni
 
 ## Development
 
-The demo application also serves as a development environment (code lives in [`demo/`](demo) folder)
+The demo application also serves as a development environment (code lives in [`demo/`](demo) folder). You can run it using [pnpm]:
 
 ```sh
+# Navigate to the demo repository
 cd demo
-```
 
-You must install the dependencies only with [pnpm]
-
-```sh
+# Install demo dependencies
 pnpm install
-```
 
-and can be run locally by calling
-
-```sh
+# Run the demo locally
 pnpm dev
 ```
 

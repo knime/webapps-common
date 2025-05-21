@@ -7,7 +7,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "vite",
+    "dev": "pnpm --filter @knime/styles build && vite",
     "build": "vite build",
     "preview": "vite preview --port 4173",
     "deploy": "gh-pages -d dist -m 'Deploy to GitHub pages' --dotfiles",
