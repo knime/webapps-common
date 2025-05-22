@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.28.5
+
+### Patch Changes
+
+- 64c9333: Adapt state provider logic to backend and change structure of validations
+
 ## 1.28.4
 
 ### Patch Changes

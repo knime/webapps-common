@@ -1,5 +1,17 @@
 # @knime/json-forms
 
+## 1.12.0
+
+### Minor Changes
+
+- 64c9333: Adapt state provider logic to backend and change structure of validations
+
+### Patch Changes
+
+- Updated dependencies [64c9333]
+  - @knime/components@1.28.5
+  - @knime/rich-text-editor@1.4.15
+
 ## 1.11.4
 
 ### Patch Changes
