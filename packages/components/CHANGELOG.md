@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.28.6
+
+### Patch Changes
+
+- Debounce scrolling item into view in FileExplorer
+
 ## 1.28.5
 
 ### Patch Changes

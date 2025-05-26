@@ -2,6 +2,7 @@
 /* eslint-disable max-lines */
 import { type Ref, computed, nextTick, ref, toRef, toRefs, watch } from "vue";
 import { useResizeObserver } from "@vueuse/core";
+import { debounce } from "lodash-es";
 
 import { getMetaOrCtrlKey } from "@knime/utils";
 import {
@@ -148,7 +149,7 @@ const changeDirectory = (pathId: string) => {
 /** Refs */
 const virtualItemRefs = ref<InstanceType<typeof FileExplorerItem>[]>([]);
 const itemBack = ref<{ $el: HTMLElement } | null>(null);
-const table = ref<null | HTMLElement>(null);
+const table = ref<null | HTMLTableElement>(null);
 
 /**
  * Coerce the clickOutsideException prop to an array of refs, regardless of whether
@@ -205,10 +206,16 @@ const scrollIntoView = (
   if (index === -1) {
     return;
   }
-  containerProps.ref.value?.scrollTo({
-    top: virtualSizeManager.toOffset(index),
-    behavior,
-  });
+
+  // wait 50ms for DOM changes (e.g. changes in table ref) to take effect before scrolling
+  const scrollDebounceMs = 50;
+  const debouncedScroll = debounce(() => {
+    containerProps.ref.value?.scrollTo({
+      top: virtualSizeManager.toOffset(index),
+      behavior,
+    });
+  }, scrollDebounceMs);
+  debouncedScroll();
 };
 
 /** MULTISELECTION */

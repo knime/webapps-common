@@ -22,6 +22,14 @@ vi.mock("motion", () => ({
   },
 }));
 
+vi.mock("lodash-es", async (importOriginal) => {
+  const original = await importOriginal<typeof import("lodash-es")>();
+  return {
+    ...original,
+    debounce: (fn: Function) => fn, // bypass debounce
+  };
+});
+
 type Props = InstanceType<typeof FileExplorer>["$props"];
 
 describe("FileExplorer.vue", () => {
