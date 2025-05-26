@@ -7,6 +7,7 @@ import {
   defineComponent,
 } from "vue";
 
+import type { VueLayout, VueLayoutRenderer } from "../layout";
 import { getAsyncSetupMethod } from "../utils";
 
 import {
@@ -68,6 +69,23 @@ export const mapControls =
           name,
           tester,
           __asyncSetup: __asyncSetup || getAsyncSetupMethod(control),
+        };
+        return acc;
+      },
+      {} as T,
+    );
+
+export const mapLayouts =
+  (mapper: (layout: VueLayout, key: string) => VueLayout) =>
+  <T extends Record<string, VueLayoutRenderer>>(ls: T): T =>
+    Object.entries(ls).reduce(
+      (acc, [key, { layout, name, tester, __asyncSetup }]) => {
+        // @ts-expect-error Type 'T' is generic and can only be indexed for reading.
+        acc[key] = {
+          layout: mapper(layout, key),
+          name,
+          tester,
+          __asyncSetup: __asyncSetup || getAsyncSetupMethod(layout),
         };
         return acc;
       },

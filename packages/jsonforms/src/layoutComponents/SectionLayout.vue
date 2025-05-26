@@ -15,7 +15,7 @@ const hover = ref(false);
 <template>
   <div class="section" @mouseover="hover = true" @mouseleave="hover = false">
     <SectionHeading :title-text="layout.uischema.label">
-      <template #buttons>
+      <template #right-buttons>
         <slot name="buttons" :hover="hover" />
       </template>
     </SectionHeading>

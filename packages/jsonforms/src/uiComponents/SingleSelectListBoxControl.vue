@@ -15,8 +15,9 @@ const { possibleValues } = usePossibleValues(toRef(props, "control"));
 <template>
   <!--  eslint-disable vue/attribute-hyphenation ariaLabel needs to be given like this for typescript to not complain -->
   <ListBox
+    v-if="possibleValues"
     :id="labelForId"
-    :possible-values="possibleValues || []"
+    :possible-values="possibleValues"
     :disabled
     :model-value="control.data"
     :is-valid
