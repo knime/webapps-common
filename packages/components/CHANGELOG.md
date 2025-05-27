@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- Debounce scrolling item into view in FileExplorer
+- Debounce scrolling to item into view in FileExplorer
 
 ## 1.28.5
 
