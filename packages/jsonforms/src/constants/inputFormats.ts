@@ -12,6 +12,7 @@ export const inputFormats = {
   nameFilter: "nameFilter",
   richTextInput: "richTextInput",
   twinList: "twinList",
+  manualTwinlist: "manualTwinlist",
   comboBox: "comboBox",
   sortList: "sortList",
   simpleButton: "simpleButton",

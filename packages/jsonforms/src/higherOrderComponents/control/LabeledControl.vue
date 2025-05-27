@@ -7,6 +7,7 @@ const props = defineProps<{
   label: string;
   hideControlHeader?: boolean;
   fill?: boolean;
+  large?: boolean;
 }>();
 const hover = ref(false);
 const labelForId: Ref<null | string> = ref("");
@@ -31,7 +32,7 @@ const title = computed(() => (props.label === "" ? " " : props.label));
         <Label
           :text="title"
           class="label"
-          compact
+          :large
           @label-for-id="labelForId = $event"
         />
         <slot name="icon" />

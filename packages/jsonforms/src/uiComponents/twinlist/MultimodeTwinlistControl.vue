@@ -144,6 +144,8 @@ const loadingInfo = computed(() =>
     : null,
 );
 
+// Types
+
 const typeDisplaysToMap = (keyValuePairs: IdAndText[] | undefined) => {
   if (typeof keyValuePairs === "undefined") {
     return {};
@@ -170,8 +172,6 @@ const getPreviouslySelectedTypes = () => {
 };
 
 previouslySelectedTypes.value = getPreviouslySelectedTypes();
-
-// Hiding controls
 
 const withTypes = computed(() =>
   Boolean(possibleValues.value?.[0]?.hasOwnProperty("type")),

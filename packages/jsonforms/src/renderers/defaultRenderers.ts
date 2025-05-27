@@ -35,7 +35,11 @@ import { singleSelectRenderer } from "./singleSelectRenderer";
 import { sortListRenderer } from "./sortListRenderer";
 import { textAreaRenderer } from "./textAreaRenderer";
 import { textMessageRenderer } from "./textMessageRenderer";
-import { simpleTwinlistRenderer, twinlistRenderer } from "./twinlistRenderer";
+import {
+  manualTwinlistRenderer,
+  simpleTwinlistRenderer,
+  twinlistRenderer,
+} from "./twinlistRenderer";
 import { typedStringFilterRenderer } from "./typedStringFilterRenderer";
 import { valueSwitchRenderer } from "./valueSwitchRenderer";
 import { verticalLayoutRenderer } from "./verticalLayoutRenderer";
@@ -62,6 +66,7 @@ export const controls = {
   sortListRenderer,
   textAreaRenderer,
   twinlistRenderer,
+  manualTwinlistRenderer,
   valueSwitchRenderer,
   zonedDateTimeRenderer,
   singleSelectRenderer,

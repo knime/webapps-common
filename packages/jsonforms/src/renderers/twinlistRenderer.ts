@@ -9,6 +9,7 @@ import {
 } from "@jsonforms/core";
 
 import { inputFormats, priorityRanks } from "../constants";
+import { hasFormat } from "../constants/inputFormats";
 import { withLabel } from "../higherOrderComponents/control/withLabel";
 
 const TwinlistControl = defineAsyncComponent(
@@ -16,6 +17,9 @@ const TwinlistControl = defineAsyncComponent(
 );
 const SimpleTwinlistControl = defineAsyncComponent(
   () => import("../uiComponents/twinlist/SimpleTwinlistControl.vue"),
+);
+const ManualTwinlistControl = defineAsyncComponent(
+  () => import("../uiComponents/twinlist/ManualTwinlistControl.vue"),
 );
 
 const isSelection: Tester = schemaMatches((s) =>
@@ -41,4 +45,12 @@ export const simpleTwinlistRenderer = withLabel()({
   name: "SimpleTwinlistControl",
   control: SimpleTwinlistControl,
   tester: rankWith(priorityRanks.default, simpleTwinlistTester),
+});
+
+export const manualTwinlistTester = hasFormat("manualTwinlist");
+
+export const manualTwinlistRenderer = withLabel()({
+  name: "ManualTwinlistControl",
+  control: ManualTwinlistControl,
+  tester: rankWith(priorityRanks.default, manualTwinlistTester),
 });

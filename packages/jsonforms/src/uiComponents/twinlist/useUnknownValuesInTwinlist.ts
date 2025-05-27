@@ -38,7 +38,7 @@ export default ({
   /**
    * The jsonforms data of the TwinlistControl
    */
-  data: Ref<TwinlistData>;
+  data: Ref<{ manualFilter: TwinlistData["manualFilter"] }>;
   /**
    * The array of possible value ids or null if no possible values are present yet.
    */
