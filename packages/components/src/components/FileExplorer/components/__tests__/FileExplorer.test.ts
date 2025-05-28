@@ -26,7 +26,7 @@ vi.mock("lodash-es", async (importOriginal) => {
   const original = await importOriginal<typeof import("lodash-es")>();
   return {
     ...original,
-    debounce: (fn: Function) => fn, // bypass debounce
+    debounce: (fn: (...args: never[]) => unknown) => fn, // bypass debounce
   };
 });
 

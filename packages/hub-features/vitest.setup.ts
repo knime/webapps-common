@@ -8,7 +8,6 @@ window.consola = consola;
 config.global.renderStubDefaultSlot = true;
 
 declare global {
-  // eslint-disable-next-line no-var
   var $ofetchMock: Mock;
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace NodeJS {

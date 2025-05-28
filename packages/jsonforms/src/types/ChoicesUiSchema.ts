@@ -23,11 +23,11 @@ export type IncludedExcludedLabelOptions = {
   excludedLabel?: string;
 };
 
-export type ChoicesUiSchema<S extends Record<string, unknown> = {}> =
+export type ChoicesUiSchema<S extends Record<string, unknown>> =
   ControlElement & {
     options?: ChoicesUiSchemaOptions<S>;
   };
 
 export type ChoicesUiSchemaWithProvidedOptions<
-  S extends Record<string, unknown> = {},
+  S extends Record<string, unknown>,
 > = UiSchemaWithProvidedOptions<ChoicesUiSchemaOptions<S>>;
