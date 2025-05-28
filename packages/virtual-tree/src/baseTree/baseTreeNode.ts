@@ -12,7 +12,7 @@ export class BaseTreeNode {
   loading = false;
   hasChildren = false;
   showCheckbox: TypeWithUndefined<boolean>;
-  // eslint-disable-next-line no-use-before-define
+
   children: BaseTreeNode[] = [];
   parentKey: TypeWithUndefined<NodeKey>;
   parentKeys: NodeKey[] = [];

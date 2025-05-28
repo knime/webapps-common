@@ -24,6 +24,11 @@
       "count": 1
     }
   },
+  "packages/components/src/components/FileExplorer/components/FileExplorer.vue": {
+    "depend/ban-dependencies": {
+      "count": 1
+    }
+  },
   "packages/components/src/components/FileExplorer/components/FileExplorerItem.vue": {
     "@typescript-eslint/no-floating-promises": {
       "count": 3
@@ -322,6 +327,14 @@
   },
   "packages/jsonforms/src/uiComponents/richTextControl/DialogLinkModal.vue": {
     "@typescript-eslint/no-floating-promises": {
+      "count": 1
+    }
+  },
+  "packages/jsonforms/src/uiComponents/twinlist/ManualTwinlistControl.vue": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    },
+    "prefer-const": {
       "count": 1
     }
   },
