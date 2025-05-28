@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { type StyleValue, markRaw, onMounted, ref } from "vue";
+import { type StyleValue, markRaw, onMounted, onUnmounted, ref } from "vue";
 
 import { setUpEmbedderService } from "../logic/embedder";
 
@@ -49,9 +49,9 @@ const loadView = async () => {
   const shadowApp = await dynamicImport(props.resourceLocation);
 
   // create dynamic view in shadow root
-  // teardown active view if we have one
+  // teardown active view if we have one usually this should be already called in onUnmount
   if (activeShadowApp.value) {
-    activeShadowApp.value?.teardown();
+    activeShadowApp.value.teardown();
   }
 
   // create or reuse shadow root
@@ -62,6 +62,10 @@ const loadView = async () => {
   // call module default exported function to load the view
   activeShadowApp.value = shadowApp.default(shadowRoot, knimeService);
 };
+
+onUnmounted(() => {
+  activeShadowApp.value?.teardown();
+});
 
 onMounted(async () => {
   await loadView();
