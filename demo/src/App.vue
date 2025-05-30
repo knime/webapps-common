@@ -371,12 +371,7 @@ export default {
             <h1>KNIME WebApps Common</h1>
             <p>
               This page gives an overview of shared CSS, assets like icons and
-              Vue-based UI components. To use them, it's recommended to
-              integrate them as Git submodule as described in the
-              <a
-                href="https://bitbucket.org/KNIME/webapps-common/src/master/README.md"
-                >README.md</a
-              >. More and more parts are also available as
+              Vue-based UI components. To use them, check the published
               <a href="https://www.npmjs.com/~knime">npm packages</a>.
             </p>
 
