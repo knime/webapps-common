@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.12.1
+
+### Patch Changes
+
+- c962c75: Add utility for fixing layout metacomponents
+
 ## 1.12.0
 
 ### Minor Changes
