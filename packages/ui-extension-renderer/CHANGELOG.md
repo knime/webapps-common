@@ -1,5 +1,11 @@
 # @knime/ui-extension-renderer
 
+## 2.0.45
+
+### Patch Changes
+
+- 294d416: Call teardown of UIExtShadowApp on unmount. Fixes possible memory leaks.
+
 ## 2.0.44
 
 ### Patch Changes
