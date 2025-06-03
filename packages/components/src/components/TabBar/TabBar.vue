@@ -36,13 +36,35 @@ export default {
       default: "value",
     },
     /**
+     *  List of configuration for each tab. The extra component can be used to render additional
+     *  information or provide additional functionality like a menu or a badge.
          * @example
            [{
-               value: 'all',
-               label: 'All',
-               icon: null,
-               title: 'everything',
-               disabled: false
+              value: 'all',
+              label: 'All',
+              icon: null,
+              title: 'everything',
+              disabled: false,
+              extraComponent: {
+                props: ["count"],
+                render() {
+                  return h(
+                    "span",
+                    {
+                      style: {
+                        display: "inline-block",
+                        background: "red",
+                        color: "white",
+                        verticalAlign: "middle",
+                      },
+                    },
+                    this.count,
+                  );
+                },
+              },
+              extraComponentProps: {
+                count: 3,
+              },
            }, {
                value: 'nodes',
                label: 'Nodes',
@@ -125,9 +147,15 @@ export default {
             type="radio"
             @change="onChange(item.value)"
           />
-          <span>
+          <span class="tab">
             <Component :is="item.icon" v-if="item.icon" />
             {{ item.label }}
+            <Component
+              :is="item.extraComponent"
+              v-if="item.extraComponent"
+              v-bind="item.extraComponentProps"
+              class="extra-component"
+            />
           </span>
         </label>
       </div>
@@ -178,15 +206,15 @@ input[type="radio"] {
   left: 0;
 }
 
-span {
+.tab {
   position: relative;
   font-size: 16px;
   font-weight: 500;
-  padding: 0 10px;
-  display: inline-block;
+  padding: 0 var(--space-8);
   height: 51px;
   line-height: 51px;
   color: var(--knime-dove-gray);
+  display: inline-block;
 }
 
 label:not(:last-child) {

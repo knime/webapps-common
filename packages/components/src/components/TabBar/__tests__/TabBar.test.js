@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { markRaw } from "vue";
+import { defineComponent, markRaw } from "vue";
 import { shallowMount } from "@vue/test-utils";
 
 import NodeIcon from "@knime/styles/img/icons/node.svg";
@@ -121,5 +121,26 @@ describe("TabBar.vue", () => {
     let titledInputs = wrapper.findAll("label[title]");
     expect(titledInputs).toHaveLength(1);
     expect(titledInputs[0].element.title).toBe("A title");
+  });
+
+  it("renders an extra component", () => {
+    let wrapper = shallowMount(TabBar, {
+      props: {
+        possibleValues: [
+          {
+            value: "extraComponentTest",
+            label: "Extra Component Test",
+            icon: markRaw(WorkflowIcon),
+            extraComponent: defineComponent({
+              template:
+                '<div class="extra-component">Will be stubbed but the element with its class exists</div>',
+            }),
+            disabled: false,
+          },
+        ],
+        modelValue: "all",
+      },
+    });
+    expect(wrapper.find(".extra-component").exists()).toBeTruthy();
   });
 });

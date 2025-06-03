@@ -5,13 +5,14 @@ import HelpIcon from "@knime/styles/img/icons/circle-help.svg";
 import StarIcon from "@knime/styles/img/icons/star.svg";
 
 import CodeExample from "./demo/CodeExample.vue";
+import { defineComponent } from "vue";
 // import tabbarCode from "webapps-common/ui/components/TabBar.vue?raw";
 const tabbarCode = "";
 
 const codeExampleStandalone = `<script>
-import TabBar from '~/webapps-common/ui/components/TabBar.vue';
-import BulbIcon from '~/@knime/styles/img/icons/bulb.svg';
-import HelpIcon from '~/@knime/styles/img/icons/circle-help.svg';
+import TabBar from "~/webapps-common/ui/components/TabBar.vue";
+import BulbIcon from "~/@knime/styles/img/icons/bulb.svg";
+import HelpIcon from "~/@knime/styles/img/icons/circle-help.svg";
 
 export default {
     components: {
@@ -79,6 +80,9 @@ const possibleTabValues = [
     label: "Bananas (out of stock)",
     title: "Currently no bananas, sorry!",
     value: "bananas",
+    extraComponent: defineComponent({
+      template: `<button class="extra-component" onclick="alert('Bananas ordered')">Order more</button>`,
+    }),
     disabled: true,
   },
 ];
