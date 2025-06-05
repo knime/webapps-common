@@ -1,0 +1,7 @@
+import{_ as m,H as u,r as s,o as C,c as _,b as o,d as l,w as t,e as p,t as n}from"./index-CJ8JrX-F.js";import{C as x}from"./CodeExample-D1e1qLOf.js";import{C as h}from"./Collapser-CJ6kggvh.js";import"./arrow-dropdown-2wUUMImU.js";import"./ExpandTransition-CXPqxFyQ.js";const f="",w={components:{Collapser:h,BulbIcon:u,CodeExample:x},data(){return{codeExample:`<Collapser title="Collapser with icon">
+  <template v-slot:title>
+    <BulbIcon style="width: 20px; height: 20px;" />
+    <h5>Collapser with icon</h5> /* Has to be h5 */
+  </template>
+  <p>Lorem ipsum…</p>
+</Collapser>`}},computed:{code(){return f}}},g={class:"grid-container"},b={class:"grid-item-12"},v={class:"grid-container demo"};function B(E,e,y,I,i,c){const r=s("Collapser",!0),d=s("BulbIcon"),a=s("CodeExample");return C(),_("section",null,[o("div",g,[o("div",b,[o("div",v,[l(r,{class:"grid-item-3 collapser"},{title:t(()=>e[0]||(e[0]=[o("h5",null,"Collapser",-1)])),default:t(()=>[e[1]||(e[1]=o("p",null,"Lorem ipsum…",-1))]),_:1}),l(r,{class:"grid-item-3 collapser"},{title:t(()=>[l(d,{style:{width:"20px",height:"20px"}}),e[2]||(e[2]=o("h5",null,"Collapser with icon",-1))]),default:t(()=>[e[3]||(e[3]=o("p",null,"Lorem ipsum…",-1))]),_:1})]),l(a,{summary:"Show usage example with icon"},{default:t(()=>[p(n(i.codeExample),1)]),_:1}),l(a,{summary:"Show Collapser.vue source code"},{default:t(()=>[p(n(c.code),1)]),_:1})])])])}const k=m(w,[["render",B],["__scopeId","data-v-eb64c7cb"]]);export{k as default};
