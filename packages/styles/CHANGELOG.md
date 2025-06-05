@@ -1,5 +1,11 @@
 # @knime/styles
 
+## 1.5.0
+
+### Minor Changes
+
+- 8e0a90a: Add DBTableSelector icon
+
 ## 1.4.0
 
 ### Minor Changes
