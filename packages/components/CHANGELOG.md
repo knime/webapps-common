@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.29.0
+
+### Minor Changes
+
+- 5c1e0fa: Allow TabBar to contain a generic component supplied as part of its data
+
 ## 1.28.7
 
 ### Patch Changes
