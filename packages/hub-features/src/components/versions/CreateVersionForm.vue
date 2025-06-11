@@ -2,19 +2,7 @@
 import { computed, nextTick, onMounted, ref } from "vue";
 import { useTextareaAutosize } from "@vueuse/core";
 
-import {
-  Button,
-  InputField,
-  Label,
-  LoadingIcon,
-  TextArea,
-} from "@knime/components";
-
-type Props = {
-  isCreationPending?: boolean;
-};
-
-withDefaults(defineProps<Props>(), { isCreationPending: false });
+import { Button, InputField, Label, TextArea } from "@knime/components";
 
 const emit = defineEmits<{
   create: [{ name: string; description: string }];
@@ -85,10 +73,9 @@ const onCreate = async () => {
         primary
         compact
         class="button create"
-        :disabled="isVersionNameInvalid || isCreationPending"
+        :disabled="isVersionNameInvalid"
         @click="onCreate"
       >
-        <LoadingIcon v-if="isCreationPending" />
         <strong>Create</strong>
       </Button>
     </div>
