@@ -1,5 +1,11 @@
 # @knime/hub-features
 
+## 1.10.0
+
+### Minor Changes
+
+- 9314d03: add prop to control pending state of version creation form
+
 ## 1.9.4
 
 ### Patch Changes
