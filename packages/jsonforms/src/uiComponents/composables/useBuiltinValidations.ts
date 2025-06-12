@@ -1,4 +1,4 @@
-import { type Ref, computed, toRef } from "vue";
+import { type Ref, computed, onUnmounted, toRef } from "vue";
 
 import type {
   VueControlProps,
@@ -122,9 +122,10 @@ const registerValidationMethods = <T, S>(
   validators: Validators<T, S>,
   onRegisterValidation: VueControlProps<S>["onRegisterValidation"],
 ) => {
+  const cleanupCallbacks: (() => void)[] = [];
   if (validations) {
     const validationMethod = getValidationMethod(validations, validators);
-    onRegisterValidation(validationMethod);
+    cleanupCallbacks.push(onRegisterValidation(validationMethod));
   }
   if (providedValidations) {
     const validationMethods = getTypedObjectEntries(providedValidations).map(
@@ -133,8 +134,11 @@ const registerValidationMethods = <T, S>(
           getProvidedValidationMethod(validation.value, key, validators),
         ),
     );
-    validationMethods.forEach(onRegisterValidation);
+    validationMethods
+      .map(onRegisterValidation)
+      .forEach((un) => cleanupCallbacks.push(un));
   }
+  return cleanupCallbacks;
 };
 
 /**
@@ -193,11 +197,12 @@ export const useBuiltinValidation = <T extends Record<string, unknown>, S>(
   const { options } = uischema as ValidationUiSchema<T>;
   const validations = extractValidations(options);
   const providedValidations = extractProvidedValidations<T>(uischema);
-  registerValidationMethods(
+  const cleanupCallbacks = registerValidationMethods(
     validations,
     providedValidations,
     validators,
     props.onRegisterValidation,
   );
+  onUnmounted(() => cleanupCallbacks.forEach((unregister) => unregister()));
   return combineValidations({ validations, providedValidations });
 };

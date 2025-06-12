@@ -15,7 +15,11 @@ export type ValidationMethod<D> = MaybeRef<((value: D) => Messages) | null>;
 export type ValidationSettings<D> = {
   isValid: boolean;
   messages: Messages;
-  onRegisterValidation: (validation: ValidationMethod<D>) => void;
+  /**
+   * @param validation the validation method to register.
+   * @returns the cleanup callback with which the validation can be unregistered.
+   */
+  onRegisterValidation: (validation: ValidationMethod<D>) => () => void;
 };
 
 export type PerformExternalValidation<D> = (

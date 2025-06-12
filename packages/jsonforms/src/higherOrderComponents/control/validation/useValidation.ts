@@ -1,5 +1,6 @@
 import { type Ref, computed, reactive, unref } from "vue";
 import { debounce } from "lodash-es";
+import { v4 as uuidv4 } from "uuid";
 
 import type {
   Messages,
@@ -22,10 +23,15 @@ export const useValidation = <T = any>({
     Boolean(options.value?.externalValidationHandler),
   );
 
-  const validationMethods: ValidationMethod<T>[] = reactive([]);
+  const validationMethods: Record<string, ValidationMethod<T>> = reactive({});
   const externalValidations: Record<string, string> = reactive({});
-  const onRegisterValidation = (validationMethod: ValidationMethod<T>) =>
-    validationMethods.push(validationMethod);
+  const onRegisterValidation = (validationMethod: ValidationMethod<T>) => {
+    const id = uuidv4();
+    validationMethods[id] = validationMethod;
+    return () => {
+      delete validationMethods[id];
+    };
+  };
   const setExternalValidationMessage = (
     validationId: string,
     validationMessage: string | null,
@@ -59,7 +65,9 @@ export const useValidation = <T = any>({
   }, EXTERNAL_VALIDATION_DEBOUNCE);
 
   const validationMessages = computed(() =>
-    validationMethods.map((method) => unref(method)?.(data.value)),
+    Object.values(validationMethods).map((method) =>
+      unref(method)?.(data.value),
+    ),
   );
 
   const externalValidationMessages = computed(() =>
