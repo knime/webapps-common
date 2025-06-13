@@ -1,6 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
 import { mount } from "@vue/test-utils";
 
+import { getDeepActiveElement } from "@knime/utils";
+
 import Checkbox from "../Checkbox/Checkbox.vue";
 
 import Multiselect from "./Multiselect.vue";
@@ -415,6 +417,32 @@ describe("Multiselect.vue", () => {
       const maxHeight = "65px";
       expect(wrapper.vm.optionsHeight).toEqual({ "max-height": maxHeight });
       expect(wrapper.find(".options").element.style.maxHeight).toBe(maxHeight);
+    });
+  });
+
+  describe("mount in Shadow DOM", () => {
+    it("navigates through the options by the arrow keys", () => {
+      const host = document.createElement("div");
+      document.body.appendChild(host);
+      const shadowRoot = host.attachShadow({ mode: "open" });
+      const wrapper = doMount({
+        attachTo: shadowRoot,
+      });
+      wrapper.setData({ collapsed: false });
+      wrapper.vm.focusOptions[0].focus();
+      expect(getDeepActiveElement()).toBe(wrapper.vm.focusOptions[0]);
+
+      wrapper.trigger("keydown.down");
+      expect(getDeepActiveElement()).toBe(wrapper.vm.focusOptions[1]);
+
+      wrapper.trigger("keydown.down");
+      expect(getDeepActiveElement()).toBe(wrapper.vm.focusOptions[2]);
+
+      wrapper.trigger("keydown.up");
+      expect(getDeepActiveElement()).toBe(wrapper.vm.focusOptions[1]);
+
+      wrapper.unmount();
+      document.body.removeChild(host);
     });
   });
 });

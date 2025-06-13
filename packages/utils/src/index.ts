@@ -18,6 +18,7 @@ import type {
   Hotkey as _Hotkey,
   KnownHotkey as _KnownHotkey,
 } from "./formatHotkeys";
+import getDeepActiveElement from "./getDeepActiveElement";
 import getWrappedAroundIndex from "./getWrappedAroundIndex";
 import * as intervalUtils from "./intervalUtils";
 import getLocalTimeZone from "./localTimezone";
@@ -58,6 +59,7 @@ export {
   filters,
   formatDateString,
   formatDateTimeString,
+  getDeepActiveElement,
   formatLocalDateTimeString,
   formatTimeString,
   getLocalTimeZone,

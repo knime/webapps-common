@@ -1,8 +1,8 @@
 <script>
 import "../variables.css";
-import { useActiveElement } from "@vueuse/core";
 
 import DropdownIcon from "@knime/styles/img/icons/arrow-dropdown.svg";
+import { getDeepActiveElement } from "@knime/utils";
 
 import Checkbox from "../Checkbox/Checkbox.vue";
 
@@ -133,10 +133,6 @@ export default {
     },
   },
   emits: ["update:modelValue", "focusOutside"],
-  setup() {
-    const activeElement = useActiveElement();
-    return { activeElement };
-  },
   data() {
     return {
       collapsed: true,
@@ -199,10 +195,10 @@ export default {
      * @param {Number} changeInd - the positive or negative index shift for the next Element (usually 1 || -1).
      * @returns {Element} - the next option Element in the list of options.
      */
-    getNextElement(changeInd) {
+    getNextElement(changeInd, deepActiveElement = getDeepActiveElement()) {
       return (
         this.focusOptions[
-          this.focusOptions.indexOf(this.activeElement) + changeInd
+          this.focusOptions.indexOf(deepActiveElement) + changeInd
         ] ||
         (changeInd < 0
           ? this.focusOptions[this.focusOptions.length - 1]
@@ -264,10 +260,11 @@ export default {
     },
     /* Handle arrow key "up" events. */
     onUp() {
-      if (this.activeElement === this.$refs.toggle) {
+      const deepActiveElement = getDeepActiveElement();
+      if (deepActiveElement === this.$refs.toggle) {
         return;
       }
-      this.getNextElement(-1).focus();
+      this.getNextElement(-1, deepActiveElement).focus();
     },
     /* Handle arrow key "down" events. */
     onDown() {
@@ -279,7 +276,7 @@ export default {
      */
     onFocusOut() {
       setTimeout(() => {
-        if (!this.focusElements.includes(this.activeElement)) {
+        if (!this.focusElements.includes(getDeepActiveElement())) {
           this.closeOptions(false);
           if (this.useCustomListBox) {
             this.$emit("focusOutside");
