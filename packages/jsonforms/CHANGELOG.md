@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.12.4
+
+### Patch Changes
+
+- 492d1c9: Unregister error messages on unmount to prevent duplicated error messages on subsequent mount.
+
 ## 1.12.3
 
 ### Patch Changes
