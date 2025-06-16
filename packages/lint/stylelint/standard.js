@@ -19,7 +19,7 @@ export default {
         ignoreProperties: ["content-visibility"],
       },
     ],
-    "selector-nested-pattern": "^&",
+    "selector-nested-pattern": "^([\\w\\-\\.]+|&)",
     "selector-type-case": [
       "lower",
       {
