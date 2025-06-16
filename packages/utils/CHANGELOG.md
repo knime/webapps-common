@@ -1,5 +1,11 @@
 # @knime/utils
 
+## 1.4.2
+
+### Patch Changes
+
+- 2a0a9fd: Add method to determine deep active element in shadow dom
+
 ## 1.4.1
 
 ### Patch Changes
