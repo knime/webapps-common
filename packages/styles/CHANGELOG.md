@@ -1,5 +1,11 @@
 # @knime/styles
 
+## 1.6.0
+
+### Minor Changes
+
+- 04258bf: Add type icons for database objects
+
 ## 1.5.0
 
 ### Minor Changes
