@@ -1,5 +1,16 @@
 # @knime/components
 
+## 1.30.0
+
+### Minor Changes
+
+- Fix and rename `FileExplorer`'s `clickOutsideExceptions` prop
+
+  - Rename the `clickOutsideException` prop to `clickOutsideExceptions` to reflect that it takes multiple exceptions
+  - Change the type of the mentioned prop to only allow an array of refs to HTML elements (it used to also allow a single, non-ref, HTML element) for consistency and code simplicity
+  - Remove logic that turned a single element into an array of refs
+  - Replace unnecessary usage of `useClickOutside` hook with a direct `onClickOutside` call
+
 ## 1.29.2
 
 ### Patch Changes

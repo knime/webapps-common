@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /* eslint-disable max-lines */
 import { type Ref, computed, nextTick, ref, toRef, toRefs, watch } from "vue";
-import { useResizeObserver } from "@vueuse/core";
+import { onClickOutside, useResizeObserver } from "@vueuse/core";
 import { debounce } from "lodash-es";
 
 import { getMetaOrCtrlKey } from "@knime/utils";
@@ -11,7 +11,6 @@ import {
 } from "@knime/vue-headless-virtual-scroller";
 
 import { useFocusableMultiSelection } from "../../../composables/multiSelection/useFocusableMultiSelection";
-import useClickOutside from "../../../composables/useClickOutside";
 import useKeyPressedUntilMouseClick from "../../../composables/useKeyPressedUntilMouseClick";
 import { useItemDragging } from "../composables/useItemDragging";
 import type {
@@ -87,10 +86,10 @@ interface Props {
    */
   draggingAnimationMode?: "auto" | "manual" | "disabled";
   /**
-   * Pass in html elements (or a singular element) here which, when clicked,
+   * Pass in refs to HTML elements which, when clicked,
    * should not unset the current selection.
    */
-  clickOutsideException?: Ref<HTMLElement | null>[] | (HTMLElement | null);
+  clickOutsideExceptions?: Array<Ref<HTMLElement | null>>;
   /**
    * Selected item ids
    */
@@ -109,7 +108,7 @@ const props = withDefaults(defineProps<Props>(), {
   disableSelection: false,
   disableDragging: false,
   draggingAnimationMode: "auto",
-  clickOutsideException: () => [],
+  clickOutsideExceptions: () => [],
   selectedItemIds: () => [],
 });
 
@@ -150,25 +149,6 @@ const changeDirectory = (pathId: string) => {
 const virtualItemRefs = ref<InstanceType<typeof FileExplorerItem>[]>([]);
 const itemBack = ref<{ $el: HTMLElement } | null>(null);
 const table = ref<null | HTMLTableElement>(null);
-
-/**
- * Coerce the clickOutsideException prop to an array of refs, regardless of whether
- * it was originally a single ref, an array of refs, or null.
- */
-const clickOutsideExceptions = computed<Ref<HTMLElement | null>[]>(() => {
-  let exceptions: Ref<HTMLElement | null>[];
-  if (props.clickOutsideException === null) {
-    exceptions = [];
-  } else if (Array.isArray(props.clickOutsideException)) {
-    exceptions = props.clickOutsideException;
-  } else {
-    exceptions = [
-      toRef(props, "clickOutsideException") as Ref<HTMLElement | null>,
-    ];
-  }
-
-  return exceptions;
-});
 
 /** Virtualization */
 const heightPerRow = computed(() => itemHeight + 2 /* item margin */);
@@ -546,9 +526,8 @@ const handleEnterKey = (event: KeyboardEvent, item: FileExplorerItemType) => {
   openFileOrEnterFolder(item);
 };
 
-useClickOutside({
-  targets: [table, ...clickOutsideExceptions.value],
-  callback: () => resetSelection(focusedIndex.value),
+onClickOutside(table, () => resetSelection(focusedIndex.value), {
+  ignore: props.clickOutsideExceptions,
 });
 
 // Force update the virtual scroll position at the end of setup

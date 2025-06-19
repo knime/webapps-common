@@ -1,5 +1,15 @@
 # demo
 
+## 1.4.29
+
+### Patch Changes
+
+- Updated dependencies
+  - @knime/components@1.30.0
+  - @knime/hub-features@1.10.3
+  - @knime/rich-text-editor@1.4.20
+  - @knime/virtual-tree@1.3.57
+
 ## 1.4.28
 
 ### Patch Changes
