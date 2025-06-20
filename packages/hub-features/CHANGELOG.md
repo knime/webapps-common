@@ -1,5 +1,12 @@
 # @knime/hub-features
 
+## 1.10.4
+
+### Patch Changes
+
+- cd0f5f0: Fix baseURL handling on ofetch client used by the upload, download and versions features.
+  Supplying a custom baseURL with trailing slashes now doesn't break these features
+
 ## 1.10.3
 
 ### Patch Changes
