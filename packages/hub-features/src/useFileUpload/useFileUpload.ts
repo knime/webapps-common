@@ -4,7 +4,6 @@ import { FetchError, type FetchOptions } from "ofetch";
 import { useUploadManager } from "@knime/components";
 import { getFileMimeType, knimeFileFormats, promise } from "@knime/utils";
 
-import { DEFAULT_API_BASE_URL } from "../common/constants";
 import { getFetchClient } from "../common/ofetchClient";
 import { rfcErrors } from "../rfcErrors";
 
@@ -108,8 +107,6 @@ type UseFileUploadOptions = {
  * ```
  */
 export const useFileUpload = (options: UseFileUploadOptions = {}) => {
-  const baseUrl =
-    options.customFetchClientOptions?.baseURL ?? DEFAULT_API_BASE_URL;
   const $ofetch = getFetchClient(options.customFetchClientOptions);
 
   const prepareUpload = (
@@ -141,10 +138,10 @@ export const useFileUpload = (options: UseFileUploadOptions = {}) => {
       items: Record<string, { uploadId: string }>;
     };
 
-    return $ofetch<PrepareUploadResponse>(
-      `${baseUrl}/repository/${parentId}/manifest`,
-      { method: "POST", body: { items } },
-    ).then(({ items }) => {
+    return $ofetch<PrepareUploadResponse>(`/repository/${parentId}/manifest`, {
+      method: "POST",
+      body: { items },
+    }).then(({ items }) => {
       return Object.keys(items).map((name) => {
         const { uploadId } = items[name];
         const file = fileDictionary[name];
@@ -161,7 +158,7 @@ export const useFileUpload = (options: UseFileUploadOptions = {}) => {
     };
 
     return $ofetch<UploadURLResponse>(
-      `${baseUrl}/uploads/${uploadId}/parts/?partNumber=${partNumber}`,
+      `/uploads/${uploadId}/parts/?partNumber=${partNumber}`,
       { method: "POST" },
     );
   };
@@ -170,14 +167,14 @@ export const useFileUpload = (options: UseFileUploadOptions = {}) => {
     uploadId: string,
     partIds: Record<number, string>,
   ) => {
-    return $ofetch(`${baseUrl}/uploads/${uploadId}`, {
+    return $ofetch(`/uploads/${uploadId}`, {
       method: "POST",
       body: partIds,
     });
   };
 
   const cancelUpload = (uploadId: string) => {
-    return $ofetch(`${baseUrl}/uploads/${uploadId}`, {
+    return $ofetch(`/uploads/${uploadId}`, {
       method: "DELETE",
     });
   };

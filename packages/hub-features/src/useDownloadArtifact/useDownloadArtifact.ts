@@ -4,7 +4,6 @@ import { FetchError, type FetchOptions } from "ofetch";
 import type { DownloadItem as DownloadItemExternal } from "@knime/components";
 import { sleep } from "@knime/utils";
 
-import { DEFAULT_API_BASE_URL } from "../common/constants";
 import { getFetchClient } from "../common/ofetchClient";
 import { rfcErrors } from "../rfcErrors";
 
@@ -80,12 +79,10 @@ const isAbortError = (error: unknown) =>
 export const useDownloadArtifact = (
   options: UseDownloadArtifactOptions = {},
 ) => {
+  const $ofetch = getFetchClient(options.customFetchClientOptions);
+
   const downloadItems = ref<Record<string, DownloadItem>>({});
   const abortControllers: Record<string, AbortController> = {};
-
-  const $ofetch = getFetchClient(options.customFetchClientOptions);
-  const baseUrl =
-    options.customFetchClientOptions?.baseURL ?? DEFAULT_API_BASE_URL;
 
   // Use fallback values if none are provided
   const maxRetries = options.maxRetries ?? DEFAULT_MAX_RETRIES;
@@ -111,13 +108,10 @@ export const useDownloadArtifact = (
     downloadId: string;
     signal?: AbortSignal;
   }) => {
-    return $ofetch<ArtifactStatusResponse>(
-      `${baseUrl}/downloads/${downloadId}/status`,
-      {
-        method: "GET",
-        signal,
-      },
-    );
+    return $ofetch<ArtifactStatusResponse>(`/downloads/${downloadId}/status`, {
+      method: "GET",
+      signal,
+    });
   };
 
   const openDownload = (downloadUrl: string) => {
@@ -255,7 +249,7 @@ export const useDownloadArtifact = (
   }) => {
     try {
       const response = await $ofetch<RequestDownloadResponse>(
-        `${baseUrl}/repository/${itemId}/artifact`,
+        `/repository/${itemId}/artifact`,
         {
           method: "GET",
           query: { version },

@@ -31,8 +31,6 @@ const downloadFailedResponse = {
 
 const defaultItemName = "top-secret-file";
 
-const baseURL = "/_/api";
-
 describe("useDownloadArtifact", () => {
   beforeEach(() => {
     vi.resetAllMocks();
@@ -44,7 +42,7 @@ describe("useDownloadArtifact", () => {
     initialCallSucceeds = true,
     retriesUntilDownloadIsReady = 0,
     downloadSucceeds = true,
-    options = { customFetchClientOptions: { baseURL } },
+    options = {},
   }: {
     initialCallSucceeds?: boolean;
     retriesUntilDownloadIsReady?: number;
@@ -86,7 +84,7 @@ describe("useDownloadArtifact", () => {
     await start({ itemId: defaultItemId, name: defaultItemName });
     expect($ofetchMock).toHaveBeenNthCalledWith(
       1,
-      `${baseURL}/repository/${defaultItemId}/artifact`,
+      `/repository/${defaultItemId}/artifact`,
       {
         method: "GET",
         query: { version: undefined },
@@ -94,7 +92,7 @@ describe("useDownloadArtifact", () => {
     );
     expect($ofetchMock).toHaveBeenNthCalledWith(
       2,
-      `${baseURL}/downloads/${defaultDownloadId}/status`,
+      `/downloads/${defaultDownloadId}/status`,
       {
         method: "GET",
         signal: undefined,

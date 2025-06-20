@@ -71,8 +71,6 @@ describe("useFileUpload", () => {
     { type: knimeFileFormats.KNWF.mimeType },
   );
 
-  const mockAPIUrl = "http://myapi.com";
-
   beforeEach(() => {
     $ofetchMock
       .mockResolvedValueOnce({
@@ -85,15 +83,13 @@ describe("useFileUpload", () => {
   });
 
   it("should start an upload", async () => {
-    const { start, uploadItems } = useFileUpload({
-      customFetchClientOptions: { baseURL: mockAPIUrl },
-    });
+    const { start, uploadItems } = useFileUpload();
 
     start(parentId, [file1, file2]);
     await flushPromises();
 
     expect($ofetchMock).toHaveBeenCalledWith(
-      `${mockAPIUrl}/repository/${parentId}/manifest`,
+      `/repository/${parentId}/manifest`,
       {
         method: "POST",
         body: {
@@ -131,11 +127,11 @@ describe("useFileUpload", () => {
     ]);
 
     expect($ofetchMock).toHaveBeenCalledWith(
-      `${mockAPIUrl}/uploads/upload1/parts/?partNumber=1`,
+      "/uploads/upload1/parts/?partNumber=1",
       { method: "POST" },
     );
     expect($ofetchMock).toHaveBeenCalledWith(
-      `${mockAPIUrl}/uploads/upload2/parts/?partNumber=1`,
+      "/uploads/upload2/parts/?partNumber=1",
       { method: "POST" },
     );
   });
@@ -157,7 +153,7 @@ describe("useFileUpload", () => {
         });
 
       const { start, isPreparingUpload, totalFilesBeingPrepared } =
-        useFileUpload({ customFetchClientOptions: { baseURL: mockAPIUrl } });
+        useFileUpload();
 
       start(parentId, [file1, file2]);
 
@@ -187,15 +183,13 @@ describe("useFileUpload", () => {
           },
         })
         .mockResolvedValue(JSON.stringify({ method: "", url: "" }));
-      const { start } = useFileUpload({
-        customFetchClientOptions: { baseURL: mockAPIUrl },
-      });
+      const { start } = useFileUpload();
 
       start(parentId, [file1, wfFile]);
       await flushPromises();
 
       expect($ofetchMock).toHaveBeenCalledWith(
-        `${mockAPIUrl}/repository/${parentId}/manifest`,
+        `/repository/${parentId}/manifest`,
         {
           method: "POST",
           body: {
@@ -220,7 +214,7 @@ describe("useFileUpload", () => {
       );
 
       const { start, isPreparingUpload, totalFilesBeingPrepared } =
-        useFileUpload({ customFetchClientOptions: { baseURL: mockAPIUrl } });
+        useFileUpload();
 
       await expect(() =>
         start(parentId, [file1, file2]),
@@ -239,9 +233,7 @@ describe("useFileUpload", () => {
       },
     });
 
-    const { start, hasPendingUploads, totalPendingUploads } = useFileUpload({
-      customFetchClientOptions: { baseURL: mockAPIUrl },
-    });
+    const { start, hasPendingUploads, totalPendingUploads } = useFileUpload();
 
     start(parentId, [file1, file2]);
     await flushPromises();
@@ -262,9 +254,7 @@ describe("useFileUpload", () => {
     });
 
     it("should add uploadId to unprocessedUploads when starting upload for file with processing step", async () => {
-      const { start, unprocessedUploads } = useFileUpload({
-        customFetchClientOptions: { baseURL: mockAPIUrl },
-      });
+      const { start, unprocessedUploads } = useFileUpload();
 
       expect(unprocessedUploads.size).toBe(0);
 
@@ -282,9 +272,7 @@ describe("useFileUpload", () => {
         })
         .mockResolvedValueOnce(JSON.stringify({ method: "", url: "" }))
         .mockResolvedValueOnce(null);
-      const { start, unprocessedUploads } = useFileUpload({
-        customFetchClientOptions: { baseURL: mockAPIUrl },
-      });
+      const { start, unprocessedUploads } = useFileUpload();
 
       expect(unprocessedUploads.size).toBe(0);
 
@@ -296,9 +284,7 @@ describe("useFileUpload", () => {
 
     it("setProcessingCompleted should update item state accordingly", async () => {
       const { start, unprocessedUploads, setProcessingCompleted } =
-        useFileUpload({
-          customFetchClientOptions: { baseURL: mockAPIUrl },
-        });
+        useFileUpload();
 
       expect(unprocessedUploads.size).toBe(0);
 
@@ -320,9 +306,8 @@ describe("useFileUpload", () => {
     });
 
     it("setProcessingFailed should update item state accordingly", async () => {
-      const { start, unprocessedUploads, setProcessingFailed } = useFileUpload({
-        customFetchClientOptions: { baseURL: mockAPIUrl },
-      });
+      const { start, unprocessedUploads, setProcessingFailed } =
+        useFileUpload();
 
       expect(unprocessedUploads.size).toBe(0);
 
@@ -348,7 +333,6 @@ describe("useFileUpload", () => {
     it("should handle successful completion of an upload", async () => {
       const onFileUploadComplete = vi.fn();
       const { start } = useFileUpload({
-        customFetchClientOptions: { baseURL: mockAPIUrl },
         onFileUploadComplete,
       });
 
@@ -370,13 +354,10 @@ describe("useFileUpload", () => {
         },
         parentId,
       });
-      expect($ofetchMock).toHaveBeenCalledWith(
-        `${mockAPIUrl}/uploads/upload1`,
-        {
-          method: "POST",
-          body: { 1: "part1" },
-        },
-      );
+      expect($ofetchMock).toHaveBeenCalledWith("/uploads/upload1", {
+        method: "POST",
+        body: { 1: "part1" },
+      });
     });
 
     it("should handle failing to complete an upload", async () => {
@@ -396,9 +377,7 @@ describe("useFileUpload", () => {
         .mockResolvedValueOnce({ method: "", url: "" })
         .mockRejectedValue(apiError);
 
-      const { start, uploadItems } = useFileUpload({
-        customFetchClientOptions: { baseURL: mockAPIUrl },
-      });
+      const { start, uploadItems } = useFileUpload();
 
       start(parentId, [file1]);
       await flushPromises();
@@ -409,13 +388,10 @@ describe("useFileUpload", () => {
         parentId,
       });
 
-      expect($ofetchMock).toHaveBeenLastCalledWith(
-        `${mockAPIUrl}/uploads/upload1`,
-        {
-          method: "POST",
-          body: { 1: "part1" },
-        },
-      );
+      expect($ofetchMock).toHaveBeenLastCalledWith("/uploads/upload1", {
+        method: "POST",
+        body: { 1: "part1" },
+      });
 
       await flushPromises();
       expect(setFailedSpy).toHaveBeenCalledWith("upload1", apiError);
@@ -437,7 +413,6 @@ describe("useFileUpload", () => {
   it("should forward call of `onFileUploadFailed`", async () => {
     const onFileUploadFailed = vi.fn();
     const { start } = useFileUpload({
-      customFetchClientOptions: { baseURL: mockAPIUrl },
       onFileUploadFailed,
     });
 
@@ -459,21 +434,16 @@ describe("useFileUpload", () => {
   });
 
   it("should cancel an upload", async () => {
-    const { start, uploadItems, cancel } = useFileUpload({
-      customFetchClientOptions: { baseURL: mockAPIUrl },
-    });
+    const { start, uploadItems, cancel } = useFileUpload();
 
     start(parentId, [file1, file2]);
     await flushPromises();
 
     cancel("upload1");
 
-    expect($ofetchMock).toHaveBeenLastCalledWith(
-      `${mockAPIUrl}/uploads/upload1`,
-      {
-        method: "DELETE",
-      },
-    );
+    expect($ofetchMock).toHaveBeenLastCalledWith("/uploads/upload1", {
+      method: "DELETE",
+    });
 
     expect(uploadItems.value).toEqual([
       expect.objectContaining({ id: "upload1", status: "cancelled" }),
@@ -484,7 +454,6 @@ describe("useFileUpload", () => {
   it("should handle upload queue size", async () => {
     const onUploadQueueSizeExceeded = vi.fn();
     const { start } = useFileUpload({
-      customFetchClientOptions: { baseURL: mockAPIUrl },
       maxUploadQueueSize: 2,
       onUploadQueueSizeExceeded,
     });

@@ -12,7 +12,6 @@ import type {
   WithLabels,
 } from "@knime/hub-features/versions";
 
-import { DEFAULT_API_BASE_URL } from "../../common/constants";
 import { getFetchClient } from "../../common/ofetchClient";
 
 type UseVersionsApiOptions = {
@@ -22,10 +21,7 @@ type UseVersionsApiOptions = {
 export const useVersionsApi = ({
   customFetchClientOptions,
 }: UseVersionsApiOptions) => {
-  const { baseURL = DEFAULT_API_BASE_URL, ...otherCustomOptions } =
-    customFetchClientOptions ?? {};
-
-  const $ofetch = getFetchClient({ baseURL, ...otherCustomOptions });
+  const $ofetch = getFetchClient(customFetchClientOptions);
 
   const doHubRequest = (path: string, fetchOptions?: FetchOptions) => {
     const defaults: FetchOptions = {

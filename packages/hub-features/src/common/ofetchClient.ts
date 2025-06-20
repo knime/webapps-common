@@ -1,6 +1,8 @@
 import { merge } from "lodash-es";
 import { type FetchOptions, ofetch } from "ofetch";
 
+import { DEFAULT_API_BASE_URL } from "./constants";
+
 export const defaultConfig: FetchOptions = {
   headers: {
     "Content-Type": "application/json",
@@ -10,5 +12,11 @@ export const defaultConfig: FetchOptions = {
   },
 } as const;
 
-export const getFetchClient = (customOptions?: FetchOptions) =>
-  ofetch.create(merge(customOptions, defaultConfig));
+export const getFetchClient = (customOptions?: FetchOptions) => {
+  const { baseURL = DEFAULT_API_BASE_URL, ...otherCustomOptions } =
+    customOptions ?? {};
+
+  return ofetch.create(
+    merge({ baseURL, ...otherCustomOptions }, defaultConfig),
+  );
+};
