@@ -34,6 +34,7 @@ export default {
     "@img/sharp-libvips-linuxmusl-arm64@1.0.2",
     "@img/sharp-libvips-linuxmusl-x64@1.0.2",
     "@img/sharp-libvips-win32-x64",
+    "@netlify/binary-info@1.0.0", // licensed under Apache-2.0 but not included in the production app
     "audit-resolve-core@3.0.0-3", // licensed under Apache-2.0 but file not included in the production app
     "npm-audit-resolver@3.0.0-RC.0", // recognized as Apache* but is actually Apache-2.0 license
     "esm-resolve@1.0.8", // recognized as Apache* but is actually Apache-2.0 license
