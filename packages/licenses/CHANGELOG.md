@@ -1,5 +1,11 @@
 # @knime/licenses
 
+## 1.1.1
+
+### Patch Changes
+
+- d21b6d6: Adding @netlify/binary-info to license exceptions (uses Apache-2.0)
+
 ## 1.1.0
 
 ### Minor Changes
