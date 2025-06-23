@@ -18,8 +18,20 @@ type ArtifactStatusResponse = {
   downloadUrl?: string;
 };
 
-type RequestDownloadResponse = {
-  downloadId: string;
+// Initial request can have either download url (if it can be downloaded immediately) or download id (to poll for the status)
+type RequestDownloadResponse =
+  | {
+      downloadId: string;
+    }
+  | {
+      downloadUrl: string;
+    };
+
+// type guard
+const hasDownloadUrl = (
+  response: RequestDownloadResponse,
+): response is { downloadUrl: string } => {
+  return "downloadUrl" in response;
 };
 
 /**
@@ -255,24 +267,20 @@ export const useDownloadArtifact = (
           query: { version },
         },
       );
-      const downloadId = response.downloadId;
 
-      const downloadStatusResponse = await fetchDownloadStatus({ downloadId });
-
-      if (
-        // download is ready immediately, no polling needed
-        downloadStatusResponse?.status === "READY" &&
-        downloadStatusResponse?.downloadUrl
-      ) {
-        openDownload(downloadStatusResponse.downloadUrl);
-      } else {
-        await pollDownloadItem({
-          itemId,
-          version,
-          downloadId,
-          name,
-        });
+      // if download is ready, open url immediately
+      if (hasDownloadUrl(response)) {
+        openDownload(response.downloadUrl);
+        return;
       }
+
+      // otherwise start polling download status
+      await pollDownloadItem({
+        itemId,
+        version,
+        downloadId: response.downloadId,
+        name,
+      });
     } catch (error: unknown) {
       // here only errors thrown by the initial requests are caught;
       // errors occurring while polling will be handled in pollDownloadItem
