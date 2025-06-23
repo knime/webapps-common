@@ -1,5 +1,11 @@
 # @knime/hub-features
 
+## 1.10.5
+
+### Patch Changes
+
+- 805588d: update async download flow in useDownloadArtifact to reflect api changes
+
 ## 1.10.4
 
 ### Patch Changes
