@@ -1,5 +1,11 @@
 # @knime/styles
 
+## 1.7.0
+
+### Minor Changes
+
+- 8e21558: Added new color to the knime color collection
+
 ## 1.6.0
 
 ### Minor Changes
