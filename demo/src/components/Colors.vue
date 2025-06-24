@@ -156,6 +156,9 @@ export default {
           <div style="--bg: var(--knime-stone-dark); --font: white">
             --knime-stone-dark
           </div>
+          <div style="--bg: var(--knime-light-yellow); --font: dark">
+            --knime-light-yellow
+          </div>
         </div>
 
         <h4>Node Background Colors</h4>

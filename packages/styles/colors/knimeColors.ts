@@ -46,6 +46,7 @@ export const StoneLight = "hsl(220, 4.3%, 86.5%)"; /* #dbdcde */
 export const Wood = "hsl(24, 46.4%, 67.1%)"; /* #d2a384 */
 export const WoodDark = "hsl(26, 33%, 35.1%)"; /* #77563c */
 export const WoodLight = "hsl(30, 100%, 85.1%)"; /* #ffd9b3 */
+export const LightYellow = "hsl(49, 73%, 91%)"; /* #F9F3D8 */
 
 /* colors not defined in the corporate styleguide */
 export const Black = "hsl(0, 3%, 12%)"; /* #201E1E */
