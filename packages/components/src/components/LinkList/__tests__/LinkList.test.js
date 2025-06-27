@@ -3,7 +3,7 @@ import { mount, shallowMount } from "@vue/test-utils";
 
 import LinkList from "../LinkList.vue";
 
-describe("LinkList.vue", () => {
+describe("LinkList", () => {
   it("renders links", () => {
     const links = [
       {

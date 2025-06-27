@@ -18,7 +18,7 @@ import {
 } from "../../../testUtils/component";
 import IntegerControl from "../IntegerControl.vue";
 
-describe("IntegerControl.vue", () => {
+describe("IntegerControl", () => {
   let props: VueControlTestProps<typeof IntegerControl>,
     wrapper: VueWrapper,
     changeValue: Mock;

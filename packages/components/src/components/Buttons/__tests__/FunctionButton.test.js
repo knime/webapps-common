@@ -4,7 +4,7 @@ import { mount, shallowMount } from "@vue/test-utils";
 import BaseButton from "../../base/Button/BaseButton.vue";
 import FunctionButton from "../FunctionButton.vue";
 
-describe("FunctionButton.vue", () => {
+describe("FunctionButton", () => {
   it("renders a FunctionButton", () => {
     const wrapper = shallowMount(FunctionButton, {
       slots: {

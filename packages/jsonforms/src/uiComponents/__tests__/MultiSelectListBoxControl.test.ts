@@ -20,7 +20,7 @@ import {
 import type { IdAndText } from "../../types/ChoicesUiSchema";
 import MultiSelectListBoxControl from "../MultiSelectListBoxControl.vue";
 
-describe("MultiSelectListBoxControl.vue", () => {
+describe("MultiSelectListBoxControl", () => {
   let wrapper: VueWrapper,
     props: VueControlTestProps<typeof MultiSelectListBoxControl>,
     changeValue: Mock;

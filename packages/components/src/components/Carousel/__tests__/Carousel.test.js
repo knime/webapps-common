@@ -4,7 +4,7 @@ import { shallowMount } from "@vue/test-utils";
 
 import Carousel from "../Carousel.vue";
 
-describe("Carousel.vue", () => {
+describe("Carousel", () => {
   it("renders default", () => {
     const wrapper = shallowMount(Carousel);
 

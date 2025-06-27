@@ -183,12 +183,10 @@ export default {
      */
     leftLabel: {
       type: String,
-      required: true,
       default: "Possible values",
     },
     rightLabel: {
       type: String,
-      required: true,
       default: "Selected values",
     },
     withSearchLabel: {

@@ -4,7 +4,7 @@ import { shallowMount } from "@vue/test-utils";
 import BaseButton from "../../base/Button/BaseButton.vue";
 import Button from "../Button.vue";
 
-describe("Button.vue", () => {
+describe("Button", () => {
   it("renders a button", () => {
     const wrapper = shallowMount(Button);
     expect(wrapper.findComponent(BaseButton).exists()).toBeTruthy();

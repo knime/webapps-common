@@ -3,7 +3,7 @@ import { mount } from "@vue/test-utils";
 
 import Description from "../Description.vue";
 
-describe("Description.vue", () => {
+describe("Description", () => {
   it("renders plain text", () => {
     const text = "<p>testtext</p>";
     const wrapper = mount(Description, {

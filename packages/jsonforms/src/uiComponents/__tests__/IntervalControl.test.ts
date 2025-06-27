@@ -19,7 +19,7 @@ import {
 } from "../../../testUtils/component";
 import IntervalControl from "../IntervalControl.vue";
 
-describe("IntervalControl.vue", () => {
+describe("IntervalControl", () => {
   let props: VueControlTestProps<typeof IntervalControl>,
     wrapper: VueWrapper,
     changeValue: Mock;

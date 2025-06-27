@@ -3,7 +3,7 @@ import { mount } from "@vue/test-utils";
 
 import ToggleSwitch from "../ToggleSwitch.vue";
 
-describe("ToggleSwitch.vue", () => {
+describe("ToggleSwitch", () => {
   it("renders", () => {
     const wrapper = mount(ToggleSwitch, {
       props: {

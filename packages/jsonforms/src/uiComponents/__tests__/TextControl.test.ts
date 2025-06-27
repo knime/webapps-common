@@ -19,7 +19,7 @@ import {
 } from "../../../testUtils/component";
 import TextControl from "../TextControl.vue";
 
-describe("TextControl.vue", () => {
+describe("TextControl", () => {
   let props: VueControlTestProps<typeof TextControl>,
     wrapper: VueWrapper,
     changeValue: Mock;

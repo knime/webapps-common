@@ -9,7 +9,7 @@ import MultiselectListBox from "../../MultiselectListBox/MultiselectListBox.vue"
 import SearchInput from "../../SearchInput/SearchInput.vue";
 import Twinlist from "../Twinlist.vue";
 
-describe("Twinlist.vue", () => {
+describe("Twinlist", () => {
   let defaultPossibleValues;
 
   const expectEmittedModelValueAndSetAsProp = (wrapper, modelValue) => {

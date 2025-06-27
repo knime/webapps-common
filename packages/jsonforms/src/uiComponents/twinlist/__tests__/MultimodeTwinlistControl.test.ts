@@ -21,7 +21,7 @@ import {
 import { mergeDeep } from "../../../utils";
 import TwinlistControl from "../MultimodeTwinlistControl.vue";
 
-describe("TwinlistControl.vue", () => {
+describe("TwinlistControl", () => {
   let props: VueControlTestProps<typeof TwinlistControl>;
 
   const labelForId = "myLabelForId";

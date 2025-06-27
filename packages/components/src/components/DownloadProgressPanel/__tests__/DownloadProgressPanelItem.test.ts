@@ -39,7 +39,7 @@ const itemStatesTestCases = {
   },
 } as const;
 
-describe("DownloadProgressPanelItem.vue", () => {
+describe("DownloadProgressPanelItem", () => {
   const doMount = ({ item = structuredClone(downloadItemMocks[0]) } = {}) => {
     return mount(DownloadProgressPanelItem, { props: { item } });
   };

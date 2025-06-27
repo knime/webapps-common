@@ -66,7 +66,7 @@ const doMount = ({ mountProps }: { mountProps?: Partial<Props> } = {}) => {
   return { wrapper };
 };
 
-describe("ManageVersions.vue", () => {
+describe("ManageVersions", () => {
   describe("rendering", () => {
     it("renders component", () => {
       const { wrapper } = doMount();

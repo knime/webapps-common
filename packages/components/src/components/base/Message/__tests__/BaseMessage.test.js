@@ -3,7 +3,7 @@ import { mount } from "@vue/test-utils";
 
 import BaseMessage from "../BaseMessage.vue";
 
-describe("BaseMessage.vue", () => {
+describe("BaseMessage", () => {
   let wrapper;
 
   it("renders default", () => {

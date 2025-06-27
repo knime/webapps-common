@@ -9,7 +9,7 @@ import SignWarningIcon from "@knime/styles/img/icons/sign-warning.svg";
 
 import InlineMessage, { type InlineMessageVariant } from "../InlineMessage.vue";
 
-describe("Message.vue", () => {
+describe("Message", () => {
   let wrapper;
 
   it.each([

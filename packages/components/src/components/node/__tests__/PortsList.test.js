@@ -4,7 +4,7 @@ import { shallowMount } from "@vue/test-utils";
 import PortGroup from "../PortGroup.vue";
 import PortsList from "../PortsList.vue";
 
-describe("PortsList.vue", () => {
+describe("PortsList", () => {
   it("renders", () => {
     const wrapper = shallowMount(PortsList);
     expect(wrapper.findComponent(PortsList)).toBeTruthy();

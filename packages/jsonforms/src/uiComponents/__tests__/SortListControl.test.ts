@@ -23,7 +23,7 @@ import SortListControl, {
   DEFAULT_ANY_UNKNOWN_VALUES_ID,
 } from "../SortListControl.vue";
 
-describe("SortListControl.vue", () => {
+describe("SortListControl", () => {
   let props: VueControlTestProps<typeof SortListControl>,
     wrapper: VueWrapper,
     changeValue: Mock;

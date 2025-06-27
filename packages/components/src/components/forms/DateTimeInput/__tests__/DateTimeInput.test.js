@@ -16,7 +16,7 @@ import TimePartInput from "../../TimePartInput/TimePartInput.vue";
 import DateTimeInput from "../DateTimeInput.vue";
 
 // TODO fix test
-describe("DateTimeInput.vue", () => {
+describe("DateTimeInput", () => {
   let context, props;
 
   beforeEach(() => {

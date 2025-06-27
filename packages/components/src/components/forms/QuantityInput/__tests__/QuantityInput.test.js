@@ -5,7 +5,7 @@ import { shallowMount } from "@vue/test-utils";
 import FunctionButton from "../../../Buttons/FunctionButton.vue";
 import QuantityInput from "../QuantityInput.vue";
 
-describe("QuantityInput.vue", () => {
+describe("QuantityInput", () => {
   it("renders", () => {
     const wrapper = shallowMount(QuantityInput, {
       props: {

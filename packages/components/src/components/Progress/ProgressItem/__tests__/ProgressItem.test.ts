@@ -6,7 +6,7 @@ import ProgressBar from "../../ProgressBar/ProgressBar.vue";
 import type { ProgressItemProps } from "../../types";
 import ProgressItem from "../ProgressItem.vue";
 
-describe("ProgressItem.vue", () => {
+describe("ProgressItem", () => {
   const defaultProps: ProgressItemProps = {
     id: "test",
     title: "testfile.txt",

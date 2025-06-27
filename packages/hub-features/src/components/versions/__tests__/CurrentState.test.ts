@@ -51,7 +51,7 @@ const savepoint: Props["currentStateSavepoint"] = {
   savepointNumber: 3,
 };
 
-describe("CurrentState.vue", () => {
+describe("CurrentState", () => {
   const doMount = ({ mountProps }: { mountProps?: Partial<Props> } = {}) => {
     const defaultProps: Props = {
       hasEditCapability: true,

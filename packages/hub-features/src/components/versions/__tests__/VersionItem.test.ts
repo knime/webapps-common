@@ -59,7 +59,7 @@ const doMount = ({ mountProps }: { mountProps?: Partial<Props> } = {}) => {
 const findMenuItemByText = (menuItems: Array<MenuItem>, text: string) =>
   menuItems.find((item) => item.text === text);
 
-describe("VersionItem.vue", () => {
+describe("VersionItem", () => {
   describe("rendering", () => {
     it("renders basic component", () => {
       const { wrapper, findLabelList } = doMount();

@@ -18,7 +18,7 @@ import {
 } from "../../../testUtils/component";
 import CheckboxesControl from "../CheckboxesControl.vue";
 
-describe("CheckboxesControl.vue", () => {
+describe("CheckboxesControl", () => {
   let wrapper: VueWrapper,
     props: VueControlTestProps<typeof CheckboxesControl>,
     changeValue: Mock;

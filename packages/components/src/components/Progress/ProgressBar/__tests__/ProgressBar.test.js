@@ -3,7 +3,7 @@ import { mount } from "@vue/test-utils";
 
 import ProgressBar from "../ProgressBar.vue";
 
-describe("ProgressBar.vue", () => {
+describe("ProgressBar", () => {
   it("renders", () => {
     let props = {
       compact: false,

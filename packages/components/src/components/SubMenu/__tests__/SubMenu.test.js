@@ -28,7 +28,7 @@ vi.mock("@floating-ui/vue", () => ({
 }));
 vi.mock("../../../composables/useClickOutside", () => ({ default: vi.fn() }));
 
-describe("SubMenu.vue", () => {
+describe("SubMenu", () => {
   let props;
 
   afterEach(() => {

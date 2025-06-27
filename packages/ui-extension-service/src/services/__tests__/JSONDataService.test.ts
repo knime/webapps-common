@@ -36,6 +36,7 @@ describe("JsonDataService", () => {
             result: JSON.stringify({ isApplied: true }),
           });
         }
+        return Promise.resolve();
       }),
       publishData: vi.fn(),
       sendAlert: vi.fn(),

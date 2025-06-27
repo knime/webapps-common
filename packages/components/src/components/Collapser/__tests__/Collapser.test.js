@@ -3,7 +3,7 @@ import { mount } from "@vue/test-utils";
 
 import Collapser from "../Collapser.vue";
 
-describe("Collapser.vue", () => {
+describe("Collapser", () => {
   it("renders content and title", () => {
     const wrapper = mount(Collapser, {
       slots: {

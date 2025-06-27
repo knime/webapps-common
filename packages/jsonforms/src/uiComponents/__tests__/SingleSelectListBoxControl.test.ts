@@ -20,7 +20,7 @@ import {
 import type { IdAndText } from "../../types/ChoicesUiSchema";
 import SingleSelectListBoxControl from "../SingleSelectListBoxControl.vue";
 
-describe("SingleSelectListBoxControl.vue", () => {
+describe("SingleSelectListBoxControl", () => {
   let wrapper: VueWrapper,
     props: VueControlTestProps<typeof SingleSelectListBoxControl>,
     changeValue: Mock;

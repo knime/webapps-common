@@ -71,7 +71,6 @@ export default {
     "click-item": (_item: BreadcrumbItem) => true,
   },
   computed: {
-    // TODO: Can be made into a composition function
     linkComponent() {
       return resolveNuxtLinkComponent();
     },

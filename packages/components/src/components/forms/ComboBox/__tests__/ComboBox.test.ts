@@ -33,7 +33,7 @@ const doMount = (
     ...options,
   });
 
-describe("ComboBox.vue", () => {
+describe("ComboBox", () => {
   it("renders", () => {
     const wrapper = doMount();
     expect(wrapper.html()).toBeTruthy();

@@ -6,7 +6,7 @@ import ArrowNext from "@knime/styles/img/icons/arrow-next.svg";
 
 import Breadcrumb from "../Breadcrumb.vue";
 
-describe("Breadcrumb.vue", () => {
+describe("Breadcrumb", () => {
   it("renders nothing by default", () => {
     let wrapper = shallowMount(Breadcrumb);
     expect(wrapper.find("nav").exists()).toBeFalsy();

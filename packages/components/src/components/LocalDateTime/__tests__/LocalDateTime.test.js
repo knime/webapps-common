@@ -9,7 +9,7 @@ import LocalDateTime from "../LocalDateTime.vue";
 const dateOffset = "2023-01-23T09:15:28+00:00";
 const dateUTC = "2023-01-23T09:15:28.000Z";
 
-describe("LocalDateTime.vue", () => {
+describe("LocalDateTime", () => {
   it("renders a date", async () => {
     const wrapper = shallowMount(LocalDateTime, {
       propsData: {

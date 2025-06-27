@@ -105,7 +105,7 @@ vi.mock("@tiptap/vue-3", () => {
   };
 });
 
-describe("RichTextEditor.vue", () => {
+describe("RichTextEditor", () => {
   afterEach(() => {
     vi.clearAllMocks();
   });

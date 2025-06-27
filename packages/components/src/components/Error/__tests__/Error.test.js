@@ -3,7 +3,7 @@ import { shallowMount } from "@vue/test-utils";
 
 import Error from "../Error.vue";
 
-describe("Error.vue", () => {
+describe("Error", () => {
   it("renders default", () => {
     const wrapper = shallowMount(Error);
     expect(wrapper.isVisible()).toBeTruthy();

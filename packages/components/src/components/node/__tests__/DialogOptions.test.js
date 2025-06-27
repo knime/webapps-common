@@ -4,7 +4,7 @@ import { mount, shallowMount } from "@vue/test-utils";
 import Collapser from "../../Collapser/Collapser.vue";
 import DialogOptions from "../DialogOptions.vue";
 
-describe("DialogOptions.vue", () => {
+describe("DialogOptions", () => {
   it("renders", () => {
     const wrapper = shallowMount(DialogOptions, {
       props: {

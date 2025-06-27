@@ -19,7 +19,7 @@ import {
 } from "../../../testUtils/component";
 import DateControl from "../DateControl.vue";
 
-describe("DateControl.vue", () => {
+describe("DateControl", () => {
   let props: VueControlTestProps<typeof DateControl>,
     wrapper: VueWrapper,
     changeValue: Mock;

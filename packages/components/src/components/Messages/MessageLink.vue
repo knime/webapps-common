@@ -27,7 +27,6 @@ export default {
     },
   },
   computed: {
-    // TODO: Can be made into a composition function
     linkComponent() {
       return resolveNuxtLinkComponent();
     },

@@ -4,7 +4,7 @@ import { mount } from "@vue/test-utils";
 import BaseRadioButtons from "../../RadioButtons/BaseRadioButtons.vue";
 import ValueSwitch from "../ValueSwitch.vue";
 
-describe("ValueSwitch.vue", () => {
+describe("ValueSwitch", () => {
   const possibleValues = new Array(3).fill(0).map((_, index) => ({
     id: `test${index + 1}`,
     text: `Text ${index + 1}`,

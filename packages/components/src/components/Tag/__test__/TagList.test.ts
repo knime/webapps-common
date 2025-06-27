@@ -16,7 +16,7 @@ const sevenTags = [
 const threeTags = ["tag1", "tag2", "tagedyTag"];
 const defaultNumInitialTags = 5;
 
-describe("TagList.vue", () => {
+describe("TagList", () => {
   const checkTagTexts = (
     wrappers: VueWrapper[],
     expectedTags: string[],

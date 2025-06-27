@@ -27,7 +27,7 @@ vi.mock("@vueuse/core", () => ({
   useVirtualList: vi.fn((possibleValues) => useVirtualListMock(possibleValues)),
 }));
 
-describe("MultiselectListBox.vue", () => {
+describe("MultiselectListBox", () => {
   let possibleValues;
 
   beforeEach(() => {

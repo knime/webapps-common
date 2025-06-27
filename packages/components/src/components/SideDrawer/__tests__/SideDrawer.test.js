@@ -8,7 +8,7 @@ const assertExpandStatus = (wrapper, isExpanded) => {
   expect(wrapper.find(".content").exists()).toBe(isExpanded);
 };
 
-describe("SideDrawer.vue", () => {
+describe("SideDrawer", () => {
   let wrapper;
 
   beforeEach(() => {

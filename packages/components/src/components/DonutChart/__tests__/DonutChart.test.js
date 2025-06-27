@@ -3,7 +3,7 @@ import { mount } from "@vue/test-utils";
 
 import DonutChart from "../DonutChart.vue";
 
-describe("DonutChart.vue", () => {
+describe("DonutChart", () => {
   const defaultValue = 3;
   const defaultMaxValue = 10;
   const defaultCircumference = 251.32741;

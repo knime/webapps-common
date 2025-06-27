@@ -15,7 +15,7 @@ import {
   iFrameExtensionConfig,
 } from "./extensionConfig";
 
-describe("UIExtension.vue", () => {
+describe("UIExtension", () => {
   type UIExtensionProps = {
     apiLayer: UIExtensionAPILayer;
     extensionConfig: ExtensionConfig;

@@ -3,7 +3,7 @@ import { mount } from "@vue/test-utils";
 
 import Tag from "../Tag.vue";
 
-describe("Tag.vue", () => {
+describe("Tag", () => {
   it("renders not clickable tag", () => {
     const wrapper = mount(Tag, {
       slots: {

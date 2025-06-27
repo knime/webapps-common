@@ -7,7 +7,7 @@ import BoldIcon from "@knime/styles/img/icons/bold.svg";
 import type { EditorToolItem } from "../../types";
 import RichTextEditorToolbar from "../RichTextEditorToolbar.vue";
 
-describe("RichTextEditorToolbar.vue", () => {
+describe("RichTextEditorToolbar", () => {
   it("displays secondary tools", () => {
     const toolName = "Tool name";
     const toolId = "toolId";

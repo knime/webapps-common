@@ -22,7 +22,7 @@ const samplePackages = [
   },
 ];
 
-describe("OpenSourceCredits.vue", () => {
+describe("OpenSourceCredits", () => {
   let wrapper;
 
   beforeAll(() => {

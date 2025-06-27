@@ -13,7 +13,7 @@ import * as IframeEmbedderModule from "../../logic/iframe/embedder";
 import UIExtIFrame from "../UIExtIFrame.vue";
 import type { UIExtensionServiceAPILayer } from "../types";
 
-describe("UIExtIFrame.vue", () => {
+describe("UIExtIFrame", () => {
   const resourceLocation = "resourceLocation";
   const apiLayer = {} as UIExtensionServiceAPILayer;
   const mockedEmbedderService = {

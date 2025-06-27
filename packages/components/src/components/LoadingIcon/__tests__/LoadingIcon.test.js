@@ -3,7 +3,7 @@ import { shallowMount } from "@vue/test-utils";
 
 import LoadingIcon from "../LoadingIcon.vue";
 
-describe("LoadingIcon.vue", () => {
+describe("LoadingIcon", () => {
   it("renders", () => {
     const wrapper = shallowMount(LoadingIcon);
 

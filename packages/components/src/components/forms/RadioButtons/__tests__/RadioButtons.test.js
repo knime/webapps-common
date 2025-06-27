@@ -4,7 +4,7 @@ import { mount } from "@vue/test-utils";
 import BaseRadioButtons from "../BaseRadioButtons.vue";
 import RadioButtons from "../RadioButtons.vue";
 
-describe("RadioButtons.vue", () => {
+describe("RadioButtons", () => {
   let possibleValues;
 
   beforeEach(() => {

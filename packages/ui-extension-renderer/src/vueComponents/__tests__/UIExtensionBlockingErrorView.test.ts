@@ -7,7 +7,7 @@ import CircleCloseIcon from "@knime/styles/img/icons/circle-close.svg";
 import UIExtensionBlockingErrorView from "../UIExtensionBlockingErrorView.vue";
 import { type ErrorAlert, USER_ERROR_CODE_BLOCKING } from "../types";
 
-describe("UIExtensionBlockingErrorView.vue", () => {
+describe("UIExtensionBlockingErrorView", () => {
   const shallowMountView = (props: { alert: ErrorAlert | null }) => {
     return shallowMount(UIExtensionBlockingErrorView, {
       props,

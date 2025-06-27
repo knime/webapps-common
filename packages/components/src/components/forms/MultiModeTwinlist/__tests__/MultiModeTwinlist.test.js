@@ -14,7 +14,7 @@ import Twinlist from "../../Twinlist/Twinlist.vue";
 import ValueSwitch from "../../ValueSwitch/ValueSwitch.vue";
 import MultiModeTwinlist from "../MultiModeTwinlist.vue";
 
-describe("MultiModeMultiModeTwinlist.vue", () => {
+describe("MultiModeMultiModeTwinlist", () => {
   let defaultPossibleValues;
 
   const expectBoxValues = (expectedValues, actualValues) => {

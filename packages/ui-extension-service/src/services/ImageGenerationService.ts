@@ -4,7 +4,7 @@ import type { ImageGenerationServiceAPILayer } from "./types/serviceApiLayers";
 /**
  * ImageGenerationService is used in views in order to detect that the view is generated in an image generation context
  * and to communicate the generated image.
- * TODO: This should only be API once UIEXT-782 is tackled.
+ * TODO UIEXT-782: This should only be API once UIEXT-782 is tackled.
  */
 export class ImageGenerationService extends AbstractService<ImageGenerationServiceAPILayer> {
   isImageGenerationActive() {
