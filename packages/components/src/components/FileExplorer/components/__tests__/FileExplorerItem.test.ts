@@ -6,7 +6,7 @@ import type { FileExplorerItem } from "../../types";
 import FileExplorerItemComponent from "../FileExplorerItem.vue";
 import FileExplorerItemBase from "../FileExplorerItemBase.vue";
 
-describe("FileExplorerItem.vue", () => {
+describe("FileExplorerItem", () => {
   const defaultProps = {
     blacklistedNames: [],
     item: {

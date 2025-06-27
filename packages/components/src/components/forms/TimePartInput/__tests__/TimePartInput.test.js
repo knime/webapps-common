@@ -3,7 +3,7 @@ import { mount, shallowMount } from "@vue/test-utils";
 
 import TimePartInput from "../TimePartInput.vue";
 
-describe("TimePartInput.vue", () => {
+describe("TimePartInput", () => {
   let props, wrapper;
 
   beforeEach(() => {

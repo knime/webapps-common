@@ -5,7 +5,7 @@ import Checkbox from "../Checkbox/Checkbox.vue";
 
 import Checkboxes from "./Checkboxes.vue";
 
-describe("Checkboxes.vue", () => {
+describe("Checkboxes", () => {
   let props;
 
   beforeEach(() => {

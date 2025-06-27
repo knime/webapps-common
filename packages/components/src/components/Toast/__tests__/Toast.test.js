@@ -4,7 +4,7 @@ import { mount, shallowMount } from "@vue/test-utils";
 
 import Toast from "../components/Toast.vue";
 
-describe("Toast.vue", () => {
+describe("Toast", () => {
   const MAX_LENGTH = 160;
   let animateMock;
 

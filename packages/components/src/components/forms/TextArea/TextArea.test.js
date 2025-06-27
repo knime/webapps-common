@@ -3,7 +3,7 @@ import { mount } from "@vue/test-utils";
 
 import TextArea from "./TextArea.vue";
 
-describe("TextArea.vue", () => {
+describe("TextArea", () => {
   it("renders", () => {
     const wrapper = mount(TextArea, {
       props: {

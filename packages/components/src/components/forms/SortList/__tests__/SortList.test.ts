@@ -10,7 +10,7 @@ import FunctionButton from "../../../Buttons/FunctionButton.vue";
 import MultiselectListBox from "../../MultiselectListBox/MultiselectListBox.vue";
 import SortList, { type Props } from "../SortList.vue";
 
-describe("SortList.vue", () => {
+describe("SortList", () => {
   let props: Props;
 
   beforeEach(() => {

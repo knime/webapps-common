@@ -7,7 +7,7 @@ import Tooltip from "../../Tooltip/Tooltip.vue";
 import Button from "../Button.vue";
 import PlusButton from "../PlusButton.vue";
 
-describe("PlusButton.vue", () => {
+describe("PlusButton", () => {
   it("renders plus button", () => {
     const wrapper = shallowMount(PlusButton);
 

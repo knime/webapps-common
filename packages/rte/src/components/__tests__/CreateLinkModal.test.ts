@@ -7,7 +7,7 @@ import { InputField } from "@knime/components";
 import { defaultLinkToolOptions } from "../../utils/custom-link";
 import CreateLinkModal from "../CreateLinkModal.vue";
 
-describe("CreateWorkflowModal.vue", () => {
+describe("CreateWorkflowModal", () => {
   const doMount = ({
     url = ref("https://mock.url"),
     text = ref("mock url"),

@@ -22,7 +22,7 @@ import type { IdAndText } from "../../../types/ChoicesUiSchema";
 import TwinlistLoadingInfo from "../../loading/TwinlistLoadingInfo.vue";
 import SimpleTwinlistControl from "../SimpleTwinlistControl.vue";
 
-describe("SimpleTwinlistControl.vue", () => {
+describe("SimpleTwinlistControl", () => {
   let props: VueControlTestProps<typeof SimpleTwinlistControl>,
     wrapper: VueWrapper,
     changeValue: Mock;

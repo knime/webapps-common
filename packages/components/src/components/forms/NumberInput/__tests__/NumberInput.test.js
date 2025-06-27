@@ -3,7 +3,7 @@ import { shallowMount } from "@vue/test-utils";
 
 import NumberInput from "../NumberInput.vue";
 
-describe("NumberInput.vue", () => {
+describe("NumberInput", () => {
   let props, wrapper;
 
   beforeEach(() => {

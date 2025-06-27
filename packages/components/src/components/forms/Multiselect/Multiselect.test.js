@@ -32,7 +32,7 @@ const doMount = (options, dynamicProps) => {
   return wrapper;
 };
 
-describe("Multiselect.vue", () => {
+describe("Multiselect", () => {
   it("renders", () => {
     const wrapper = doMount();
     expect(wrapper.html()).toBeTruthy();

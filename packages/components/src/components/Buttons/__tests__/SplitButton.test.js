@@ -3,7 +3,7 @@ import { shallowMount } from "@vue/test-utils";
 
 import SplitButton from "../SplitButton.vue";
 
-describe("SplitButton.vue", () => {
+describe("SplitButton", () => {
   it("renders slot content", () => {
     const wrapper = shallowMount(SplitButton, {
       slots: {

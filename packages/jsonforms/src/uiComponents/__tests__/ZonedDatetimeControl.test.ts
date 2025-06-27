@@ -20,7 +20,7 @@ import {
 } from "../../../testUtils/component";
 import ZonedDateTimeControl from "../ZonedDateTimeControl.vue";
 
-describe("ZonedDateTimeControl.vue", () => {
+describe("ZonedDateTimeControl", () => {
   let props: VueControlTestProps<typeof ZonedDateTimeControl>,
     wrapper: VueWrapper,
     changeValue: Mock;

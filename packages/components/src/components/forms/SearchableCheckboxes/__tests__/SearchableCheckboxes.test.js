@@ -6,7 +6,7 @@ import Checkboxes from "../../Checkboxes/Checkboxes.vue";
 import SearchInput from "../../SearchInput/SearchInput.vue";
 import SearchableCheckboxes from "../SearchableCheckboxes.vue";
 
-describe("SearchableCheckboxes.vue", () => {
+describe("SearchableCheckboxes", () => {
   let defaultPossibleValues;
 
   beforeEach(() => {

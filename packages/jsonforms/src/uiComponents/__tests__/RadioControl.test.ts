@@ -18,7 +18,7 @@ import {
 } from "../../../testUtils/component";
 import RadioControl from "../RadioControl.vue";
 
-describe("RadioControl.vue", () => {
+describe("RadioControl", () => {
   let props: VueControlTestProps<typeof RadioControl>,
     wrapper: VueWrapper,
     changeValue: Mock;

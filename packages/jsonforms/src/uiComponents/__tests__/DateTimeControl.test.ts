@@ -19,7 +19,7 @@ import {
 } from "../../../testUtils/component";
 import DateTimeControl from "../DateTimeControl.vue";
 
-describe("DateTimeInput.vue", () => {
+describe("DateTimeInput", () => {
   let props: VueControlTestProps<typeof DateTimeControl>,
     wrapper: VueWrapper,
     changeValue: Mock;

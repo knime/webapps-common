@@ -8,7 +8,7 @@ import NodeFeatureList from "../NodeFeatureList.vue";
 import PortsList from "../PortsList.vue";
 import ViewsList from "../ViewsList.vue";
 
-describe("NodeFeatureList.vue", () => {
+describe("NodeFeatureList", () => {
   it("renders ports and options", async () => {
     const wrapper = shallowMount(NodeFeatureList, {
       props: {

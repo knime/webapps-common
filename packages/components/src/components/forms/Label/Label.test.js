@@ -3,7 +3,7 @@ import { shallowMount } from "@vue/test-utils";
 
 import Label from "./Label.vue";
 
-describe("Label.vue", () => {
+describe("Label", () => {
   let props;
 
   beforeEach(() => {

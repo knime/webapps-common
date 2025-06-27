@@ -3,7 +3,7 @@ import { mount } from "@vue/test-utils";
 
 import Dropzone from "../Dropzone.vue";
 
-describe("Dropzone.vue", () => {
+describe("Dropzone", () => {
   describe("renders", () => {
     it("renders default content", () => {
       const wrapper = mount(Dropzone);

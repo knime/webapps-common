@@ -19,7 +19,7 @@ import {
 } from "../../../testUtils/component";
 import DateTimeFormatPickerControl from "../DateTimeFormatPickerControl.vue";
 
-describe("DateTimeFormatPickerControl.vue", () => {
+describe("DateTimeFormatPickerControl", () => {
   let props: VueControlTestProps<typeof DateTimeFormatPickerControl>,
     wrapper: VueWrapper,
     changeValue: Mock;

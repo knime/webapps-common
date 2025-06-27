@@ -10,7 +10,7 @@ import {
 } from "../../../testUtils/component";
 import OneOfDropdown from "../OneOfDropdown.vue";
 
-describe("OneOfDropdown.vue", () => {
+describe("OneOfDropdown", () => {
   let wrapper: VueWrapper, props: VueControlTestProps<typeof OneOfDropdown>;
 
   const labelForId = "myLabelForId";

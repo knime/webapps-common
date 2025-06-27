@@ -20,7 +20,7 @@ import {
 import type { IdAndText } from "../../types/ChoicesUiSchema";
 import ComboBoxControl from "../ComboBoxControl.vue";
 
-describe("ComboBoxControl.vue", () => {
+describe("ComboBoxControl", () => {
   let props: VueControlTestProps<typeof ComboBoxControl>,
     wrapper: VueWrapper,
     changeValue: Mock;

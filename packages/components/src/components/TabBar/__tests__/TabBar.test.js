@@ -8,7 +8,7 @@ import WorkflowIcon from "@knime/styles/img/icons/workflow.svg";
 import Carousel from "../../Carousel/Carousel.vue";
 import TabBar from "../TabBar.vue";
 
-describe("TabBar.vue", () => {
+describe("TabBar", () => {
   let possibleValues = [
     {
       value: "all",

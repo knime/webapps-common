@@ -9,7 +9,7 @@ import type { DownloadItem } from "../types";
 
 import { downloadItemMocks } from "./downloadItemMocks";
 
-describe("DownloadProgressPanel.vue", () => {
+describe("DownloadProgressPanel", () => {
   const doMount = ({
     downloadItems = structuredClone(downloadItemMocks),
   }: {

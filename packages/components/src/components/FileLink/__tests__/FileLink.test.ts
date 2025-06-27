@@ -3,8 +3,7 @@ import { mount, shallowMount } from "@vue/test-utils";
 
 import FileLink from "../FileLink.vue";
 
-describe("FileLink.vue", () => {
-  // TODO .vue or not?
+describe("FileLink", () => {
   it("renders link", () => {
     const wrapper = shallowMount(FileLink, {
       props: {

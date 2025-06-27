@@ -13,7 +13,7 @@ import Message from "../Message.vue";
 
 // TODO split tests up into MessageTitle.test.js
 
-describe("Message.vue", () => {
+describe("Message", () => {
   let wrapper;
 
   it("renders default", () => {

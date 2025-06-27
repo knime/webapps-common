@@ -6,7 +6,7 @@ import MultiselectListBox from "../../MultiselectListBox/MultiselectListBox.vue"
 import SearchInput from "../../SearchInput/SearchInput.vue";
 import SearchableList from "../SearchableList.vue";
 
-describe("SearchableList.vue", () => {
+describe("SearchableList", () => {
   let defaultPossibleValues;
 
   beforeEach(() => {

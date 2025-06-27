@@ -36,9 +36,7 @@ export default defineComponent({
   },
   emits: ["click"],
   computed: {
-    // TODO: Can be made into a composition function
     component() {
-      // TODO
       if (this.to) {
         return resolveNuxtLinkComponent();
       }

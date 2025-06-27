@@ -32,7 +32,7 @@ vi.mock("lodash-es", async (importOriginal) => {
 
 type Props = InstanceType<typeof FileExplorer>["$props"];
 
-describe("FileExplorer.vue", () => {
+describe("FileExplorer", () => {
   const MOCK_DATA: Array<FileExplorerItem> = [
     {
       id: "0",

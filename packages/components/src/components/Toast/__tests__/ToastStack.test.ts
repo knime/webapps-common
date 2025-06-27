@@ -12,7 +12,7 @@ import { VueWrapper, shallowMount } from "@vue/test-utils";
 import ToastStack from "../components/ToastStack.vue";
 import { useToasts } from "../toastService";
 
-describe("ToastStack.vue", () => {
+describe("ToastStack", () => {
   const MAX_TOAST_COUNT = 5;
   const OFFSET = 4;
 

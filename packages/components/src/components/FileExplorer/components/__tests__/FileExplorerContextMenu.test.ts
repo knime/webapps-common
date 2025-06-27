@@ -19,7 +19,7 @@ vi.mock("@floating-ui/vue", () => ({
   flip: vi.fn(),
 }));
 
-describe("FileExplorerContextMenu.vue", () => {
+describe("FileExplorerContextMenu", () => {
   beforeAll(() => {
     window.innerHeight = 100;
   });

@@ -5,7 +5,7 @@ import * as nodeColors from "@knime/styles/colors/nodeColors";
 
 import NodeTorsoNormal from "../NodeTorsoNormal.vue";
 
-describe("NodeTorsoNormal.vue", () => {
+describe("NodeTorsoNormal", () => {
   let doShallowMount = (props) => shallowMount(NodeTorsoNormal, { props });
 
   it("sets background color", () => {

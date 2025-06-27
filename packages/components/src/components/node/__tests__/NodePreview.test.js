@@ -5,7 +5,7 @@ import NodePreview from "../NodePreview.vue";
 import NodeTorsoNormal from "../NodeTorsoNormal.vue";
 import PortIcon from "../PortIcon.vue";
 
-describe("NodePreview.vue", () => {
+describe("NodePreview", () => {
   it("renders node torso", () => {
     const wrapper = shallowMount(NodePreview, {
       props: {

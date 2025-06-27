@@ -17,7 +17,7 @@ vi.mock("../../../../composables/useDropdownNavigation", () => ({
   default: vi.fn(() => dropdownNavigation),
 }));
 
-describe("MenuItems.vue", () => {
+describe("MenuItems", () => {
   it("passes down all props", () => {
     const myProp = "test property";
     const wrapper = shallowMount(MenuItems, {

@@ -148,7 +148,7 @@ const doMount = ({
   };
 };
 
-describe("Dropdown.vue", () => {
+describe("Dropdown", () => {
   let props;
 
   beforeEach(() => {

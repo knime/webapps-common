@@ -74,7 +74,7 @@ const doMount = ({
   return { wrapper, findLoadMoreButton };
 };
 
-describe("VersionHistory.vue", () => {
+describe("VersionHistory", () => {
   it("renders component", () => {
     const { wrapper, findLoadMoreButton } = doMount();
 

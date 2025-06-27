@@ -3,7 +3,7 @@ import { mount } from "@vue/test-utils";
 
 import ResizeHandle from "../ResizeHandle.vue";
 
-describe("ResizeHandle.vue", () => {
+describe("ResizeHandle", () => {
   type ComponentProps = InstanceType<typeof ResizeHandle>["$props"];
 
   const doMount = (props: ComponentProps) => {

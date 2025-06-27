@@ -19,7 +19,7 @@ import {
 import { inputFormats } from "../../../constants";
 import RichTextControl from "../RichTextControl.vue";
 
-describe("RichTextControl.vue", () => {
+describe("RichTextControl", () => {
   let props: VueControlTestProps<typeof RichTextControl>,
     wrapper: VueWrapper,
     changeValue: Mock,

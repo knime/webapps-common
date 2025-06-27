@@ -3,7 +3,7 @@ import { VueWrapper, mount } from "@vue/test-utils";
 
 import BaseRadioButtons from "../BaseRadioButtons.vue";
 
-describe("BaseRadioButtons.vue", () => {
+describe("BaseRadioButtons", () => {
   const possibleValues = new Array(5).fill(0).map((_, index) => ({
     id: `test${index + 1}`,
     text: `Text ${index + 1}`,

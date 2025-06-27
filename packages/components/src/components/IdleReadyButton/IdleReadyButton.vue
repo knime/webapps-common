@@ -56,7 +56,6 @@ export default {
   },
   emits: ["click"],
   computed: {
-    // TODO: Can be made into a composition function
     clientOnlyComponent() {
       return resolveClientOnlyComponent();
     },

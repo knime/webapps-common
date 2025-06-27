@@ -5,7 +5,7 @@ import StyledListItem from "../StyledListItem.vue";
 
 vi.useFakeTimers();
 
-describe("StyledListItem.vue", () => {
+describe("StyledListItem", () => {
   it("renders", () => {
     const wrapper = mount(StyledListItem);
     expect(wrapper.find('[role="option"]')).toBeTruthy();

@@ -3,7 +3,7 @@ import { mount } from "@vue/test-utils";
 
 import InputField from "../InputField.vue";
 
-describe("InputField.vue", () => {
+describe("InputField", () => {
   it("renders", () => {
     const wrapper = mount(InputField, {
       props: {

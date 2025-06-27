@@ -10,7 +10,7 @@ import {
 } from "../../../testUtils/component";
 import TextMessageControl from "../TextMessageControl.vue";
 
-describe("TextMessageControl.vue", () => {
+describe("TextMessageControl", () => {
   let props: VueControlTestProps<typeof TextMessageControl>;
 
   beforeEach(() => {

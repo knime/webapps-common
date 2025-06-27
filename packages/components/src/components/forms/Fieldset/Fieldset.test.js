@@ -3,7 +3,7 @@ import { shallowMount } from "@vue/test-utils";
 
 import Label from "./Fieldset.vue";
 
-describe("Fieldset.vue", () => {
+describe("Fieldset", () => {
   let props;
 
   beforeEach(() => {

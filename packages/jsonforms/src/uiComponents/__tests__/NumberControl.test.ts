@@ -20,7 +20,7 @@ import {
 } from "../../../testUtils/component";
 import NumberControl from "../NumberControl.vue";
 
-describe("NumberControl.vue", () => {
+describe("NumberControl", () => {
   let props: VueControlTestProps<typeof NumberControl>,
     wrapper: VueWrapper,
     changeValue: Mock;

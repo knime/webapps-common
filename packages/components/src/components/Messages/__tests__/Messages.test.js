@@ -56,7 +56,7 @@ const linkedMessageTo = {
   },
 };
 
-describe("Messages.vue", () => {
+describe("Messages", () => {
   let wrapper;
 
   it("renders notifications", () => {

@@ -19,7 +19,7 @@ import {
 import type { VueControlProps } from "../../higherOrderComponents/control/types";
 import SimpleButtonControl from "../SimpleButtonControl.vue";
 
-describe("SimpleButtonControl.vue", () => {
+describe("SimpleButtonControl", () => {
   let props: Omit<
       VueControlProps<undefined>,
       "handleChange" | "changeValue" | "onRegisterValidation"

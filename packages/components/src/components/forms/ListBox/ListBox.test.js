@@ -4,7 +4,7 @@ import { mount } from "@vue/test-utils";
 
 import ListBox from "./ListBox.vue";
 
-describe("ListBox.vue", () => {
+describe("ListBox", () => {
   let props;
 
   beforeEach(() => {

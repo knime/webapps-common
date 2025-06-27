@@ -6,7 +6,7 @@ import AvatarImagePlaceholder from "../AvatarImagePlaceholder.vue";
 
 const testUrl = "//mockimageurl.test";
 
-describe("Avatar.vue", () => {
+describe("Avatar", () => {
   it("renders a given image", () => {
     const wrapper = mount(Avatar, {
       props: {

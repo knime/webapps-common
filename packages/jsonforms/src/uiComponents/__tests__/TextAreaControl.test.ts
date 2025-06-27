@@ -18,7 +18,7 @@ import {
 } from "../../../testUtils/component";
 import TextAreaControl from "../TextAreaControl.vue";
 
-describe("TextAreaControl.vue", () => {
+describe("TextAreaControl", () => {
   let defaultProps: VueControlTestProps<typeof TextAreaControl>,
     wrapper: VueWrapper,
     changeValue: Mock;

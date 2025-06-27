@@ -3,7 +3,7 @@ import { RouterLinkStub, shallowMount } from "@vue/test-utils";
 
 import MessageLink from "../MessageLink.vue";
 
-describe("MessageLink.vue", () => {
+describe("MessageLink", () => {
   let wrapper;
 
   it("renders with href", () => {

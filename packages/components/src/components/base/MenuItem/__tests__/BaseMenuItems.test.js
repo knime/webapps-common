@@ -3,7 +3,7 @@ import { RouterLinkStub, mount } from "@vue/test-utils";
 
 import BaseMenuItems from "../BaseMenuItems.vue";
 
-describe("BaseMenuItems.vue", () => {
+describe("BaseMenuItems", () => {
   it("renders the items", () => {
     const items = [
       { href: "https://www.google.com/slash", text: "Google Slash" },

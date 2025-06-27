@@ -9,7 +9,7 @@ import {
 import AnyOfTwinlist from "../AnyOfTwinlist.vue";
 import TwinlistControlBase from "../TwinlistControlBase.vue";
 
-describe("AnyOfTwinlist.vue", () => {
+describe("AnyOfTwinlist", () => {
   let wrapper: VueWrapper, props: VueControlTestProps<typeof AnyOfTwinlist>;
 
   const labelForId = "myLabelForId";

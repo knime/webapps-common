@@ -29,7 +29,7 @@ vi.mock("../useDynamicImport", () => {
   };
 });
 
-describe("UIExtShadowApp.vue", () => {
+describe("UIExtShadowApp", () => {
   const resourceInfo = {
     id: "org.knime.base.views.scatterplot.ScatterPlotNodeFactory",
   };

@@ -5,7 +5,7 @@ import Description from "../../Description/Description.vue";
 import PortGroup from "../PortGroup.vue";
 import PortIcon from "../PortIcon.vue";
 
-describe("PortsListItem.vue", () => {
+describe("PortsListItem", () => {
   let props, wrapper;
 
   beforeEach(() => {

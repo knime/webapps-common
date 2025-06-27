@@ -5,7 +5,7 @@ import ProgressItem from "../../Progress/ProgressItem/ProgressItem.vue";
 import UploadProgressPanelItem from "../UploadProgressPanelItem.vue";
 import type { UploadItem } from "../types";
 
-describe("UploadProgressPanelItem.vue", () => {
+describe("UploadProgressPanelItem", () => {
   type ComponentProps = InstanceType<typeof UploadProgressPanelItem>["$props"];
 
   const item: UploadItem = {

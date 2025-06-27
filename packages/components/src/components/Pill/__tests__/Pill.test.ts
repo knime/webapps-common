@@ -3,7 +3,7 @@ import { mount } from "@vue/test-utils";
 
 import Pill from "../Pill.vue";
 
-describe("Pill.vue", () => {
+describe("Pill", () => {
   type ComponentProps = InstanceType<typeof Pill>["$props"];
 
   const doMount = ({

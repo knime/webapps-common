@@ -21,7 +21,7 @@ import {
 import type { IdAndText } from "../../types/ChoicesUiSchema";
 import DropdownControl from "../DropdownControl.vue";
 
-describe("DropdownControl.vue", () => {
+describe("DropdownControl", () => {
   let wrapper: VueWrapper,
     props: VueControlTestProps<typeof DropdownControl>,
     changeValue: Mock;

@@ -3,7 +3,7 @@ import { mount } from "@vue/test-utils";
 
 import Checkbox from "./Checkbox.vue";
 
-describe("Checkbox.vue", () => {
+describe("Checkbox", () => {
   it("renders", () => {
     const wrapper = mount(Checkbox, {
       props: {

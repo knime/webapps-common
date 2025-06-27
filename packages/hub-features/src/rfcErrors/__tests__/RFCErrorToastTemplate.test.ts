@@ -12,7 +12,7 @@ vi.mock("@vueuse/core", () => ({
   useClipboard: useClipboardMock,
 }));
 
-describe("RFCErrorToastTemplate.vue", () => {
+describe("RFCErrorToastTemplate", () => {
   const defaultProps = {
     headline: "Toast headline",
     title: "There was an error",

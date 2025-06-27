@@ -6,7 +6,7 @@ import LensIcon from "@knime/styles/img/icons/lens.svg";
 import Button from "../../Buttons/Button.vue";
 import FileSelector from "../FileSelector.vue";
 
-describe("FileSelector.vue", () => {
+describe("FileSelector", () => {
   it("renders correctly with no selected file", () => {
     const wrapper = mount(FileSelector, {
       propsData: {

@@ -29,9 +29,9 @@ index 9b2eeaa66..807062939 100644
 -import DialogLabel from "../label/DialogLabel.vue";
 -import LabeledControl from "../label/LabeledControl.vue";
  
--describe("TextControl.vue", () => {
+-describe("TextControl", () => {
 -  let defaultProps, wrapper, component;
-+describe("TextAreaControl.vue", () => {
++describe("TextAreaControl", () => {
 +  let defaultProps: VueControlTestProps<typeof TextAreaControl>,
 +    wrapper: VueWrapper,
 +    changeValue: Mock;
@@ -40,7 +40,7 @@ index 9b2eeaa66..807062939 100644
  
    beforeEach(async () => {
      defaultProps = {
-@@ -30,18 +41,21 @@ describe("TextControl.vue", () => {
+@@ -30,18 +41,21 @@ describe("TextControl", () => {
          },
          uischema: {
            type: "Control",
@@ -64,7 +64,7 @@ index 9b2eeaa66..807062939 100644
    });
  
    const changedTextInput = "Shaken not stirred";
-@@ -51,39 +65,18 @@ describe("TextControl.vue", () => {
+@@ -51,39 +65,18 @@ describe("TextControl", () => {
    });
  
    it("renders", () => {
@@ -107,7 +107,7 @@ index 9b2eeaa66..807062939 100644
    });
  
    it("sets correct initial value", () => {
-@@ -91,16 +84,4 @@ describe("TextControl.vue", () => {
+@@ -91,16 +84,4 @@ describe("TextControl", () => {
        defaultProps.control.data,
      );
    });

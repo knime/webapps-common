@@ -53,7 +53,7 @@ const defaultLabels: Array<AssignedLabel> = [
 ];
 const labelCount = 3;
 
-describe("LabelList.vue", () => {
+describe("LabelList", () => {
   const doMount = ({
     labels = defaultLabels,
     defaultLabelCount = labelCount,

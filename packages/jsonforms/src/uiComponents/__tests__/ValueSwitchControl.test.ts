@@ -19,7 +19,7 @@ import {
 import RadioControlBase from "../RadioControlBase.vue";
 import ValueSwitchControl from "../ValueSwitchControl.vue";
 
-describe("ValueSwitchControl.vue", () => {
+describe("ValueSwitchControl", () => {
   let props: VueControlTestProps<typeof ValueSwitchControl>,
     wrapper: VueWrapper,
     changeValue: Mock;

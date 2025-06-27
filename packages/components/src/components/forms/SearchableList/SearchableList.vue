@@ -41,7 +41,6 @@ export default {
     },
     ariaLabel: {
       type: String,
-      required: true,
       default: "Possible values",
     },
     /**

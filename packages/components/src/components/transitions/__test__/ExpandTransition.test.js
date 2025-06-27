@@ -3,7 +3,7 @@ import { mount } from "@vue/test-utils";
 
 import ExpandTransition from "../ExpandTransition.vue";
 
-describe("ExpandTransition.vue", () => {
+describe("ExpandTransition", () => {
   it("calls transition handlers and expands", async () => {
     const wrapper = mount(ExpandTransition, {
       propsData: {
