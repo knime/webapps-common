@@ -1,5 +1,14 @@
 # @knime/utils
 
+## 1.5.0
+
+### Minor Changes
+
+- 493c9f0: TS improvements
+
+  - removed namespaces: UploadManagerNS
+  - replaced any with fitting type or unknown/never
+
 ## 1.4.4
 
 ### Patch Changes

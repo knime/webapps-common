@@ -1,5 +1,18 @@
 # @knime/ui-extension-renderer
 
+## 2.1.0
+
+### Minor Changes
+
+- 493c9f0: TS improvements
+  - removed namespaces: UIExtensionPushEvents
+  - replaced any with fitting type or unknown/never
+
+### Patch Changes
+
+- Updated dependencies [493c9f0]
+  - @knime/components@1.31.0
+
 ## 2.0.51
 
 ### Patch Changes

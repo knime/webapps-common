@@ -1,5 +1,13 @@
 # @knime/ui-extension-service
 
+## 2.3.0
+
+### Minor Changes
+
+- 493c9f0: TS improvements
+  - removed namespaces: UIExtensionPushEvents
+  - replaced any with fitting type or unknown/never
+
 ## 2.2.0
 
 ### Minor Changes

@@ -1,5 +1,22 @@
 # @knime/components
 
+## 1.31.0
+
+### Minor Changes
+
+- 493c9f0: TS improvements
+
+  - removed namespaces:
+    - FileExplorerContextMenu
+      - renamed MenuItem to FileExplorerMenuItem
+  - replaced any with fitting type or unknown/never
+  - use generic in DropdownControl.vue
+
+### Patch Changes
+
+- Updated dependencies [493c9f0]
+  - @knime/utils@1.5.0
+
 ## 1.30.1
 
 ### Patch Changes

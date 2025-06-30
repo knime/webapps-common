@@ -1,5 +1,18 @@
 # @knime/rich-text-editor
 
+## 1.5.0
+
+### Minor Changes
+
+- 493c9f0: TS improvements
+  - replaced any with fitting type or unknown/never
+
+### Patch Changes
+
+- Updated dependencies [493c9f0]
+  - @knime/components@1.31.0
+  - @knime/utils@1.5.0
+
 ## 1.4.21
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @knime/licenses
 
+## 1.2.0
+
+### Minor Changes
+
+- 493c9f0: TS improvements
+
 ## 1.1.1
 
 ### Patch Changes

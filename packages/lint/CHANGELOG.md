@@ -1,5 +1,20 @@
 # @knime/eslint-config
 
+## 9.1.0
+
+### Minor Changes
+
+- 011ba07: enable typed linting for `typescript`, `vue3-typescript` and `nuxt3` configs
+  - path to the tsconfig file which eslint should use needs to be provided in projects `eslint.config.js`, see [README.md](README.md)
+  - enable rules `no-floating-promise` and `no-misused-promise`
+- update dependencies, e.g. eslint which now supports [suppressions](https://eslint.org/docs/latest/use/suppressions)
+- acfc273: linting improvements
+  - re-enable default rules which were temporarily disabled in @knime/eslint-config 9.0.x
+  - remove `no-undefined` and `func-style` rules
+  - add `eslint-plugin-depend` which checks for unwanted (e.g. legacy) dependencies (it checks imports and `package.json`)
+  - add `e2e` folder to vitest rules
+- 59d7dce: add rule for TODO comments that will only warn if a TODO does not include a ticket id (pattern `TODO: <ticket-id>` or `TODO <ticket-id>`). FIXME comments will now raise an error.
+
 ## 9.0.2
 
 ### Patch Changes
