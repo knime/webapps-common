@@ -1,5 +1,11 @@
 # @knime/eslint-config
 
+## 9.1.1
+
+### Patch Changes
+
+- 5a3b453: Allow the "is child of" (`.parent-modifier-class &`) selector syntax in Stylelint config.
+
 ## 9.1.0
 
 ### Minor Changes
