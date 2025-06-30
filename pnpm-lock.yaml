@@ -175,7 +175,7 @@ importers:
         version: link:../packages/licenses
       '@knime/rich-text-editor':
         specifier: workspace:*
-        version: link:../packages/rte
+        version: link:../packages/rich-text-editor
       '@knime/styles':
         specifier: workspace:*
         version: link:../packages/styles
@@ -370,7 +370,7 @@ importers:
         version: link:../components
       '@knime/rich-text-editor':
         specifier: workspace:*
-        version: link:../rte
+        version: link:../rich-text-editor
       '@knime/styles':
         specifier: workspace:*
         version: link:../styles
@@ -533,7 +533,7 @@ importers:
         specifier: 'catalog:'
         version: 3.3.2
 
-  packages/rte:
+  packages/rich-text-editor:
     dependencies:
       '@knime/components':
         specifier: workspace:*
@@ -9822,7 +9822,7 @@ snapshots:
   terser@5.36.0:
     dependencies:
       '@jridgewell/source-map': 0.3.6
-      acorn: 8.14.0
+      acorn: 8.15.0
       commander: 2.20.3
       source-map-support: 0.5.21
     optional: true

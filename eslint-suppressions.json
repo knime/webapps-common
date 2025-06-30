@@ -343,7 +343,7 @@
       "count": 1
     }
   },
-  "packages/rte/src/components/__tests__/CreateLinkModal.test.ts": {
+  "packages/rich-text-editor/src/components/__tests__/CreateLinkModal.test.ts": {
     "@typescript-eslint/no-floating-promises": {
       "count": 5
     }
