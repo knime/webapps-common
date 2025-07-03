@@ -1,5 +1,11 @@
 # @knime/styles
 
+## 1.8.0
+
+### Minor Changes
+
+- 88df4da: add new hand and map icons
+
 ## 1.7.0
 
 ### Minor Changes
