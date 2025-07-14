@@ -20,6 +20,7 @@ import {
 } from "../../../testUtils/component";
 import type { IdAndText } from "../../types/ChoicesUiSchema";
 import DropdownControl from "../DropdownControl.vue";
+import LoadingDropdown from "../loading/LoadingDropdown.vue";
 
 describe("DropdownControl", () => {
   let wrapper: VueWrapper,
@@ -102,6 +103,7 @@ describe("DropdownControl", () => {
 
   it("sets placeholder text correctly if possible values are not yet available", async () => {
     delete props.control.uischema.options!.possibleValues;
+    props.control.uischema.providedOptions = ["possibleValues"];
     const { wrapper } = mountJsonFormsControlLabelContent(DropdownControl, {
       props,
     });
@@ -177,5 +179,16 @@ describe("DropdownControl", () => {
     expect(
       wrapper.findComponent(Dropdown).props().possibleValues,
     ).toStrictEqual(providedChoices);
+  });
+
+  it("does not show a loading animation if no choices will be provided", () => {
+    delete props.control.uischema.options!.possibleValues;
+    props.control.uischema.providedOptions = [];
+    const { wrapper } = mountJsonFormsControlLabelContent(DropdownControl, {
+      props,
+    });
+    expect(
+      wrapper.findComponent(LoadingDropdown).props("possibleValues"),
+    ).not.toBeNull();
   });
 });

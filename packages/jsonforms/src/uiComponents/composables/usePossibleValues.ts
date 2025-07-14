@@ -17,7 +17,13 @@ export const usePossibleValues = <
   }>,
 ) => {
   const uischema = computed(() => control.value.uischema);
-  const possibleValues = useProvidedState(uischema, "possibleValues");
+  const providedPossibleValues = useProvidedState(uischema, "possibleValues");
+  const possibleValues = computed(() => {
+    if (uischema.value.providedOptions?.includes("possibleValues")) {
+      return providedPossibleValues.value;
+    }
+    return uischema.value.options?.possibleValues ?? [];
+  });
   return { possibleValues };
 };
 
