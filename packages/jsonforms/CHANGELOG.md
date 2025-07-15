@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.13.2
+
+### Patch Changes
+
+- e921ba3: Make DropdownControl more robust with respect to missing options.
+
 ## 1.13.1
 
 ### Patch Changes
