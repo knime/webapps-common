@@ -38,7 +38,7 @@ type getData = (
  * Types provided by the JsonFormsDialog.vue component
  */
 export interface Provided {
-  addStateProviderListener: addStateProviderListener<never>;
+  addStateProviderListener: addStateProviderListener<unknown>;
   trigger: (triggerId: unknown) => void;
   sendAlert: (params: AlertParams) => void;
   // To be removed (see JsonFormsDialog.vue)

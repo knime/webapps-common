@@ -70,8 +70,8 @@ export default <
     if ((uischema.value.providedOptions ?? []).includes(providedOptionName)) {
       addStateProviderListener(
         { ...identifier, providedOptionName },
-        (providedValue: NonUndefined<D>) => {
-          state.value = providedValue;
+        (providedValue: unknown) => {
+          state.value = providedValue as NonUndefined<D>;
         },
       );
     }

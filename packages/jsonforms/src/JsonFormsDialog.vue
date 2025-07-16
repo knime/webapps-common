@@ -32,7 +32,7 @@ const emit = defineEmits<{
   alert: [alert: AlertParams];
   stateProviderListener: [
     identifier: StateProviderLocation & { [key: string]: unknown },
-    callback: (value: never) => void,
+    callback: (value: unknown) => void,
   ];
 }>();
 
