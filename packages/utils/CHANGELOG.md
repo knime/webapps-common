@@ -1,5 +1,12 @@
 # @knime/utils
 
+## 1.5.2
+
+### Patch Changes
+
+- Updated dependencies [11332fe]
+  - @knime/styles@1.9.0
+
 ## 1.5.1
 
 ### Patch Changes

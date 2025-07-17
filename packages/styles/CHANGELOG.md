@@ -1,5 +1,11 @@
 # @knime/styles
 
+## 1.9.0
+
+### Minor Changes
+
+- 11332fe: Add icons to open and minimize large dialog
+
 ## 1.8.0
 
 ### Minor Changes
