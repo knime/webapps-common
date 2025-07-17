@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.13.3
+
+### Patch Changes
+
+- 0660f7a: Changed callback type parameter from never to unknown
+
 ## 1.13.2
 
 ### Patch Changes
