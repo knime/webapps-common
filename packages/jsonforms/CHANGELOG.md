@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.13.5
+
+### Patch Changes
+
+- a102d60: Don't show `__regular__` or `__special__` prefix in case of missing values in SingleSelectControl.
+
 ## 1.13.4
 
 ### Patch Changes
