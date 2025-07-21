@@ -47,17 +47,17 @@ export default defineComponent({
     // Only manual activation is supported.
     active(newVal) {
       if (newVal === true) {
-        window.addEventListener("keyup", this.onGlobalKeyUp);
+        window.addEventListener("keydown", this.onGlobalKeyDown);
       } else {
-        window.removeEventListener("keyup", this.onGlobalKeyUp);
+        window.removeEventListener("keydown", this.onGlobalKeyDown);
       }
     },
   },
   beforeUnmount() {
-    window.removeEventListener("keyup", this.onGlobalKeyUp);
+    window.removeEventListener("keydown", this.onGlobalKeyDown);
   },
   methods: {
-    onGlobalKeyUp(event: KeyboardEvent) {
+    onGlobalKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape" && this.implicitDismiss) {
         consola.trace("ESC key press, closing modal");
         this.cancel();
@@ -94,6 +94,7 @@ export default defineComponent({
       v-if="active"
       :active="active && showContent"
       :initial-focus="() => $refs.dialog as HTMLElement"
+      :escape-deactivates="false"
       allow-outside-click
       class="container"
     >

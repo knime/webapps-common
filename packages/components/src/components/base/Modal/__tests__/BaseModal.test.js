@@ -57,7 +57,7 @@ describe("BaseModal", () => {
     // only manual activation is supported
     await wrapper.setProps({ active: true });
 
-    window.dispatchEvent(new KeyboardEvent("keyup", { key: "Escape" }));
+    window.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
     expect(wrapper.emitted().cancel).toBeTruthy();
   });
 
@@ -97,7 +97,7 @@ describe("BaseModal", () => {
     await wrapper.find(".overlay").trigger("click");
     expect(wrapper.emitted("cancel")).toBeUndefined();
 
-    window.dispatchEvent(new KeyboardEvent("keyup", { key: "Escape" }));
+    window.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
     expect(wrapper.emitted("cancel")).toBeUndefined();
   });
 });
