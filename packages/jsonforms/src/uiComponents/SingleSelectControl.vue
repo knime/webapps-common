@@ -106,8 +106,31 @@ const toSingleSelectId = (
   return "";
 };
 
+const extractRawValue = (singleSelectValue: SingleSelectValue): string => {
+  if (typeof singleSelectValue === "undefined" || singleSelectValue === null) {
+    return "";
+  }
+  if ("regularChoice" in singleSelectValue && singleSelectValue.regularChoice) {
+    return singleSelectValue.regularChoice;
+  }
+  if ("specialChoice" in singleSelectValue && singleSelectValue.specialChoice) {
+    return singleSelectValue.specialChoice;
+  }
+  return "";
+};
+
 const modelValue = computed<string>({
-  get: () => toSingleSelectId(props.control.data),
+  get: () => {
+    const prefixedId = toSingleSelectId(props.control.data);
+    if (
+      allChoices.value &&
+      !allChoices.value.some((choice) => choice.id === prefixedId)
+    ) {
+      // We want to show the original id in case of missing values
+      return extractRawValue(props.control.data);
+    }
+    return prefixedId as string;
+  },
   set: (value) => {
     props.changeValue(toSingleSelectValue(value));
   },

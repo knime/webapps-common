@@ -1,5 +1,5 @@
 import { type Mock, beforeEach, describe, expect, it } from "vitest";
-import type { VueWrapper } from "@vue/test-utils";
+import { type VueWrapper } from "@vue/test-utils";
 
 import {
   type VueControlTestProps,
@@ -112,5 +112,36 @@ describe("SingleSelectControl", () => {
       .findComponent(LoadingDropdown)
       .vm.$emit("update:modelValue", "__special__second");
     expect(changeValue).toHaveBeenCalledWith({ specialChoice: "second" });
+  });
+
+  it("handles missing values by displaying original value as id", async () => {
+    props.control.data = { regularChoice: "missingChoice" };
+    const { addStateProviderListener, provideState } =
+      useInitialProvidedState<IdAndText[]>();
+    provideChoices = provideState;
+    ({ wrapper, changeValue } = mountJsonFormsControlLabelContent(
+      SingleSelectControl,
+      {
+        props,
+        provide: {
+          addStateProviderListener,
+        },
+      },
+    ));
+
+    expect(wrapper.findComponent(LoadingDropdown).props("modelValue")).toBe(
+      "__regular__missingChoice",
+    );
+
+    await provideChoices([
+      {
+        id: "existingChoice",
+        text: "Existing Choice",
+      },
+    ]);
+
+    expect(wrapper.findComponent(LoadingDropdown).props("modelValue")).toBe(
+      "missingChoice",
+    );
   });
 });
