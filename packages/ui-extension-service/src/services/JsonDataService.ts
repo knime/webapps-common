@@ -87,31 +87,38 @@ export class JsonDataService extends AbstractService<JsonDataServiceAPILayer> {
    * @param {[]} [params.options] - optional options that should be passed to called method.
    * @returns {Promise} rejected or resolved depending on backend response.
    */
-  async data(params: { method?: string; options?: [] } = {}) {
+  async data<T = unknown>(
+    params: { method?: string; options?: unknown[] } = {},
+  ): Promise<T | undefined> {
     const response = await this.callDataService(
       "data",
       JSON.stringify(
         createJsonRpcRequest(params.method || "getData", params.options),
       ),
     );
+
     // https://www.jsonrpc.org/specification#response_object:~:text=method%27s%20expected%20parameters.-,5%20Response%20object,-When%20a%20rpc
     if (!response?.result) {
       return undefined;
     }
+
     const jsonRPCResponse: JSONRPCResponse =
       typeof response.result === "string"
         ? JSON.parse(response.result)
         : response.result;
+
     if (jsonRPCResponse.error) {
       this.handleError(jsonRPCResponse.error);
 
       return undefined;
     } else {
       const { result, warningMessages } = jsonRPCResponse;
+
       if (warningMessages) {
         this.handleWarnings(warningMessages);
       }
-      return result;
+
+      return result as T;
     }
   }
 

@@ -33,14 +33,17 @@ export default <A extends API, K extends keyof API & string>(
       }
 
       resolve(event.data.payload);
+      clearTimeout(timeoutID);
       iframeWindow.removeEventListener("message", handler);
     };
+
     iframeWindow.addEventListener("message", handler);
     const requestMessage: RequestForKey<A, K> = {
       requestId,
       payload,
       type: "UIExtensionRequest",
     };
+
     iframeWindow.parent.postMessage(requestMessage, "*");
 
     timeoutID = setTimeout(() => {
@@ -50,8 +53,5 @@ export default <A extends API, K extends keyof API & string>(
     }, REQUEST_TIMEOUT_MS);
   });
 
-  return promise.then((response) => {
-    clearTimeout(timeoutID);
-    return response;
-  });
+  return promise;
 };

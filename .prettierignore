@@ -5,3 +5,4 @@ dist
 test-results
 **/opensourcecredits/used-packages.json
 .pnpm-store
+eslint-suppressions.json

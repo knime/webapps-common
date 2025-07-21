@@ -28,25 +28,46 @@ const enableRequestsToMethods = (
   const callApiLayer = <K extends keyof UIExtensionServiceAPILayer>(
     payload: PayloadForKey<UIExtensionServiceAPILayer, K>,
   ) => {
-    // @ts-expect-error Cannot invoke an object which is possibly 'undefined'.
-    return apiLayer[payload.method](...payload.params);
+    const method = apiLayer[payload.method] as (...args: unknown[]) => unknown;
+
+    if (!method) {
+      consola.warn(
+        "UI Extension Renderer:: Failed calling API layer method. Implementation missing",
+        { method: payload.method, params: payload.params, apiLayer },
+      );
+
+      return Promise.resolve();
+    }
+
+    return method(...payload.params);
   };
 
   // handles events received in parent
   const messageHandler = (event: MessageEvent) => {
-    if (isUIExtensionMessageExchangeRequest(event)) {
-      if (event.source !== iframeContentWindow) {
-        return;
-      }
-      Promise.resolve(callApiLayer(event.data.payload)).then((response) => {
+    if (
+      !isUIExtensionMessageExchangeRequest(event) ||
+      event.source !== iframeContentWindow
+    ) {
+      return;
+    }
+
+    const requestId = event.data.requestId;
+
+    Promise.resolve(callApiLayer(event.data.payload))
+      .then((response) => {
         const responseMessage: Response = {
-          requestId: event.data.requestId,
+          requestId,
           type: "UIExtensionResponse",
           payload: response,
         };
         iframeContentWindow.postMessage(responseMessage, "*");
+      })
+      .catch((error) => {
+        consola.error(
+          "UI Extension Renderer:: Unexpected error sending response to iframe",
+          { error, requestId },
+        );
       });
-    }
   };
 
   window.addEventListener("message", messageHandler);
@@ -55,14 +76,34 @@ const enableRequestsToMethods = (
     iframeContentWindow.removeEventListener("message", messageHandler);
 };
 
-export const setUpIframeEmbedderService = (
+const waitForIframeReady = (iframeContentWindow: Window) => {
+  return new Promise<void>((resolve) => {
+    const handleIFrameReady = (event: MessageEvent) => {
+      if (
+        event.source === iframeContentWindow &&
+        event.data.type === "UIExtensionReady"
+      ) {
+        window.removeEventListener("message", handleIFrameReady);
+        resolve();
+      }
+    };
+
+    window.addEventListener("message", handleIFrameReady);
+  });
+};
+
+export const setUpIframeEmbedderService = async (
   apiLayer: UIExtensionServiceAPILayer,
   iframeContentWindow: Window,
 ) => {
   enableRequestsToMethods(iframeContentWindow, addDefaults(apiLayer));
   const dispatchEventService = new IframeDispatchEvent(iframeContentWindow);
+
+  await waitForIframeReady(iframeContentWindow);
+
   const boundDispatchPushEvent =
     dispatchEventService.dispatchPushEvent.bind(dispatchEventService);
+
   return {
     dispatchPushEvent: boundDispatchPushEvent,
   };

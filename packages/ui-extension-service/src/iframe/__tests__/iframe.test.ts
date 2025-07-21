@@ -1,48 +1,53 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
-import {
-  type PushEvent,
-  type UIExtensionService,
-} from "@knime/ui-extension-renderer/api";
+import { type UIExtensionService } from "@knime/ui-extension-renderer/api";
 import { setUpIframeEmbedderService } from "@knime/ui-extension-renderer/testing";
 
 import { getInitializedBaseServiceProxy } from "../../services/AbstractService";
 
-class Embedder<APILayer extends { getConfig: () => unknown }> {
-  iframe: HTMLIFrameElement;
-  dispatchPushEvent: (event: PushEvent<any>) => void;
+type Configurable = { getConfig: () => unknown };
+type APILayer<T = any> = T & Configurable;
 
-  constructor(apiLayer: APILayer) {
-    // @ts-expect-error Property 'getInitializedBaseService' does not exist on type 'Window & typeof globalThis'
-    window.getInitializedBaseService = getInitializedBaseServiceProxy;
-    const iframe = document.createElement("iframe");
-    document.body.appendChild(iframe);
+type InjectedScript<T> = (param: {
+  service: UIExtensionService<APILayer<T>>;
+}) => void;
 
-    // @ts-expect-error the parent window of the HTMLIFrameElement is not properly loaded/attached so we explicitly need to set it
-    iframe.contentWindow.parent = window;
-    const { dispatchPushEvent } = setUpIframeEmbedderService(
+async function setupEmbedder<T>(apiLayer: APILayer<T>) {
+  const iframe = document.createElement("iframe");
+  document.body.appendChild(iframe);
+  // @ts-expect-error the parent window of the HTMLIFrameElement is not properly loaded/attached so we explicitly need to set it
+  iframe.contentWindow.parent = window;
+
+  // @ts-expect-error Property 'getInitializedBaseService' does not exist on type 'Window & typeof globalThis'
+  window.getInitializedBaseService = getInitializedBaseServiceProxy;
+
+  // Tests fail without this wrapper, since event.source is null in this constructed test setup.
+  window.postMessage = (
+    message: any,
+    targetOrigin: string | WindowPostMessageOptions | undefined,
+  ) => {
+    expect(targetOrigin).toBe("*");
+    const event = new MessageEvent("message", {
+      data: message,
+      source: iframe.contentWindow,
+    });
+    window.dispatchEvent(event);
+  };
+
+  const { dispatchPushEvent } = await (() => {
+    const promise = setUpIframeEmbedderService(
       apiLayer as any,
       iframe.contentWindow!,
     );
-    this.dispatchPushEvent = dispatchPushEvent;
-    this.iframe = iframe;
-    // Tests fail without this wrapper, since event.source is null in this constructed test setup.
-    window.postMessage = (
-      message: any,
-      targetOrigin: string | WindowPostMessageOptions | undefined,
-    ) => {
-      expect(targetOrigin).toBe("*");
-      const event = new MessageEvent("message", {
-        data: message,
-        source: iframe.contentWindow,
-      });
-      window.dispatchEvent(event);
-    };
-  }
 
-  injectScript(
-    injectedScript: (param: { service: UIExtensionService<APILayer> }) => void,
-  ) {
+    window.postMessage({ type: "UIExtensionReady" }, "*");
+
+    return promise;
+  })();
+
+  const cleanUp = () => document.body.removeChild(iframe);
+
+  const injectScript = (injectedScript: InjectedScript<T>) => {
     const stringLines = injectedScript.toString().split("\n");
     if (!stringLines[0].trim().startsWith("({ service })")) {
       throw Error(
@@ -52,45 +57,46 @@ class Embedder<APILayer extends { getConfig: () => unknown }> {
     stringLines.shift();
     stringLines.pop();
     const injectedScriptBodyText = stringLines.join("\n");
-    this.iframe.contentDocument!.open();
-    this.iframe.contentDocument!.write(`<!doctype html>
+    iframe.contentDocument!.open();
+    iframe.contentDocument!.write(`<!doctype html>
       <html lang="en">
-      <head>
-        <meta charset="UTF-8" />
-        <title>IFrame test content</title>
-      </head>
-      <body>
-        <div id="iframe-content"></div>
-        <script>
-          window.parent.getInitializedBaseService(window).then(({serviceProxy: service}) => {
-            ${injectedScriptBodyText}
-          });
-        </script>
-      </body>
-    </html>
+        <head>
+          <meta charset="UTF-8" />
+          <title>IFrame test content</title>
+        </head>
+        <body>
+          <div id="iframe-content"></div>
+          <script>
+            window.parent.getInitializedBaseService(window).then(({serviceProxy: service}) => {
+              ${injectedScriptBodyText}
+            });
+          </script>
+        </body>
+      </html>
     `);
-    this.iframe.contentDocument!.close();
-  }
+    iframe.contentDocument!.close();
+  };
 
-  cleanUp() {
-    document.body.removeChild(this.iframe);
-  }
+  return {
+    iframe,
+    dispatchPushEvent,
+    injectScript,
+    cleanUp,
+  };
 }
 
 describe("iframe UIExtension embedding", () => {
-  let toBeCleanedUp: Embedder<any>;
-
-  afterEach(() => {
-    toBeCleanedUp.cleanUp();
-  });
-
-  it("enables proxying method calls to parent window and back", () => {
+  it("enables proxying method calls to parent window and back", async () => {
     const expectedResult = "myResult";
     const myMethod: (param: string) => Promise<string> = vi.fn(() =>
       Promise.resolve(expectedResult),
     );
-    const embedder = new Embedder({ myMethod, getConfig: () => ({}) });
-    toBeCleanedUp = embedder;
+
+    const { injectScript, cleanUp } = await setupEmbedder({
+      myMethod,
+      getConfig: () => ({}),
+    });
+
     return new Promise<void>((resolve) => {
       window.addEventListener("message", (event: MessageEvent) => {
         if (event.data.type !== "myMethodResult") {
@@ -99,8 +105,11 @@ describe("iframe UIExtension embedding", () => {
         expect(myMethod).toHaveBeenCalledWith("foo");
         expect(event.data.result).toBe(expectedResult);
         resolve();
+        cleanUp();
       });
-      embedder.injectScript(({ service }) => {
+
+      injectScript(({ service }) => {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         service
           .myMethod("foo")
           .then((result) =>
@@ -110,22 +119,26 @@ describe("iframe UIExtension embedding", () => {
     });
   });
 
-  it("enables adding push event listeners", () => {
-    const embedder = new Embedder({ getConfig: () => ({}) });
-    toBeCleanedUp = embedder;
+  it("enables adding push event listeners", async () => {
+    const { injectScript, cleanUp, dispatchPushEvent } = await setupEmbedder({
+      getConfig: () => ({}),
+    });
+
     const payload = "myPayload";
     return new Promise<void>((resolve) => {
       window.addEventListener("message", (event: MessageEvent) => {
-        if (event.data === "ready") {
-          embedder.dispatchPushEvent({ eventType: "my-push-event", payload });
+        if (event.data.type === "UIExtensionReady") {
+          dispatchPushEvent({ eventType: "my-push-event", payload });
         }
         if (event.data.type !== "pushEventListenerCalled") {
           return;
         }
         expect(event.data.payload).toStrictEqual(payload);
         resolve();
+        cleanUp();
       });
-      embedder.injectScript(({ service }) => {
+
+      injectScript(({ service }) => {
         service.addPushEventListener("my-push-event", (payload) =>
           window.parent.postMessage(
             { type: "pushEventListenerCalled", payload },
@@ -137,10 +150,13 @@ describe("iframe UIExtension embedding", () => {
     });
   });
 
-  it("initially loads the extensionConfig to have it availably synchronously later", () => {
+  it("initially loads the extensionConfig to have it availably synchronously later", async () => {
     const extensionConfig = { nodeId: "123" };
-    const embedder = new Embedder({ getConfig: () => extensionConfig });
-    toBeCleanedUp = embedder;
+
+    const { injectScript, cleanUp } = await setupEmbedder({
+      getConfig: () => extensionConfig,
+    });
+
     return new Promise<void>((resolve) => {
       window.addEventListener("message", (event: MessageEvent) => {
         if (event.data.type !== "extensionConfigEvent") {
@@ -148,8 +164,10 @@ describe("iframe UIExtension embedding", () => {
         }
         expect(event.data.extensionConfig).toStrictEqual(extensionConfig);
         resolve();
+        cleanUp();
       });
-      embedder.injectScript(({ service }) => {
+
+      injectScript(({ service }) => {
         const extensionConfig = service.getConfig();
         window.parent.postMessage(
           { type: "extensionConfigEvent", extensionConfig },

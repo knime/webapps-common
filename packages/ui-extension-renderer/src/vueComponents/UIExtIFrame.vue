@@ -14,6 +14,14 @@ const props = defineProps<{
   apiLayer: UIExtensionServiceAPILayer;
 }>();
 
+type EventDispatcherService = Awaited<
+  ReturnType<typeof setUpIframeEmbedderService>
+>;
+
+const iframe: Ref<null | HTMLIFrameElement> = ref(null);
+let eventQueue: Array<PushEvent<EventType>> | null = [];
+let resolvedDispatcherService: EventDispatcherService;
+
 const emit = defineEmits<{
   serviceCreated: [
     service: {
@@ -22,14 +30,35 @@ const emit = defineEmits<{
   ];
 }>();
 
-const iframe: Ref<null | HTMLIFrameElement> = ref(null);
-
 onMounted(() => {
-  const service = setUpIframeEmbedderService(
-    props.apiLayer,
-    iframe.value!.contentWindow!,
-  );
-  emit("serviceCreated", service);
+  setUpIframeEmbedderService(props.apiLayer, iframe.value!.contentWindow!)
+    .then((service) => {
+      resolvedDispatcherService = service;
+
+      if (eventQueue) {
+        eventQueue.forEach((event) =>
+          resolvedDispatcherService.dispatchPushEvent(event),
+        );
+        // null for GC
+        eventQueue = null;
+      }
+    })
+    .catch(() => {});
+
+  const dispatchPushEvent: EventDispatcherService["dispatchPushEvent"] = (
+    event,
+  ) => {
+    if (resolvedDispatcherService) {
+      resolvedDispatcherService.dispatchPushEvent(event);
+      return;
+    }
+
+    if (eventQueue) {
+      eventQueue.push(event as PushEvent<EventType>);
+    }
+  };
+
+  emit("serviceCreated", { dispatchPushEvent });
 });
 </script>
 

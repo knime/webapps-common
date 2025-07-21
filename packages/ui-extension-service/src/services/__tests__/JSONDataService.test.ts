@@ -21,6 +21,8 @@ import {
 
 import { extensionConfig } from "./mocks";
 
+const noop = () => {};
+
 describe("JsonDataService", () => {
   const defaultExtensionConfig = extensionConfig;
 
@@ -95,7 +97,7 @@ describe("JsonDataService", () => {
       const { jsonDataService, callNodeDataService } =
         constructJsonDataService();
 
-      jsonDataService.data();
+      jsonDataService.data().catch(noop);
 
       const parameters = getFirstCallParameter(callNodeDataService);
       expect(parameters.serviceType).toBe("data" satisfies DataServiceType);
@@ -106,8 +108,7 @@ describe("JsonDataService", () => {
       const { jsonDataService, callNodeDataService } =
         constructJsonDataService();
 
-      // @ts-expect-error Type 'string[]' is not assignable to type '[]'
-      jsonDataService.data({ options });
+      jsonDataService.data({ options }).catch(noop);
 
       const parameters = getFirstCallParameter(callNodeDataService);
       expect(parameters.dataServiceRequest).toContain(JSON.stringify(options));
@@ -117,7 +118,7 @@ describe("JsonDataService", () => {
       const { jsonDataService, callNodeDataService } =
         constructJsonDataService();
 
-      jsonDataService.data({ method: "nextPage" });
+      jsonDataService.data({ method: "nextPage" }).catch(noop);
 
       const parameters = getFirstCallParameter(callNodeDataService);
       expect(parameters.dataServiceRequest).toContain("nextPage");

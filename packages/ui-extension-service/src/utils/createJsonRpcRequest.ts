@@ -5,13 +5,13 @@ const JSON_RPC_VERSION = "2.0";
 type JsonRpcRequest = {
   jsonrpc: string;
   method: unknown;
-  params: string | string[];
+  params: unknown[];
   id: number;
 };
 
 export const createJsonRpcRequest = (
   method: string,
-  params = [],
+  params: unknown[] = [],
 ): JsonRpcRequest => ({
   jsonrpc: JSON_RPC_VERSION,
   method,

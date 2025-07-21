@@ -353,18 +353,8 @@
       "count": 1
     }
   },
-  "packages/ui-extension-renderer/src/logic/iframe/embedder.ts": {
-    "@typescript-eslint/no-floating-promises": {
-      "count": 1
-    }
-  },
   "packages/ui-extension-renderer/src/vueComponents/Popover.vue": {
     "vue/block-lang": {
-      "count": 1
-    }
-  },
-  "packages/ui-extension-service/src/iframe/__tests__/iframe.test.ts": {
-    "@typescript-eslint/no-floating-promises": {
       "count": 1
     }
   },
@@ -374,11 +364,6 @@
     }
   },
   "packages/ui-extension-service/src/services/__tests__/CachingSelectionService.test.ts": {
-    "@typescript-eslint/no-floating-promises": {
-      "count": 3
-    }
-  },
-  "packages/ui-extension-service/src/services/__tests__/JSONDataService.test.ts": {
     "@typescript-eslint/no-floating-promises": {
       "count": 3
     }

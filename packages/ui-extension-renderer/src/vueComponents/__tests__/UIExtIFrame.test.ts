@@ -1,54 +1,90 @@
-import {
-  type MockInstance,
-  afterEach,
-  beforeAll,
-  describe,
-  expect,
-  it,
-  vi,
-} from "vitest";
-import { shallowMount } from "@vue/test-utils";
+import { describe, expect, it, vi } from "vitest";
+import { flushPromises, shallowMount } from "@vue/test-utils";
 
 import * as IframeEmbedderModule from "../../logic/iframe/embedder";
 import UIExtIFrame from "../UIExtIFrame.vue";
 import type { UIExtensionServiceAPILayer } from "../types";
 
-describe("UIExtIFrame", () => {
+vi.mock("../../logic/iframe/embedder");
+
+describe("UIExtIFrame.vue", () => {
   const resourceLocation = "resourceLocation";
   const apiLayer = {} as UIExtensionServiceAPILayer;
-  const mockedEmbedderService = {
-    dispatchPushEvent: () => {},
+
+  const createUnwrappedPromise = <T>() => {
+    let resolve: (value: T | PromiseLike<T>) => void = () => {};
+    let reject: (reason?: any) => void = () => {};
+
+    const promise = new Promise<T>((res, rej) => {
+      resolve = res;
+      reject = rej;
+    });
+
+    return { resolve, reject, promise };
   };
 
-  let wrapper: ReturnType<typeof shallowMount>,
-    setUpIframeEmbedderServiceSpy: MockInstance;
+  type Dispatcher = Awaited<
+    ReturnType<typeof IframeEmbedderModule.setUpIframeEmbedderService>
+  >;
 
-  beforeAll(() => {
-    setUpIframeEmbedderServiceSpy = vi
-      .spyOn(IframeEmbedderModule, "setUpIframeEmbedderService")
-      .mockReturnValue(mockedEmbedderService);
-    wrapper = shallowMount(UIExtIFrame, {
+  const doMount = (
+    mockDispatcher: Promise<Dispatcher> = Promise.resolve({
+      dispatchPushEvent: vi.fn(),
+    }),
+  ) => {
+    vi.mocked(IframeEmbedderModule.setUpIframeEmbedderService).mockReturnValue(
+      mockDispatcher,
+    );
+
+    const wrapper = shallowMount(UIExtIFrame, {
       props: { resourceLocation, apiLayer },
     });
+
+    return { wrapper };
+  };
+
+  it("emits 'serviceCreated' event", () => {
+    const { wrapper } = doMount();
+
+    expect(wrapper.emitted("serviceCreated")).toBeDefined();
   });
 
-  afterEach(() => {
-    vi.clearAllMocks();
-  });
+  it("queues dispatched events before iframe is ready", async () => {
+    const iframeDispatcherMock = vi.fn();
 
-  it("renders html as iframes and sets up embedder service", () => {
-    const iFrameWrapper = wrapper.find("iframe");
-    expect(iFrameWrapper.exists()).toBeTruthy();
-    expect(setUpIframeEmbedderServiceSpy).toHaveBeenCalledWith(
-      apiLayer,
-      iFrameWrapper.element.contentWindow,
-    );
-    expect(iFrameWrapper.attributes("src")).toBe(resourceLocation);
-  });
+    const done = vi.fn();
+    const { promise, resolve } = createUnwrappedPromise<Dispatcher>();
 
-  it("emits constructed service", () => {
-    expect(wrapper.emitted("serviceCreated")![0][0]).toStrictEqual(
-      mockedEmbedderService,
-    );
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    promise.then(done);
+
+    const { wrapper } = doMount(promise);
+    expect(done).not.toHaveBeenCalled();
+    const emittedDispatcher = wrapper.emitted(
+      "serviceCreated",
+    )![0][0] as Dispatcher;
+
+    emittedDispatcher.dispatchPushEvent({
+      eventType: "DisplayModeEvent",
+      payload: { mode: "large" },
+    });
+    emittedDispatcher.dispatchPushEvent({
+      eventType: "DisplayModeEvent",
+      payload: { mode: "small" },
+    });
+
+    expect(done).not.toHaveBeenCalled();
+    resolve({ dispatchPushEvent: iframeDispatcherMock });
+    await flushPromises();
+
+    expect(done).toHaveBeenCalledOnce();
+    expect(iframeDispatcherMock).toHaveBeenNthCalledWith(1, {
+      eventType: "DisplayModeEvent",
+      payload: { mode: "large" },
+    });
+    expect(iframeDispatcherMock).toHaveBeenNthCalledWith(2, {
+      eventType: "DisplayModeEvent",
+      payload: { mode: "small" },
+    });
   });
 });
