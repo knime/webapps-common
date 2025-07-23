@@ -1,7 +1,7 @@
 /**
- * @typedef {import('svgo').Config} Config
+ * @typedef {import('./svgo.config').SvgoConfig} SvgoConfig
  *
- * @type {Config}
+ * @type {SvgoConfig}
  */
 const svgoConfig = {
   plugins: [
