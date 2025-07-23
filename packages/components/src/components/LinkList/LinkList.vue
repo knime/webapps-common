@@ -4,10 +4,10 @@ import { defineComponent } from "vue";
 
 import ArrowIcon from "@knime/styles/img/icons/arrow-right.svg";
 
-interface LinkItem {
+type LinkItem = {
   text?: string;
   url: string;
-}
+};
 
 /**
  * Renders a list of clickable links displayed with an arrow icon and text

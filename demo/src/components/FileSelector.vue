@@ -1,7 +1,8 @@
-<script>
+<script lang="ts">
 import { Dropdown, FileSelector } from "@knime/components";
 
 import CodeExample from "./demo/CodeExample.vue";
+import { defineComponent } from "vue";
 // import fileSelectorCode from "webapps-common/ui/components/FileSelector.vue?raw";
 const fileSelectorCode = "";
 
@@ -11,7 +12,7 @@ const codeExample = `<FileSelector
   :multiple="true"
 />`;
 
-export default {
+export default defineComponent({
   components: {
     FileSelector,
     CodeExample,
@@ -24,7 +25,7 @@ export default {
       acceptedFileTypes: "*",
     };
   },
-};
+});
 </script>
 
 <template>
@@ -49,7 +50,7 @@ export default {
             <p>Example of accepted file types</p>
             <Dropdown
               v-model="acceptedFileTypes"
-              aria-label="Accepted file types"
+              ariaLabel="Accepted file types"
               :possible-values="[
                 {
                   id: '*',

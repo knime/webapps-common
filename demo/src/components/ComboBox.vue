@@ -1,7 +1,8 @@
-<script>
+<script lang="ts">
 import { ComboBox } from "@knime/components";
 
 import CodeExample from "./demo/CodeExample.vue";
+import { defineComponent } from "vue";
 // import code from "webapps-common/ui/components/forms/ComboBox.vue?raw";
 const code = "";
 
@@ -22,7 +23,7 @@ const codeExample = `<ComboBox
   close-dropdown-on-selection
 />`;
 
-export default {
+export default defineComponent({
   components: {
     ComboBox,
     CodeExample,
@@ -46,7 +47,7 @@ export default {
       return code;
     },
   },
-};
+});
 </script>
 
 <template>

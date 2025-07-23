@@ -13,12 +13,12 @@ import { type Props as BasePopoverProps } from "./BasePopover.vue";
 import BasePopover from "./BasePopover.vue";
 import PopoverContent from "./PopoverContent.vue";
 
-interface Props extends Omit<BasePopoverProps, "reference"> {
+type Props = Omit<BasePopoverProps, "reference"> & {
   content: InstanceType<typeof PopoverContent>["$props"];
   reference: string | MaybeRef<MaybeElement>;
   completeHint: () => void;
   skipAllHints: () => void;
-}
+};
 
 const props = defineProps<Props>();
 

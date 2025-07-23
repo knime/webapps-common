@@ -20,10 +20,10 @@ import type { MaybeElement } from "../types";
 const ARROW_SIZE_PX = 12;
 const FLOATING_OFFSET_PX = 4;
 
-export interface Props {
+export type Props = {
   reference: MaybeElement;
   placement: Placement;
-}
+};
 
 const props = defineProps<Props>();
 const placement = toRef(props, "placement");

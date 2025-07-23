@@ -1,24 +1,16 @@
 <script lang="ts" setup>
 import { computed } from "vue";
 
-const props = defineProps({
-  modelValue: {
-    type: Boolean,
-    default: false,
-  },
-  disabled: {
-    type: Boolean,
-    default: false,
-  },
-  halfChecked: {
-    type: Boolean,
-    default: false,
-  },
-});
+type Props = {
+  modelValue?: boolean;
+  disabled?: boolean;
+  halfChecked?: boolean;
+};
+const props = defineProps<Props>();
 
 const emit = defineEmits<{
-  (e: "change", value: boolean): void;
-  (e: "update:modelValue", value: boolean): void;
+  change: [value: boolean];
+  "update:modelValue": [value: boolean];
 }>();
 
 const rootCls = computed(() => {

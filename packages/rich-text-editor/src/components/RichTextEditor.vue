@@ -26,7 +26,7 @@ type BaseExtensions =
   | BaseExtensionsConfig
   | ({ [key in keyof BaseExtensionsConfig]: never } & { all: boolean });
 
-interface Props {
+type Props = {
   modelValue: string;
   editable?: boolean;
   /**
@@ -86,7 +86,7 @@ interface Props {
    *   the purpose of having a limit
    */
   characterLimit?: number;
-}
+};
 
 const props = withDefaults(defineProps<Props>(), {
   editable: true,

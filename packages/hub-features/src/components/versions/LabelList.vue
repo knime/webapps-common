@@ -11,10 +11,10 @@ import Popover from "../Popover.vue";
 
 import type { AssignedLabel } from "./types";
 
-interface PopoverElement extends HTMLElement {
+type PopoverElement = HTMLElement & {
   closeMenu: () => void;
   openMenu: () => void;
-}
+};
 
 const LABEL_LENGTH = 25;
 

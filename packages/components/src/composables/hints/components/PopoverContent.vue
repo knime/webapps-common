@@ -4,7 +4,7 @@ import CloseIcon from "@knime/styles/img/icons/close.svg";
 
 import type { VideoSource } from "../types";
 
-interface Props {
+type Props = {
   title: string;
   description: string;
   linkText?: string;
@@ -12,7 +12,7 @@ interface Props {
   video?: VideoSource;
   image?: string;
   hideButtons?: boolean;
-}
+};
 
 defineProps<Props>();
 

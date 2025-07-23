@@ -33,7 +33,7 @@ const MAX_HEIGHT_BUTTONS_CENTER_ALIGNMENT =
 // width of the boxes, which is the width of the whole twinlist minus the button gap between the two lists
 const RESIZE_HANDLE_WIDTH = `calc((100% - ${BUTTON_WIDTH}px) * 1 / 6)`;
 
-interface TransformOnMovePayload {
+type TransformOnMovePayload = {
   /**
    * The to be updated list of ids
    */
@@ -48,7 +48,7 @@ interface TransformOnMovePayload {
      */
     movingUnknownValues: boolean;
   };
-}
+};
 
 /** The included values or null if not yet known. Values which are not an id in the possible values will be shown as missing. */
 type SimpleTwinlistModelValue<T extends Id> = null | T[];
@@ -59,7 +59,7 @@ type SimpleTwinlistModelValue<T extends Id> = null | T[];
  * Also missing values now can always exist on the opposite side of the unknown values which is why we also need to
  *  keep track of the excluded values as data.
  */
-interface TwinlistModelValueWithUnknownValues<T extends Id> {
+type TwinlistModelValueWithUnknownValues<T extends Id> = {
   /**
    * null if not yet known
    */
@@ -69,7 +69,7 @@ interface TwinlistModelValueWithUnknownValues<T extends Id> {
    */
   excludedValues: T[] | null;
   includeUnknownValues: boolean;
-}
+};
 
 type TwinlistModelValue<T extends Id = Id> =
   | SimpleTwinlistModelValue<T>

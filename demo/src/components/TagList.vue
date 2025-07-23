@@ -1,7 +1,8 @@
-<script>
+<script lang="ts">
 import { TagList } from "@knime/components";
 
 import CodeExample from "./demo/CodeExample.vue";
+import { defineComponent } from "vue";
 // import code from "webapps-common/ui/components/TagList.vue?raw";
 const code = "";
 
@@ -13,7 +14,7 @@ const codeExample = `<TagList
   @click="onTagClick"
 />`;
 
-export default {
+export default defineComponent({
   components: {
     TagList,
     CodeExample,
@@ -29,11 +30,11 @@ export default {
     },
   },
   methods: {
-    onTagClick(tag) {
+    onTagClick(tag: string) {
       alert(`clicked tag: ${tag}`);
     },
   },
-};
+});
 </script>
 
 <template>
@@ -63,7 +64,7 @@ export default {
             ]"
             :number-of-initial-tags="3"
             clickable
-            active-tags="['Banana', 'Papaya']"
+            :active-tags="['Banana', 'Papaya']"
             @click="onTagClick"
           />
         </div>
