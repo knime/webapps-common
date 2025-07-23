@@ -3,12 +3,10 @@
 <!-- eslint-disable func-style -->
 <script setup lang="ts">
 import {
-  type PropType,
   computed,
   nextTick,
   provide,
   ref,
-  shallowReactive,
   toRaw,
   toRef,
   useSlots,
@@ -45,61 +43,45 @@ import type {
 import { addOrDelete } from "./utils";
 import type { TypeWithUndefined } from "./utils/types";
 
-const props = defineProps({
-  source: {
-    type: Array as PropType<TreeNodeOptions[]>,
-    default: () => [],
-  },
-  defaultSelectedKey: {
-    type: [String, Number],
-    default: "",
-  },
-  defaultExpandedKeys: {
-    type: Array as PropType<NodeKey[]>,
-    default: () => [],
-  },
-  defaultCheckedKeys: {
-    type: Array as PropType<NodeKey[]>,
-    default: () => [],
-  },
-  defaultDisabledKeys: {
-    type: Array as PropType<NodeKey[]>,
-    default: () => [],
-  },
-  showCheckbox: {
-    type: Boolean,
-    default: false,
-  },
-  checkStrictly: {
-    type: Boolean,
-    default: false,
-  },
-  disableDeselect: {
-    type: Boolean,
-    default: false,
-  },
-  virtual: {
-    type: Boolean,
-    default: false,
-  },
-  virtualHeight: {
-    type: Number,
-    default: 24,
-  },
-  // eslint-disable-next-line vue/require-default-prop
-  renderNode: Function as PropType<RenderNodeFunc>,
-  // eslint-disable-next-line vue/require-default-prop
-  renderIcon: Function as PropType<RenderIconFunc>,
-  // eslint-disable-next-line vue/require-default-prop
-  loadData: Function as PropType<LoadDataFunc>,
+type Props = {
+  source?: TreeNodeOptions[];
+  defaultSelectedKey?: string | number;
+  defaultExpandedKeys?: NodeKey[];
+  defaultCheckedKeys?: NodeKey[];
+  defaultDisabledKeys?: NodeKey[];
+  showCheckbox?: boolean;
+  checkStrictly?: boolean;
+  disableDeselect?: boolean;
+  virtual?: boolean;
+  virtualHeight?: number;
+
+  loadData?: LoadDataFunc;
+  renderNode?: RenderNodeFunc;
+  renderIcon?: RenderIconFunc;
+};
+
+const props = withDefaults(defineProps<Props>(), {
+  source: () => [],
+  defaultSelectedKey: "",
+  defaultExpandedKeys: () => [],
+  defaultCheckedKeys: () => [],
+  defaultDisabledKeys: () => [],
+  showCheckbox: false,
+  checkStrictly: false,
+  disableDeselect: false,
+  virtual: false,
+  virtualHeight: 24,
+  loadData: undefined,
+  renderNode: undefined,
+  renderIcon: undefined,
 });
 
 const emit = defineEmits<{
-  (e: "selectChange", value: SelectEventParams): void;
-  (e: "checkChange", value: EventParams): void;
-  (e: "expandChange", value: EventParams): void;
-  (e: "focusChange", value: FocusEventParams): void;
-  (e: "keydown", value: KeydownEvent): void;
+  selectChange: [value: SelectEventParams];
+  checkChange: [value: EventParams];
+  expandChange: [value: EventParams];
+  focusChange: [value: FocusEventParams];
+  keydown: [value: KeydownEvent];
 }>();
 
 const flattenTreeData = ref<BaseTreeNode[]>([]);
@@ -135,7 +117,7 @@ const halfCheckedKeys = ref(new Set<NodeKey>());
 watch(
   () => props.defaultCheckedKeys,
   (newVal) => {
-    // todo: Lazy loading changes the key2TreeNode and re-calls the useCheckState
+    // TODO: Lazy loading changes the key2TreeNode and re-calls the useCheckState
     useCheckState(newVal, {
       checkedKeys: checkedKeys.value,
       halfCheckedKeys: halfCheckedKeys.value,
@@ -246,12 +228,14 @@ function lazyLoad(node: BaseTreeNode, children: TreeNodeOptions[]) {
   );
   const key2ChildrenNode = getKey2TreeNode(childrenFlattenData);
   Object.assign(key2TreeNode.value, key2ChildrenNode);
-  childrenFlattenData.forEach(async (item) => {
+
+  for (const item of childrenFlattenData) {
     if (expandedKeys.value.has(item.key)) {
-      await nextTick();
-      toggleExpand({ state: true, node: item });
+      nextTick(() => {
+        toggleExpand({ state: true, node: item });
+      }).catch(() => {});
     }
-  });
+  }
 }
 
 const selectedKeys = ref(new Set<NodeKey>());
@@ -388,7 +372,7 @@ function checkChange(node: BaseTreeNode) {
   emit("checkChange", { state: newChecked, node });
 }
 
-const context = shallowReactive({
+const context = {
   renderNode: props.renderNode,
   renderIcon: props.renderIcon,
   slots: useSlots(),
@@ -410,7 +394,7 @@ const context = shallowReactive({
   loadChildren: (nodeKey: NodeKey) => loadChildren(key2TreeNode.value[nodeKey]),
   clearChildren: (nodeKey: NodeKey) =>
     clearChildren(key2TreeNode.value[nodeKey]),
-});
+};
 
 defineExpose(toRaw(context));
 provide(TreeInjectionKey, context);
@@ -430,7 +414,7 @@ provide(TreeInjectionKey, context);
       class="vir-tree-wrap virtual"
       :style="{ ...scrolledAreaStyles }"
     >
-      <tree-node
+      <TreeNode
         v-for="index in indices.toArray()"
         :key="visibleList[index].key"
         :style="{ height: `${virtualHeight}px` }"
@@ -449,7 +433,7 @@ provide(TreeInjectionKey, context);
     </div>
 
     <div v-else class="vir-tree-wrap">
-      <tree-node
+      <TreeNode
         v-for="item of visibleList"
         :key="item.key"
         :node="item"

@@ -1,5 +1,5 @@
 <!-- eslint-disable max-lines -->
-<script>
+<script lang="ts">
 import { Dropdown, LoadingIcon } from "@knime/components";
 import DiamondIcon from "@knime/styles/img/icons/diamond.svg";
 import EarlyBirdIcon from "@knime/styles/img/icons/early-bird.svg";
@@ -7,12 +7,13 @@ import DisconnectIcon from "@knime/styles/img/icons/nodes-disconnect.svg";
 import RocketIcon from "@knime/styles/img/icons/rocket.svg";
 
 import CodeExample from "./demo/CodeExample.vue";
+import { defineComponent } from "vue";
 // import code from "webapps-common/ui/components/forms/Dropdown.vue?raw";
 const code = "";
 
 const codeExample = `<Dropdown
   v-model="selected"
-  aria-label="A Dropdown"
+  ariaLabel="A Dropdown"
   :possible-values="[{
     id: 'foo',
     text: 'Foo'
@@ -27,7 +28,7 @@ const codeExample = `<Dropdown
 
 const slottedCodeExample = `<Dropdown
   v-model="slottedSelected"
-  aria-label="A Slotted dropdown"
+  ariaLabel="A Slotted dropdown"
   :possible-values="[{
       id: '1',
       text: 'The Sundering',
@@ -83,7 +84,7 @@ const slottedCodeExample = `<Dropdown
 </Dropdown>
 `;
 
-export default {
+export default defineComponent({
   components: {
     Dropdown,
     CodeExample,
@@ -155,7 +156,7 @@ export default {
       return code;
     },
   },
-};
+});
 </script>
 
 <template>
@@ -176,7 +177,7 @@ export default {
         <div class="grid-item-5">
           <Dropdown
             v-model="selected"
-            aria-label="A List"
+            ariaLabel="A List"
             :possible-values="[
               {
                 id: 'specialOption',
@@ -193,7 +194,7 @@ export default {
         <div class="grid-item-5">
           <Dropdown
             v-model="selected"
-            aria-label="A limited list"
+            ariaLabel="A limited list"
             size="3"
             :possible-values="[
               {
@@ -263,7 +264,7 @@ export default {
           <Dropdown
             v-model="placeholderModel"
             placeholder="Placeholder…"
-            aria-label="A List"
+            ariaLabel="A List"
             :possible-values="[
               {
                 id: 'foo',
@@ -285,7 +286,7 @@ export default {
             v-model="placeholderModel"
             placeholder="Placeholder…"
             :is-valid="false"
-            aria-label="A limited list"
+            ariaLabel="A limited list"
             size="3"
             :possible-values="[
               {
@@ -347,7 +348,7 @@ export default {
           <Dropdown
             v-model="disabledSelected"
             placeholder="Disabled..."
-            aria-label="A List"
+            ariaLabel="A List"
             :possible-values="[
               {
                 id: 'foo',
@@ -373,7 +374,7 @@ export default {
           <Dropdown
             v-model="disabledSelected"
             placeholder="No values present"
-            aria-label="A List"
+            ariaLabel="A List"
           />
         </div>
         <div class="grid-item-2">selected id: {{ disabledSelected }}</div>
@@ -384,7 +385,7 @@ export default {
           <Dropdown
             v-model="withSlotsSelected"
             placeholder="With slots..."
-            aria-label="A List"
+            ariaLabel="A List"
             :possible-values="[
               {
                 id: 'foo',
@@ -411,7 +412,7 @@ export default {
           <Dropdown
             v-model="withSlotsSelected"
             placeholder="In compact mode"
-            aria-label="A List"
+            ariaLabel="A List"
             compact
             :possible-values="[
               {
@@ -443,7 +444,7 @@ export default {
         <div class="grid-item-5">
           <Dropdown
             v-model="dropupSelected"
-            aria-label="A Dropup"
+            ariaLabel="A Dropup"
             :possible-values="[
               {
                 id: 'foo',
@@ -473,7 +474,7 @@ export default {
           <Dropdown
             v-model="withGroupSelected"
             placeholder="With groups"
-            aria-label="Dropdown with groups"
+            ariaLabel="Dropdown with groups"
             :possible-values="[
               {
                 id: 'foo',
@@ -557,7 +558,7 @@ export default {
         <div class="grid-item-5">
           <Dropdown
             v-model="slottedSelected"
-            aria-label="A limited list"
+            ariaLabel="A limited list"
             size="3"
             :possible-values="slottedExamplePossibleValue"
           >

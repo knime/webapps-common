@@ -171,8 +171,8 @@ const onLabelLeave = () => {
     display: flex;
     flex-direction: column;
     gap: 3px;
-    overflow-wrap: anywhere;
-    word-break: break-word;
+    overflow-wrap: break-word;
+    word-break: normal;
 
     & h6 {
       display: block;

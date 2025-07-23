@@ -47,7 +47,7 @@ import useDropdownNavigation from "../../../composables/useDropdownNavigation";
 import BaseMenuItem from "./BaseMenuItem.vue";
 import BaseMenuItems from "./BaseMenuItems.vue";
 
-export interface MenuItem<TMetadata = unknown, TChildrenMetadata = TMetadata> {
+export type MenuItem<TMetadata = unknown, TChildrenMetadata = TMetadata> = {
   text: string;
   icon?: Component;
   disabled?: boolean;
@@ -79,7 +79,7 @@ export interface MenuItem<TMetadata = unknown, TChildrenMetadata = TMetadata> {
     checked: boolean;
     setBoolean: (checked: boolean) => void;
   };
-}
+};
 
 export type Props = {
   items: MenuItem[];

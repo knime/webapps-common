@@ -9,7 +9,7 @@ export type VideoSource = Array<{
 
 export type MaybeElement = Element | ComponentPublicInstance | null | undefined;
 
-export interface HintConfiguration {
+export type HintConfiguration = {
   /** The title of the hint */
   title: string;
   /** The description that is displayed on the hint */
@@ -32,7 +32,7 @@ export interface HintConfiguration {
   align?: "start" | "center" | "end";
   /** querySelector to find the anchor element, if omitted the id (object key) is used as `#<id>` */
   referenceSelector?: string;
-}
+};
 
 export type HintState = {
   completedHints: string[];

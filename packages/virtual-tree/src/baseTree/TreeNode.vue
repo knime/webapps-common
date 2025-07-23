@@ -1,48 +1,26 @@
 <!-- eslint-disable no-undefined -->
 <script setup lang="ts">
-import { type PropType, computed, inject } from "vue";
+import { computed, inject } from "vue";
 
-import VirCheckBox from "./TreeNodeCheckbox.vue";
+import TreeNodeCheckbox from "./TreeNodeCheckbox.vue";
 import { BaseTreeNode } from "./baseTreeNode";
 import { TreeInjectionKey } from "./context";
-import renderIcon from "./renderIcon";
+import RenderIcon from "./renderIcon";
 import RenderNode from "./renderNode";
 import type { EventParams, NodeKey } from "./types";
 
-const props = defineProps({
-  node: {
-    type: Object as PropType<BaseTreeNode>,
-    required: true,
-  },
-  selectedKeys: {
-    type: Object as PropType<Set<NodeKey>>,
-    required: true,
-  },
-  // eslint-disable-next-line vue/require-default-prop
-  focusKey: {
-    type: [String, Number] as PropType<NodeKey>,
-  },
-  expandedKeys: {
-    type: Object as PropType<Set<NodeKey>>,
-    required: true,
-  },
-  disabledKeys: {
-    type: Object as PropType<Set<NodeKey>>,
-    required: true,
-  },
-  checkedKeys: {
-    type: Set as PropType<Set<NodeKey>>,
-    required: true,
-  },
-  halfCheckedKeys: {
-    type: Set as PropType<Set<NodeKey>>,
-    required: true,
-  },
-  showCheckbox: {
-    type: Boolean,
-    default: false,
-  },
-});
+type Props = {
+  node: BaseTreeNode;
+  selectedKeys: Set<NodeKey>;
+  expandedKeys: Set<NodeKey>;
+  disabledKeys: Set<NodeKey>;
+  checkedKeys: Set<NodeKey>;
+  halfCheckedKeys: Set<NodeKey>;
+  showCheckbox: boolean;
+  focusKey?: NodeKey;
+};
+
+const props = defineProps<Props>();
 
 const showArrow = computed(() => props.node.hasChildren);
 const showCheckbox = computed(() => {
@@ -53,9 +31,9 @@ const showCheckbox = computed(() => {
 });
 
 const emit = defineEmits<{
-  (e: "selectChange", value: BaseTreeNode): void;
-  (e: "checkChange", value: BaseTreeNode): void;
-  (e: "toggleExpand", value: EventParams): void;
+  selectChange: [value: BaseTreeNode];
+  checkChange: [value: BaseTreeNode];
+  toggleExpand: [value: EventParams];
 }>();
 
 const treeContext = inject(TreeInjectionKey)!;
@@ -115,9 +93,9 @@ const arrowClick = (event: MouseEvent) => {
       ]"
       @click="arrowClick"
     >
-      <render-icon v-if="showArrow" :context="treeContext" :node="props.node" />
+      <RenderIcon v-if="showArrow" :context="treeContext" :node="props.node" />
     </div>
-    <vir-check-box
+    <TreeNodeCheckbox
       v-if="showCheckbox"
       class="node-content node-check-box"
       :disabled="props.disabledKeys.has(props.node.key)"
@@ -125,14 +103,14 @@ const arrowClick = (event: MouseEvent) => {
       :half-checked="props.halfCheckedKeys.has(props.node.key)"
       @change="handleCheckChange"
     >
-      <render-node
+      <RenderNode
         :title-cls="titleCls"
         :context="treeContext"
         :node="props.node"
       />
-    </vir-check-box>
+    </TreeNodeCheckbox>
     <div v-else class="node-content node-text" @click="handleSelect">
-      <render-node
+      <RenderNode
         :title-cls="titleCls"
         :context="treeContext"
         :node="props.node"

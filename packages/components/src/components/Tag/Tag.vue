@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import CheckIcon from "@knime/styles/img/icons/check.svg";
 
-interface Props {
+type Props = {
   /**
    * If the tags should have hover + cursor styles.
    */
@@ -10,7 +10,7 @@ interface Props {
    * If the tag should be displayed as active
    */
   active?: boolean;
-}
+};
 
 withDefaults(defineProps<Props>(), {
   clickable: false,

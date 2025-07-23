@@ -6,7 +6,7 @@ import Tag from "./Tag.vue";
 
 const defaultInitialTagCount = 5;
 
-interface Props {
+type Props = {
   /**
    * Maximum number of tags to display initially.
    * If more tags are present, they will be expandable via a '+' button.
@@ -34,7 +34,7 @@ interface Props {
    * Shows active tags in front of all others
    */
   sortByActive?: boolean;
-}
+};
 
 const props = withDefaults(defineProps<Props>(), {
   numberOfInitialTags: defaultInitialTagCount,

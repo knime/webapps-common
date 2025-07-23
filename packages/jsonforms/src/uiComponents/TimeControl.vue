@@ -28,7 +28,7 @@ const showMilliseconds = computed(
     :show-milliseconds="showMilliseconds"
     :is-valid
     @update:model-value="
-      (newValue) => changeValue(localTimeUtils.toString(newValue))
+      (newValue: Date) => changeValue(localTimeUtils.toString(newValue))
     "
   />
 </template>

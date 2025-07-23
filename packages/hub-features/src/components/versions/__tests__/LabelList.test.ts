@@ -1,6 +1,6 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { isRef, ref } from "vue";
-import { flushPromises, shallowMount } from "@vue/test-utils";
+import { shallowMount } from "@vue/test-utils";
 import { useEventBus } from "@vueuse/core";
 import { useFloating } from "@floating-ui/vue";
 
@@ -54,6 +54,10 @@ const defaultLabels: Array<AssignedLabel> = [
 const labelCount = 3;
 
 describe("LabelList", () => {
+  afterEach(() => {
+    vi.resetAllMocks();
+  });
+
   const doMount = ({
     labels = defaultLabels,
     defaultLabelCount = labelCount,
@@ -88,35 +92,29 @@ describe("LabelList", () => {
       },
     });
 
-    vi.spyOn(
-      HTMLElement.prototype,
-      "getBoundingClientRect",
-    ).mockReturnValueOnce({
-      top: 0,
-      left: 50,
-      right: 150,
-      bottom: 200,
-      width: 100,
-      height: 100,
-      x: 50,
-      y: 100,
-      toJSON: () => ({}),
-    });
-
-    vi.spyOn(
-      HTMLElement.prototype,
-      "getBoundingClientRect",
-    ).mockReturnValueOnce({
-      top: deltaTop,
-      left: 50,
-      right: 150,
-      bottom: 200,
-      width: 100,
-      height: 100,
-      x: 50,
-      y: 100,
-      toJSON: () => ({}),
-    });
+    vi.spyOn(HTMLElement.prototype, "getBoundingClientRect")
+      .mockReturnValueOnce({
+        top: deltaTop,
+        left: 50,
+        right: 150,
+        bottom: 200,
+        width: 100,
+        height: 100,
+        x: 50,
+        y: 100,
+        toJSON: () => ({}),
+      })
+      .mockReturnValueOnce({
+        top: 0,
+        left: 50,
+        right: 150,
+        bottom: 200,
+        width: 100,
+        height: 100,
+        x: 50,
+        y: 100,
+        toJSON: () => ({}),
+      });
 
     const findLabels = () =>
       wrapper.findAllComponents({ name: "FunctionButton" });
@@ -127,12 +125,8 @@ describe("LabelList", () => {
     const findFloatingPanel = () => wrapper.find(".floating-panel");
 
     const triggerLabelClick = async (index: number) => {
-      vi.useFakeTimers();
       const labels = findLabels();
-      labels.at(index)?.trigger("click");
-
-      vi.advanceTimersByTime(2);
-      await flushPromises();
+      await labels.at(index)?.trigger("click");
     };
 
     return {

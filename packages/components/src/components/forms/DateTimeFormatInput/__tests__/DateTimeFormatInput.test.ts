@@ -1,6 +1,8 @@
 /* eslint-disable vitest/expect-expect */
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { sleep } from "@knime/utils";
+
 import ValueSwitch from "../../ValueSwitch/ValueSwitch.vue";
 import DateTimeFormatInput from "../DateTimeFormatInput.vue";
 import type { FormatCategory, FormatDateType } from "../utils/types";
@@ -75,6 +77,7 @@ describe("DateTimeFormatInput", () => {
       const popover = await doMountWithPopover();
       popover.assert.isOpen();
 
+      await sleep(0);
       await popover.clickAway();
       popover.assert.isClosed();
 

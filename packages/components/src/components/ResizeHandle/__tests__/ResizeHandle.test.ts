@@ -27,7 +27,7 @@ describe("ResizeHandle", () => {
     const handleContainers = wrapper.findAll(".handle-container");
     expect(handleContainers).toHaveLength(1);
     expect(handleContainers[0].attributes("style")).toBe(
-      "width: calc(50% + 2 * 2px);",
+      "width: calc(50% + 4px);",
     );
   });
 
@@ -41,10 +41,10 @@ describe("ResizeHandle", () => {
     const handleContainers = wrapper.findAll(".handle-container");
     expect(handleContainers).toHaveLength(2);
     expect(handleContainers[0].attributes("style")).toBe(
-      "width: calc(33% + 2 * 2px);",
+      "width: calc(33% + 4px);",
     );
     expect(handleContainers[1].attributes("style")).toBe(
-      "width: calc(33% + 2 * 2px);",
+      "width: calc(33% + 4px);",
     );
     expect(wrapper.find(".resize-handle-container").attributes("style")).toBe(
       "gap: 10px;",

@@ -28,7 +28,7 @@ import FileExplorerItemBack from "./FileExplorerItemBack.vue";
  *
  * NOTE: Do not add store bindings to component to keep it as reusable as possible
  */
-interface Props {
+type Props = {
   mode?: "normal" | "mini";
   /**
    * full path of the currently displayed directory. This is used to
@@ -95,7 +95,7 @@ interface Props {
    * Selected item ids
    */
   selectedItemIds?: string[];
-}
+};
 
 const itemHeight = 38;
 

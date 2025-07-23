@@ -1,7 +1,8 @@
-<script>
+<script lang="ts">
 import { LinkList } from "@knime/components";
 
 import CodeExample from "./demo/CodeExample.vue";
+import { defineComponent } from "vue";
 // import code from "webapps-common/ui/components/LinkList.vue?raw";
 const code = "";
 
@@ -12,7 +13,7 @@ const codeExample = `<LinkList
   ]"
 />`;
 
-export default {
+export default defineComponent({
   components: {
     LinkList,
     CodeExample,
@@ -25,7 +26,7 @@ export default {
       return code;
     },
   },
-};
+});
 </script>
 
 <template>

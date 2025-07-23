@@ -28,6 +28,7 @@
     "flush-promises": "1.0.2",
     "npm-run-all2": "catalog:",
     "rimraf": "6.0.1",
+    "terser": "^5.43.1",
     "typescript": "catalog:",
     "vite": "catalog:",
     "vite-plugin-dts": "catalog:",

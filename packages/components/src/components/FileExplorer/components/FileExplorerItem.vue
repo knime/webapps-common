@@ -11,7 +11,7 @@ import type { FileExplorerItem, ItemIconRenderer } from "../types";
 
 import FileExplorerItemBase from "./FileExplorerItemBase.vue";
 
-interface Props {
+type Props = {
   blacklistedNames: Array<string>;
   item: FileExplorerItem;
   isSelected: boolean;
@@ -19,7 +19,7 @@ interface Props {
   isRenameActive: boolean;
   disabled: boolean;
   isDraggingEnabled?: boolean;
-}
+};
 
 const props = withDefaults(defineProps<Props>(), {
   isDraggingEnabled: true,
@@ -31,20 +31,20 @@ const defaultIconRenderer: ItemIconRenderer = (item) => {
 
 const { isRenameActive, blacklistedNames } = toRefs(props);
 
-interface Emits {
-  (e: "dblclick", nativeEvent: MouseEvent): void;
-  (e: "click", nativeEvent: MouseEvent): void;
-  (e: "dragstart", nativeEvent: DragEvent): void;
-  (e: "dragenter", nativeEvent: DragEvent): void;
-  (e: "dragover", nativeEvent: DragEvent): void;
-  (e: "drag", nativeEvent: DragEvent): void;
-  (e: "dragleave", nativeEvent: DragEvent): void;
-  (e: "dragend", nativeEvent: DragEvent): void;
-  (e: "drop", nativeEvent: DragEvent): void;
-  (e: "contextmenu", nativeEvent: MouseEvent): void;
-  (e: "rename:submit", payload: { itemId: string; newName: string }): void;
-  (e: "rename:clear"): void;
-}
+type Emits = {
+  dblclick: [nativeEvent: MouseEvent];
+  click: [nativeEvent: MouseEvent];
+  dragstart: [nativeEvent: DragEvent];
+  dragenter: [nativeEvent: DragEvent];
+  dragover: [nativeEvent: DragEvent];
+  drag: [nativeEvent: DragEvent];
+  dragleave: [nativeEvent: DragEvent];
+  dragend: [nativeEvent: DragEvent];
+  drop: [nativeEvent: DragEvent];
+  contextmenu: [nativeEvent: MouseEvent];
+  "rename:submit": [payload: { itemId: string; newName: string }];
+  "rename:clear": [];
+};
 
 const emit = defineEmits<Emits>();
 

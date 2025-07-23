@@ -26,7 +26,6 @@ describe("Carousel", () => {
     const mouseLeaveSpy = vi.spyOn(Carousel.methods, "onMouseEnd");
     const mouseDownSpy = vi.spyOn(Carousel.methods, "onMouseDown");
     const mouseMoveSpy = vi.spyOn(Carousel.methods, "onMouseMove");
-    const clickSpy = vi.spyOn(Carousel.methods, "onMouseEnd");
 
     const wrapper = shallowMount(Carousel);
 
@@ -52,6 +51,6 @@ describe("Carousel", () => {
     expect(mouseLeaveSpy).toHaveBeenCalled();
 
     wrapper.find(".carousel").trigger("click");
-    expect(clickSpy).toHaveBeenCalledTimes(2);
+    expect(mouseLeaveSpy).toHaveBeenCalledTimes(2);
   });
 });

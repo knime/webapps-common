@@ -13,7 +13,7 @@ import useSearch from "../../../composables/useSearch";
 import FunctionButton from "../../Buttons/FunctionButton.vue";
 
 type Id = string | number;
-interface PossibleValue {
+type PossibleValue = {
   id: Id;
   text: string;
   title?: string;
@@ -22,7 +22,7 @@ interface PossibleValue {
     [K in keyof unknown]: string | number | boolean;
   };
   isSpecial?: boolean;
-}
+};
 
 const KEY_DOWN = "ArrowDown";
 const KEY_UP = "ArrowUp";

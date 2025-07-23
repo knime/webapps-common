@@ -11,13 +11,13 @@ import FunctionButton from "../../Buttons/FunctionButton.vue";
 import MultiselectListBox from "../MultiselectListBox/MultiselectListBox.vue";
 import { type PossibleValue, createMissingItem } from "../possibleValues";
 
-export interface Props {
+export type Props = {
   modelValue: string[];
   id?: string;
   ariaLabel: string;
   disabled?: boolean;
   possibleValues: (PossibleValue & { id: string })[];
-}
+};
 
 const props = defineProps<Props>();
 

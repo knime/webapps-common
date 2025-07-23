@@ -15,7 +15,7 @@ import "../variables.css";
 
 const DRAFT_ITEM_ID = "draft-id-combobox-preview-item";
 
-interface ComponentData {
+type ComponentData = {
   searchValue: string;
   inputOrOptionsFocussed: boolean;
   /*
@@ -26,7 +26,7 @@ interface ComponentData {
   focusElement: HTMLInputElement;
   refocusElement: HTMLDivElement;
   allPossibleItems: Array<PossibleValue>;
-}
+};
 
 type MultiselectRef = InstanceType<typeof Multiselect>;
 

@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import { nextTick } from "vue";
 import { mount } from "@vue/test-utils";
 
+import { sleep } from "@knime/utils";
+
 import NumberInput from "../../NumberInput/NumberInput.vue";
 import ValueSwitch from "../../ValueSwitch/ValueSwitch.vue";
 import IntervalInput from "../IntervalInput.vue";
@@ -85,9 +87,10 @@ describe("IntervalInput", () => {
   it("should hide popup when clicking outside", async () => {
     const { wrapper } = await doMount({ showPopup: true, props: defaultProps });
 
-    await wrapper.trigger("click");
-    await nextTick();
+    await sleep(0);
+    window.dispatchEvent(new Event("click"));
 
+    await nextTick();
     const popup = wrapper.find(".control-popup");
     expect(popup.isVisible()).toBeFalsy();
   });
