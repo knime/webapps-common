@@ -53,6 +53,7 @@
     "eslint": "catalog:",
     "globals": "catalog:",
     "husky": "^9.1.7",
+    "jsdom": "^26.1.0",
     "nano-staged": "0.8.0",
     "npm-run-all2": "catalog:",
     "prettier": "catalog:",
