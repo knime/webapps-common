@@ -29,13 +29,13 @@ import SidePanelBackArrow from "./SettingsSubPanelBackArrow.vue";
 export type SettingsSubPanelProps = {
   showBackArrow?: boolean;
   hideButtonsWhenExpanded?: boolean;
-  backgroundColorOverride?: string;
+  backgroundColorOverride?: string | null;
 };
 
 const props = withDefaults(defineProps<SettingsSubPanelProps>(), {
   showBackArrow: true,
   hideButtonsWhenExpanded: false,
-  backgroundColorOverride: "var(--knime-porcelain)",
+  backgroundColorOverride: null,
 });
 
 const isExpanded = ref(false);
@@ -62,7 +62,7 @@ const subSettingsPanels = inject(subPanelDestInjectionKey)!;
 const styleOverrides = computed(() => ({
   width: "100%",
   position: "absolute" as const,
-  backgroundColor: props.backgroundColorOverride,
+  backgroundColor: props.backgroundColorOverride ?? "var(--knime-porcelain)",
 }));
 </script>
 
@@ -71,7 +71,11 @@ const styleOverrides = computed(() => ({
   <Teleport :to="subSettingsPanels">
     <SideDrawer :is-expanded class="side-drawer" :style-overrides>
       <div class="side-drawer-content">
-        <SidePanelBackArrow v-if="showBackArrow" @click="close" />
+        <SidePanelBackArrow
+          v-if="showBackArrow"
+          :background-color-override
+          @click="close"
+        />
         <div class="main-content">
           <Form>
             <template #default>

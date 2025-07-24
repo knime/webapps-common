@@ -1,12 +1,28 @@
 <script setup lang="ts">
+import { computed } from "vue";
+
 import { FunctionButton } from "@knime/components";
 import ArrowLeft from "@knime/styles/img/icons/arrow-left.svg";
 
 const emit = defineEmits(["click"]);
+
+const props = withDefaults(
+  defineProps<{
+    backgroundColorOverride?: string | null;
+  }>(),
+  {
+    backgroundColorOverride: null,
+  },
+);
+
+const styleOverrides = computed(() => ({
+  backgroundColor:
+    props.backgroundColorOverride ?? "var(--knime-gray-ultra-light)",
+}));
 </script>
 
 <template>
-  <div class="flex-horizontal">
+  <div class="flex-horizontal" :style="styleOverrides">
     <FunctionButton
       primary
       class="arrow-left-button"
