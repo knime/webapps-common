@@ -1,5 +1,17 @@
 # @knime/ui-extension-renderer
 
+## 2.2.0
+
+### Minor Changes
+
+- 51d4769: Remove usages of the FunctionalComponent type for svg icon imports and replace it with the more proper Component type
+
+### Patch Changes
+
+- Updated dependencies [51d4769]
+  - @knime/components@1.32.0
+  - @knime/styles@1.10.0
+
 ## 2.1.2
 
 ### Patch Changes

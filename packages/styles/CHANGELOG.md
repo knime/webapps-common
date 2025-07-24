@@ -1,5 +1,11 @@
 # @knime/styles
 
+## 1.10.0
+
+### Minor Changes
+
+- 51d4769: Remove usages of the FunctionalComponent type for svg icon imports and replace it with the more proper Component type
+
 ## 1.9.0
 
 ### Minor Changes
