@@ -1,4 +1,4 @@
-import { type FunctionalComponent, type SVGAttributes, toRaw } from "vue";
+import { type Component, toRaw } from "vue";
 
 import type { NodeKey, TreeNodeOptions } from "./types";
 import type { TypeWithUndefined } from "./utils/types";
@@ -7,7 +7,7 @@ export class BaseTreeNode {
   readonly key: NodeKey;
   readonly name: string;
   readonly level: number;
-  readonly icon?: FunctionalComponent<SVGAttributes>;
+  readonly icon?: Component;
   readonly customSlot?: string;
   loading = false;
   hasChildren = false;

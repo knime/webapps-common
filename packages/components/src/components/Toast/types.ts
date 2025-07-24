@@ -1,9 +1,4 @@
-import type {
-  ComputedRef,
-  FunctionalComponent,
-  SVGAttributes,
-  VNode,
-} from "vue";
+import type { Component, ComputedRef, VNode } from "vue";
 
 type BaseToastButton = {
   /**
@@ -26,12 +21,12 @@ type ToastButtonWithIcon = {
   /**
    * The icon to be displayed alongside with, or instead of the button text.
    */
-  icon: FunctionalComponent<SVGAttributes>;
+  icon: Component;
   text?: string;
 };
 
 type ToastButtonWithText = {
-  icon?: FunctionalComponent<SVGAttributes>;
+  icon?: Component;
   /**
    * The text content to be displayed on the button.
    */

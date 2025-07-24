@@ -1,4 +1,4 @@
-import type { FunctionalComponent, SVGAttributes } from "vue";
+import type { Component } from "vue";
 
 import type { MenuItem as BaseMenuItem } from "../../base/MenuItem/MenuItems.vue";
 
@@ -14,9 +14,7 @@ export type FileExplorerItem<T = Record<string, unknown>> = {
   disabled?: boolean;
 };
 
-export type ItemIconRenderer = (
-  item: FileExplorerItem,
-) => FunctionalComponent<SVGAttributes>;
+export type ItemIconRenderer = (item: FileExplorerItem) => Component;
 
 type DefaultOptions = "rename" | "delete";
 
@@ -43,4 +41,3 @@ export type ItemClickPayload = {
   isDelete: boolean;
   isRename: boolean;
 };
-// }

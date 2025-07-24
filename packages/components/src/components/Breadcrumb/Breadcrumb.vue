@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { FunctionalComponent, PropType, SVGAttributes } from "vue";
+import type { Component, PropType } from "vue";
 
 import ArrowNext from "@knime/styles/img/icons/arrow-next.svg";
 
@@ -8,7 +8,7 @@ import { resolveNuxtLinkComponent } from "../nuxtComponentResolver";
 export type BreadcrumbItem = {
   text?: string;
   href?: string;
-  icon?: FunctionalComponent<SVGAttributes>;
+  icon?: Component;
   clickable?: boolean;
   title?: string;
   [key: string]: unknown;

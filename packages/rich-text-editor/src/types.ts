@@ -1,4 +1,4 @@
-import type { FunctionalComponent, SVGAttributes } from "vue";
+import type { Component } from "vue";
 
 import type { MenuItem } from "@knime/components";
 
@@ -7,7 +7,7 @@ import type { ParagraphTextStyleId } from "./utils/paragraphTextStyle";
 interface EditorToolItemBase {
   id: string;
   name: string;
-  icon: FunctionalComponent<SVGAttributes>;
+  icon: Component;
   hotkey?: Array<string>;
   active?: () => boolean;
   disabled?: () => boolean;

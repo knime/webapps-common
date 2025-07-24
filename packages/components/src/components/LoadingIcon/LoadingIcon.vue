@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { svgWithTitle } from "@knime/components";
 import ReloadIcon from "@knime/styles/img/icons/reload.svg";
-// @ts-expect-error Argument of type 'FunctionalComponent<SVGAttributes>' is not assignable to parameter of type 'never'.
+
 const ReloadIconWithTitle = svgWithTitle(ReloadIcon, "Loading…");
 </script>
 

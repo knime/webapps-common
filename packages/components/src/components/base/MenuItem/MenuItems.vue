@@ -31,10 +31,9 @@
  * Use the selector `:deep(.menu-items-sub-level)` to style the sub menus
  */
 import {
+  type Component,
   type ComponentPublicInstance,
-  type FunctionalComponent,
   type Ref,
-  type SVGAttributes,
   nextTick,
   ref,
 } from "vue";
@@ -50,7 +49,7 @@ import BaseMenuItems from "./BaseMenuItems.vue";
 
 export interface MenuItem<TMetadata = unknown, TChildrenMetadata = TMetadata> {
   text: string;
-  icon?: FunctionalComponent<SVGAttributes>;
+  icon?: Component;
   disabled?: boolean;
   /** longer description text that will be displayed below the menu entry but still is part of it */
   description?: string;
@@ -186,7 +185,7 @@ const onKeydownWithOpenCloseSubMenu = (event: KeyboardEvent) => {
       setOpenSubmenuIndex(currentIndex.value ?? 0);
       nextTick(() => {
         subLevelItems.value?.focusIndex();
-      });
+      }).catch(() => {});
       break;
   }
   onDropdownNavigationKeydown(event);

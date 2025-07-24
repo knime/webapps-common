@@ -109,11 +109,6 @@
       "count": 1
     }
   },
-  "packages/components/src/components/base/MenuItem/MenuItems.vue": {
-    "@typescript-eslint/no-floating-promises": {
-      "count": 1
-    }
-  },
   "packages/components/src/components/base/Message/BaseMessage.vue": {
     "vue/block-lang": {
       "count": 1

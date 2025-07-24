@@ -1,4 +1,4 @@
-import type { App, Plugin } from "vue";
+import type { App, Plugin, Ref } from "vue";
 import { computed, getCurrentInstance, inject, provide, ref } from "vue";
 import { cloneDeep, uniqueId } from "lodash-es"; // eslint-disable-line depend/ban-dependencies
 
@@ -33,7 +33,7 @@ export class ToastServiceError extends Error {
  * - get the toast service object directly via `getToastServiceObject` method.
  */
 export class ToastServiceProvider {
-  toasts = ref<ToastWithId[]>([]);
+  toasts: Ref<ToastWithId[]> = ref<ToastWithId[]>([]);
 
   show = (toast: Toast): string => {
     const clonedToast = cloneDeep(toast);
