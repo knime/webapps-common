@@ -1,5 +1,13 @@
 # @knime/ui-extension-service
 
+## 2.4.0
+
+### Minor Changes
+
+- 76a88bb: Improve setup for iframe embedding by communicating a "ready" message
+  which can be used by embedders to detect when initial setup of the iframe
+  proxy and base service is complete
+
 ## 2.3.0
 
 ### Minor Changes
