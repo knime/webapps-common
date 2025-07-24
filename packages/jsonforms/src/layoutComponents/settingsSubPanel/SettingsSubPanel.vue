@@ -8,6 +8,7 @@ import {
   ref,
   watch,
 } from "vue";
+
 /**
  * Exported for tests
  */
@@ -21,6 +22,7 @@ export const provideSideDrawerTeleportDest = (
 
 <script setup lang="ts">
 import { SideDrawer } from "@knime/components";
+import * as $colors from "@knime/styles/colors/knimeColors";
 
 import Form from "../Form.vue";
 
@@ -35,7 +37,7 @@ export type SettingsSubPanelProps = {
 const props = withDefaults(defineProps<SettingsSubPanelProps>(), {
   showBackArrow: true,
   hideButtonsWhenExpanded: false,
-  backgroundColorOverride: "var(--knime-porcelain)",
+  backgroundColorOverride: undefined,
 });
 
 const isExpanded = ref(false);
@@ -62,7 +64,7 @@ const subSettingsPanels = inject(subPanelDestInjectionKey)!;
 const styleOverrides = computed(() => ({
   width: "100%",
   position: "absolute" as const,
-  backgroundColor: props.backgroundColorOverride,
+  backgroundColor: props.backgroundColorOverride ?? $colors.Porcelain,
 }));
 </script>
 
@@ -71,7 +73,11 @@ const styleOverrides = computed(() => ({
   <Teleport :to="subSettingsPanels">
     <SideDrawer :is-expanded class="side-drawer" :style-overrides>
       <div class="side-drawer-content">
-        <SidePanelBackArrow v-if="showBackArrow" @click="close" />
+        <SidePanelBackArrow
+          v-if="showBackArrow"
+          :background-color-override
+          @click="close"
+        />
         <div class="main-content">
           <Form>
             <template #default>
