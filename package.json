@@ -78,14 +78,6 @@
       "esbuild@<=0.24.2": ">=0.25.0",
       "@babel/runtime@<7.26.10": ">=7.26.10",
       "@eslint/plugin-kit@<0.3.3": ">=0.3.3"
-    },
-    "auditConfig": {
-      "ignoreGhsas": [
-        "GHSA-356w-63v5-8wf4",
-        "GHSA-859w-5945-r5v3",
-        "GHSA-v6h2-p8h4-qcjw",
-        "GHSA-fjxv-7rqg-78g4"
-      ]
     }
   },
   "engines": {
