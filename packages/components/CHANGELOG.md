@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.33.0
+
+### Minor Changes
+
+- f9c2726: change escape listener for Modal from keyup to keydown
+
 ## 1.32.0
 
 ### Minor Changes
