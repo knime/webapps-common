@@ -128,7 +128,7 @@ const onMenuItemClick = (_: Event, item: (typeof menuItems.value)[number]) => {
         flex-direction: column;
         gap: 3px;
         overflow-wrap: anywhere;
-        word-break: break-word;
+        word-break: normal;
 
         & h6 {
           display: flex;
