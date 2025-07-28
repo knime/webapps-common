@@ -12,13 +12,19 @@ import { RFCError, type RFCErrorData } from "./types";
 const toToast = ({
   headline,
   rfcError,
+  canCopyToClipboard = true,
 }: {
   headline: string;
   rfcError: RFCError;
+  canCopyToClipboard?: boolean;
 }): Toast => {
   const { data } = rfcError;
 
-  const rfcErrorToastContent = h(RFCErrorToastTemplate, { headline, ...data });
+  const rfcErrorToastContent = h(RFCErrorToastTemplate, {
+    headline,
+    ...data,
+    canCopyToClipboard,
+  });
 
   return {
     type: "error",
@@ -39,14 +45,14 @@ const tryParse = (error: FetchError): RFCError | FetchError => {
 
   const responseDate = error.response.headers.get("date")
     ? new Date(error.response.headers.get("date")!)
-    : new Date();
+    : undefined;
 
   const rfcErrorData: RFCErrorData = {
     title: error.data.title as string,
     details: error.data.details as string[] | undefined,
     status: error.statusCode as number,
     date: responseDate,
-    requestId: error.response.headers.get("x-request-id") ?? "",
+    requestId: error.response.headers.get("x-request-id") ?? undefined,
     errorId: error.response.headers.get("x-error-id") ?? undefined,
   };
 

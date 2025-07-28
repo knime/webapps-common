@@ -9,14 +9,22 @@ import CopyIcon from "@knime/styles/img/icons/copy.svg";
 interface Props {
   headline: string; // toast headline, will not be displayed here but needed when copying to clipboard
   title: string;
+  status?: number;
+  date?: Date;
   details?: string[];
-  status: number;
-  date: Date;
-  requestId: string;
+  requestId?: string;
   errorId?: string;
+  canCopyToClipboard?: boolean;
 }
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {
+  status: undefined,
+  date: undefined,
+  details: () => [],
+  requestId: undefined,
+  errorId: undefined,
+  canCopyToClipboard: true,
+});
 const emits = defineEmits(["showMore"]);
 
 const { copy, copied } = useClipboard({
@@ -57,16 +65,29 @@ const errorForClipboard = computed(() => {
   errorText += `${props.title}\n\n`;
   errorText += details ? `Details: ${details}\n\n` : "";
 
-  errorText += `Status: ${props.status}\n`;
-  errorText += `Date: ${formattedDate.value}\n`;
-  errorText += `Request Id: ${props.requestId}\n`;
-  errorText += props.errorId ? `Error Id: ${props.errorId}\n` : "";
+  if (props.status !== undefined) {
+    errorText += `Status: ${props.status}\n`;
+  }
+
+  if (props.date) {
+    errorText += `Date: ${formattedDate.value}\n`;
+  }
+
+  if (props.requestId) {
+    errorText += `Request Id: ${props.requestId}\n`;
+  }
+
+  if (props.errorId) {
+    errorText += props.errorId ? `Error Id: ${props.errorId}\n` : "";
+  }
 
   return errorText;
 });
 
 const copyToClipboard = () => {
-  copy(errorForClipboard.value);
+  copy(errorForClipboard.value).catch((error) => {
+    consola.error("Failed to copy to clipboard", { error });
+  });
 };
 
 const onShowDetailsClicked = () => {
@@ -95,17 +116,20 @@ const onShowDetailsClicked = () => {
           </ul>
         </template>
       </div>
-      <div><strong>Status: </strong>{{ status }}</div>
-      <div><strong>Date: </strong>{{ formattedDate }}</div>
-      <div><strong>Request id: </strong>{{ requestId }}</div>
+
+      <div v-if="status !== undefined">
+        <strong>Status: </strong>{{ status }}
+      </div>
+      <div v-if="date"><strong>Date: </strong>{{ formattedDate }}</div>
+      <div v-if="requestId"><strong>Request id: </strong>{{ requestId }}</div>
       <div v-if="errorId"><strong>Error id: </strong>{{ errorId }}</div>
-      <div class="copy-button-wrapper">
+      <div v-if="canCopyToClipboard" class="copy-button-wrapper">
         <Button @click="copyToClipboard">
-          <template v-if="copied"
-            ><CheckIcon class="copy-icon" />Error was copied</template
-          >
-          <template v-else
-            ><CopyIcon class="copy-icon" />Copy error to clipboard
+          <template v-if="copied">
+            <CheckIcon class="copy-icon" />Error was copied
+          </template>
+          <template v-else>
+            <CopyIcon class="copy-icon" />Copy error to clipboard
           </template>
         </Button>
       </div>

@@ -25,6 +25,7 @@ describe("RFCErrorToastTemplate", () => {
     const copiedMock = ref(false);
     const copyMock = vi.fn(() => {
       copiedMock.value = true;
+      return Promise.resolve();
     });
     useClipboardMock.mockReturnValue({
       copy: copyMock,

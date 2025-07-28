@@ -32,6 +32,7 @@ describe("rfcErrors", () => {
       expect(result.component?.props).toStrictEqual({
         headline: "Toast headline",
         ...rfcError.data,
+        canCopyToClipboard: true,
       });
     });
   });
