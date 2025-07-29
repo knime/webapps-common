@@ -22,6 +22,18 @@ export const getInitializedBaseServiceProxy = async (
     const readyMessage = { type: "UIExtensionReady" };
     iframeWindow.parent.postMessage(readyMessage, "*");
   }, 0);
+
+  iframeWindow.addEventListener("keydown", (event) => {
+    // if someone along the chain of event handlers did prevent default we do not send it to the embedder
+    // this way we can indicate that it has been already handled but still keep the propagation till the "end"
+    if (!event.defaultPrevented && event.key === "Escape") {
+      iframeWindow.parent.postMessage(
+        { type: "UIExtensionEscapePressed" },
+        "*",
+      );
+    }
+  });
+
   /**
    * Without nesting the result in an object, because this is an asynchronous method,
    * e.g. the 'then' method would also be proxied

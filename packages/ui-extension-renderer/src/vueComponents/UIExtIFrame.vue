@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type Ref, onMounted, ref } from "vue";
+import { type Ref, onBeforeUnmount, onMounted, ref } from "vue";
 
 import { setUpIframeEmbedderService } from "../logic/iframe/embedder";
 
@@ -28,7 +28,14 @@ const emit = defineEmits<{
       dispatchPushEvent: (event: PushEvent<EventType>) => void;
     },
   ];
+  escapePressed: [];
 }>();
+
+const handleEscapeMessage = (event: MessageEvent) => {
+  if (event.data.type === "UIExtensionEscapePressed") {
+    emit("escapePressed");
+  }
+};
 
 onMounted(() => {
   setUpIframeEmbedderService(props.apiLayer, iframe.value!.contentWindow!)
@@ -59,6 +66,12 @@ onMounted(() => {
   };
 
   emit("serviceCreated", { dispatchPushEvent });
+
+  window.addEventListener("message", handleEscapeMessage);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener("message", handleEscapeMessage);
 });
 </script>
 

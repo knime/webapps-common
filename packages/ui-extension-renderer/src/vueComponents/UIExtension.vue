@@ -44,6 +44,10 @@ const props = withDefaults(defineProps<Props>(), {
   shadowAppStyle: null,
 });
 
+defineEmits<{
+  escapePressed: [];
+}>();
+
 const configKey = ref(0);
 let deregisterOldService: () => void;
 
@@ -118,5 +122,6 @@ onUnmounted(() => {
     :api-layer="serviceAPILayer"
     :resource-location="resourceLocation"
     @service-created="onServiceCreated"
+    @escape-pressed="$emit('escapePressed')"
   />
 </template>
