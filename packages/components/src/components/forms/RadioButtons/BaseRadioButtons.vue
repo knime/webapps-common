@@ -1,6 +1,6 @@
 <script lang="ts">
 import { type PropType, defineComponent } from "vue";
-import { useId } from "vue";
+import { v4 as uuidv4 } from "uuid";
 
 export type BaseRadioButtonItem = {
   id: string;
@@ -23,7 +23,7 @@ export default defineComponent({
     name: {
       type: String,
       default() {
-        return `RadioButtons-${useId()}`;
+        return `RadioButtons-${uuidv4()}`;
       },
     },
     disabled: {

@@ -47,6 +47,7 @@
     "lodash-es": "catalog:",
     "motion": "^12.4.7",
     "typescript": "catalog:",
+    "uuid": "11.1.0",
     "v-calendar": "git+https://bitbucket.org/KNIME/v-calendar"
   },
   "peerDependencies": {

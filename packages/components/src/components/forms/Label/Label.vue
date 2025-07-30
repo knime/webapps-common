@@ -1,5 +1,5 @@
 <script>
-import { useId } from "vue";
+import { v4 as uuidv4 } from "uuid";
 /**
  * Default label component
  * It provides a `labelForId` property that can be used via slot prop destructuring to associate it with a form element
@@ -52,7 +52,7 @@ export default {
   emits: ["labelForId"],
   data() {
     return {
-      labelForId: useId(),
+      labelForId: uuidv4(),
     };
   },
   computed: {

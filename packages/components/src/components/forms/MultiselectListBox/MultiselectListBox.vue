@@ -1,7 +1,8 @@
 <!-- eslint-disable max-lines -->
 <script lang="ts">
-import { type PropType, toRef, useId, watch } from "vue";
+import { type PropType, toRef, watch } from "vue";
 import { useVirtualList } from "@vueuse/core";
+import { v4 as uuidv4 } from "uuid";
 
 import { debounce } from "@knime/utils";
 
@@ -17,7 +18,7 @@ export default {
     id: {
       type: String,
       default() {
-        return `MultiselectListBox-${useId()}`;
+        return `MultiselectListBox-${uuidv4()}`;
       },
     },
     modelValue: {

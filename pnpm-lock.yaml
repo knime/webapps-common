@@ -265,6 +265,9 @@ importers:
       typescript:
         specifier: 'catalog:'
         version: 5.4.5
+      uuid:
+        specifier: 11.1.0
+        version: 11.1.0
       v-calendar:
         specifier: git+https://bitbucket.org/KNIME/v-calendar
         version: https://bitbucket.org/KNIME/v-calendar/get/31f97bfb0854e28c87f35ee28c8f332181c22e8f.tar.gz(@popperjs/core@2.11.8)(vue@3.5.13(typescript@5.4.5))
@@ -4991,6 +4994,10 @@ packages:
 
   uuid@10.0.0:
     resolution: {integrity: sha512-8XkAphELsDnEGrDxUOHB3RGvXz6TeuYSGEZBOjtTtPm2lwhGBjLgOzLHB63IUWfBpNucQjND6d3AOudO+H3RWQ==}
+    hasBin: true
+
+  uuid@11.1.0:
+    resolution: {integrity: sha512-0/A9rDy9P7cJ+8w1c9WD9V//9Wj15Ce2MPz8Ri6032usz+NfePxx5AcN3bN+r6ZL6jEo066/yNYB3tn4pQEx+A==}
     hasBin: true
 
   uuid@9.0.1:
@@ -10003,6 +10010,8 @@ snapshots:
   util-extend@1.0.3: {}
 
   uuid@10.0.0: {}
+
+  uuid@11.1.0: {}
 
   uuid@9.0.1: {}
 

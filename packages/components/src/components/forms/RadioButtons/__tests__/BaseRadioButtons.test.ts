@@ -1,7 +1,10 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { VueWrapper, mount } from "@vue/test-utils";
+import { v4 as uuidv4 } from "uuid";
 
 import BaseRadioButtons from "../BaseRadioButtons.vue";
+
+vi.mock("uuid");
 
 describe("BaseRadioButtons", () => {
   const possibleValues = new Array(5).fill(0).map((_, index) => ({
@@ -9,6 +12,19 @@ describe("BaseRadioButtons", () => {
     text: `Text ${index + 1}`,
     disabled: false,
   }));
+
+  const firstUUIDReturnValue = new Uint8Array(16);
+  const secondUUIDReturnValue = new Uint8Array(16).map((_val, ind) => ind);
+
+  beforeEach(() => {
+    vi.mocked(uuidv4)
+      .mockReturnValueOnce(firstUUIDReturnValue)
+      .mockReturnValueOnce(secondUUIDReturnValue);
+  });
+
+  afterEach(() => {
+    vi.resetAllMocks();
+  });
 
   it("renders", () => {
     const wrapper = mount(BaseRadioButtons, {
@@ -35,7 +51,9 @@ describe("BaseRadioButtons", () => {
       },
     });
 
-    expect(wrapper.find("input").attributes("name")).toBe("RadioButtons-v-0");
+    expect(wrapper.find("input").attributes("name")).toBe(
+      `RadioButtons-${firstUUIDReturnValue}`,
+    );
 
     wrapper = mount(BaseRadioButtons, {
       props: {
@@ -51,26 +69,18 @@ describe("BaseRadioButtons", () => {
     expect(mount(BaseRadioButtons).html()).toBeTruthy();
   });
 
-  it("renders unique name attributes", () => {
-    const wrapper = mount({
-      template: `
-        <div>
-          <BaseRadioButtons :possibleValues="possibleValues" />
-          <BaseRadioButtons :possibleValues="possibleValues" />
-        </div>
-      `,
-      components: {
-        BaseRadioButtons,
-      },
-      data() {
-        return {
-          possibleValues,
-        };
-      },
+  it("renders a unique name attribute", () => {
+    const wrapper1 = mount(BaseRadioButtons, {
+      props: { possibleValues },
+    }) as VueWrapper<any>;
+    const wrapper2 = mount(BaseRadioButtons, {
+      props: { possibleValues },
     }) as VueWrapper<any>;
 
-    const radioButtons = wrapper.findAllComponents(BaseRadioButtons);
-    expect(radioButtons[0].props().name).not.toBe(radioButtons[1].props());
+    expect(wrapper1.vm.name).not.toBe(wrapper2.vm.name);
+    expect(wrapper1.find("input").attributes().name).not.toBe(
+      wrapper2.find("input").attributes().name,
+    );
   });
 
   it("renders selected value", () => {

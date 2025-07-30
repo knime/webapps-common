@@ -1,5 +1,5 @@
 <script>
-import { useId } from "vue";
+import { v4 as uuidv4 } from "uuid";
 
 import StyledListItem from "../../StyleListItem/StyledListItem.vue";
 
@@ -17,7 +17,7 @@ export default {
     id: {
       type: String,
       default() {
-        return `ListBox-${useId()}`;
+        return `ListBox-${uuidv4()}`;
       },
     },
     modelValue: {
