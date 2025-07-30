@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.33.1
+
+### Patch Changes
+
+- e7d2020: Replace useId by uuid to support vue versions < 3.5
+
 ## 1.33.0
 
 ### Minor Changes

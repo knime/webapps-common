@@ -1,5 +1,12 @@
 # @knime/rich-text-editor
 
+## 1.6.2
+
+### Patch Changes
+
+- Updated dependencies [e7d2020]
+  - @knime/components@1.33.1
+
 ## 1.6.1
 
 ### Patch Changes

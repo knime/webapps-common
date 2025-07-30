@@ -1,5 +1,12 @@
 # @knime/virtual-tree
 
+## 1.5.2
+
+### Patch Changes
+
+- Updated dependencies [e7d2020]
+  - @knime/components@1.33.1
+
 ## 1.5.1
 
 ### Patch Changes

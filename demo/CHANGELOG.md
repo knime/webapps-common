@@ -1,5 +1,15 @@
 # demo
 
+## 1.5.5
+
+### Patch Changes
+
+- Updated dependencies [e7d2020]
+  - @knime/components@1.33.1
+  - @knime/hub-features@1.11.5
+  - @knime/rich-text-editor@1.6.2
+  - @knime/virtual-tree@1.5.2
+
 ## 1.5.4
 
 ### Patch Changes

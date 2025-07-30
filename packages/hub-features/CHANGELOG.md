@@ -1,5 +1,12 @@
 # @knime/hub-features
 
+## 1.11.5
+
+### Patch Changes
+
+- Updated dependencies [e7d2020]
+  - @knime/components@1.33.1
+
 ## 1.11.4
 
 ### Patch Changes
