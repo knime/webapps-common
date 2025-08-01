@@ -1,5 +1,11 @@
 # @knime/hub-features
 
+## 1.11.6
+
+### Patch Changes
+
+- dc12ac4: Adjust payload for RFC error utils
+
 ## 1.11.5
 
 ### Patch Changes
