@@ -73,6 +73,24 @@ describe("RFCErrorToastTemplate", () => {
     expect(wrapper.text()).toContain("extremely-fatal-error");
   });
 
+  it("handles stacktrace", async () => {
+    const { wrapper, copyMock } = doMount({
+      ...defaultProps,
+      stacktrace: "cannot read property explosion of undefined at foo.bar.baz",
+    } as any);
+    await wrapper.find("button").trigger("click");
+    expect(wrapper.text()).toContain("Stacktrace: Part of clipboard text");
+
+    await wrapper.find("button").trigger("click"); // first show details
+    await wrapper.find("button").trigger("click"); // then the clipboard button
+
+    // @ts-expect-error
+    const copiedText = copyMock.mock.calls[0][0];
+    expect(copiedText).toContain(
+      "cannot read property explosion of undefined at foo.bar.baz",
+    );
+  });
+
   it("copies to clipboard", async () => {
     const { wrapper, copyMock } = doMount({
       ...defaultProps,

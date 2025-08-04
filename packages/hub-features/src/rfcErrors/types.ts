@@ -9,7 +9,16 @@ export type RFCErrorData = {
   date?: Date;
   details?: string[];
   requestId?: string;
+  /**
+   * Id used to find an error in the Hub logs. Specially relevant
+   * when details of the error are not wanted to be exposed to the user.
+   */
   errorId?: string;
+  /**
+   * Relevant only for the Analytics Platform, since the Hub does not expose
+   * stack traces.
+   */
+  stacktrace?: string;
 };
 
 export class RFCError extends Error {

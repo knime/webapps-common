@@ -338,6 +338,7 @@ const rfcError = new rfcErrors.RFCError({
   date: new Date(),
   requestId: "134123212413412321241341",
   errorId: "abcdefg",
+  stacktrace: "foo bar baz",
 });
 
 const apiErrorToast = rfcErrors.toToast({

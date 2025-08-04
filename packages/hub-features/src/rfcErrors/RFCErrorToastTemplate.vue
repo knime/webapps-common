@@ -6,16 +6,12 @@ import { Button } from "@knime/components";
 import CheckIcon from "@knime/styles/img/icons/check.svg";
 import CopyIcon from "@knime/styles/img/icons/copy.svg";
 
-interface Props {
+import type { RFCErrorData } from "./types";
+
+type Props = {
   headline: string; // toast headline, will not be displayed here but needed when copying to clipboard
-  title: string;
-  status?: number;
-  date?: Date;
-  details?: string[];
-  requestId?: string;
-  errorId?: string;
   canCopyToClipboard?: boolean;
-}
+} & RFCErrorData;
 
 const props = withDefaults(defineProps<Props>(), {
   status: undefined,
@@ -78,7 +74,12 @@ const errorForClipboard = computed(() => {
   }
 
   if (props.errorId) {
-    errorText += props.errorId ? `Error Id: ${props.errorId}\n` : "";
+    errorText += `Error Id: ${props.errorId}\n`;
+  }
+
+  if (props.stacktrace) {
+    errorText += "------\n"; // separator
+    errorText += `Stacktrace:\n\n${props.stacktrace}\n`;
   }
 
   return errorText;
@@ -123,6 +124,9 @@ const onShowDetailsClicked = () => {
       <div v-if="date"><strong>Date: </strong>{{ formattedDate }}</div>
       <div v-if="requestId"><strong>Request id: </strong>{{ requestId }}</div>
       <div v-if="errorId"><strong>Error id: </strong>{{ errorId }}</div>
+      <div v-if="stacktrace">
+        <strong>Stacktrace: </strong>Part of clipboard text
+      </div>
       <div v-if="canCopyToClipboard" class="copy-button-wrapper">
         <Button @click="copyToClipboard">
           <template v-if="copied">
