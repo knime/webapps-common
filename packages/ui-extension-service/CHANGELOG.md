@@ -1,5 +1,11 @@
 # @knime/ui-extension-service
 
+## 2.4.1
+
+### Patch Changes
+
+- 0f074fc: add bubbling of escape event over iframe boundary (via custom event)
+
 ## 2.4.0
 
 ### Minor Changes
