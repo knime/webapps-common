@@ -1,5 +1,13 @@
 # demo
 
+## 1.5.7
+
+### Patch Changes
+
+- 2e90c18: Add possibility to send and copy stacktrace in RFC errors
+- Updated dependencies [2e90c18]
+  - @knime/hub-features@1.11.7
+
 ## 1.5.6
 
 ### Patch Changes
