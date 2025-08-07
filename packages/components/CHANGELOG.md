@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.33.2
+
+### Patch Changes
+
+- 170b8d2: Flex grow rename input container in FileExplorer, so it fills the row.
+
 ## 1.33.1
 
 ### Patch Changes
