@@ -151,6 +151,7 @@ const onRenameSubmit = (keyupEvent: KeyboardEvent, isClickAway = false) => {
 
         <template v-else>
           <OnClickOutside
+            class="rename-input-container"
             @trigger="($event: any) => onRenameSubmit($event, true)"
           >
             <div>
@@ -234,6 +235,10 @@ const onRenameSubmit = (keyupEvent: KeyboardEvent, isClickAway = false) => {
 
   & td.rename-active {
     padding: 0;
+
+    & .rename-input-container {
+      flex: 1;
+    }
 
     & .rename-input {
       pointer-events: auto;
