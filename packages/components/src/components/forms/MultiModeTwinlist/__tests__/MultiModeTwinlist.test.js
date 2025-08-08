@@ -574,6 +574,26 @@ describe("MultiModeMultiModeTwinlist", () => {
 
       expect(wrapper.findComponent(Twinlist).vm.disabled).toBe(true);
     });
+
+    it("uses a slot for type labels if a slot is passed", () => {
+      const props = {
+        possibleValues: possibleValuesWithTypes,
+        mode: "type",
+      };
+      const wrapper = mount(MultiModeTwinlist, {
+        props,
+        slots: {
+          type: ({ slotItem }) => `SlotData: ${slotItem.text}`,
+        },
+      });
+      expect(wrapper.findComponent(Checkboxes).exists()).toBeTruthy();
+      expect(
+        wrapper
+          .findComponent(Checkboxes)
+          .findAll("label")
+          .map((l) => l.text()),
+      ).toEqual(["SlotData: String", "SlotData: Double"]);
+    });
   });
 
   describe("twinlist model value", () => {

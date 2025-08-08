@@ -9,6 +9,12 @@ export type IdAndText = {
   text: string;
 };
 
+export type DataType = {
+  type: IdAndText;
+};
+
+export type TypedIdAndText = IdAndText & Partial<DataType>;
+
 export type PossibleValue<SpecialChoicesProps extends Record<string, unknown>> =
   IdAndText & SpecialChoicesProps;
 

@@ -2,6 +2,7 @@
 import { MultiModeTwinList } from "@knime/components";
 
 import CodeExample from "./demo/CodeExample.vue";
+import { DataType } from "@knime/kds-components";
 // import code from "webapps-common/ui/components/forms/MultiModeTwinList.vue?raw";
 const code = "";
 
@@ -53,14 +54,51 @@ const codeExample = `<MultiModeTwinList
 />
 `;
 
+const codeExampleSlotted = `<MultiModeTwinList
+  show-mode
+  with-types
+  :size="7"
+  :possible-values="[
+        "string-datatype",
+        "date-datatype",
+        "tool-datatype",
+        "number-integer-datatype",
+        "path-datatype",
+      ].map((typeId) => ({
+        id: \`id-\${typeId}\`,
+        text: \`Text for \${typeId}\`,
+        type: { id: typeId, text: \`Type of \${typeId}\` },
+      }))"
+  ><template #option="{ slotItem }">
+    <div :class="['data-type-entry', { invalid: slotItem.invalid }]">
+      <DataType
+        :icon-name="slotItem?.type?.id"
+        :icon-title="slotItem?.type?.text"
+        size="small"
+      />
+      <span>{{ slotItem.text }}</span>
+    </div>
+  </template>
+  <template #type="{ slotItem }">
+    <DataType
+      :icon-name="slotItem.id"
+      :icon-title="slotItem.text"
+      size="small"
+    />
+    <span class="data-type-text">{{ slotItem.text }}</span>
+  </template></MultiModeTwinList
+>`;
+
 export default {
   components: {
     MultiModeTwinList,
     CodeExample,
+    DataType,
   },
   data() {
     return {
       codeExample,
+      codeExampleSlotted,
       selected: [],
       withMissing: ["missing"],
       manualSelection: {
@@ -87,6 +125,16 @@ export default {
       pattern: "^[ab].*[57]$|\$",
       selectedTypes: ["Type1", "Type"],
       key: 0,
+      slottedProps: {
+        pattern: "^[ab].*[57]$|\$",
+        manualSelection: {
+          includedValues: ["missingIncluded"],
+          excludedValues: ["missingExcluded"],
+          includeUnknownValues: false,
+        },
+        mode: "type",
+        selectedTypes: [],
+      },
     };
   },
   computed: {
@@ -136,6 +184,19 @@ export default {
           type: { id: "type2", text: "Type 2" },
         },
       ];
+    },
+    slottedDemoValues() {
+      return [
+        "string-datatype",
+        "date-datatype",
+        "tool-datatype",
+        "number-integer-datatype",
+        "path-datatype",
+      ].map((typeId) => ({
+        id: `id-${typeId}`,
+        text: `Text for ${typeId}`,
+        type: { id: typeId, text: `Type of ${typeId}` },
+      }));
     },
   },
   watch: {
@@ -278,5 +339,84 @@ export default {
         </div>
       </div>
     </section>
+    <section>
+      <div class="grid-container">
+        <div class="grid-item-12">
+          <h4>Slotted MultiModeTwinList</h4>
+        </div>
+      </div>
+      <div class="grid-container">
+        <div class="grid-item-6">
+          <MultiModeTwinList
+            v-model:manualSelection="slottedProps.manualSelection"
+            v-model:mode="slottedProps.mode"
+            v-model:selected-types="slottedProps.selectedTypes"
+            show-mode
+            with-types
+            :size="7"
+            :possible-values="slottedDemoValues"
+            left-label="Select from the visible items"
+            right-label="The selected stuff"
+            mode-label="Selection mode"
+            @update:selected="
+              (newSelected: any) => {
+                selected = newSelected;
+              }
+            "
+            ><template #option="{ slotItem }">
+              <div :class="['data-type-entry', { invalid: slotItem.invalid }]">
+                <DataType
+                  :icon-name="slotItem?.type?.id"
+                  :icon-title="slotItem?.type?.text"
+                  size="small"
+                />
+                <span>{{ slotItem.text }}</span>
+              </div>
+            </template>
+            <template #type="{ slotItem }">
+              <DataType
+                :icon-name="slotItem.id"
+                :icon-title="slotItem.text"
+                size="small"
+              />
+              <span class="data-type-text">{{ slotItem.text }}</span>
+            </template></MultiModeTwinList
+          >
+        </div>
+        <div class="grid-item-6">
+          <template v-if="mode === 'manual'">
+            <br />
+            <span>
+              selected ids: {{ slottedProps.manualSelection.includedValues }}
+            </span>
+            <br />
+            <span>
+              deselected ids: {{ slottedProps.manualSelection.excludedValues }}
+            </span>
+          </template>
+        </div>
+      </div>
+    </section>
+    <section>
+      <div class="grid-container">
+        <div class="grid-item-12">
+          <CodeExample summary="Show usage example">{{
+            codeExampleSlotted
+          }}</CodeExample>
+        </div>
+      </div>
+    </section>
   </div>
 </template>
+
+<style lang="css" scoped>
+.data-type-entry {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.data-type-text {
+  margin-left: var(--space-4);
+}
+</style>

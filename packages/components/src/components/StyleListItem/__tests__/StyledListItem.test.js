@@ -33,4 +33,14 @@ describe("StyledListItem", () => {
     const option = wrapper.find('[role="option"]');
     expect(option.text()).toBe("Test");
   });
+
+  it("renders with default slot", () => {
+    const wrapper = mount(StyledListItem, {
+      slots: {
+        default: "<span>Default Slot Content</span>",
+      },
+    });
+    const option = wrapper.find('[role="option"]');
+    expect(option.text()).toContain("Default Slot Content");
+  });
 });

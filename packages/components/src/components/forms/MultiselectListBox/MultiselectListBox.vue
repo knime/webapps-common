@@ -645,7 +645,9 @@ export default {
             @click="handleClick($event, item.id, index)"
             @dblclick-shift="handleShiftDblClick()"
             @dblclick-exact="handleDblClick(item.id, index)"
-          />
+          >
+            <slot name="option" :slot-item="item" />
+          </StyledListItem>
         </div>
       </ul>
       <div v-if="showEmptyState" class="empty-state">

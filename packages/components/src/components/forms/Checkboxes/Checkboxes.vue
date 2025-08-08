@@ -110,7 +110,7 @@ export default {
       class="box"
       @update:model-value="onUpdateModelValue(item.id, $event)"
     >
-      {{ item.text }}
+      <slot name="label" :slot-item="item">{{ item.text }}</slot>
     </Checkbox>
   </div>
 </template>

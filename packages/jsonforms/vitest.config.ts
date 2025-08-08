@@ -68,6 +68,11 @@ export default defineConfig(({ mode }) => {
         reporter: ["html", "text", "lcov"],
         reportsDirectory: getReportDirectory(testMode),
       },
+      server: {
+        deps: {
+          inline: ["@knime/kds-components"], // https://github.com/vitest-dev/vitest/issues/5283
+        },
+      },
       alias: [
         {
           find: "v-calendar",

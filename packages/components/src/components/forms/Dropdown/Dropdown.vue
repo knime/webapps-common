@@ -345,7 +345,7 @@ export default {
       this.searchValue = this.displayTextMap[this.modelValue];
       if (this.hasOptionTemplate) {
         this.slotContainerHeight =
-          (this.$refs.slotContainer as HTMLElement)?.clientHeight ?? 0;
+          (this.$refs.button as HTMLElement)?.clientHeight ?? 0;
       }
       this.isExpanded = true;
       if (
@@ -483,7 +483,7 @@ export default {
           @click.stop
           @input="(e) => handleSearch((e.target as HTMLInputElement).value)"
         />
-        <div v-else-if="hasOptionTemplate" ref="slotContainer">
+        <div v-else-if="hasOptionTemplate">
           <slot
             name="option"
             :slot-data="selectedOption?.slotData"

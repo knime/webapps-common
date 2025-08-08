@@ -10,7 +10,8 @@ import {
 import type { VueWrapper } from "@vue/test-utils";
 import { flushPromises } from "@vue/test-utils";
 
-import { MultiModeTwinList, Twinlist } from "@knime/components";
+import { Checkboxes, MultiModeTwinList, Twinlist } from "@knime/components";
+import { DataType } from "@knime/kds-components";
 
 import {
   type ProvidedMethods,
@@ -308,7 +309,7 @@ describe("TwinlistControl", () => {
       ];
       wrapper
         .findComponent(MultiModeTwinList)
-        .vm.$emit("update:selected-types", selectedTypes, typeDisplays);
+        .vm.$emit("update:selectedTypes", selectedTypes, typeDisplays);
       expect(changeValue).toHaveBeenNthCalledWith(
         1,
         expect.objectContaining({
@@ -519,5 +520,30 @@ describe("TwinlistControl", () => {
     expect(
       wrapper.findComponent(Twinlist).props().possibleValues,
     ).toStrictEqual(providedChoices);
+  });
+
+  it("renders slot contents to display DataType icons if the possible values have types", async () => {
+    props.control.data.mode = "TYPE";
+    const { wrapper } = await mountTwinlistControl();
+    await flushPromises();
+    const optionItems = wrapper.findAll(".data-type-entry");
+    const expectedOptionResult = [
+      ["test_2", "DoubleValue"],
+      ["test_1", "StringValue"],
+      ["test_3", "StringValue"],
+    ];
+    optionItems.forEach((item, index) => {
+      expect(item.text()).toBe(expectedOptionResult[index][0]);
+      expect(item.findComponent(DataType).props("iconName")).toBe(
+        expectedOptionResult[index][1],
+      );
+    });
+
+    const checkboxes = wrapper.findComponent(Checkboxes);
+    const labelItems = checkboxes.findAllComponents(DataType);
+    const expectedLabelResult = ["IntValue", "StringValue", "DoubleValue"];
+    labelItems.forEach((item, index) => {
+      expect(item.props("iconName")).toBe(expectedLabelResult[index]);
+    });
   });
 });

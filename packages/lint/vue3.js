@@ -50,6 +50,7 @@ export default [
           json: "always",
           mjs: "always",
           svg: "always",
+          css: "always",
           config: "ignorePackages",
         },
       ],

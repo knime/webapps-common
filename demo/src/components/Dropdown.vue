@@ -8,6 +8,7 @@ import RocketIcon from "@knime/styles/img/icons/rocket.svg";
 
 import CodeExample from "./demo/CodeExample.vue";
 import { defineComponent } from "vue";
+import { DataType } from "@knime/kds-components";
 // import code from "webapps-common/ui/components/forms/Dropdown.vue?raw";
 const code = "";
 
@@ -86,6 +87,7 @@ const slottedCodeExample = `<Dropdown
 
 export default defineComponent({
   components: {
+    DataType,
     Dropdown,
     CodeExample,
     LoadingIcon,
@@ -105,6 +107,7 @@ export default defineComponent({
       slottedSelected: "1",
       dropupSelected: "bar",
       withGroupSelected: "",
+      slottedSmallSelected: "missing",
     };
   },
   computed: {
@@ -531,6 +534,17 @@ export default defineComponent({
         </div>
         <div class="grid-item-2">selected id: {{ withGroupSelected }}</div>
       </div>
+    </section>
+    <section>
+      <div class="grid-container">
+        <div class="grid-item-12">
+          <CodeExample summary="Show usage example">{{
+            codeExample
+          }}</CodeExample>
+        </div>
+      </div>
+    </section>
+    <section>
       <div class="grid-container">
         <div class="grid-item-12">
           <h4>Slotted Dropdown</h4>
@@ -543,17 +557,6 @@ export default defineComponent({
           </p>
         </div>
       </div>
-    </section>
-    <section>
-      <div class="grid-container">
-        <div class="grid-item-12">
-          <CodeExample summary="Show usage example">{{
-            codeExample
-          }}</CodeExample>
-        </div>
-      </div>
-    </section>
-    <section>
       <div class="grid-container">
         <div class="grid-item-5">
           <Dropdown
@@ -584,6 +587,87 @@ export default defineComponent({
           </Dropdown>
         </div>
         <div class="grid-item-2">selected id: {{ slottedSelected }}</div>
+      </div>
+      <div class="grid-container">
+        <div class="grid-item-12">
+          <h4>Slotted Dropdown (With datatypes)</h4>
+        </div>
+      </div>
+      <div class="grid-container">
+        <div class="grid-item-5">
+          <Dropdown
+            v-model="slottedSmallSelected"
+            ariaLabel="A limited list"
+            :possible-values="[
+              {
+                id: 'withoutType',
+                text: 'Without Type',
+                slotData: {
+                  text: 'Without Type',
+                },
+              },
+              {
+                id: 'string',
+                text: 'String',
+                slotData: {
+                  text: 'String',
+                  typeId: 'string-datatype',
+                  typeText: 'String Value',
+                },
+              },
+              {
+                id: 'set',
+                text: 'Set',
+                slotData: {
+                  text: 'Set',
+                  typeId: 'collection-set-datatype',
+                  typeText: 'Set Value',
+                },
+              },
+              {
+                id: 'pmml',
+                text: 'PMML',
+                slotData: {
+                  text: 'PMML',
+                  typeId: 'model-pmml-datatype',
+                  typeText: 'PMML Value',
+                },
+              },
+            ]"
+          >
+            <template
+              #option="{ slotData, selectedValue, isMissing } = {
+                slotData: {},
+              }"
+            >
+              <div
+                :class="[
+                  'data-type-entry',
+                  {
+                    missing: isMissing,
+                    'with-type': isMissing || slotData.typeId,
+                  },
+                ]"
+              >
+                <template v-if="isMissing">
+                  <DataType size="small" />
+                  <span>(MISSING) {{ selectedValue }}</span>
+                </template>
+                <template v-else>
+                  <template v-if="slotData.typeId">
+                    <DataType
+                      :icon-name="slotData.typeId"
+                      :icon-title="slotData.typeText"
+                      size="small"
+                    />
+                  </template>
+                  <span>{{ slotData.text }}</span>
+                </template>
+              </div>
+            </template>
+          </Dropdown>
+        </div>
+        <div class="grid-item-2">selected id: {{ slottedSmallSelected }}</div>
       </div>
     </section>
     <section>
@@ -638,6 +722,12 @@ export default defineComponent({
       line-height: 150%;
       text-align: right;
     }
+  }
+
+  & .data-type-entry.with-type {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
   }
 }
 </style>

@@ -350,7 +350,11 @@ export default {
         :possible-values="possibleTypes"
         :disabled="disabled"
         @update:model-value="onTypeInput"
-      />
+      >
+        <template #label="slotProps">
+          <slot name="type" v-bind="slotProps" />
+        </template>
+      </Checkboxes>
     </Label>
     <Twinlist
       v-bind="$attrs"
@@ -361,7 +365,9 @@ export default {
       :possible-values="possibleValues"
       :compact="compact"
       @update:model-value="onManualInput"
-    />
+      ><template #option="slotProps">
+        <slot name="option" v-bind="slotProps" /> </template
+    ></Twinlist>
   </div>
 </template>
 

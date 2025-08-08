@@ -6,6 +6,7 @@ import type { PartialDeep } from "type-fest";
 
 import type { TwinlistModelValue } from "@knime/components";
 import { MultiModeTwinList } from "@knime/components";
+import { DataType } from "@knime/kds-components";
 
 import type { VueControlPropsForLabelContent } from "../../higherOrderComponents/control/withLabel";
 import type { IdAndText } from "../../types/ChoicesUiSchema";
@@ -215,10 +216,39 @@ const rightLabel = computed(() => includedLabel ?? props.twinlistRightLabel);
     @update:selected-types="onSelectedTypesChange"
     @update:inverse-pattern="onInversePatternChange"
     @update:case-sensitive-pattern="onCaseSensitiveChange"
-  />
+  >
+    <template v-if="withTypes" #option="{ slotItem }">
+      <div :class="['data-type-entry', { invalid: slotItem.invalid }]">
+        <DataType
+          :icon-name="slotItem?.type?.id"
+          :icon-title="slotItem?.type?.text"
+          size="small"
+        />
+        <span>{{ slotItem.text }}</span>
+      </div>
+    </template>
+    <template v-if="withTypes" #type="{ slotItem }">
+      <DataType
+        :icon-name="slotItem.id"
+        :icon-title="slotItem.text"
+        size="small"
+      />
+      <span class="data-type-text">{{ slotItem.text }}</span>
+    </template>
+  </MultiModeTwinList>
 </template>
 
 <style lang="postcss" scoped>
+.data-type-entry {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.data-type-text {
+  margin-left: var(--space-4);
+}
+
 .twinlist :deep(.lists) :deep(.multiselect-list-box) :deep([role="listbox"]) {
   font-size: 13px;
 }

@@ -98,4 +98,17 @@ describe("Checkboxes", () => {
       expect(checkbox.props().disabled).toBeTruthy();
     });
   });
+
+  it("renders custom slot content", () => {
+    const wrapper = mount(Checkboxes, {
+      props,
+      slots: {
+        label: '<span class="custom-slot">Custom Content</span>',
+      },
+    });
+
+    const customSlot = wrapper.find(".box").find(".custom-slot");
+    expect(customSlot.exists()).toBeTruthy();
+    expect(customSlot.text()).toBe("Custom Content");
+  });
 });

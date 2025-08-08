@@ -158,6 +158,22 @@ describe("MultiselectListBox", () => {
     expect(scrollTo).not.toHaveBeenCalled();
   });
 
+  it("renders custom option slot content", () => {
+    const wrapper = mount(MultiselectListBox, {
+      props: {
+        possibleValues,
+        modelValue: ["test1", "test3"],
+        ariaLabel: "A Label",
+      },
+      slots: {
+        option: ({ slotItem }) => `Custom Option: ${slotItem.text}`,
+      },
+    });
+
+    const customSlotContent = wrapper.find("[role=option]").text();
+    expect(customSlotContent).toContain("Custom Option: Option 1");
+  });
+
   describe("mouse click", () => {
     it("selects item on click", async () => {
       const wrapper = mount(MultiselectListBox, {

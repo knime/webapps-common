@@ -593,7 +593,7 @@ describe("Dropdown", () => {
         possibleValues,
         slots: { option: OPTION_SLOT_CONTENT_MOCK },
       });
-      Object.defineProperty(wrapper.vm.$refs.slotContainer, "clientHeight", {
+      Object.defineProperty(wrapper.vm.$refs.button, "clientHeight", {
         value: 40,
       });
       const button = wrapper.find("[role=button]");

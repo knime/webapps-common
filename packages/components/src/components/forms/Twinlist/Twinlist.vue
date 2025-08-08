@@ -727,7 +727,9 @@ export default {
         @double-click-shift="onLeftListBoxShiftDoubleClick"
         @key-arrow-right="moveRight"
         @update:model-value="onLeftInput"
-      />
+        ><template #option="slotProps">
+          <slot name="option" v-bind="slotProps" /></template
+      ></MultiselectListBox>
       <!--  eslint-enable vue/attribute-hyphenation -->
       <div class="buttons">
         <div
@@ -791,7 +793,9 @@ export default {
         @double-click-shift="onRightListBoxShiftDoubleClick"
         @key-arrow-left="moveLeft"
         @update:model-value="onRightInput"
-      />
+        ><template #option="slotProps">
+          <slot name="option" v-bind="slotProps" /> </template
+      ></MultiselectListBox>
       <!--  eslint-enable vue/attribute-hyphenation -->
     </div>
     <ResizeHandle

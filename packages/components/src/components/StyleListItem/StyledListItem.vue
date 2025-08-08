@@ -66,7 +66,9 @@ export default {
     @mousedown="$emit('mousedown', $event)"
     @mousemove="$emit('mousemove', $event)"
   >
-    {{ text }}
+    <slot>
+      {{ text }}
+    </slot>
   </li>
 </template>
 

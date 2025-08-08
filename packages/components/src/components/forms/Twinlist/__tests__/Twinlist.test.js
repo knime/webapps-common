@@ -36,7 +36,7 @@ describe("Twinlist", () => {
     ];
   });
 
-  it("renders", () => {
+  it("renders", async () => {
     let props = {
       possibleValues: defaultPossibleValues,
       modelValue: ["test3"],
@@ -59,6 +59,12 @@ describe("Twinlist", () => {
     expect(
       wrapper.findAllComponents(MultiselectListBox)[0].props().minSize,
     ).toBe(5);
+
+    await nextTick();
+    const boxes = wrapper.findAllComponents(MultiselectListBox);
+    expect(boxes[0].html()).toContain("Text 1");
+    expect(boxes[0].html()).toContain("Text 2");
+    expect(boxes[1].html()).toContain("Text 3");
   });
 
   it("renders with null modelValue", () => {
@@ -218,6 +224,28 @@ describe("Twinlist", () => {
 
     await wrapper.setProps({ modelValue: ["test1"] });
     expect(wrapper.vm.hasSelection()).toBe(true);
+  });
+
+  it("uses the option slot if all possible values have slot data set", async () => {
+    const wrapper = mount(Twinlist, {
+      props: {
+        possibleValues: [
+          { id: "test1", text: "Text 1" },
+          { id: "test2", text: "Text 2" },
+          { id: "test3", text: "Text 3" },
+        ],
+        modelValue: ["test1"],
+      },
+      slots: {
+        option: ({ slotItem }) => `SlotData: ${slotItem.text}`,
+      },
+    });
+
+    await nextTick();
+    const boxes = wrapper.findAllComponents(MultiselectListBox);
+    expect(boxes[0].html()).toContain("SlotData: Text 2");
+    expect(boxes[0].html()).toContain("SlotData: Text 3");
+    expect(boxes[1].html()).toContain("SlotData: Text 1");
   });
 
   describe("double click", () => {

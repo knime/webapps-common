@@ -2,7 +2,7 @@
 import { computed, toRef } from "vue";
 
 import type { VueControlPropsForLabelContent } from "../higherOrderComponents";
-import type { IdAndText } from "../types/ChoicesUiSchema";
+import type { IdAndText, TypedIdAndText } from "../types/ChoicesUiSchema";
 
 import { usePossibleValues } from "./composables/usePossibleValues";
 import LoadingDropdown from "./loading/LoadingDropdown.vue";
@@ -55,15 +55,9 @@ const createSpecialChoice = ({
   isSpecial: true,
 });
 
-const createRegularChoice = ({
-  id,
-  text,
-}: {
-  id: string;
-  text: string;
-}): Choice => ({
-  id: createRegularId(id),
-  text,
+const createRegularChoice = (choice: TypedIdAndText): Choice => ({
+  ...choice,
+  id: createRegularId(choice.id),
 });
 
 const allChoices = computed<Choice[] | null>(() => {

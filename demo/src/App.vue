@@ -1,5 +1,6 @@
 <script>
 import "./assets/index.css";
+import "@knime/kds-styles/kds-variables.css";
 
 import { h as createElement, defineAsyncComponent } from "vue";
 

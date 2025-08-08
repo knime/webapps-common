@@ -5,6 +5,7 @@ export type PossibleValue = {
   text: string;
   invalid?: boolean;
   special?: true;
+  [key: string]: unknown;
 };
 
 export type BottomValue = {
