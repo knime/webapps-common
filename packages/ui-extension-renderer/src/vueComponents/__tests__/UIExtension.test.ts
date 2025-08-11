@@ -100,6 +100,18 @@ describe("UIExtension", () => {
     });
   });
 
+  it("handles default initialSharedData", () => {
+    const wrapper = shallowMount(UIExtension, {
+      props,
+    });
+    const serviceApiLayer = wrapper.findComponent(UIExtShadowApp).props()
+      .apiLayer as UIExtensionServiceAPILayer;
+    expect(serviceApiLayer.getConfig()).toStrictEqual({
+      ...componentExtensionConfig,
+      initialSharedData: null,
+    });
+  });
+
   it("provides extensionConfig and dialogSettings in getConfig method in the apiLayer", () => {
     const initialSharedData = { agent: "007" };
     props.initialSharedData = initialSharedData;

@@ -12,7 +12,11 @@ import {
 
 import UIExtIFrame from "./UIExtIFrame.vue";
 import UIExtShadowApp from "./UIExtShadowApp.vue";
-import { type EventType, type PushEvent } from "./types";
+import {
+  type EventType,
+  type PushEvent,
+  type UIExtensionServiceAPILayer,
+} from "./types";
 import type { ExtensionConfig } from "./types/ExtensionConfig";
 import type { UIExtensionAPILayer } from "./types/UIExtensionAPILayer";
 
@@ -33,14 +37,14 @@ type Props = {
     result?: string | object;
     userError?: object;
     internalError?: object;
-  };
+  } | null;
   isReporting?: boolean;
   isDialogLayout?: boolean;
   shadowAppStyle?: StyleValue | null;
 };
 
 const props = withDefaults(defineProps<Props>(), {
-  initialSharedData: () => ({}),
+  initialSharedData: null,
   shadowAppStyle: null,
 });
 
@@ -111,7 +115,7 @@ onUnmounted(() => {
   <UIExtShadowApp
     v-if="isUIExtShadowApp"
     :key="`comp_${configKey}`"
-    :api-layer="serviceAPILayer"
+    :api-layer="serviceAPILayer as UIExtensionServiceAPILayer"
     :style="shadowAppStyle"
     :resource-location="resourceLocation"
     @service-created="onServiceCreated"
@@ -119,7 +123,7 @@ onUnmounted(() => {
   <UIExtIFrame
     v-else
     :key="`iframe_${configKey}`"
-    :api-layer="serviceAPILayer"
+    :api-layer="serviceAPILayer as UIExtensionServiceAPILayer"
     :resource-location="resourceLocation"
     @service-created="onServiceCreated"
     @escape-pressed="$emit('escapePressed')"
