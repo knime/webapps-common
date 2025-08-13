@@ -22,7 +22,6 @@ const isDisabled = computed(
 <template>
   <Multiselect
     :id="labelForId"
-    :allow-new-values="noPossibleValuesPresent ? ('' as any) : false"
     :aria-label="control.label"
     :disabled="isDisabled"
     :possible-values="
