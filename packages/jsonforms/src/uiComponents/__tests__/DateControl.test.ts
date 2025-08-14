@@ -17,6 +17,7 @@ import {
   getControlBase,
   mountJsonFormsControlLabelContent,
 } from "../../../testUtils/component";
+import { toUTCTime } from "../../utils/localTimeUtils";
 import DateControl from "../DateControl.vue";
 
 describe("DateControl", () => {
@@ -82,16 +83,18 @@ describe("DateControl", () => {
   });
 
   it("calls changeValue when date input is changed", () => {
-    const newDateValue = new Date("2022-12-12T20:22:22.000Z");
+    const newDateString = "2022-12-12T20:22:22.000";
+    const newDateValue = new Date(`${newDateString}Z`);
     wrapper
       .findComponent(DateTimeInput)
       .vm.$emit("update:modelValue", newDateValue);
-    expect(changeValue).toHaveBeenCalledWith(newDateValue);
+    expect(changeValue).toHaveBeenCalledWith(newDateString);
   });
 
   it("sets correct initial value", () => {
+    const utcDate = toUTCTime(props.control.data);
     expect(wrapper.findComponent(DateTimeInput).vm.modelValue).toStrictEqual(
-      new Date(props.control.data),
+      new Date(utcDate),
     );
   });
 });
