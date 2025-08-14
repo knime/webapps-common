@@ -1,5 +1,32 @@
 # demo
 
+## 1.6.0
+
+### Minor Changes
+
+- 0df972d: Dependency updates. Mostly relevant:
+
+  - vite, vitest (and coverage reporter), vite-plugin-vue, vue-tsc
+  - tiptap
+  - vueuse/core
+
+  Other improvements:
+
+  - Updated license-checker to allow for Open Font License (OFL)
+  - Updated svgo.config.d.ts to fix detection of svg config when supplying it to the vite-svg-loader plugin in vite.config files
+  - Remove usages of interface in favor of type, when used in .vue; interfaces create multiple type issues when inferring props, etc which are likely caused by the declaration merging feature of interfaces.
+
+### Patch Changes
+
+- Updated dependencies [0df972d]
+  - @knime/rich-text-editor@1.7.0
+  - @knime/hub-features@1.12.0
+  - @knime/virtual-tree@1.6.0
+  - @knime/components@1.34.0
+  - @knime/licenses@1.3.0
+  - @knime/styles@1.11.0
+  - @knime/utils@1.5.4
+
 ## 1.5.8
 
 ### Patch Changes
