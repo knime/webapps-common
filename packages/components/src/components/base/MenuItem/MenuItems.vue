@@ -81,7 +81,7 @@ export type MenuItem<TMetadata = unknown, TChildrenMetadata = TMetadata> = {
   };
 };
 
-export type Props = {
+export type MenuItemsProps = {
   items: MenuItem[];
   menuAriaLabel: string;
   disableSpaceToClick?: boolean;
@@ -95,7 +95,7 @@ export type Props = {
   clippingBoundary?: Boundary;
 };
 
-const props = withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<MenuItemsProps>(), {
   disableSpaceToClick: false,
   registerKeydown: false,
   clippingBoundary: () => document.body,

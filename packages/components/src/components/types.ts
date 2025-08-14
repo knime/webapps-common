@@ -1,5 +1,5 @@
 import type { BreadcrumbItem } from "./Breadcrumb/Breadcrumb.vue";
-import type { MenuItem } from "./base/MenuItem/MenuItems.vue";
+import type { MenuItem, MenuItemsProps } from "./base/MenuItem/MenuItems.vue";
 import type {
   FormatCategory,
   FormatDateType,
@@ -9,6 +9,7 @@ import type { TwinlistModelValue } from "./forms/Twinlist/Twinlist.vue";
 
 export type {
   MenuItem,
+  MenuItemsProps,
   TwinlistModelValue,
   BreadcrumbItem,
   FormatWithExample,

@@ -13,10 +13,7 @@ import {
 import { useClickOutside } from "../../composables";
 import FunctionButton from "../Buttons/FunctionButton.vue";
 import MenuItems from "../base/MenuItem/MenuItems.vue";
-import type {
-  MenuItem,
-  Props as MenuItemsProps,
-} from "../base/MenuItem/MenuItems.vue";
+import type { MenuItem, MenuItemsProps } from "../base/MenuItem/MenuItems.vue";
 
 const orientations = ["right", "top", "left"] as const;
 
