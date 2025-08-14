@@ -1,0 +1,1 @@
+import{c as e,o as n,b as r}from"./index-DRvYTa_0.js";const t={xmlns:"http://www.w3.org/2000/svg",fill:"none",stroke:"#000","stroke-linejoin":"round",viewBox:"0 0 32 32"};function s(l,o){return n(),e("svg",t,o[0]||(o[0]=[r("path",{d:"M28.7 9.7 16 22.3 3.3 9.7"},null,-1)]))}const a={render:s};export{a as D};
