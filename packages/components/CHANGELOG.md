@@ -1,5 +1,12 @@
 # @knime/components
 
+## 1.34.1
+
+### Patch Changes
+
+- 6887f7b: Explicitly export MenuItemsProps to resolve ts issues in library builds (e.g. table) which use the SubMenu and therefore implicitly use the MenuItemsProps.
+  Remove warning when building jsonforms due to LoadingIcon referencing its own package.
+
 ## 1.34.0
 
 ### Minor Changes
