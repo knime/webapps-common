@@ -1,5 +1,13 @@
 # @knime/components
 
+## 1.34.2
+
+### Patch Changes
+
+- 7fcf85b: Enable slots in Twinlist sub components
+  Add DataType Icon to Jsonforms dropdowns and twinlists
+  Adjust linting rule -> css imports now need the file extension
+
 ## 1.34.1
 
 ### Patch Changes

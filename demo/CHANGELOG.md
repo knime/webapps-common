@@ -1,5 +1,18 @@
 # demo
 
+## 1.6.2
+
+### Patch Changes
+
+- 7fcf85b: Enable slots in Twinlist sub components
+  Add DataType Icon to Jsonforms dropdowns and twinlists
+  Adjust linting rule -> css imports now need the file extension
+- Updated dependencies [7fcf85b]
+  - @knime/components@1.34.2
+  - @knime/hub-features@1.12.2
+  - @knime/rich-text-editor@1.7.2
+  - @knime/virtual-tree@1.6.2
+
 ## 1.6.1
 
 ### Patch Changes

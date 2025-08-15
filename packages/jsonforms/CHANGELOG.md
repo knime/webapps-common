@@ -1,5 +1,16 @@
 # @knime/json-forms
 
+## 1.15.2
+
+### Patch Changes
+
+- 7fcf85b: Enable slots in Twinlist sub components
+  Add DataType Icon to Jsonforms dropdowns and twinlists
+  Adjust linting rule -> css imports now need the file extension
+- Updated dependencies [7fcf85b]
+  - @knime/components@1.34.2
+  - @knime/rich-text-editor@1.7.2
+
 ## 1.15.1
 
 ### Patch Changes
