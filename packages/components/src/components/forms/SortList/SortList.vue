@@ -129,7 +129,9 @@ const getFormattedTooltip = (text: string, hotkey: Array<Hotkey>) => {
     @keydown.alt.up="moveUp"
     @keydown.alt.home="moveToStart"
     @keydown.alt.end="moveToEnd"
-  />
+    ><template #option="slotProps">
+      <slot name="option" v-bind="slotProps" /> </template
+  ></MultiselectListBox>
   <div class="buttons">
     <FunctionButton
       :disabled="noneSelected"

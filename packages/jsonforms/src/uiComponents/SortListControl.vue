@@ -7,6 +7,7 @@ import { computed, onMounted, ref, watch } from "vue";
 import { indexOf } from "lodash-es"; // eslint-disable-line depend/ban-dependencies
 
 import { Button, SortList } from "@knime/components";
+import { DataType } from "@knime/kds-components";
 
 import LabeledControl from "../higherOrderComponents/control/LabeledControl.vue";
 import ErrorMessages from "../higherOrderComponents/control/errorMessage/ErrorMessages.vue";
@@ -84,6 +85,10 @@ onMounted(() => {
   addUnknownValuesToData(possibleValues.value);
 });
 
+const withTypes = computed(() =>
+  Boolean(possibleValues.value?.[0]?.hasOwnProperty("type")),
+);
+
 watch(() => possibleValues.value, addUnknownValuesToData);
 
 const sortAToZ = () => {
@@ -121,7 +126,34 @@ const controlElement = ref<typeof SortList | null>(null);
           :ariaLabel="control.label"
           :disabled="disabled"
           @update:model-value="changeValue"
-        />
+          ><template v-if="withTypes" #option="{ slotItem }">
+            <div
+              :class="[
+                'data-type-entry',
+                {
+                  invalid: slotItem.invalid,
+                  'with-type': slotItem.invalid || slotItem.type?.id,
+                  special: slotItem.special,
+                },
+              ]"
+            >
+              <template v-if="slotItem.invalid">
+                <DataType size="small" />
+                <span>{{ slotItem.text }}</span>
+              </template>
+              <template v-else>
+                <template v-if="slotItem.type?.id">
+                  <DataType
+                    :icon-name="slotItem.type.id"
+                    :icon-title="slotItem.type.text"
+                    size="small"
+                  />
+                </template>
+                <span>{{ slotItem.text }}</span>
+              </template>
+            </div>
+          </template>
+        </SortList>
       </ErrorMessages>
     </template>
     <template #icon>
@@ -146,5 +178,11 @@ const controlElement = ref<typeof SortList | null>(null);
   &.space-between {
     justify-content: space-between;
   }
+}
+
+.data-type-entry.with-type {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
 }
 </style>

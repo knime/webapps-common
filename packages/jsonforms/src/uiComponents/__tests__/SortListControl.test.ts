@@ -11,6 +11,7 @@ import type { VueWrapper } from "@vue/test-utils";
 import { flushPromises } from "@vue/test-utils";
 
 import { Button, SortList } from "@knime/components";
+import { DataType } from "@knime/kds-components";
 
 import {
   type VueControlTestProps,
@@ -216,6 +217,64 @@ describe("SortListControl", () => {
         "unknown",
         DEFAULT_ANY_UNKNOWN_VALUES_ID,
       ]);
+    });
+  });
+
+  describe("slot rendering if types are available", () => {
+    beforeEach(async () => {
+      props.control.data = [
+        "type_1",
+        DEFAULT_ANY_UNKNOWN_VALUES_ID,
+        "missing_type",
+      ];
+      props.control.uischema.options!.possibleValues = [
+        {
+          id: "type_1",
+          text: "Type 1",
+          type: { id: "type_1", text: "Type 1" },
+        },
+      ];
+
+      const component = mountJsonFormsControl(SortListControl, {
+        props,
+      });
+
+      await flushPromises();
+      wrapper = component.wrapper;
+    });
+
+    it("renders an existing item", () => {
+      expect(wrapper.find(".data-type-entry").exists()).toBeTruthy();
+      const type1ListEntry = wrapper.find("ul").findAll("li")[0];
+      expect(type1ListEntry.find(".data-type-entry").exists()).toBeTruthy();
+      expect(type1ListEntry.text()).toBe("Type 1");
+      const dataTypeComp = type1ListEntry.findComponent(DataType);
+      expect(dataTypeComp.exists()).toBeTruthy();
+      expect(dataTypeComp.props()).toStrictEqual({
+        iconName: "type_1",
+        iconTitle: "Type 1",
+        size: "small",
+      });
+    });
+
+    it("renders a special item", () => {
+      expect(wrapper.find(".data-type-entry").exists()).toBeTruthy();
+      const specialListEntry = wrapper.find("ul").findAll("li")[1];
+      expect(specialListEntry.find(".data-type-entry").exists()).toBeTruthy();
+      expect(specialListEntry.text()).toBe("Any unknown column");
+      expect(specialListEntry.findComponent(DataType).exists()).toBeFalsy();
+    });
+
+    it("renders an invalid item", () => {
+      expect(wrapper.find(".data-type-entry").exists()).toBeTruthy();
+      const missingTypeListEntry = wrapper.find("ul").findAll("li")[2];
+      expect(
+        missingTypeListEntry.find(".data-type-entry").exists(),
+      ).toBeTruthy();
+      expect(missingTypeListEntry.text()).toBe("(MISSING) missing_type");
+      expect(
+        missingTypeListEntry.findComponent(DataType).exists(),
+      ).toBeTruthy();
     });
   });
 });
