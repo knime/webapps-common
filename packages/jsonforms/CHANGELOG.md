@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.15.3
+
+### Patch Changes
+
+- d833dc3: No longer use system timezone in DateControl
+
 ## 1.15.2
 
 ### Patch Changes
