@@ -18,7 +18,7 @@ withDefaults(defineProps<Props>(), { isCreationPending: false });
 
 const emit = defineEmits<{
   create: [{ name: string; description: string }];
-  cancel: [];
+  cancel: [hasUnsavedChanges: boolean];
 }>();
 
 const versionName = ref("");
@@ -37,6 +37,10 @@ const doValidate = ref(false);
 
 const isVersionNameInvalid = computed(() => {
   return versionName.value.length <= 0 && doValidate.value;
+});
+
+const hasUnsavedChanges = computed(() => {
+  return versionName.value !== "" || versionDescription.value !== "";
 });
 
 const onCreate = async () => {
@@ -77,7 +81,7 @@ const onCreate = async () => {
         with-border
         compact
         class="button cancel"
-        @click="$emit('cancel')"
+        @click="$emit('cancel', hasUnsavedChanges)"
       >
         <strong>Cancel</strong>
       </Button>
