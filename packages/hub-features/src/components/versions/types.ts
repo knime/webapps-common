@@ -70,3 +70,8 @@ export type ItemPermission =
   | "CONFIGURATION"
   | "MOVE"
   | "COPY";
+
+export type VersionLimit = {
+  currentUsage: number;
+  limit?: number;
+};

@@ -108,17 +108,17 @@ describe("CurrentState", () => {
 
   describe("actions", () => {
     describe("handles selection", () => {
-      it("select", () => {
+      it("select", async () => {
         const { wrapper } = doMount();
 
-        wrapper.find(".current-state").trigger("click");
+        await wrapper.find(".current-state").trigger("click");
         expect(wrapper.emitted("select")).toBeDefined();
       });
 
-      it("already selected", () => {
+      it("already selected", async () => {
         const { wrapper } = doMount({ mountProps: { isSelected: true } });
 
-        wrapper.find(".current-state").trigger("click");
+        await wrapper.find(".current-state").trigger("click");
         expect(wrapper.emitted("select")).toBeUndefined();
       });
     });
@@ -194,5 +194,13 @@ describe("CurrentState", () => {
 
       expect(wrapper.findComponent(SubMenu).exists()).toBeFalsy();
     });
+  });
+
+  it("hides create version button if version limit is exceeded", () => {
+    const { wrapper } = doMount({
+      mountProps: { hasEditCapability: true, isVersionLimitExceeded: true },
+    });
+
+    expect(wrapper.find(".create-button").exists()).toBe(false);
   });
 });

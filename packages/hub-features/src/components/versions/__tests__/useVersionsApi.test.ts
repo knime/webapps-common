@@ -54,4 +54,24 @@ describe("useVersionsApi", () => {
       "Network error",
     );
   });
+
+  it("should fetch version limit", async () => {
+    const limitMock = { limit: 123, currentUsage: 42 };
+    $ofetchMock.mockResolvedValue(limitMock);
+
+    const { fetchVersionLimit } = useVersionsApi({
+      customFetchClientOptions: { baseURL: mockBaseUrl },
+    });
+
+    await expect(fetchVersionLimit({ itemId: "someId" })).resolves.toBe(
+      limitMock,
+    );
+
+    expect($ofetchMock).toHaveBeenCalledWith(
+      "/repository/limits/someId/item-versions",
+      {
+        method: "GET",
+      },
+    );
+  });
 });
