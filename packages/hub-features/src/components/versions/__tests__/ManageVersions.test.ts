@@ -160,4 +160,60 @@ describe("ManageVersions", () => {
       });
     });
   });
+
+  describe("version limits", () => {
+    it("version limit is present but not exceeded", () => {
+      const { wrapper } = doMount({
+        mountProps: {
+          versionLimit: { currentUsage: 3, limit: 5 },
+        },
+      });
+      const versionLimitInfo = wrapper.findComponent({
+        name: "VersionLimitInfo",
+      });
+      expect(versionLimitInfo.exists()).toBe(true);
+      expect(versionLimitInfo.props("versionLimit")).toEqual({
+        currentUsage: 3,
+        limit: 5,
+      });
+      const currentState = wrapper.findComponent({ name: "CurrentState" });
+      expect(currentState.exists()).toBe(true);
+      expect(currentState.props("isVersionLimitExceeded")).toBe(false);
+    });
+  });
+
+  it("version limit is present and exceeded", () => {
+    const { wrapper } = doMount({
+      mountProps: {
+        versionLimit: { currentUsage: 5, limit: 5 },
+      },
+    });
+    const versionLimitInfo = wrapper.findComponent({
+      name: "VersionLimitInfo",
+    });
+    expect(versionLimitInfo.exists()).toBe(true);
+    expect(versionLimitInfo.props("versionLimit")).toEqual({
+      currentUsage: 5,
+      limit: 5,
+    });
+    const currentState = wrapper.findComponent({ name: "CurrentState" });
+    expect(currentState.exists()).toBe(true);
+    expect(currentState.props("isVersionLimitExceeded")).toBe(true);
+  });
+
+  it("version limit is not present", () => {
+    const { wrapper } = doMount();
+    expect(
+      wrapper
+        .findComponent({
+          name: "VersionLimitInfo",
+        })
+        .exists(),
+    ).toBe(false);
+    expect(
+      wrapper
+        .findComponent({ name: "CurrentState" })
+        .props("isVersionLimitExceeded"),
+    ).toBe(false);
+  });
 });

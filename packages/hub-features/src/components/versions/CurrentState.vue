@@ -15,6 +15,7 @@ const props = defineProps<{
   hasEditCapability: boolean;
   hasPreviousVersion: boolean;
   currentStateSavepoint: ItemSavepoint & WithAvatar & WithLabels;
+  isVersionLimitExceeded?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -66,7 +67,7 @@ const onMenuItemClick = (_: Event, item: (typeof menuItems.value)[number]) => {
       </div>
       <div class="right">
         <Button
-          v-if="hasEditCapability"
+          v-if="hasEditCapability && !isVersionLimitExceeded"
           with-border
           compact
           class="create-button"

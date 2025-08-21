@@ -264,11 +264,6 @@
       "count": 1
     }
   },
-  "packages/hub-features/src/components/versions/__tests__/CurrentState.test.ts": {
-    "@typescript-eslint/no-floating-promises": {
-      "count": 2
-    }
-  },
   "packages/hub-features/src/useDownloadArtifact/__tests__/useDownloadArtifact.test.ts": {
     "@typescript-eslint/no-floating-promises": {
       "count": 6

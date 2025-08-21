@@ -199,6 +199,9 @@ const demoComponents = {
     OpenSourceCredits: defineAsyncComponent(
       () => import("./components/OpenSourceCredits.vue"),
     ),
+    ManageVersions: defineAsyncComponent(
+      () => import("./components/ManageVersions.vue"),
+    ),
   },
   npm: {
     "KNIME UI Table": {

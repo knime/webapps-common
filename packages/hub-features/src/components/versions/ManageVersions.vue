@@ -8,10 +8,12 @@ import HistoryIcon from "@knime/styles/img/icons/history.svg";
 
 import CurrentState from "./CurrentState.vue";
 import VersionHistory from "./VersionHistory.vue";
+import VersionLimitInfo from "./VersionLimitInfo.vue";
 import { CURRENT_STATE_VERSION } from "./constants";
 import type {
   ItemSavepoint,
   NamedItemVersion,
+  VersionLimit,
   WithAvatar,
   WithLabels,
 } from "./types";
@@ -25,6 +27,8 @@ type ManageVersionsProps = {
   hasLoadedAllVersions: boolean;
   hasAdminRights: boolean;
   hasEditCapability: boolean;
+  versionLimit?: VersionLimit;
+  upgradeUrl?: string;
 };
 
 defineProps<ManageVersionsProps>();
@@ -67,6 +71,10 @@ const closeLabelPopovers = throttle(() => {
             :has-previous-version="versionHistory.length > 0"
             :is-selected="currentVersion === CURRENT_STATE_VERSION"
             :current-state-savepoint="unversionedSavepoint"
+            :is-version-limit-exceeded="
+              versionLimit?.limit !== undefined &&
+              versionLimit.currentUsage >= versionLimit.limit
+            "
             @select="$emit('select', CURRENT_STATE_VERSION)"
             @create-version="$emit('create')"
             @discard="$emit('discardCurrentState')"
@@ -91,6 +99,15 @@ const closeLabelPopovers = throttle(() => {
             @restore="$emit('restore', $event)"
             @load-all="$emit('loadAll')"
             @select="$emit('select', $event ?? CURRENT_STATE_VERSION)"
+          />
+          <VersionLimitInfo
+            v-if="versionLimit?.limit !== undefined"
+            class="version-limit-info"
+            :version-limit="{
+              limit: versionLimit.limit,
+              currentUsage: versionLimit.currentUsage,
+            }"
+            :upgrade-url
           />
         </div>
       </div>
@@ -155,6 +172,10 @@ const closeLabelPopovers = throttle(() => {
       & .versions {
         width: 100%;
         padding: 30px;
+
+        & .version-limit-info {
+          margin-top: 30px;
+        }
       }
     }
 

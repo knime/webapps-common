@@ -8,6 +8,7 @@ import type {
   ItemSavepoint,
   NamedItemVersion,
   RepositoryItem,
+  VersionLimit,
   WithAvatar,
   WithLabels,
 } from "@knime/hub-features/versions";
@@ -49,6 +50,12 @@ export const useVersionsApi = ({
 
   const fetchRepositoryItem = ({ itemId }: { itemId: string }) => {
     return doHubRequest(`/repository/${itemId}`) as Promise<RepositoryItem>;
+  };
+
+  const fetchVersionLimit = ({ itemId }: { itemId: string }) => {
+    return doHubRequest(
+      `/repository/limits/${itemId}/item-versions`,
+    ) as Promise<VersionLimit>;
   };
 
   const fetchVersions = ({
@@ -214,6 +221,7 @@ export const useVersionsApi = ({
 
   return {
     fetchVersions,
+    fetchVersionLimit,
     fetchResourceLabels,
     fetchItemSavepoints,
     fetchPermissions,
