@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.34.3
+
+### Patch Changes
+
+- 6e00414: Add data type icons to SortListControl
+
 ## 1.34.2
 
 ### Patch Changes

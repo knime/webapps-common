@@ -1,5 +1,14 @@
 # @knime/json-forms
 
+## 1.15.4
+
+### Patch Changes
+
+- 6e00414: Add data type icons to SortListControl
+- Updated dependencies [6e00414]
+  - @knime/components@1.34.3
+  - @knime/rich-text-editor@1.7.3
+
 ## 1.15.3
 
 ### Patch Changes
