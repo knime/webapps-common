@@ -1,5 +1,12 @@
 # @knime/components
 
+## 1.35.0
+
+### Minor Changes
+
+- e1c15d1: Add a default slot to InlineMessage.vue component and make the `description` prop optional.
+  The `description` prop now serves as a fallback for the slot.
+
 ## 1.34.3
 
 ### Patch Changes
