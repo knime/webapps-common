@@ -9,7 +9,10 @@ const codeExample = `<InlineMessage
   type="info"
   title="Info"
   description="Here is a message that informs the user"
-/>`;
+/>
+<InlineMessage variant="info" title="Info">
+  Here is a message that contains a <a href="/">link</a>.
+</InlineMessage>`;
 </script>
 
 <template>
@@ -42,6 +45,9 @@ const codeExample = `<InlineMessage
             title="Promotion"
             description="Here is a message that informs the user about KNIME news"
           />
+          <InlineMessage variant="info" title="Info">
+            Here is a message that contains a <a href="/">link</a>.
+          </InlineMessage>
         </div>
         <CodeExample summary="Show usage example">{{
           codeExample

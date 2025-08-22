@@ -23,7 +23,7 @@ const TYPE_ICON_MAP = {
 defineProps<{
   variant: InlineMessageVariant;
   title: string;
-  description: string;
+  description?: string;
 }>();
 </script>
 
@@ -31,7 +31,9 @@ defineProps<{
   <div :class="['inline-message', variant]">
     <component :is="TYPE_ICON_MAP[variant]" class="icon" />
     <span class="title">{{ title }}</span>
-    <span class="description">{{ description }}</span>
+    <span class="description">
+      <slot>{{ description }}</slot>
+    </span>
   </div>
 </template>
 

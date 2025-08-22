@@ -57,4 +57,21 @@ describe("Message", () => {
     expect(wrapper.find(".title").text()).toBe(title);
     expect(wrapper.find(".description").text()).toBe(description);
   });
+
+  it("renders with a slot", () => {
+    const variant = "info";
+    const title = "Info with a link";
+    wrapper = mount(InlineMessage, {
+      props: { variant, title },
+      slots: { default: '<p>An info message with a <a href="/">link</a>.</p>' },
+    });
+
+    expect(wrapper.find("a").exists()).toBe(true);
+    expect(wrapper.findComponent(CircleInfoIcon).exists()).toBe(true);
+    expect(wrapper.find(".inline-message").classes()).toContain(variant);
+    expect(wrapper.find(".title").text()).toBe(title);
+    expect(wrapper.find(".description").text()).toBe(
+      "An info message with a link.",
+    );
+  });
 });
