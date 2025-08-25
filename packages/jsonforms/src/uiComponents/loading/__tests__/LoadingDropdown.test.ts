@@ -50,35 +50,57 @@ describe("LoadingDropdown", () => {
     });
 
     it("renders an untyped value", () => {
-      const slot = wrapper.find(".data-type-entry");
-      expect(slot.exists()).toBeTruthy();
-      expect(slot.findComponent(DataType).exists()).toBeFalsy();
-      expect(slot.text()).toBe("First");
+      const slots = wrapper.findAll(".data-type-entry");
+      // +1 for the summary entry if the dropdown is not expanded
+      expect(slots).toHaveLength(props.possibleValues!.length + 1);
+      const summary = slots[0];
+      expect(summary.exists()).toBeTruthy();
+      expect(summary.findComponent(DataType).exists()).toBeFalsy();
+      expect(summary.text()).toBe("First");
     });
 
     it("renders a typed value", async () => {
       await wrapper.setProps({
         modelValue: "second",
       });
-      const slot = wrapper.find(".data-type-entry");
-      expect(slot.exists()).toBeTruthy();
-      expect(slot.findComponent(DataType).exists()).toBeTruthy();
-      expect(slot.findComponent(DataType).props()).toStrictEqual({
+      const slots = wrapper.findAll(".data-type-entry");
+      // +1 for the summary entry if the dropdown is not expanded
+      expect(slots).toHaveLength(props.possibleValues!.length + 1);
+      const summary = slots[0];
+      expect(summary.exists()).toBeTruthy();
+      expect(summary.findComponent(DataType).exists()).toBeTruthy();
+      expect(summary.findComponent(DataType).props()).toStrictEqual({
         iconName: "secondType",
         iconTitle: "Second Type",
         size: "small",
       });
-      expect(slot.text()).toBe("Second");
+      expect(summary.text()).toBe("Second");
     });
 
     it("renders a missing value", async () => {
       await wrapper.setProps({
         modelValue: "missingValue",
       });
-      const slot = wrapper.find(".data-type-entry");
-      expect(slot.exists()).toBeTruthy();
-      expect(slot.findComponent(DataType).exists()).toBeTruthy();
-      expect(slot.text()).toBe("(MISSING) missingValue");
+      const slots = wrapper.findAll(".data-type-entry");
+      // +1 for the summary entry if the dropdown is not expanded
+      expect(slots).toHaveLength(props.possibleValues!.length + 1);
+      const summary = slots[0];
+      expect(summary.exists()).toBeTruthy();
+      expect(summary.findComponent(DataType).exists()).toBeTruthy();
+      expect(summary.text()).toBe("(MISSING) missingValue");
+    });
+
+    it("renders without a selected value", async () => {
+      await wrapper.setProps({
+        modelValue: "",
+      });
+      const slots = wrapper.findAll(".data-type-entry");
+      expect(slots).toHaveLength(props.possibleValues!.length);
+      const expectedPlaceholder = "No value selected";
+      expect(wrapper.html()).toContain(expectedPlaceholder);
+      slots.forEach((slot) => {
+        expect(slot.text()).not.toContain(expectedPlaceholder);
+      });
     });
   });
 });
