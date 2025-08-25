@@ -58,31 +58,34 @@ const possibleValues = computed(() => {
     compact
   >
     <template
-      #option="{ slotData, selectedValue, isMissing } = {
+      #option="{ slotData, selectedValue, isMissing, expanded } = {
         slotData: {},
       }"
     >
-      <div
-        :class="[
-          'data-type-entry',
-          { missing: isMissing, 'with-type': isMissing || slotData.typeId },
-        ]"
-      >
-        <template v-if="isMissing">
-          <DataType size="small" />
-          <span>(MISSING) {{ selectedValue }}</span>
-        </template>
-        <template v-else>
-          <template v-if="slotData.typeId">
-            <DataType
-              :icon-name="slotData.typeId"
-              :icon-title="slotData.typeText"
-              size="small"
-            />
+      <template v-if="expanded || selectedValue !== '' || isMissing">
+        <div
+          :class="[
+            'data-type-entry',
+            { missing: isMissing, 'with-type': isMissing || slotData.typeId },
+          ]"
+        >
+          <template v-if="isMissing">
+            <DataType size="small" />
+            <span>(MISSING) {{ selectedValue }}</span>
           </template>
-          <span>{{ slotData.text }}</span>
-        </template>
-      </div>
+          <template v-else>
+            <template v-if="slotData.typeId">
+              <DataType
+                :icon-name="slotData.typeId"
+                :icon-title="slotData.typeText"
+                size="small"
+              />
+            </template>
+            <span>{{ slotData.text }}</span>
+          </template>
+        </div>
+      </template>
+      <template v-else>{{ placeholderText }}</template>
     </template>
     <template #icon-right>
       <LoadingIcon v-if="possibleValues === null" class="loading-icon" />
