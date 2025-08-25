@@ -1,5 +1,12 @@
 # demo
 
+## 1.6.5
+
+### Patch Changes
+
+- Updated dependencies [70f61b3]
+  - @knime/hub-features@1.12.5
+
 ## 1.6.4
 
 ### Patch Changes

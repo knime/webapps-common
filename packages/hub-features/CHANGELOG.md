@@ -1,5 +1,11 @@
 # @knime/hub-features
 
+## 1.12.5
+
+### Patch Changes
+
+- 70f61b3: Version panel emitting unsaved changes from Creation form
+
 ## 1.12.4
 
 ### Patch Changes
