@@ -19,7 +19,6 @@ import InteractiveIcon from "@knime/styles/img/icons/interactive.svg";
 import ListThumbs from "@knime/styles/img/icons/list-thumbs.svg";
 import ImageIcon from "@knime/styles/img/icons/media-image.svg";
 import ViewListIcon from "@knime/styles/img/icons/view-list.svg";
-
 import HeadlineWithAnchorLink from "./components/demo/HeadlineWithAnchorLink.vue";
 import NpmLink from "./components/demo/NpmLink.vue";
 
@@ -99,6 +98,9 @@ const demoComponents = {
       () => import("./components/LocalDateTime.vue"),
     ),
     Pill: defineAsyncComponent(() => import("./components/Pill.vue")),
+    ManageVersions: defineAsyncComponent(
+      () => import("./components/ManageVersions.vue"),
+    ),
     CollapsiblePanel: defineAsyncComponent(
       () => import("./components/CollapsiblePanel.vue"),
     ),

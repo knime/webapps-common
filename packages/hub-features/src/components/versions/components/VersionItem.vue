@@ -6,10 +6,10 @@ import { LocalDateTime, SubMenu, Tooltip } from "@knime/components";
 import MenuIcon from "@knime/styles/img/icons/menu-options.svg";
 import { truncateString } from "@knime/utils";
 
-import HubAvatar from "../avatars/HubAvatar.vue";
+import HubAvatar from "../../avatars/HubAvatar.vue";
+import type { NamedItemVersion, WithAvatar, WithLabels } from "../types";
 
 import LabelList from "./LabelList.vue";
-import type { NamedItemVersion, WithAvatar, WithLabels } from "./types";
 
 const DESCRIPTION_TRUNCATE_LENGTH = 120;
 

@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { IdleReadyButton } from "@knime/components";
 
+import type { NamedItemVersion, WithAvatar, WithLabels } from "../types";
+
 import NoVersionItem from "./NoVersionItem.vue";
 import VersionItem from "./VersionItem.vue";
-import type { NamedItemVersion, WithAvatar, WithLabels } from "./types";
 
 defineProps<{
   selectedVersion: NamedItemVersion["version"] | null;

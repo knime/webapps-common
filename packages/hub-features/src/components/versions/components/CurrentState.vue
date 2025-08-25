@@ -5,10 +5,10 @@ import { Button, LocalDateTime, SubMenu } from "@knime/components";
 import MenuIcon from "@knime/styles/img/icons/menu-options.svg";
 import WrenchIcon from "@knime/styles/img/icons/wrench.svg";
 
-import HubAvatar from "../avatars/HubAvatar.vue";
+import HubAvatar from "../../avatars/HubAvatar.vue";
+import type { ItemSavepoint, WithAvatar, WithLabels } from "../types";
 
 import LabelList from "./LabelList.vue";
-import type { ItemSavepoint, WithAvatar, WithLabels } from "./types";
 
 const props = defineProps<{
   isSelected: boolean;

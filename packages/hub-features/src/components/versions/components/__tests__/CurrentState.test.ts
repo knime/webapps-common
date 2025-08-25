@@ -5,10 +5,10 @@ import { find } from "lodash-es"; // eslint-disable-line depend/ban-dependencies
 import { Button, LocalDateTime, SubMenu } from "@knime/components";
 import MenuIcon from "@knime/styles/img/icons/menu-options.svg";
 
-import type { HubAvatarData } from "../../avatars";
-import HubAvatar from "../../avatars/HubAvatar.vue";
+import type { HubAvatarData } from "../../../avatars";
+import HubAvatar from "../../../avatars/HubAvatar.vue";
+import type { AssignedLabel, ItemSavepoint } from "../../types";
 import CurrentState from "../CurrentState.vue";
-import type { AssignedLabel, ItemSavepoint } from "../types";
 
 type Props = InstanceType<typeof CurrentState>["$props"];
 
@@ -108,17 +108,17 @@ describe("CurrentState", () => {
 
   describe("actions", () => {
     describe("handles selection", () => {
-      it("select", () => {
+      it("select", async () => {
         const { wrapper } = doMount();
 
-        wrapper.find(".current-state").trigger("click");
+        await wrapper.find(".current-state").trigger("click");
         expect(wrapper.emitted("select")).toBeDefined();
       });
 
-      it("already selected", () => {
+      it("already selected", async () => {
         const { wrapper } = doMount({ mountProps: { isSelected: true } });
 
-        wrapper.find(".current-state").trigger("click");
+        await wrapper.find(".current-state").trigger("click");
         expect(wrapper.emitted("select")).toBeUndefined();
       });
     });
