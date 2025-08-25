@@ -5,10 +5,10 @@ import { find } from "lodash-es"; // eslint-disable-line depend/ban-dependencies
 import { Button, LocalDateTime, SubMenu } from "@knime/components";
 import MenuIcon from "@knime/styles/img/icons/menu-options.svg";
 
-import type { HubAvatarData } from "../../avatars";
-import HubAvatar from "../../avatars/HubAvatar.vue";
+import type { HubAvatarData } from "../../../avatars";
+import HubAvatar from "../../../avatars/HubAvatar.vue";
+import type { AssignedLabel, ItemSavepoint } from "../../types";
 import CurrentState from "../CurrentState.vue";
-import type { AssignedLabel, ItemSavepoint } from "../types";
 
 type Props = InstanceType<typeof CurrentState>["$props"];
 

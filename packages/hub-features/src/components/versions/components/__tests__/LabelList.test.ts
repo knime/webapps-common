@@ -4,8 +4,8 @@ import { shallowMount } from "@vue/test-utils";
 import { useEventBus } from "@vueuse/core";
 import { useFloating } from "@floating-ui/vue";
 
+import type { AssignedLabel } from "../../types";
 import LabelList from "../LabelList.vue";
-import type { AssignedLabel } from "../types";
 
 vi.mock("@vueuse/core", () => ({
   useEventBus: vi.fn(),

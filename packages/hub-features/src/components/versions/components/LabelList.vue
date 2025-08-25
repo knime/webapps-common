@@ -7,9 +7,8 @@ import { isEqual } from "lodash-es"; // eslint-disable-line depend/ban-dependenc
 import { FunctionButton } from "@knime/components";
 import { truncateString } from "@knime/utils";
 
-import Popover from "../Popover.vue";
-
-import type { AssignedLabel } from "./types";
+import Popover from "../../Popover.vue";
+import type { AssignedLabel } from "../types";
 
 type PopoverElement = HTMLElement & {
   closeMenu: () => void;

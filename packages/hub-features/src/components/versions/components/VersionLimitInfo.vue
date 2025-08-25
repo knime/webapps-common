@@ -3,7 +3,7 @@ import { computed } from "vue";
 
 import { InlineMessage } from "@knime/components";
 
-import type { VersionLimit } from "./types";
+import type { VersionLimit } from "../types";
 
 const { versionLimit, upgradeUrl = undefined } = defineProps<{
   versionLimit: Required<VersionLimit>;

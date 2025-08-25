@@ -10,15 +10,15 @@ import {
 } from "@knime/components";
 import MenuIcon from "@knime/styles/img/icons/menu-options.svg";
 
-import HubAvatar from "../../avatars/HubAvatar.vue";
-import LabelList from "../LabelList.vue";
-import VersionItem from "../VersionItem.vue";
+import HubAvatar from "../../../avatars/HubAvatar.vue";
 import type {
   AssignedLabel,
   NamedItemVersion,
   WithAvatar,
   WithLabels,
-} from "../types";
+} from "../../types";
+import LabelList from "../LabelList.vue";
+import VersionItem from "../VersionItem.vue";
 
 const mockVersion: NamedItemVersion & WithAvatar & WithLabels = {
   author: "Mira Mock",

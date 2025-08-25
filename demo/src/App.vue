@@ -16,10 +16,10 @@ import CheckboxIcon from "@knime/styles/img/icons/checkboxes.svg";
 import PaletteIcon from "@knime/styles/img/icons/color-palette.svg";
 import UnknownIcon from "@knime/styles/img/icons/file-question.svg";
 import InteractiveIcon from "@knime/styles/img/icons/interactive.svg";
+import CubeIcon from "@knime/styles/img/icons/cube.svg";
 import ListThumbs from "@knime/styles/img/icons/list-thumbs.svg";
 import ImageIcon from "@knime/styles/img/icons/media-image.svg";
 import ViewListIcon from "@knime/styles/img/icons/view-list.svg";
-
 import HeadlineWithAnchorLink from "./components/demo/HeadlineWithAnchorLink.vue";
 import NpmLink from "./components/demo/NpmLink.vue";
 
@@ -99,6 +99,7 @@ const demoComponents = {
       () => import("./components/LocalDateTime.vue"),
     ),
     Pill: defineAsyncComponent(() => import("./components/Pill.vue")),
+
     CollapsiblePanel: defineAsyncComponent(
       () => import("./components/CollapsiblePanel.vue"),
     ),
@@ -112,6 +113,11 @@ const demoComponents = {
       () => import("./components/SkeletonItem.vue"),
     ),
     Avatar: defineAsyncComponent(() => import("./components/Avatar.vue")),
+  },
+  hubFeatures: {
+    ManageVersions: defineAsyncComponent(
+      () => import("./components/ManageVersions.vue"),
+    ),
   },
   toasts: {
     "Toast Service": defineAsyncComponent(
@@ -189,6 +195,7 @@ const demoComponents = {
       () => import("./components/RichTextEditor.vue"),
     ),
   },
+
   misc: {
     NodePreview: defineAsyncComponent(
       () => import("./components/NodePreview.vue"),
@@ -198,9 +205,6 @@ const demoComponents = {
     ),
     OpenSourceCredits: defineAsyncComponent(
       () => import("./components/OpenSourceCredits.vue"),
-    ),
-    ManageVersions: defineAsyncComponent(
-      () => import("./components/ManageVersions.vue"),
     ),
   },
   npm: {
@@ -290,6 +294,11 @@ export default {
           value: "interactive",
           label: "UI Components",
           icon: InteractiveIcon,
+        },
+        {
+          value: "hubFeatures",
+          label: "Hub Features",
+          icon: CubeIcon,
         },
         {
           value: "forms",

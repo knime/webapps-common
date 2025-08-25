@@ -1,7 +1,7 @@
-import CreateVersionForm from "./CreateVersionForm.vue";
-import ManageVersions from "./ManageVersions.vue";
+import CreateVersionForm from "./components/CreateVersionForm.vue";
+import ManageVersions from "./components/ManageVersions.vue";
 
 export { CreateVersionForm, ManageVersions };
 export type * from "./types";
 export * from "./constants";
-export * from "./useVersionsApi";
+export * from "./composables/useVersionsApi";

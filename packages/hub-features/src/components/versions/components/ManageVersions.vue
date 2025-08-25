@@ -6,17 +6,18 @@ import { FunctionButton } from "@knime/components";
 import CloseIcon from "@knime/styles/img/icons/close.svg";
 import HistoryIcon from "@knime/styles/img/icons/history.svg";
 
-import CurrentState from "./CurrentState.vue";
-import VersionHistory from "./VersionHistory.vue";
-import VersionLimitInfo from "./VersionLimitInfo.vue";
-import { CURRENT_STATE_VERSION } from "./constants";
+import { CURRENT_STATE_VERSION } from "../constants";
 import type {
   ItemSavepoint,
   NamedItemVersion,
   VersionLimit,
   WithAvatar,
   WithLabels,
-} from "./types";
+} from "../types";
+
+import CurrentState from "./CurrentState.vue";
+import VersionHistory from "./VersionHistory.vue";
+import VersionLimitInfo from "./VersionLimitInfo.vue";
 
 type ManageVersionsProps = {
   hasUnversionedChanges: boolean;

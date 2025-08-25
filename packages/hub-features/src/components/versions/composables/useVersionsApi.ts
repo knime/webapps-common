@@ -13,7 +13,7 @@ import type {
   WithLabels,
 } from "@knime/hub-features/versions";
 
-import { getFetchClient } from "../../common/ofetchClient";
+import { getFetchClient } from "../../../common/ofetchClient";
 
 type UseVersionsApiOptions = {
   customFetchClientOptions?: FetchOptions;

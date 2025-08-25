@@ -3,11 +3,11 @@ import { shallowMount } from "@vue/test-utils";
 
 import { IdleReadyButton } from "@knime/components";
 
+import { CURRENT_STATE_VERSION } from "../../constants";
+import type { NamedItemVersion, WithAvatar, WithLabels } from "../../types";
 import NoVersionItem from "../NoVersionItem.vue";
 import VersionHistory from "../VersionHistory.vue";
 import VersionItem from "../VersionItem.vue";
-import { CURRENT_STATE_VERSION } from "../constants";
-import type { NamedItemVersion, WithAvatar, WithLabels } from "../types";
 
 const mockVersions: Array<NamedItemVersion & WithAvatar & WithLabels> = [
   {
