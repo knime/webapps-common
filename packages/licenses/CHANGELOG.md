@@ -1,5 +1,11 @@
 # @knime/licenses
 
+## 1.3.1
+
+### Patch Changes
+
+- 73ea3a3: Correct DataType icon use for missing and path variables
+
 ## 1.3.0
 
 ### Minor Changes

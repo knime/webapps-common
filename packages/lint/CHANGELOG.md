@@ -1,5 +1,11 @@
 # @knime/eslint-config
 
+## 9.1.3
+
+### Patch Changes
+
+- 73ea3a3: Correct DataType icon use for missing and path variables
+
 ## 9.1.2
 
 ### Patch Changes

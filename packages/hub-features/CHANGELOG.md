@@ -1,5 +1,15 @@
 # @knime/hub-features
 
+## 1.12.6
+
+### Patch Changes
+
+- 73ea3a3: Correct DataType icon use for missing and path variables
+- Updated dependencies [73ea3a3]
+  - @knime/components@1.35.1
+  - @knime/styles@1.11.1
+  - @knime/utils@1.5.5
+
 ## 1.12.5
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @knime/styles
 
+## 1.11.1
+
+### Patch Changes
+
+- 73ea3a3: Correct DataType icon use for missing and path variables
+
 ## 1.11.0
 
 ### Minor Changes

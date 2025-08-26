@@ -1,5 +1,14 @@
 # @knime/ui-extension-renderer
 
+## 2.3.5
+
+### Patch Changes
+
+- 73ea3a3: Correct DataType icon use for missing and path variables
+- Updated dependencies [73ea3a3]
+  - @knime/components@1.35.1
+  - @knime/styles@1.11.1
+
 ## 2.3.4
 
 ### Patch Changes

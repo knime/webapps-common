@@ -1,5 +1,11 @@
 # @knime/ui-extension-service
 
+## 2.5.1
+
+### Patch Changes
+
+- 73ea3a3: Correct DataType icon use for missing and path variables
+
 ## 2.5.0
 
 ### Minor Changes
