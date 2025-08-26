@@ -1,0 +1,1 @@
+import{M as u}from"./index-C9nwT2dq.js";const c=(t,r,e)=>{const l=u(()=>!t.value||t.value.length===0?0:t.value.length),a=u(()=>!e?.value||e?.value.length===0?0:e.value.length);return((o,v,g)=>{let n=`${o} of ${v} entries`;return e&&(n+=` [ ${g} selected ]`),n})(l.value,r,a.value)};export{c as u};
