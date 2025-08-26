@@ -1,5 +1,13 @@
 # demo
 
+## 1.6.7
+
+### Patch Changes
+
+- d04922e: display version limit info in ManageVersions side drawer
+- Updated dependencies [d04922e]
+  - @knime/hub-features@1.13.0
+
 ## 1.6.6
 
 ### Patch Changes

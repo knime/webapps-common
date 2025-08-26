@@ -1,5 +1,11 @@
 # @knime/hub-features
 
+## 1.13.0
+
+### Minor Changes
+
+- d04922e: display version limit info in ManageVersions side drawer
+
 ## 1.12.6
 
 ### Patch Changes
