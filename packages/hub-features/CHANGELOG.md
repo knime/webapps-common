@@ -1,5 +1,16 @@
 # @knime/hub-features
 
+## 1.14.0
+
+### Minor Changes
+
+- c75b415: Added SideDrawerHeader component
+
+### Patch Changes
+
+- Updated dependencies [c75b415]
+  - @knime/components@1.36.0
+
 ## 1.13.0
 
 ### Minor Changes

@@ -1,5 +1,16 @@
 # demo
 
+## 1.6.8
+
+### Patch Changes
+
+- c75b415: Added Hub Featuers section with updated version panel component
+- Updated dependencies [c75b415]
+  - @knime/hub-features@1.14.0
+  - @knime/components@1.36.0
+  - @knime/rich-text-editor@1.7.6
+  - @knime/virtual-tree@1.6.6
+
 ## 1.6.7
 
 ### Patch Changes

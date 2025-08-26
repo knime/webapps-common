@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.36.0
+
+### Minor Changes
+
+- c75b415: Added SideDrawerHeader component
+
 ## 1.35.1
 
 ### Patch Changes
