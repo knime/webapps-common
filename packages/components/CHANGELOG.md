@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.36.1
+
+### Patch Changes
+
+- 2fb809c: Fix SideDrawerHeader color
+
 ## 1.36.0
 
 ### Minor Changes
