@@ -62,6 +62,9 @@ const tooltipOrDiv = computed(() => {
   z-index: 1;
   position: relative;
   padding: 32px 30px 0;
+  --side-drawer-header-background: var(--knime-white);
+
+  background-color: var(--side-drawer-header-background);
 
   & .subdrawer {
     margin-bottom: 30px;
