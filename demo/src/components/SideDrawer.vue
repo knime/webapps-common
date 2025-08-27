@@ -1,5 +1,12 @@
 <script lang="ts" setup>
-import { Button, SideDrawer, SideDrawerHeader } from "@knime/components";
+import {
+  Button,
+  SideDrawer,
+  SideDrawerHeader,
+  Checkboxes,
+  SideDrawerControls,
+  Checkbox,
+} from "@knime/components";
 
 import CodeExample from "./demo/CodeExample.vue";
 import { ref } from "vue";
@@ -70,29 +77,17 @@ const lorumIpsumContent = `And a lot more Lorem ipsum dolor sit amet consectetur
           sapiente quas culpa sint alias.`;
 
 const isExpanded = ref(false);
-const isExpandedCustomStyles = ref(false);
-const isExpandedWithHeader = ref(false);
-const isExpandedWithSubSideDrawerHeader = ref(false);
+const selected = ref<Array<string>>([]);
+
+const enableCustomStyles = computed(() =>
+  selected.value.includes("customStyles"),
+);
+const enableControls = computed(() => selected.value.includes("controls"));
+const enableHeader = computed(() => selected.value.includes("header"));
+const enableSubDrawerHeader = ref(false);
 
 const expandedMessage = computed(() => {
   return isExpanded.value ? "expanded" : "not expanded";
-});
-const expandedMessageCustomStyles = computed(() => {
-  return isExpandedCustomStyles.value
-    ? "expanded (with custom styles)"
-    : "not expanded (so you can't see the custom styles)";
-});
-
-const expandedMessageWithHeader = computed(() => {
-  return isExpandedWithHeader.value
-    ? "expanded (with header)"
-    : "not expanded (so you can't see the header)";
-});
-
-const expandedMessageWithSubHeader = computed(() => {
-  return isExpandedWithSubSideDrawerHeader.value
-    ? "expanded (with sub drawer header)"
-    : "not expanded (so you can't see the sub drawer header)";
 });
 </script>
 
@@ -101,126 +96,83 @@ const expandedMessageWithSubHeader = computed(() => {
     <section>
       <div class="grid-container">
         <div class="grid-item-12 wrapper">
-          <p>
-            Provides an expandable drawer to the right side which can be filled
-            with arbitrary content. On small screens it will take up the whole
-            width.
-          </p>
-          <Button primary @click="isExpanded = !isExpanded"> Draw it! </Button>
-          <p>I am {{ expandedMessage }}</p>
-        </div>
-      </div>
-    </section>
-    <SideDrawer class="side-drawer" :is-expanded="isExpanded">
-      <div class="contents-side-drawer">
-        <h4>something here</h4>
-        <p>
-          {{ lorumIpsumContent }}
-        </p>
-        <Button with-border @click="isExpanded = false"> Close me! </Button>
-      </div>
-    </SideDrawer>
-
-    <section>
-      <div class="grid-container">
-        <div class="grid-item-12 wrapper">
-          <p>
-            It is possible to override some styles of the drawer by using the
-            <code>styleOverrides</code> prop.
-          </p>
-          <Button
-            primary
-            @click="isExpandedCustomStyles = !isExpandedCustomStyles"
-          >
-            Draw it!
-          </Button>
-          <p>I am {{ expandedMessageCustomStyles }}</p>
-        </div>
-      </div>
-    </section>
-    <SideDrawer
-      class="side-drawer"
-      :is-expanded="isExpandedCustomStyles"
-      :style-overrides="{ width: '50%' }"
-    >
-      <div class="contents-side-drawer">
-        <h4>something here</h4>
-        <p>
-          {{ lorumIpsumContent }}
-        </p>
-        <Button with-border @click="isExpandedCustomStyles = false">
-          Close me!
-        </Button>
-      </div>
-    </SideDrawer>
-    <section>
-      <div class="grid-container">
-        <div class="grid-item-12 wrapper">
-          <p>Provides an expandable drawer with header</p>
-          <Button primary @click="isExpandedWithHeader = !isExpandedWithHeader">
-            Draw it!
-          </Button>
-          <p>I am {{ expandedMessageWithHeader }}</p>
+          <div class="info">
+            <p>
+              Provides an expandable drawer to the right side which can be
+              filled with arbitrary content. On small screens it will take up
+              the whole width.
+            </p>
+            <Button primary @click="isExpanded = !isExpanded">
+              Draw it!
+            </Button>
+            <p>I am {{ expandedMessage }}</p>
+          </div>
+          <div class="options">
+            <h4>Options</h4>
+            <Checkboxes
+              v-model="selected"
+              :possible-values="[
+                {
+                  id: 'header',
+                  text: 'Show Header',
+                },
+                {
+                  id: 'controls',
+                  text: 'Show Controls',
+                },
+                {
+                  id: 'customStyles',
+                  text: 'Use Custom Styles',
+                },
+              ]"
+            />
+            <div v-if="enableHeader">
+              <h5>Extras</h5>
+              <Checkbox v-model="enableSubDrawerHeader"
+                >Enable Side Drawer Header</Checkbox
+              >
+            </div>
+          </div>
         </div>
       </div>
     </section>
     <SideDrawer
       class="side-drawer"
-      :is-expanded="isExpandedWithHeader"
-      :style-overrides="{ width: '50%' }"
+      :is-expanded="isExpanded"
+      :style-overrides="enableCustomStyles ? { width: '50%' } : undefined"
     >
-      <SideDrawerHeader title="My header" description="This is a description" />
-      <div class="contents-side-drawer">
-        <h4>something here</h4>
-        <p>
-          {{ lorumIpsumContent }}
-        </p>
-        <Button with-border @click="isExpandedWithHeader = false">
-          Close me!
-        </Button>
-      </div>
-    </SideDrawer>
-
-    <section>
-      <div class="grid-container">
-        <div class="grid-item-12 wrapper">
-          <p>Provides an expandable drawer with sub drawer header</p>
-          <Button
-            primary
-            @click="
-              isExpandedWithSubSideDrawerHeader =
-                !isExpandedWithSubSideDrawerHeader
-            "
-          >
-            Draw it!
-          </Button>
-          <p>I am {{ expandedMessageWithSubHeader }}</p>
+      <div class="side-drawer-wrapper">
+        <div>
+          <SideDrawerHeader
+            v-if="enableHeader"
+            title="My header"
+            description="This is a description"
+            :is-sub-drawer="enableSubDrawerHeader"
+            @close="isExpanded = false"
+          />
+          <div class="contents-side-drawer">
+            <h4>something here</h4>
+            <p>
+              {{ lorumIpsumContent }}
+            </p>
+            <Button
+              v-if="!enableHeader && !enableControls"
+              with-border
+              @click="isExpanded = false"
+            >
+              Close me!
+            </Button>
+          </div>
         </div>
-      </div>
-    </section>
-    <SideDrawer
-      class="side-drawer"
-      :is-expanded="isExpandedWithSubSideDrawerHeader"
-      :style-overrides="{ width: '50%' }"
-    >
-      <SideDrawerHeader
-        title="My header"
-        description="This is a description"
-        @close="isExpandedWithSubSideDrawerHeader = false"
-        :is-sub-drawer="true"
-      />
-      <div class="contents-side-drawer">
-        <h4>something here</h4>
-        <p>
-          {{ lorumIpsumContent }}
-        </p>
-        <Button with-border @click="isExpandedWithSubSideDrawerHeader = false">
-          Close me!
-        </Button>
+        <SideDrawerControls
+          v-if="enableControls"
+          class="side-drawer-controls"
+          :edit-enabled="true"
+          @cancel="isExpanded = false"
+        />
       </div>
     </SideDrawer>
-
-    <section>
+    <section class="code-example">
       <div class="grid-container">
         <div class="grid-item-12">
           <CodeExample summary="Show usage example">{{
@@ -237,10 +189,29 @@ h4 {
   margin: 0;
 }
 
-.contents-side-drawer {
-  padding: 30px;
-  box-sizing: border-box;
-  background-color: var(--knime-white);
-  height: 100%;
+.options,
+.code-example {
+  margin-top: 30px;
+}
+
+.options-controller {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.side-drawer {
+  & .side-drawer-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: space-between;
+  }
+
+  & .contents-side-drawer {
+    padding: 30px;
+    box-sizing: border-box;
+    height: 100%;
+  }
 }
 </style>
