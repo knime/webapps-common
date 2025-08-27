@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.37.0
+
+### Minor Changes
+
+- 1b3973e: Added SideDrawerControls component
+
 ## 1.36.1
 
 ### Patch Changes

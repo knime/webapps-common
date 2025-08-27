@@ -1,5 +1,16 @@
 # demo
 
+## 1.6.10
+
+### Patch Changes
+
+- 1b3973e: Added SideDrawerControls component
+- Updated dependencies [1b3973e]
+  - @knime/components@1.37.0
+  - @knime/hub-features@1.14.2
+  - @knime/rich-text-editor@1.7.8
+  - @knime/virtual-tree@1.6.8
+
 ## 1.6.9
 
 ### Patch Changes
