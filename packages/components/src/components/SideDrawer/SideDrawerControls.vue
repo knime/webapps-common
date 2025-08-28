@@ -27,6 +27,7 @@ defineEmits<{
       class="cancel"
       with-border
       :disabled="processing"
+      compact
       @click.prevent="$emit('cancel')"
     >
       Cancel
@@ -34,6 +35,7 @@ defineEmits<{
     <Button
       class="save"
       primary
+      compact
       :disabled="disabled || processing"
       @click.prevent="$emit('save')"
     >

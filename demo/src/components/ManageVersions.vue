@@ -9,7 +9,9 @@ import {
   CreateVersionForm,
   type AssignedLabel,
 } from "@knime/hub-features/versions";
+
 import { Button, SideDrawer } from "@knime/components";
+import { sleep } from "@knime/utils";
 import { computed } from "vue";
 
 const isOpened = ref(false);
@@ -17,6 +19,7 @@ const isSubmenuOpen = ref(false);
 const hasLoadedAllVersions = ref(false);
 const loading = ref(false);
 const currentVersion = ref<NamedItemVersion["version"] | null>("current-state");
+const isCreationPending = ref(false);
 
 const versionHistory = ref<Array<NamedItemVersion & WithAvatar & WithLabels>>([
   {
@@ -159,14 +162,13 @@ const valueToAddOnLoadMore: NamedItemVersion & WithAvatar & WithLabels = {
   labels: [],
 };
 
-const onLoadMore = () => {
+const onLoadMore = async () => {
   loading.value = true;
 
-  setTimeout(() => {
-    versionHistory.value.push(valueToAddOnLoadMore);
-    loading.value = false;
-    hasLoadedAllVersions.value = true;
-  }, 1000);
+  await sleep(1000);
+  versionHistory.value.push(valueToAddOnLoadMore);
+  loading.value = false;
+  hasLoadedAllVersions.value = true;
 };
 
 const onRestore = (version: NamedItemVersion["version"]) => {
@@ -179,13 +181,15 @@ const onDelete = (version: NamedItemVersion["version"]) => {
   );
 };
 
-const onCreate = ({
+const onCreate = async ({
   name,
   description,
 }: {
   name: string;
   description: string;
 }) => {
+  isCreationPending.value = true;
+  await sleep(1000);
   if (unversionedSavepoint.value) {
     versionHistory.value.push({
       version: (versionHistory.value.length + 1) as number,
@@ -262,7 +266,11 @@ const onDiscard = () => {
         </SideDrawer>
 
         <SideDrawer :is-expanded="isSubmenuOpen">
-          <CreateVersionForm @create="onCreate" @cancel="onCloseSubmenu" />
+          <CreateVersionForm
+            @create="onCreate"
+            @cancel="onCloseSubmenu"
+            :isCreationPending="isCreationPending"
+          />
         </SideDrawer>
       </div>
     </div>

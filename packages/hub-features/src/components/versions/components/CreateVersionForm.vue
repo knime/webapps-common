@@ -3,10 +3,9 @@ import { computed, nextTick, onMounted, ref } from "vue";
 import { useTextareaAutosize } from "@vueuse/core";
 
 import {
-  Button,
   InputField,
   Label,
-  LoadingIcon,
+  SideDrawerControls,
   SideDrawerHeader,
   TextArea,
 } from "@knime/components";
@@ -86,24 +85,15 @@ const onCreate = async () => {
         />
       </Label>
       <div class="controls">
-        <Button
-          with-border
-          compact
-          class="button cancel"
-          @click="$emit('cancel', hasUnsavedChanges)"
-        >
-          <strong>Cancel</strong>
-        </Button>
-        <Button
-          primary
-          compact
-          class="button create"
+        <SideDrawerControls
+          class="create-version-controls"
+          :edit-enabled="true"
+          :processing="isCreationPending"
+          action-label="Create"
           :disabled="isVersionNameInvalid || isCreationPending"
-          @click="onCreate"
-        >
-          <LoadingIcon v-if="isCreationPending" />
-          <strong v-if="!isCreationPending">Create</strong>
-        </Button>
+          @save="onCreate"
+          @cancel="$emit('cancel', hasUnsavedChanges)"
+        />
       </div>
     </div>
   </div>
@@ -153,13 +143,12 @@ const onCreate = async () => {
     }
 
     & .controls {
-      border-top: 1px solid var(--knime-silver-sand);
-      display: flex;
       margin: 0 -30px;
-      padding: 10px 20px;
-      gap: 10px;
-      justify-content: space-between;
       margin-top: auto;
+    }
+
+    .create-version-controls {
+      margin: 0;
     }
   }
 }
