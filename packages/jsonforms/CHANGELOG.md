@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.15.11
+
+### Patch Changes
+
+- 51bb83f: - SettingsSubPanel back button now inherits backgrond colour overrides
+
 ## 1.15.10
 
 ### Patch Changes
