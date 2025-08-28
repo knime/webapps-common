@@ -113,6 +113,9 @@ const demoComponents = {
       () => import("./components/SkeletonItem.vue"),
     ),
     Avatar: defineAsyncComponent(() => import("./components/Avatar.vue")),
+    SplitPanel: defineAsyncComponent(
+      () => import("./components/SplitPanel.vue"),
+    ),
   },
   hubFeatures: {
     ManageVersions: defineAsyncComponent(

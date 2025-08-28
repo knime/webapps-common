@@ -31,6 +31,7 @@ import SideDrawer from "./SideDrawer/SideDrawer.vue";
 import SideDrawerControls from "./SideDrawer/SideDrawerControls.vue";
 import SideDrawerHeader from "./SideDrawer/SideDrawerHeader.vue";
 import SkeletonItem from "./SkeletonItem/SkeletonItem.vue";
+import SplitPanel from "./SplitPanel/SplitPanel.vue";
 import StyledListItem from "./StyleListItem/StyledListItem.vue";
 import SubMenu from "./SubMenu/SubMenu.vue";
 import svgWithTitle from "./SvgWithTitle/svgWithTitle";
@@ -100,6 +101,7 @@ export {
   SideDrawer,
   SkeletonItem,
   SplitButton,
+  SplitPanel,
   StyledListItem,
   SubMenu,
   TabBar,
