@@ -1,5 +1,17 @@
 # demo
 
+## 1.6.11
+
+### Patch Changes
+
+- a771f90: Add SideDrawerControls to the CreateVersionForm component
+- Updated dependencies [a771f90]
+- Updated dependencies [a771f90]
+  - @knime/components@1.37.1
+  - @knime/hub-features@1.14.3
+  - @knime/rich-text-editor@1.7.9
+  - @knime/virtual-tree@1.6.9
+
 ## 1.6.10
 
 ### Patch Changes

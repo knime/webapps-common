@@ -1,5 +1,13 @@
 # @knime/hub-features
 
+## 1.14.3
+
+### Patch Changes
+
+- a771f90: Add SideDrawerControls to the CreateVersionForm component
+- Updated dependencies [a771f90]
+  - @knime/components@1.37.1
+
 ## 1.14.2
 
 ### Patch Changes

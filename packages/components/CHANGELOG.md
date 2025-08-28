@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.37.1
+
+### Patch Changes
+
+- a771f90: Compacting the buttons in the SideDrawerControls
+
 ## 1.37.0
 
 ### Minor Changes
