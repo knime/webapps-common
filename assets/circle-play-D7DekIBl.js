@@ -1,1 +1,0 @@
-import{c as n,o as r,b as o}from"./index-BTIpTClr.js";const t={xmlns:"http://www.w3.org/2000/svg",fill:"none",stroke:"#000","stroke-linejoin":"round",viewBox:"0 0 32 32"};function l(s,e){return r(),n("svg",t,e[0]||(e[0]=[o("circle",{cx:"16",cy:"16",r:"13"},null,-1),o("path",{d:"M12 22.1V9.9L22.5 16z"},null,-1)]))}const a={render:l};export{a as P};

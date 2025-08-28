@@ -1,1 +1,0 @@
-import{c as o,o as t,b as n}from"./index-BTIpTClr.js";const r={xmlns:"http://www.w3.org/2000/svg",fill:"none",stroke:"currentColor","stroke-linecap":"round",viewBox:"0 0 12 12"};function s(c,e){return t(),o("svg",r,e[0]||(e[0]=[n("path",{d:"M1 2.25h10m-10 5h10m-8-2.5h6m-6 5h6","vector-effect":"non-scaling-stroke"},null,-1)]))}const a={render:s};export{a as default,s as render};
