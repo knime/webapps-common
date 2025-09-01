@@ -1,5 +1,11 @@
 # @knime/styles
 
+## 1.12.0
+
+### Minor Changes
+
+- 95587b5: Add ai-description.svg icon
+
 ## 1.11.1
 
 ### Patch Changes
