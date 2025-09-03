@@ -264,7 +264,7 @@ watch(
       left: 0;
       top: 0;
       opacity: 0;
-      z-index: 100; /* TODO: replace with actual z-index */
+      z-index: var(--z-index-common-splitter, 20);
     }
   }
 
@@ -349,7 +349,7 @@ watch(
     width: 100%;
     height: 100%;
     background-color: var(--will-snap-background-color);
-    z-index: 100; /* TODO: replace with actual z-index */
+    z-index: var(--z-index-common-splitter, 20);
     overflow: hidden;
     white-space: nowrap;
   }
