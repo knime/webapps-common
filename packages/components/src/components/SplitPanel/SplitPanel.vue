@@ -196,7 +196,7 @@ watch(
 </template>
 
 <style lang="postcss" scoped>
-@import url("@knime/styles/css/mixins");
+@import url("@knime/styles/css/mixins.css");
 
 .switch-icon {
   @mixin svg-icon-size 10;
