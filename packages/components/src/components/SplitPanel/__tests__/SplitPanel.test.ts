@@ -189,4 +189,67 @@ describe("SplitPanel", () => {
       expectSecondarySize(42);
     },
   );
+
+  describe("hideSecondaryPane", () => {
+    it("passes hideSecondaryPane prop to Splitter component", () => {
+      const { wrapper } = doMount({ hideSecondaryPane: true });
+
+      const splitter = wrapper.findComponent(Splitter);
+      expect(splitter.props("hiddenPane")).toBe("bottom");
+    });
+
+    it.each([
+      {
+        hideSecondaryPane: true,
+        keepElementOnClose: false,
+        expected: false,
+      },
+      {
+        hideSecondaryPane: true,
+        keepElementOnClose: true,
+        expected: true,
+      },
+      {
+        hideSecondaryPane: false,
+        keepElementOnClose: false,
+        expanded: false,
+        expected: false,
+      },
+      {
+        hideSecondaryPane: false,
+        keepElementOnClose: true,
+        expanded: false,
+        expected: true,
+      },
+      {
+        hideSecondaryPane: false,
+        keepElementOnClose: false,
+        expanded: true,
+        expected: true,
+      },
+    ])(
+      "renders secondary content correctly with hideSecondaryPane=$hideSecondaryPane, keepElementOnClose=$keepElementOnClose, expanded=$expanded",
+      ({
+        hideSecondaryPane,
+        keepElementOnClose,
+        expanded = true,
+        expected,
+      }) => {
+        const { wrapper } = doMount({
+          hideSecondaryPane,
+          keepElementOnClose,
+          expanded,
+        });
+
+        const hasSecondaryContent = wrapper
+          .text()
+          .includes("secondary content");
+        expect(hasSecondaryContent).toBe(expected);
+
+        // Switch icon should not be present when hideSecondaryPane is true
+        const expectedIcon = !hideSecondaryPane;
+        expect(wrapper.find(".switch-icon").exists()).toBe(expectedIcon);
+      },
+    );
+  });
 });
