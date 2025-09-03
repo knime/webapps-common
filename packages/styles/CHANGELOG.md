@@ -1,5 +1,11 @@
 # @knime/styles
 
+## 1.12.1
+
+### Patch Changes
+
+- e06f88c: Add a .hover class the a style of the RTE to be able to fake the hover with js.
+
 ## 1.12.0
 
 ### Minor Changes
