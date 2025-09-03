@@ -145,7 +145,8 @@
     color: var(--theme-text-link-foreground-color);
     text-decoration-style: underline;
 
-    &:hover {
+    &:hover,
+    &.hover {
       text-decoration-style: solid;
       background: var(--theme-text-link-background-color-hover);
       color: var(--theme-text-link-foreground-color-hover);
