@@ -6,14 +6,7 @@ import CodeExample from "./demo/CodeExample.vue";
 // import code from "webapps-common/ui/components/SplitPanel.vue?raw";
 const code = "";
 
-export default {
-  components: {
-    SplitPanel,
-    CodeExample,
-  },
-  data() {
-    return {
-      codeExample: `<SplitPanel
+const codeExample = `<SplitPanel
       direction="right"
       :secondary-snap-size="100"
       use-pixel
@@ -24,8 +17,13 @@ export default {
   <template #secondary>
     Secondary content
   </template>
-</SplitPanel>`,
-    };
+</SplitPanel>
+`;
+
+export default {
+  components: {
+    SplitPanel,
+    CodeExample,
   },
   computed: {
     code() {
@@ -34,6 +32,7 @@ export default {
   },
   data: function () {
     return {
+      codeExample,
       secondarySize: 200,
       splitterExpanded: true,
     };
