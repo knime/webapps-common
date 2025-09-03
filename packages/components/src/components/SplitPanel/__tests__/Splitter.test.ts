@@ -1,4 +1,4 @@
-import { beforeEach, expect, test, vi } from "vitest";
+import { beforeEach, describe, expect, it, test, vi } from "vitest";
 import { mount } from "@vue/test-utils";
 
 import Splitter from "../Splitter.vue";
@@ -55,4 +55,40 @@ test("moving the splitter should set the class to active", async () => {
   expect(elDragger.classes("active")).toBe(false);
   await elDragger.trigger("pointerdown");
   expect(elDragger.classes("active")).toBe(true);
+});
+
+describe("hideSecondaryPane", () => {
+  it("hides splitter element", () => {
+    const comp = mount(Splitter, { props: { hideSecondaryPane: true } });
+
+    // Splitter element should not exist
+    expect(comp.find(".splitter").exists()).toBe(false);
+
+    // But both pane containers should still exist
+    const panes = comp.findAll(".splitter-pane");
+    expect(panes).toHaveLength(2);
+  });
+
+  it.each([
+    { sizePane: "left", isHorizontal: false, expectedGrid: "none / 0 1fr" },
+    { sizePane: "right", isHorizontal: false, expectedGrid: "none / 1fr 0" },
+    { sizePane: "top", isHorizontal: true, expectedGrid: "0 1fr / none" },
+    { sizePane: "bottom", isHorizontal: true, expectedGrid: "1fr 0 / none" },
+  ] as const)(
+    "sets grid size of secondary pane to 0 for sizePane=$sizePane",
+    ({ sizePane, isHorizontal, expectedGrid }) => {
+      const comp = mount(Splitter, {
+        props: {
+          hideSecondaryPane: true,
+          sizePane,
+          isHorizontal,
+        },
+      });
+
+      const elDragger = comp.get(".base-splitter");
+      const style = elDragger.attributes("style");
+
+      expect(style!.includes(`grid-template: ${expectedGrid}`)).toBe(true);
+    },
+  );
 });

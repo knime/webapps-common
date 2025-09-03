@@ -35,6 +35,7 @@ export default {
       codeExample,
       secondarySize: 200,
       splitterExpanded: true,
+      hideSecondaryPane: false,
     };
   },
 };
@@ -74,6 +75,7 @@ export default {
           v-model:expanded="splitterExpanded"
           direction="right"
           :secondary-snap-size="100"
+          :hide-secondary-pane="hideSecondaryPane"
           use-pixel
         >
           <template #default> Default content </template>
@@ -84,6 +86,10 @@ export default {
         <div class="grid-item-12">
           <p>Secondary size: {{ secondarySize }}px</p>
           <p>Splitter expanded: {{ splitterExpanded }}</p>
+          <label>
+            <input v-model="hideSecondaryPane" type="checkbox" />
+            Hide Secondary Pane
+          </label>
         </div>
       </div>
     </section>

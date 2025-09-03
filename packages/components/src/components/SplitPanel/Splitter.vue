@@ -8,6 +8,7 @@
 // * added splitterSize prop
 // * added ability to define the panel for which the size will be set (important for pixel mode)
 // * use pointer events instead of mouse and touch events
+// * added functionality to completely hide the secondary pane
 import { computed, ref, watch } from "vue";
 
 const props = withDefaults(
@@ -23,6 +24,11 @@ const props = withDefaults(
     splitterTitle?: string;
     // ID added for testing purposes to differentiate between splitters
     splitterId?: string;
+    /**
+     * Completely hides the secondary pane and splitter, making only the primary pane
+     * visible and preventing any user interaction with the secondary pane.
+     */
+    hideSecondaryPane?: boolean;
   }>(),
   {
     percent: null,
@@ -35,6 +41,7 @@ const props = withDefaults(
     splitterSize: 8,
     splitterTitle: "",
     splitterId: "",
+    hideSecondaryPane: false,
   },
 );
 
@@ -91,11 +98,21 @@ const leftPaneClass = computed(() =>
 const rightPaneClass = computed(() =>
   props.isHorizontal ? "bottom-pane" : "right-pane",
 );
-const gridTemplate = computed(() =>
-  props.isHorizontal
+const gridTemplate = computed(() => {
+  if (props.hideSecondaryPane) {
+    // When hiding secondary pane, we only have 2 elements (primary pane + hidden secondary pane)
+    // since the splitter is removed via v-if. Use a simple 2-track grid.
+    const hiddenSizes = ["top", "left"].includes(props.sizePane)
+      ? "0 1fr" // Hide first track (secondary), show second track (primary)
+      : "1fr 0"; // Show first track (primary), hide second track (secondary)
+    return props.isHorizontal
+      ? `${hiddenSizes} / none`
+      : `none / ${hiddenSizes}`;
+  }
+  return props.isHorizontal
     ? `${templateSizes.value} / none`
-    : `none / ${templateSizes.value}`,
-);
+    : `none / ${templateSizes.value}`;
+});
 const userSelect = computed(() => (isActive.value ? "none" : "auto"));
 
 const calculateSplitterPercent = (e: PointerEvent) => {
@@ -190,6 +207,7 @@ const onSplitterPointerDown = (pointerdown: PointerEvent) => {
       <slot name="top-pane" />
     </div>
     <div
+      v-if="!hideSecondaryPane"
       ref="splitter"
       class="splitter"
       :data-test-id="splitterId"

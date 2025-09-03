@@ -15,6 +15,12 @@ type SplitPanelProps = {
   usePixel?: boolean;
   keepElementOnClose?: boolean;
   splitterId?: string;
+  /**
+   * When true, completely hides the secondary pane and splitter controls,
+   * making only the primary pane visible. The secondary content is either
+   * kept in the DOM (if keepElementOnClose=true) or removed entirely.
+   */
+  hideSecondaryPane?: boolean;
 };
 
 const props = withDefaults(defineProps<SplitPanelProps>(), {
@@ -25,6 +31,7 @@ const props = withDefaults(defineProps<SplitPanelProps>(), {
   direction: "left",
   keepElementOnClose: false,
   splitterId: "",
+  hideSecondaryPane: false,
 });
 
 const expanded = defineModel<boolean>("expanded", { default: true });
@@ -161,6 +168,7 @@ watch(
     :size-pane="sizePane"
     :is-horizontal="isHorizontal"
     :splitter-size="1"
+    :hide-secondary-pane="hideSecondaryPane"
     :class="[
       'splitter-root',
       `direction-${direction}`,
@@ -172,7 +180,10 @@ watch(
   >
     <template v-if="isSecondaryReverse" #left-pane>
       <div class="secondary-wrapper" :class="{ 'will-snap': willSnap }">
-        <slot v-if="expanded || keepElementOnClose" name="secondary" />
+        <slot
+          v-if="(expanded && !hideSecondaryPane) || keepElementOnClose"
+          name="secondary"
+        />
       </div>
     </template>
     <template v-else #left-pane>
@@ -189,7 +200,10 @@ watch(
     </template>
     <template v-else #right-pane>
       <div class="secondary-wrapper" :class="{ 'will-snap': willSnap }">
-        <slot v-if="expanded || keepElementOnClose" name="secondary" />
+        <slot
+          v-if="(expanded && !hideSecondaryPane) || keepElementOnClose"
+          name="secondary"
+        />
       </div>
     </template>
   </Splitter>
