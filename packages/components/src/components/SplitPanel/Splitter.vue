@@ -153,14 +153,6 @@ const onSplitterPointerDown = (pointerdown: PointerEvent) => {
   watch(hasMoved, () => emit("dragStart"), { once: true });
 
   const onMove = (pointermove: PointerEvent) => {
-    const hasNoButtonsPressed =
-      pointermove.buttons && pointermove.buttons === 0;
-
-    if (hasNoButtonsPressed) {
-      isActive.value = false;
-      window.removeEventListener("pointermove", onMove);
-    }
-
     if (!isActive.value) {
       return;
     }
