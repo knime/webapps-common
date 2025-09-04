@@ -146,7 +146,6 @@ const closeLabelPopovers = throttle(() => {
     & .header {
       background-color: var(--knime-white);
       z-index: 2;
-      box-shadow: var(--shadow-elevation-1);
       padding: 32px 30px 30px;
 
       & h4 {
