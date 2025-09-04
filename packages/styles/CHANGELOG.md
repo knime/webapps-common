@@ -1,5 +1,11 @@
 # @knime/styles
 
+## 1.13.0
+
+### Minor Changes
+
+- 712590e: Align ai-description.svg with SVG guidelines. Update node alignment icons with reworked ones.
+
 ## 1.12.1
 
 ### Patch Changes
