@@ -57,9 +57,9 @@ test("moving the splitter should set the class to active", async () => {
   expect(elDragger.classes("active")).toBe(true);
 });
 
-describe("hideSecondaryPane", () => {
-  it("hides splitter element", () => {
-    const comp = mount(Splitter, { props: { hideSecondaryPane: true } });
+describe("hiddenPane", () => {
+  it("hides splitter element when any pane is hidden", () => {
+    const comp = mount(Splitter, { props: { hiddenPane: "left" } });
 
     // Splitter element should not exist
     expect(comp.find(".splitter").exists()).toBe(false);
@@ -70,17 +70,16 @@ describe("hideSecondaryPane", () => {
   });
 
   it.each([
-    { sizePane: "left", isHorizontal: false, expectedGrid: "none / 0 1fr" },
-    { sizePane: "right", isHorizontal: false, expectedGrid: "none / 1fr 0" },
-    { sizePane: "top", isHorizontal: true, expectedGrid: "0 1fr / none" },
-    { sizePane: "bottom", isHorizontal: true, expectedGrid: "1fr 0 / none" },
+    { hiddenPane: "left", isHorizontal: false, expectedGrid: "none / 0 1fr" },
+    { hiddenPane: "right", isHorizontal: false, expectedGrid: "none / 1fr 0" },
+    { hiddenPane: "top", isHorizontal: true, expectedGrid: "0 1fr / none" },
+    { hiddenPane: "bottom", isHorizontal: true, expectedGrid: "1fr 0 / none" },
   ] as const)(
-    "sets grid size of secondary pane to 0 for sizePane=$sizePane",
-    ({ sizePane, isHorizontal, expectedGrid }) => {
+    "sets grid size to hide $hiddenPane pane",
+    ({ hiddenPane, isHorizontal, expectedGrid }) => {
       const comp = mount(Splitter, {
         props: {
-          hideSecondaryPane: true,
-          sizePane,
+          hiddenPane,
           isHorizontal,
         },
       });

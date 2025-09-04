@@ -195,7 +195,7 @@ describe("SplitPanel", () => {
       const { wrapper } = doMount({ hideSecondaryPane: true });
 
       const splitter = wrapper.findComponent(Splitter);
-      expect(splitter.props("hideSecondaryPane")).toBe(true);
+      expect(splitter.props("hiddenPane")).toBe("bottom");
     });
 
     it.each([

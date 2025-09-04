@@ -11,39 +11,51 @@
 // * added functionality to completely hide the secondary pane
 import { computed, ref, watch } from "vue";
 
-const props = withDefaults(
-  defineProps<{
-    isHorizontal?: boolean;
-    sizePane?: "left" | "right" | "top" | "bottom";
-    usePixel?: boolean;
-    percent?: number | null;
-    pixel?: number | null;
-    initialPercent?: number | string;
-    initialPixel?: number | string;
-    splitterSize?: number;
-    splitterTitle?: string;
-    // ID added for testing purposes to differentiate between splitters
-    splitterId?: string;
-    /**
-     * Completely hides the secondary pane and splitter, making only the primary pane
-     * visible and preventing any user interaction with the secondary pane.
-     */
-    hideSecondaryPane?: boolean;
-  }>(),
-  {
-    percent: null,
-    pixel: null,
-    sizePane: "left",
-    usePixel: false,
-    isHorizontal: false,
-    initialPercent: 50,
-    initialPixel: 250,
-    splitterSize: 8,
-    splitterTitle: "",
-    splitterId: "",
-    hideSecondaryPane: false,
-  },
-);
+type SplitterProps = {
+  usePixel?: boolean;
+  percent?: number | null;
+  pixel?: number | null;
+  initialPercent?: number | string;
+  initialPixel?: number | string;
+  splitterSize?: number;
+  splitterTitle?: string;
+  /** ID added for testing purposes to differentiate between splitters */
+  splitterId?: string;
+  /**
+   * When true, the splitter bar runs horizontally across the screen,
+   * creating top and bottom panes (vertical layout of panes).
+   * When false (default), the splitter bar runs vertically down the screen,
+   * creating left and right panes (horizontal layout of panes).
+   */
+  isHorizontal?: boolean;
+  /**
+   * Which pane's size is controlled by the splitter.
+   * For horizontal splitters (isHorizontal=true): "top" or "bottom"
+   * For vertical splitters (isHorizontal=false): "left" or "right"
+   */
+  sizePane?: "left" | "right" | "top" | "bottom";
+  /**
+   * Optional: Which pane to hide completely and make inaccessible to the user.
+   * For horizontal splitters (isHorizontal=true): "top" or "bottom"
+   * For vertical splitters (isHorizontal=false): "left" or "right"
+   * For the usual behavior, this is undefined.
+   */
+  hiddenPane?: "left" | "right" | "top" | "bottom";
+};
+
+const props = withDefaults(defineProps<SplitterProps>(), {
+  percent: null,
+  pixel: null,
+  sizePane: "left",
+  usePixel: false,
+  isHorizontal: false,
+  initialPercent: 50,
+  initialPixel: 250,
+  splitterSize: 8,
+  splitterTitle: "",
+  splitterId: "",
+  hiddenPane: undefined,
+});
 
 const splitter = ref<HTMLElement>();
 
@@ -99,12 +111,12 @@ const rightPaneClass = computed(() =>
   props.isHorizontal ? "bottom-pane" : "right-pane",
 );
 const gridTemplate = computed(() => {
-  if (props.hideSecondaryPane) {
-    // When hiding secondary pane, we only have 2 elements (primary pane + hidden secondary pane)
+  if (props.hiddenPane) {
+    // When hiding a pane, we only have 2 elements (visible pane + hidden pane)
     // since the splitter is removed via v-if. Use a simple 2-track grid.
-    const hiddenSizes = ["top", "left"].includes(props.sizePane)
-      ? "0 1fr" // Hide first track (secondary), show second track (primary)
-      : "1fr 0"; // Show first track (primary), hide second track (secondary)
+    const hiddenSizes = ["top", "left"].includes(props.hiddenPane)
+      ? "0 1fr" // Hide first track, show second track
+      : "1fr 0"; // Show first track, hide second track
     return props.isHorizontal
       ? `${hiddenSizes} / none`
       : `none / ${hiddenSizes}`;
@@ -207,7 +219,7 @@ const onSplitterPointerDown = (pointerdown: PointerEvent) => {
       <slot name="top-pane" />
     </div>
     <div
-      v-if="!hideSecondaryPane"
+      v-if="!hiddenPane"
       ref="splitter"
       class="splitter"
       :data-test-id="splitterId"

@@ -65,6 +65,12 @@ const isSecondaryReverse = computed(() =>
   ["left", "up"].includes(props.direction),
 );
 
+// When hideSecondaryPane is true, we need to hide the secondary pane
+// The secondary pane corresponds to the sizePane
+const hiddenPane = computed(() =>
+  props.hideSecondaryPane ? sizePane.value : undefined,
+);
+
 // the last really defined size (which is never 0 for hidden)
 // start with secondary size to ensure that we open closed ones to a nice size
 const previousSecondarySize = ref(secondarySize.value);
@@ -168,7 +174,7 @@ watch(
     :size-pane="sizePane"
     :is-horizontal="isHorizontal"
     :splitter-size="1"
-    :hide-secondary-pane="hideSecondaryPane"
+    :hidden-pane="hiddenPane"
     :class="[
       'splitter-root',
       `direction-${direction}`,
