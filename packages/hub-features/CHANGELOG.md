@@ -1,5 +1,11 @@
 # @knime/hub-features
 
+## 1.14.7
+
+### Patch Changes
+
+- 7942e54: Minor UI fix to Version Panel header
+
 ## 1.14.6
 
 ### Patch Changes
