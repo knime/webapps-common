@@ -48,6 +48,7 @@ const createKnimeVueTSConfig = (tsconfigPath) => {
         import: importPlugin,
       },
       rules: {
+        "unused-imports/no-unused-vars": "off",
         "@typescript-eslint/no-unused-vars": [
           // allow unused vars if their name starts with _
           "error",
@@ -58,10 +59,12 @@ const createKnimeVueTSConfig = (tsconfigPath) => {
             varsIgnorePattern: "^_",
           },
         ],
-        // explicitly turn off base rule which is extended by @typescript-eslint/no-unused-vars
-        "import/no-duplicates": "error",
+
         "no-duplicate-imports": "off",
-        "unused-imports/no-unused-vars": "off",
+        "import/no-duplicates": "error",
+
+        "no-use-before-define": "off",
+        "@typescript-eslint/no-use-before-define": "error",
 
         "vue/block-lang": [
           "error",

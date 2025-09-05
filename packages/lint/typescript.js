@@ -39,9 +39,14 @@ const createTSConfig = (tsconfigPath) => {
       rules: {
         "no-duplicate-imports": "off",
         "import/no-duplicates": "error",
+
         "no-unused-vars": "off",
         "@typescript-eslint/no-unused-vars": "off",
+
         "prefer-const": "error",
+
+        "no-use-before-define": "off",
+        "@typescript-eslint/no-use-before-define": "error",
       },
     },
   ];
