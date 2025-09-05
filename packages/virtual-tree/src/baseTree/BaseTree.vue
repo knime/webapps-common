@@ -1,4 +1,4 @@
-<!-- eslint-disable no-use-before-define -->
+<!-- eslint-disable @typescript-eslint/no-use-before-define -->
 <!-- eslint-disable no-undefined -->
 <!-- eslint-disable func-style -->
 <script setup lang="ts">

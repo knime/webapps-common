@@ -1,13 +1,6 @@
 import { BaseTreeNode } from "../baseTreeNode";
 import type { KeyNodeMap, TreeNodeOptions } from "../types";
 
-function useTreeData(source: TreeNodeOptions[]) {
-  const treeData = coerceTreeNodes(source);
-  const flattenTreeData = getFlattenTreeData(treeData);
-  const key2TreeNode = getKey2TreeNode(flattenTreeData);
-  return { treeData, flattenTreeData, key2TreeNode };
-}
-
 function coerceTreeNodes(
   source: TreeNodeOptions[],
   parent?: BaseTreeNode,
@@ -49,6 +42,13 @@ function getKey2TreeNode(flattenTreeData: BaseTreeNode[]) {
     key2TreeNode[node.key] = node;
   });
   return key2TreeNode;
+}
+
+function useTreeData(source: TreeNodeOptions[]) {
+  const treeData = coerceTreeNodes(source);
+  const flattenTreeData = getFlattenTreeData(treeData);
+  const key2TreeNode = getKey2TreeNode(flattenTreeData);
+  return { treeData, flattenTreeData, key2TreeNode };
 }
 
 export { useTreeData, coerceTreeNodes, getFlattenTreeData, getKey2TreeNode };
