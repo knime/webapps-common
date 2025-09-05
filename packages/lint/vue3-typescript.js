@@ -63,6 +63,10 @@ const createKnimeVueTSConfig = (tsconfigPath) => {
         "no-duplicate-imports": "off",
         "unused-imports/no-unused-vars": "off",
 
+        "no-use-before-define": "off",
+        // explicitly turn off base rule which is extended by @typescript-eslint/no-use-before-define
+        "@typescript-eslint/no-use-before-define": "error",
+
         "vue/block-lang": [
           "error",
           {
