@@ -1,5 +1,11 @@
 # @knime/hub-features
 
+## 1.14.8
+
+### Patch Changes
+
+- 6da13f6: fix error handling on versions api
+
 ## 1.14.7
 
 ### Patch Changes
