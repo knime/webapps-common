@@ -24,7 +24,7 @@ export const useVersionsApi = ({
 }: UseVersionsApiOptions) => {
   const $ofetch = getFetchClient(customFetchClientOptions);
 
-  const doHubRequest = (path: string, fetchOptions?: FetchOptions) => {
+  const doHubRequest = async (path: string, fetchOptions?: FetchOptions) => {
     const defaults: FetchOptions = {
       method: "GET",
     };
@@ -35,10 +35,7 @@ export const useVersionsApi = ({
         options: fetchOptions,
       });
 
-      return $ofetch(path, {
-        ...defaults,
-        ...fetchOptions,
-      });
+      return await $ofetch(path, { ...defaults, ...fetchOptions });
     } catch (error) {
       if (error instanceof FetchError) {
         throw rfcErrors.tryParse(error);
