@@ -185,7 +185,10 @@ watch(
     @drag-end="onDragEnd"
   >
     <template v-if="isSecondaryReverse" #left-pane>
-      <div class="secondary-wrapper" :class="{ 'will-snap': willSnap }">
+      <div
+        class="secondary-wrapper"
+        :class="{ 'will-snap': willSnap, 'is-horizontal': isHorizontal }"
+      >
         <slot
           v-if="(expanded && !hideSecondaryPane) || keepElementOnClose"
           name="secondary"
@@ -205,7 +208,10 @@ watch(
       <slot />
     </template>
     <template v-else #right-pane>
-      <div class="secondary-wrapper" :class="{ 'will-snap': willSnap }">
+      <div
+        class="secondary-wrapper"
+        :class="{ 'will-snap': willSnap, 'is-horizontal': isHorizontal }"
+      >
         <slot
           v-if="(expanded && !hideSecondaryPane) || keepElementOnClose"
           name="secondary"
@@ -359,17 +365,21 @@ watch(
 
   &::after {
     position: absolute;
-    content: "Release to hide panel.";
-    display: flex;
-    font-style: italic;
-    justify-content: center;
-    align-items: center;
+    content: "";
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     background-color: var(--will-snap-background-color);
     z-index: var(--z-index-common-splitter, 20);
+  }
+
+  &.is-horizontal::after {
+    content: "Release to hide panel.";
+    display: flex;
+    font-style: italic;
+    justify-content: center;
+    align-items: center;
     overflow: hidden;
     white-space: nowrap;
   }
