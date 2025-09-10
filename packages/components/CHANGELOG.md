@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.38.0
+
+### Minor Changes
+
+- 8794178: Add new SplitPane component
+
 ## 1.37.4
 
 ### Patch Changes
