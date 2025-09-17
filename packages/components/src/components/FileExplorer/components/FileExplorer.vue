@@ -621,6 +621,15 @@ useResizeObserver(containerProps.ref, containerProps.onScroll);
               :is-selected="slotProps.isSelected"
             />
           </template>
+
+          <template v-if="$slots.itemAppend" #itemAppend="slotProps">
+            <slot
+              name="itemAppend"
+              :item="item"
+              :is-rename-active="slotProps.isRenameActive"
+              :is-selected="slotProps.isSelected"
+            />
+          </template>
         </FileExplorerItem>
 
         <tr v-if="items.length === 0" class="empty">

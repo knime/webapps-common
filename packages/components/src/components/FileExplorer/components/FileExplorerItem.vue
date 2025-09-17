@@ -172,6 +172,16 @@ const onRenameSubmit = (keyupEvent: KeyboardEvent, isClickAway = false) => {
         </template>
       </template>
     </td>
+    <td
+      v-if="$slots.itemAppend"
+      :class="['item-append', { light: !item.isDirectory }]"
+    >
+      <slot
+        name="itemAppend"
+        :is-rename-active="isRenameActive"
+        :is-selected="isSelected"
+      />
+    </td>
   </FileExplorerItemBase>
 </template>
 
@@ -189,6 +199,17 @@ const onRenameSubmit = (keyupEvent: KeyboardEvent, isClickAway = false) => {
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
+  }
+
+  & .item-append {
+    height: 100%;
+    align-items: center;
+    display: flex;
+    padding: calc(var(--item-padding) * 1px);
+
+    &:empty {
+      display: none;
+    }
   }
 
   &:focus {
@@ -229,7 +250,8 @@ const onRenameSubmit = (keyupEvent: KeyboardEvent, isClickAway = false) => {
     white-space: normal;
   }
 
-  &:not(.selected, .dragging, .dragging-over) .item-content.light {
+  &:not(.selected, .dragging, .dragging-over) .item-content.light,
+  &:not(.selected, .dragging, .dragging-over) .item-append.light {
     background-color: var(--knime-white);
   }
 
