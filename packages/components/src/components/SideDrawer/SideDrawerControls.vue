@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { Button, LoadingIcon } from "@knime/components";
+import Button from "../Buttons/Button.vue";
+import LoadingIcon from "../LoadingIcon/LoadingIcon.vue";
 
 type Props = {
   actionLabel?: string;

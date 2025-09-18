@@ -1,8 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { mount } from "@vue/test-utils";
 
-import { AutoPlayVideo } from "@knime/components";
-
+import AutoPlayVideo from "../../../../components/AutoPlayVideo/AutoPlayVideo.vue";
 import PopoverContent from "../PopoverContent.vue";
 
 describe("PopoverContent", () => {

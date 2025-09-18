@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-import { Button, FunctionButton, Tooltip } from "@knime/components";
 import ArrowLeftIcon from "@knime/styles/img/icons/arrow-left.svg";
 import CloseIcon from "@knime/styles/img/icons/close.svg";
 import { truncateString } from "@knime/utils";
+
+import Button from "../Buttons/Button.vue";
+import FunctionButton from "../Buttons/FunctionButton.vue";
+import Tooltip from "../Tooltip/Tooltip.vue";
 
 const TITLE_MAX_LENGTH = 70;
 

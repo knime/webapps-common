@@ -1,7 +1,9 @@
 <script lang="ts" setup>
-import { AutoPlayVideo, Button, FunctionButton } from "@knime/components";
 import CloseIcon from "@knime/styles/img/icons/close.svg";
 
+import AutoPlayVideo from "../../../components/AutoPlayVideo/AutoPlayVideo.vue";
+import Button from "../../../components/Buttons/Button.vue";
+import FunctionButton from "../../../components/Buttons/FunctionButton.vue";
 import type { VideoSource } from "../types";
 
 type Props = {
