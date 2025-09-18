@@ -1,5 +1,15 @@
 # demo
 
+## 1.6.18
+
+### Patch Changes
+
+- Updated dependencies [feda14b]
+  - @knime/components@1.38.1
+  - @knime/hub-features@1.14.10
+  - @knime/rich-text-editor@1.7.14
+  - @knime/virtual-tree@1.6.14
+
 ## 1.6.17
 
 ### Patch Changes

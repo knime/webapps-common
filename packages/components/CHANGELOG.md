@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.38.1
+
+### Patch Changes
+
+- feda14b: fix circular imports in components package
+
 ## 1.38.0
 
 ### Minor Changes

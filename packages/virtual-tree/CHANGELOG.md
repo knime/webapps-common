@@ -1,5 +1,12 @@
 # @knime/virtual-tree
 
+## 1.6.14
+
+### Patch Changes
+
+- Updated dependencies [feda14b]
+  - @knime/components@1.38.1
+
 ## 1.6.13
 
 ### Patch Changes

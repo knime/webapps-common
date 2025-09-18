@@ -1,5 +1,12 @@
 # @knime/ui-extension-renderer
 
+## 2.3.14
+
+### Patch Changes
+
+- Updated dependencies [feda14b]
+  - @knime/components@1.38.1
+
 ## 2.3.13
 
 ### Patch Changes
