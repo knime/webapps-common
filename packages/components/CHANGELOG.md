@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.38.2
+
+### Patch Changes
+
+- d17a4d3: Add itemAppend slot to FileExplorer to be able to add something to the item but also keep edit feature.
+
 ## 1.38.1
 
 ### Patch Changes
