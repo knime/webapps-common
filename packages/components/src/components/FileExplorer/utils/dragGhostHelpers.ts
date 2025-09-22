@@ -302,9 +302,11 @@ export const createDragGhosts = ({
 
   const ghostElements = allGhosts.map(({ ghost }) => ghost);
 
+  let cleanupCustomDragPreviewEventHandlers: (() => void) | undefined;
   const updatePosition = createGhostPositionUpdateHandler(ghostElements);
 
-  document.addEventListener("drag", updatePosition);
+  // use dragover on window because drag does not work in firefox https://bugzilla.mozilla.org/show_bug.cgi?id=505521#c95
+  window.addEventListener("dragover", updatePosition);
 
   const setGhostDisplay =
     (display: string) =>
@@ -327,7 +329,7 @@ export const createDragGhosts = ({
         // in which case it would result in an exception when attempting to remove
         // an element that no longer exists
       }
-      document.removeEventListener("drag", updatePosition);
+      window.removeEventListener("dragover", updatePosition);
     };
 
     hideCustomGhostPreviewElement();
@@ -357,6 +359,8 @@ export const createDragGhosts = ({
         },
       );
     });
+
+    cleanupCustomDragPreviewEventHandlers?.();
   };
 
   const replaceGhostPreview: CreateDragGhostsReturnType["replaceGhostPreview"] =
@@ -364,11 +368,11 @@ export const createDragGhosts = ({
       customGhostPreviewElement = ghostPreviewEl;
 
       if (shouldUseCustomPreview) {
-        document.removeEventListener("drag", updatePosition);
+        window.removeEventListener("dragover", updatePosition);
 
         showCustomGhostPreviewElement();
 
-        document.addEventListener("drag", (event) => {
+        const updateCustomDragPreview = (event: DragEvent) => {
           if (!customGhostPreviewElement) {
             return;
           }
@@ -379,11 +383,18 @@ export const createDragGhosts = ({
           customGhostPreviewElement.style.top = `${
             event.clientY - (opts.topOffset || 0)
           }px`;
-        });
+        };
+
+        window.addEventListener("dragover", updateCustomDragPreview);
+
+        cleanupCustomDragPreviewEventHandlers?.();
+        cleanupCustomDragPreviewEventHandlers = () => {
+          window.removeEventListener("dragover", updateCustomDragPreview);
+        };
 
         allGhosts.forEach(setGhostDisplay("none"));
       } else {
-        document.addEventListener("drag", updatePosition);
+        window.addEventListener("dragover", updatePosition);
 
         hideCustomGhostPreviewElement();
 

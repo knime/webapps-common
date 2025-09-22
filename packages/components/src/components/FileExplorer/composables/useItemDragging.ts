@@ -1,4 +1,4 @@
-import { type Ref, computed, ref, watch } from "vue";
+import { type Ref, computed, ref, shallowRef, watch } from "vue";
 
 import type { UseMultiSelectionReturn } from "../../../composables/multiSelection/useMultiSelection";
 import type { FileExplorerItem } from "../types";
@@ -13,6 +13,38 @@ type UseItemDraggingOptions = {
   draggingAnimationMode: Ref<"auto" | "manual" | "disabled">;
   getCustomPreviewEl: () => HTMLElement;
   isDirectory: (item: FileExplorerItem) => boolean;
+};
+
+// bug firefox https://bugzilla.mozilla.org/show_bug.cgi?id=505521#c95
+const useDragPatchPosition = () => {
+  const lastWindowDragEvent = shallowRef<DragEvent | undefined>();
+
+  const trackClientXY = (event: DragEvent) => {
+    lastWindowDragEvent.value = event;
+  };
+  const startTrack = () => {
+    window.addEventListener("dragover", trackClientXY);
+  };
+  const stopTrack = () => {
+    window.removeEventListener("dragover", trackClientXY);
+  };
+
+  const updateClientXY = (event: DragEvent) => {
+    if (
+      lastWindowDragEvent.value &&
+      event.timeStamp - lastWindowDragEvent.value.timeStamp < 100
+    ) {
+      // We can use the lastWindowDragEvent, it's not too old
+      return {
+        ...event,
+        clientX: lastWindowDragEvent.value.clientX,
+        clientY: lastWindowDragEvent.value.clientY,
+      };
+    }
+    return event;
+  };
+
+  return { stopTrack, startTrack, updateClientXY };
 };
 
 let __removeGhosts: ReturnType<typeof createDragGhosts>["removeGhosts"] | null =
@@ -43,6 +75,8 @@ export const useItemDragging = (options: UseItemDraggingOptions) => {
     isDirectory,
   } = options;
 
+  const { startTrack, stopTrack, updateClientXY } = useDragPatchPosition();
+
   const isDragging = ref(false);
   const startDragItemIndex = ref<number | null>(null);
 
@@ -67,6 +101,8 @@ export const useItemDragging = (options: UseItemDraggingOptions) => {
   const onDragStart = (event: DragEvent, index: number) => {
     isDragging.value = true;
     startDragItemIndex.value = index;
+
+    startTrack();
 
     // remove native drag image for custom animation modes
     if (
@@ -152,7 +188,10 @@ export const useItemDragging = (options: UseItemDraggingOptions) => {
   const onDrag = (
     event: DragEvent,
     item: FileExplorerItem,
-  ): { event: DragEvent; item: FileExplorerItem } => ({ event, item });
+  ): { event: DragEvent; item: FileExplorerItem } => ({
+    event: updateClientXY(event),
+    item,
+  });
 
   watch(options.draggingAnimationMode, (next, prev) => {
     if (next !== prev && prev === "disabled") {
@@ -247,6 +286,8 @@ export const useItemDragging = (options: UseItemDraggingOptions) => {
     item: FileExplorerItem,
   ): DragEndReturn => {
     isDragging.value = false;
+
+    stopTrack();
 
     if (event.dataTransfer?.dropEffect === "none") {
       doRemoveGhosts(true);
