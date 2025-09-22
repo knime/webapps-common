@@ -14,19 +14,24 @@ const { possibleValues } = usePossibleValues(toRef(props, "control"));
 const noPossibleValuesPresent = computed(
   () => possibleValues.value === null || possibleValues.value.length === 0,
 );
+
+const willHavePossibleValues = computed(
+  () =>
+    props.control.uischema.providedOptions?.includes("possibleValues") ||
+    props.control.uischema.options?.possibleValues !== undefined,
+);
+
 const isDisabled = computed(
-  () => props.disabled || noPossibleValuesPresent.value,
+  () =>
+    props.disabled ||
+    (noPossibleValuesPresent.value && willHavePossibleValues.value),
 );
 </script>
 
 <template>
-  <!--
-        TODO Enable unsing :allow-new-values="noPossibleValuesPresent"
-        (see https://github.com/vuejs/vue/issues/2169)
-      -->
   <ComboBox
     :id="labelForId"
-    :allow-new-values="noPossibleValuesPresent ? ('' as any) : false"
+    :allow-new-values="!willHavePossibleValues"
     :aria-label="control.label"
     :disabled="isDisabled"
     :possible-values="
