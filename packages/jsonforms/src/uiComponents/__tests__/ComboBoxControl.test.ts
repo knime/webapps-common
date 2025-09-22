@@ -22,8 +22,10 @@ import ComboBoxControl from "../ComboBoxControl.vue";
 
 describe("ComboBoxControl", () => {
   let props: VueControlTestProps<typeof ComboBoxControl>,
-    wrapper: VueWrapper,
-    changeValue: Mock;
+    mountComboboxControl: () => {
+      wrapper: VueWrapper;
+      changeValue: Mock;
+    };
 
   const labelForId = "myLabelForId";
 
@@ -60,11 +62,13 @@ describe("ComboBoxControl", () => {
       disabled: false,
       isValid: false,
     };
-    const component = mountJsonFormsControlLabelContent(ComboBoxControl, {
-      props,
-    });
-    wrapper = component.wrapper;
-    changeValue = component.changeValue;
+
+    mountComboboxControl = () => {
+      const component = mountJsonFormsControlLabelContent(ComboBoxControl, {
+        props,
+      });
+      return { wrapper: component.wrapper, changeValue: component.changeValue };
+    };
   });
 
   afterEach(() => {
@@ -72,14 +76,17 @@ describe("ComboBoxControl", () => {
   });
 
   it("renders", () => {
+    const { wrapper } = mountComboboxControl();
     expect(wrapper.findComponent(ComboBox).exists()).toBe(true);
   });
 
   it("sets labelForId", () => {
+    const { wrapper } = mountComboboxControl();
     expect(wrapper.getComponent(ComboBox).attributes().id).toBe(labelForId);
   });
 
   it("sets correct initial value", () => {
+    const { wrapper } = mountComboboxControl();
     expect(wrapper.findComponent(ComboBox).props().modelValue).toStrictEqual(
       props.control.data,
     );
@@ -106,12 +113,14 @@ describe("ComboBoxControl", () => {
   });
 
   it("calls changeValue when ComboBox's value changes", () => {
+    const { wrapper, changeValue } = mountComboboxControl();
     const comboBox = wrapper.findComponent(ComboBox);
     comboBox.vm.$emit("update:modelValue", ["id_1", "id_2"]);
     expect(changeValue).toHaveBeenCalledWith(["id_1", "id_2"]);
   });
 
   it("sets allowNewValues to false when there are possible values defined", () => {
+    const { wrapper } = mountComboboxControl();
     const comboBox = wrapper.findComponent(ComboBox);
     expect(comboBox.props().allowNewValues).toBe(false);
   });
@@ -151,6 +160,36 @@ describe("ComboBoxControl", () => {
     await flushPromises();
     expect(
       wrapper.findComponent(ComboBox).props().possibleValues,
+    ).toStrictEqual(providedChoices);
+  });
+
+  it("has reactive possible values", async () => {
+    props.control.data = [];
+    delete props.control.uischema.options!.possibleValues;
+    props.control.uischema.providedOptions = ["possibleValues"];
+    let provideChoices: (choices: IdAndText[] | null) => void;
+    const addStateProviderListener = vi.fn((_id, callback) => {
+      provideChoices = callback;
+    });
+    const { wrapper } = mountJsonFormsControlLabelContent(ComboBoxControl, {
+      props,
+      provide: { addStateProviderListener },
+    });
+    await flushPromises();
+    expect(
+      wrapper.findComponent(ComboBox).props().possibleValues,
+    ).toStrictEqual([]);
+
+    const providedChoices = [
+      {
+        id: "Universe_0_0",
+        text: "Universe_0_0",
+      },
+    ];
+    provideChoices!(providedChoices);
+    await flushPromises();
+    expect(
+      wrapper.findComponent(ComboBox).vm.$data.allPossibleItems,
     ).toStrictEqual(providedChoices);
   });
 });
