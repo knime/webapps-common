@@ -1,5 +1,5 @@
 export default {
-  extends: "stylelint-config-standard",
+  extends: ["stylelint-config-standard", "stylelint-config-recess-order"],
   rules: {
     "rule-empty-line-before": [
       "always-multi-line",

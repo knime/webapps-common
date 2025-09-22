@@ -1,5 +1,5 @@
 export default {
-  extends: "stylelint-config-standard-vue",
+  extends: ["stylelint-config-standard-vue", "stylelint-config-recess-order"],
   rules: {
     "rule-empty-line-before": [
       "always-multi-line",
