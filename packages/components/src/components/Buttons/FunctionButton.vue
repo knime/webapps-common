@@ -95,17 +95,17 @@ export default {
   --icon-size: var(--icon-size-default);
 
   display: flex;
-  text-align: center;
-  font-weight: 500;
-  font-size: 13px;
-  font-family: var(--theme-text-medium-font-family);
-  line-height: 18px;
   padding: 6px 15px;
-  text-decoration: none;
-  border: 0;
-  cursor: pointer;
+  font-family: var(--theme-text-medium-font-family);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 18px;
   color: var(--theme-button-function-foreground-color);
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
   background-color: var(--theme-button-function-background-color, transparent);
+  border: 0;
 
   /* best way to ensure pill shaped buttons with flexible 1/4 corners */
   border-radius: var(--theme-button-function-border-radius, 9999px);
@@ -124,12 +124,12 @@ export default {
   }
 
   &.single {
-    padding: 6px;
+    align-items: center;
+    align-self: center;
+    justify-content: center;
     width: var(--size);
     height: var(--size);
-    align-items: center;
-    justify-content: center;
-    align-self: center;
+    padding: 6px;
   }
 
   & :deep(svg) {
@@ -153,8 +153,8 @@ export default {
   }
 
   &:hover {
-    outline: none;
     color: var(--theme-button-function-foreground-color-hover);
+    outline: none;
     background-color: var(--theme-button-function-background-color-hover);
 
     & :deep(svg) {
@@ -167,8 +167,8 @@ export default {
   }
 
   &:focus {
-    outline: none;
     color: var(--theme-button-function-foreground-color-focus);
+    outline: none;
     background-color: var(--theme-button-function-background-color-focus);
 
     & :deep(svg) {
@@ -206,8 +206,8 @@ export default {
     }
 
     &:hover {
-      outline: none;
       color: var(--theme-button-foreground-color-hover);
+      outline: none;
       background-color: var(--theme-button-background-color-hover);
 
       & :deep(svg) {
@@ -221,8 +221,8 @@ export default {
 
     &:active,
     &:focus {
-      outline: none;
       color: var(--theme-button-foreground-color-focus);
+      outline: none;
       background-color: var(--theme-button-background-color-focus);
 
       & :deep(svg) {
@@ -236,9 +236,10 @@ export default {
   }
 
   &.disabled {
+    pointer-events: none;
+
     /* via class since <a> elements don't have a native disabled attribute */
     opacity: 0.5;
-    pointer-events: none;
   }
 }
 </style>

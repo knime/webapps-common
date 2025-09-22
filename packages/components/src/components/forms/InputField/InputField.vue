@@ -162,13 +162,13 @@ export default {
 
 <style lang="postcss" scoped>
 .input-wrapper {
+  position: relative;
   display: flex;
   align-items: center;
-  position: relative;
-  border: var(--form-border-width) solid var(--knime-stone-gray);
-  background-color: var(--theme-input-field-background-color);
   height: var(--single-line-form-height);
   padding: 0 5px;
+  background-color: var(--theme-input-field-background-color);
+  border: var(--form-border-width) solid var(--knime-stone-gray);
 
   &.compact {
     height: var(--single-line-form-height-compact);
@@ -182,20 +182,20 @@ export default {
     --icon-size: 18;
 
     display: flex;
-    padding: 5px;
-    pointer-events: none;
 
     /* The gap is needed if there are adjacent activated buttons, to keep some space. */
     gap: 1px;
+    padding: 5px;
+    pointer-events: none;
 
     & :slotted(svg) {
-      vertical-align: top;
       width: calc(var(--icon-size) * 1px);
       height: calc(var(--icon-size) * 1px);
+      vertical-align: top;
+      stroke: var(--knime-masala);
 
       /* TODO: See ticket UIEXT-590, the stroke-width mixin should be used here. */
       stroke-width: calc(32px / var(--icon-size));
-      stroke: var(--knime-masala);
     }
   }
 
@@ -220,14 +220,14 @@ export default {
 
 input {
   flex-grow: 1;
+  min-width: 1em;
+  height: 100%;
+  padding: 0 5px;
   font-size: 13px;
   font-weight: 300;
-  height: 100%;
   line-height: normal;
-  padding: 0 5px;
-  border: 0;
   background-color: transparent;
-  min-width: 1em;
+  border: 0;
 
   &:focus {
     outline: none;
@@ -243,16 +243,16 @@ input {
 
   &.invalid + .invalid-marker {
     position: absolute;
-    display: block;
-    width: 3px;
-    margin: 0;
-    background-color: var(--theme-color-error);
-    pointer-events: none; /* otherwise :hover of the field doesn't work when hovering the marker */
+    top: calc(-1 * var(--form-border-width));
+    bottom: calc(-1 * var(--form-border-width));
 
     /* "Outside" location corresponds to wrapper border. */
     left: calc(-1 * var(--form-border-width));
-    top: calc(-1 * var(--form-border-width));
-    bottom: calc(-1 * var(--form-border-width));
+    display: block;
+    width: 3px;
+    margin: 0;
+    pointer-events: none; /* otherwise :hover of the field doesn't work when hovering the marker */
+    background-color: var(--theme-color-error);
   }
 }
 

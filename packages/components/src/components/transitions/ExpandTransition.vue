@@ -46,7 +46,7 @@ export default {
 
 <style lang="postcss" scoped>
 .panel {
-  transition: height 0.2s ease-in-out;
   overflow: hidden;
+  transition: height 0.2s ease-in-out;
 }
 </style>

@@ -43,20 +43,20 @@ const callback = computed(() => {
 <style lang="postcss" scoped>
 .toast-button {
   all: unset;
-  cursor: pointer;
   display: flex;
   flex-direction: row;
-  align-items: center;
   gap: 6px;
-  font-weight: 500;
+  align-items: center;
   font-size: 13px;
+  font-weight: 500;
   line-height: 18px;
   color: var(--knime-dove-gray);
+  cursor: pointer;
 
   & svg {
-    stroke: var(--knime-dove-gray);
     width: 12px;
     height: 12px;
+    stroke: var(--knime-dove-gray);
     stroke-width: calc(32px / 12);
   }
 

@@ -24,10 +24,10 @@ defineProps<VueLayoutProps>();
 
 <style lang="postcss" scoped>
 .horizontal {
-  width: 100%;
   display: inline-flex;
-  justify-content: space-between;
   gap: 5px;
+  justify-content: space-between;
+  width: 100%;
 }
 
 .horizontal-element {

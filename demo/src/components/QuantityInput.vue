@@ -124,8 +124,8 @@ const step3 = ref(3);
 
 <style lang="postcss" scoped>
 .no-wrap {
-  padding-bottom: 0;
   flex-wrap: nowrap;
+  padding-bottom: 0;
 
   & > div:first-child {
     line-height: var(--single-line-form-height);

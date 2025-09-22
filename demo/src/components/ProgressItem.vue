@@ -81,8 +81,8 @@ const items: Array<ProgressItemProps & { actions?: boolean }> = [
 
 <style lang="postcss" scoped>
 .wrapper {
+  padding: var(--space-12);
   border: 1px solid var(--knime-black);
   border-radius: 4px;
-  padding: var(--space-12);
 }
 </style>

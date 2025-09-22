@@ -187,10 +187,10 @@ export default {
 
 .details {
   display: inline-block;
+  margin: auto 0;
   font-size: 13px;
   font-weight: 300;
   line-height: 18px;
-  margin: auto 0;
 }
 
 .title {
@@ -201,13 +201,13 @@ export default {
 .collapser :deep(svg),
 .banner :deep(svg) {
   position: relative;
+  top: 3px;
+  flex-shrink: 0;
   width: 24px;
   height: 24px;
-  stroke-width: calc(32px / 24);
-  stroke: var(--knime-white);
   margin-right: 20px;
-  flex-shrink: 0;
-  top: 3px;
+  stroke: var(--knime-white);
+  stroke-width: calc(32px / 24);
 }
 
 .collapser {
@@ -220,15 +220,15 @@ export default {
 
     & .message {
       font-size: 16px;
-      line-height: 24px;
       font-weight: 700;
+      line-height: 24px;
     }
 
     & .dropdown {
+      top: 0;
       width: 30px;
       height: 30px;
       margin-right: 15px;
-      top: 0;
 
       &:hover {
         background-color: var(--knime-masala-semi);
@@ -246,49 +246,50 @@ export default {
   }
 
   & :deep(.panel) {
-    width: 100vw;
-    max-width: 100vw;
-    background-color: var(--knime-white);
-    opacity: 0.9;
-    min-height: 50px;
-    max-height: 100px;
-    margin-bottom: -15px;
-    display: flex;
-    align-content: center;
-    margin-top: 15px;
-    padding: 10px calc(3 * var(--grid-gap-width)) 5px;
     position: relative;
     left: calc((100% - 100vw) / 2);
+    display: flex;
+    align-content: center;
+    width: 100vw;
+    max-width: 100vw;
+    min-height: 50px;
+    max-height: 100px;
+    padding: 10px calc(3 * var(--grid-gap-width)) 5px;
+    margin-top: 15px;
+    margin-bottom: -15px;
+    background-color: var(--knime-white);
+    opacity: 0.9;
 
     & .details {
-      min-width: var(--grid-min-width);
       display: flex;
       justify-content: space-between;
-      overflow-y: auto;
       width: 100%;
-      margin: 0 auto;
+      min-width: var(--grid-min-width);
       max-width: calc(
         var(--grid-max-width) - 6 * var(--grid-gap-width)
       ); /* same as grid-container */
 
+      margin: 0 auto;
+      overflow-y: auto;
+
       & .detail-text {
         display: inline-block;
-        color: var(--knime-masala);
+        max-width: 80%;
+        margin: auto 0;
         font-size: 13px;
         font-weight: 300;
         line-height: 18px;
-        margin: auto 0;
-        max-width: 80%;
+        color: var(--knime-masala);
       }
 
       & .copy-button {
-        border-radius: 50%;
-        height: 30px;
         width: 30px;
-        text-align: center;
+        height: 30px;
         margin-right: 23px; /* line-up with dropdown icon */
-        outline: none;
+        text-align: center;
         cursor: pointer;
+        outline: none;
+        border-radius: 50%;
 
         &:hover,
         &:focus {
@@ -296,11 +297,11 @@ export default {
         }
 
         & svg {
-          margin: auto;
           top: 6px;
-          stroke: var(--knime-dove-gray);
-          height: 18px;
           width: 18px;
+          height: 18px;
+          margin: auto;
+          stroke: var(--knime-dove-gray);
           stroke-width: calc(32px / 18);
         }
       }
@@ -311,8 +312,8 @@ export default {
 @media only screen and (width <= 1180px) {
   .collapser {
     & :deep(.panel) {
-      padding-left: var(--grid-gap-width);
       padding-right: var(--grid-gap-width);
+      padding-left: var(--grid-gap-width);
     }
   }
 }

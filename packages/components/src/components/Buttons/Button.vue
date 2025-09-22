@@ -78,42 +78,42 @@ export default defineComponent({
 <style lang="postcss" scoped>
 .button {
   display: inline-block;
-  text-align: center;
-  font-weight: 500;
-  font-size: 16px;
-  font-family: var(--theme-text-medium-font-family);
-  line-height: 19px;
   padding: 12px 30px;
-  text-decoration: none;
-  border: 0;
-  cursor: pointer;
+  font-family: var(--theme-text-medium-font-family);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 19px;
   color: var(--knime-dove-gray);
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
   background-color: transparent;
+  border: 0;
 
   /* best way to ensure pill shaped buttons with flexible 1/4 corners */
   border-radius: var(--theme-button-border-radius, 9999px);
 
   & :slotted(svg) {
-    width: 18px;
-    height: 18px;
-    stroke: var(--knime-dove-gray);
-    stroke-width: calc(32px / 18);
     position: relative;
     top: -0.11em;
-    vertical-align: middle;
+    width: 18px;
+    height: 18px;
     margin-right: 8px;
+    vertical-align: middle;
+    stroke: var(--knime-dove-gray);
+    stroke-width: calc(32px / 18);
   }
 
   &[disabled] {
-    opacity: 0.5;
     pointer-events: none;
+    opacity: 0.5;
   }
 
   &:active,
   &:hover,
   &:focus {
-    outline: none;
     color: var(--knime-masala);
+    outline: none;
 
     & :slotted(svg) {
       stroke: var(--knime-masala);
@@ -121,8 +121,8 @@ export default defineComponent({
   }
 
   &.compact {
-    padding: 6px 15px;
     min-width: 50px;
+    padding: 6px 15px;
     font-size: 13px;
     line-height: 18px;
     color: var(--theme-button-small-foreground-color);
@@ -140,10 +140,10 @@ export default defineComponent({
     }
 
     & :slotted(svg) {
+      top: -0.1em;
       width: 14px;
       height: 14px;
       stroke-width: calc(32px / 14);
-      top: -0.1em;
     }
 
     &.with-border {
@@ -172,8 +172,8 @@ export default defineComponent({
 
   &.with-border {
     padding: 11px 29px;
-    border: 1px solid var(--theme-button-border-color);
     color: var(--theme-button-foreground-color);
+    border: 1px solid var(--theme-button-border-color);
 
     & :slotted(svg) {
       stroke: var(--theme-button-foreground-color);
@@ -187,8 +187,8 @@ export default defineComponent({
     }
 
     &.with-warning {
-      border-color: var(--theme-color-error);
       color: var(--theme-color-error);
+      border-color: var(--theme-color-error);
 
       & :deep(svg) {
         stroke: var(--theme-color-error);
@@ -196,8 +196,8 @@ export default defineComponent({
     }
 
     &:hover {
-      outline: none;
       color: var(--theme-button-foreground-color-hover);
+      outline: none;
       background-color: var(--theme-button-background-color-hover);
 
       & :slotted(svg) {
@@ -207,8 +207,8 @@ export default defineComponent({
 
     &:active,
     &:focus {
-      outline: none;
       color: var(--theme-button-foreground-color-focus);
+      outline: none;
       background-color: var(--theme-button-background-color-focus);
 
       & :slotted(svg) {
@@ -223,9 +223,9 @@ export default defineComponent({
 
   &.on-dark {
     &.with-border {
-      border: 1px solid var(--knime-white);
-      background-color: transparent;
       color: var(--knime-white);
+      background-color: transparent;
+      border: 1px solid var(--knime-white);
 
       & :slotted(svg) {
         stroke: var(--knime-white);
@@ -237,9 +237,9 @@ export default defineComponent({
       &:active,
       &:hover,
       &:focus {
+        color: var(--knime-masala);
         outline: none;
         background-color: var(--knime-white);
-        color: var(--knime-masala);
 
         & :slotted(svg) {
           stroke: var(--knime-masala);

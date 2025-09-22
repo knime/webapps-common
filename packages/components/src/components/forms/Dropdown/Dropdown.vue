@@ -577,26 +577,26 @@ export default {
   position: relative;
 
   & .search-input {
-    outline: none;
-    border-style: none;
+    padding: 0;
     font-weight: 300;
     line-height: normal;
-    padding: 0;
+    outline: none;
+    border-style: none;
   }
 
   & .empty-state {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.8rem;
     padding: 0.5rem;
+    font-size: 0.8rem;
     cursor: default;
   }
 
   & .right {
     display: flex;
-    align-items: center;
     gap: 5px;
+    align-items: center;
   }
 
   &.collapsed {
@@ -618,13 +618,13 @@ export default {
   }
 
   &.invalid::after {
-    content: "";
     position: absolute;
-    width: 3px;
-    left: 0;
-    margin: 0;
     top: 0;
     bottom: 0;
+    left: 0;
+    width: 3px;
+    margin: 0;
+    content: "";
     background-color: var(--theme-color-error);
   }
 
@@ -635,18 +635,18 @@ export default {
 
   /* stylelint-disable-next-line no-descending-specificity */
   & [role="button"] {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: space-between;
     height: var(--single-line-form-height);
-    margin: 0;
-    border: var(--form-border-width) solid var(--knime-stone-gray);
     padding: 0 6px 0 10px;
-    font-size: 13px;
-    white-space: nowrap;
+    margin: 0;
     overflow: hidden;
     text-overflow: ellipsis;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    justify-content: space-between;
+    font-size: 13px;
+    white-space: nowrap;
+    border: var(--form-border-width) solid var(--knime-stone-gray);
 
     & .button {
       padding: 4px;
@@ -681,8 +681,8 @@ export default {
   }
 
   &:not(.collapsed) [role="button"] {
-    border-color: var(--knime-masala);
     background: var(--knime-white);
+    border-color: var(--knime-masala);
   }
 
   &:not(.disabled) [role="button"] {
@@ -699,9 +699,9 @@ export default {
 
     width: calc(var(--icon-size) * 1px);
     height: calc(var(--icon-size) * 1px);
-    stroke-width: calc(32px / 18);
-    stroke: var(--knime-masala);
     pointer-events: none;
+    stroke: var(--knime-masala);
+    stroke-width: calc(32px / 18);
     transition: transform 0.2s ease-in-out;
   }
 
@@ -712,13 +712,13 @@ export default {
     pointer-events: none;
 
     & :slotted(svg) {
-      vertical-align: top;
       width: calc(var(--icon-size) * 1px);
       height: calc(var(--icon-size) * 1px);
+      vertical-align: top;
+      stroke: var(--knime-masala);
 
       /* TODO: See ticket UIEXT-590, the stroke-width mixin should be used here. */
       stroke-width: calc(32px / var(--icon-size));
-      stroke: var(--knime-masala);
     }
   }
 
@@ -728,23 +728,23 @@ export default {
 
   /* this selector is required to override some * rules interfere (overflow) - so do not simplify */
   & [role="listbox"] {
-    overflow-y: auto;
     position: absolute;
     z-index: var(--z-index-common-dropdown-expanded, 2);
+    width: 100%;
+    min-height: 22px;
     max-height: var(
       --dropdown-max-height,
       calc(22px * 7)
     ); /* show max 7 items. override to change default */
 
-    font-size: 14px;
-    min-height: 22px;
-    width: 100%;
     padding: 0;
     margin: -1px 0 1px;
-    background: var(--theme-dropdown-background-color);
-    box-shadow: var(--shadow-elevation-1);
+    overflow-y: auto;
+    font-size: 14px;
     cursor: pointer;
     outline: none;
+    background: var(--theme-dropdown-background-color);
+    box-shadow: var(--shadow-elevation-1);
 
     &.drops-upwards {
       bottom: 100%;
@@ -752,8 +752,8 @@ export default {
   }
 
   & [role="option"] {
-    background: var(--theme-dropdown-background-color);
     color: var(--theme-dropdown-foreground-color);
+    background: var(--theme-dropdown-background-color);
 
     & > :slotted(svg) {
       stroke: var(--theme-dropdown-foreground-color);
@@ -770,8 +770,8 @@ export default {
     }
 
     &:focus {
-      background: var(--theme-dropdown-background-color-hover);
       color: var(--theme-dropdown-foreground-color-hover);
+      background: var(--theme-dropdown-background-color-hover);
 
       & :slotted(svg) {
         stroke: var(--theme-dropdown-foreground-color-focus);
@@ -779,8 +779,8 @@ export default {
     }
 
     &.focused {
-      background: var(--theme-dropdown-background-color-hover);
       color: var(--theme-dropdown-foreground-color-hover);
+      background: var(--theme-dropdown-background-color-hover);
 
       & :slotted(svg) {
         stroke: var(--theme-dropdown-foreground-color-hover);
@@ -793,13 +793,13 @@ export default {
   }
 
   & [role="option"]:not(.slot-option) {
+    position: relative;
     display: block;
     width: 100%;
     padding: 0 10px;
-    line-height: 22px;
-    position: relative;
-    text-overflow: ellipsis;
     overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 22px;
     white-space: nowrap;
 
     &.empty {
@@ -818,8 +818,8 @@ export default {
   & .group-label {
     display: block;
     margin: 5px 10px;
-    cursor: default;
     font-weight: 500;
+    cursor: default;
   }
 
   & .group-divider {

@@ -284,21 +284,21 @@ export default {
   }
 
   &.invalid::after {
-    content: "";
     position: absolute;
-    width: 3px;
-    left: 0;
-    margin: 0;
     top: 0;
     bottom: 0;
+    left: 0;
+    width: 3px;
+    margin: 0;
+    content: "";
     background-color: var(--theme-color-error);
   }
 
   & [role="listbox"] {
-    font-size: 14px;
     min-height: 22px;
     padding: 0;
     margin: 0;
+    font-size: 14px;
     background: var(--theme-listbox-background-color);
     border: 1px solid var(--knime-stone-gray);
 
@@ -309,8 +309,8 @@ export default {
   }
 
   & ul[role="listbox"] {
-    overflow-y: auto;
     position: relative;
+    overflow-y: auto;
   }
 
   & .noselect {

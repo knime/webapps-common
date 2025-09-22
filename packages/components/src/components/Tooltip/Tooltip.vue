@@ -25,47 +25,48 @@ export default {
 .text {
   --arrow-size: 12px;
 
-  /* hide visually */
-  height: 1px;
-  width: 1px;
-  visibility: hidden;
-  overflow: hidden;
-
   /* positioning and styling */
   position: absolute;
   top: calc(var(--arrow-size) * -1);
   left: 50%;
-  transform: translateX(-50%) translateY(-100%);
-  opacity: 0;
-  background-color: var(--theme-tooltip-background-color);
-  white-space: nowrap;
-  color: var(--theme-tooltip-foreground-color);
+  visibility: hidden;
+  width: 1px;
+
+  /* hide visually */
+  height: 1px;
   padding: 6px 10px;
-  box-shadow: var(--shadow-elevation-2);
-  border-radius: 1px;
+  overflow: hidden;
   font-size: 13px;
+  color: var(--theme-tooltip-foreground-color);
+  white-space: nowrap;
   pointer-events: none;
+  background-color: var(--theme-tooltip-background-color);
+  border-radius: 1px;
+  box-shadow: var(--shadow-elevation-2);
+  opacity: 0;
+  transform: translateX(-50%) translateY(-100%);
 
   /* arrow */
   &::after {
+    position: absolute;
+    bottom: 2px;
+    left: 50%;
+    z-index: -1;
     width: var(--arrow-size);
     height: var(--arrow-size);
     content: "";
-    position: absolute;
-    z-index: -1;
-    left: 50%;
     background-color: var(--theme-tooltip-background-color);
-    bottom: 2px;
     transform: translate(-50%, 50%) rotate(135deg);
   }
 }
 
 @media (hover: hover) {
   .tooltip:hover > .text {
+    visibility: visible;
+    width: auto;
+
     /* show */
     height: auto;
-    width: auto;
-    visibility: visible;
     overflow: initial;
 
     /* other styles */
@@ -74,9 +75,10 @@ export default {
   }
 
   .expanded:focus-within + .text {
+    opacity: 0;
+
     /* hide the tooltip when the container has the 'expanded' class, e.g. for popovers */
     transition: opacity 150ms ease;
-    opacity: 0;
   }
 }
 </style>

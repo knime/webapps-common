@@ -119,23 +119,23 @@ export default {
 }
 
 svg {
-  margin-top: 40px;
   width: 100%;
   height: auto;
+  margin-top: 40px;
 
   & .error-status {
     font: 30px sans-serif;
-    font-weight: 300;
     font-size: 18px;
+    font-weight: 300;
     fill: var(--knime-white);
   }
 }
 
 .error-message {
+  margin-top: -10px;
+  margin-bottom: 100px;
   font-size: 22px;
   font-weight: 300;
   line-height: 33px;
-  margin-bottom: 100px;
-  margin-top: -10px;
 }
 </style>

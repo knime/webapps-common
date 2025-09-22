@@ -374,10 +374,10 @@ export default defineComponent({
 <style lang="postcss" scoped>
 .multiselect {
   & .summary-input-icon-wrapper {
-    border: var(--form-border-width) solid var(--knime-stone-gray);
     display: flex;
     justify-content: space-between;
     max-width: 100%;
+    border: var(--form-border-width) solid var(--knime-stone-gray);
 
     &:focus-within {
       border-color: var(--knime-masala);
@@ -388,22 +388,21 @@ export default defineComponent({
     }
 
     & .summary-input-wrapper {
-      max-width: 100%;
-      cursor: text;
       display: flex;
+      flex: 1;
       flex-wrap: wrap;
       gap: 5px;
-      flex: 1;
-
-      /** The height of the input field and tags inside the summary */
-      --inner-height: 18px;
-
+      max-width: 100%;
       padding: calc(
         (
             var(--single-line-form-height) - 2 * var(--form-border-width) -
               var(--inner-height)
           ) / 2
       );
+      cursor: text;
+
+      /** The height of the input field and tags inside the summary */
+      --inner-height: 18px;
 
       &.compact {
         padding: calc(
@@ -421,32 +420,32 @@ export default defineComponent({
 
       & .search-input {
         all: unset;
+        flex: 1;
         height: var(--inner-height);
         font-size: 13px;
         font-weight: 300;
         line-height: normal;
-        flex: 1;
       }
 
       & .tag {
-        height: var(--inner-height);
-        max-width: 100%;
-        overflow: hidden;
-        padding: 2px 2px 2px 5px;
-        gap: 2px;
         display: flex;
+        gap: 2px;
         align-items: center;
+        max-width: 100%;
+        height: var(--inner-height);
+        padding: 2px 2px 2px 5px;
+        overflow: hidden;
         cursor: default;
         border: 1px solid var(--knime-dove-gray);
 
         & .text {
-          font-weight: 500;
-          font-size: 12px;
-          color: var(--knime-dove-gray);
           overflow: hidden;
-          white-space: nowrap;
           text-overflow: ellipsis;
+          font-size: 12px;
+          font-weight: 500;
           line-height: 12px;
+          color: var(--knime-dove-gray);
+          white-space: nowrap;
 
           &.invalid {
             color: var(--theme-color-error);
@@ -454,9 +453,9 @@ export default defineComponent({
         }
 
         & .remove-tag-button {
-          padding: 2px;
           width: unset;
           height: unset;
+          padding: 2px;
 
           & :deep(svg) {
             --icon-size: 10;
@@ -470,10 +469,10 @@ export default defineComponent({
     }
 
     & .icon-right {
-      width: 40px;
       display: flex;
       align-items: center;
       justify-content: center;
+      width: 40px;
     }
   }
 }

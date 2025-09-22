@@ -121,15 +121,15 @@ defineExpose({
 
     &::after {
       position: absolute;
-      content: "";
       width: 0;
       height: 0;
+      content: "";
     }
 
     /* transparent background to maintain focus on the popover while transitioning into it with the mouse */
     &::before {
-      content: "";
       position: absolute;
+      content: "";
       background-color: rgb(0 0 0 / 0%);
     }
 
@@ -137,17 +137,17 @@ defineExpose({
       &::after {
         top: calc(100% + var(--popover-top-margin) - var(--popover-arrow-size));
         right: 20px;
-        border-left: var(--popover-arrow-size) solid transparent;
         border-right: var(--popover-arrow-size) solid transparent;
         border-bottom: var(--popover-arrow-size) solid var(--knime-white);
+        border-left: var(--popover-arrow-size) solid transparent;
 
         @media only screen and (width <= 900px) {
-          border-top: var(--popover-arrow-size) solid var(--knime-white);
-          border-bottom: 0;
+          top: auto;
           bottom: calc(
             100% + var(--popover-top-margin) - var(--popover-arrow-size)
           );
-          top: auto;
+          border-top: var(--popover-arrow-size) solid var(--knime-white);
+          border-bottom: 0;
         }
       }
 
@@ -173,22 +173,21 @@ defineExpose({
   }
 
   & .content {
-    width: var(--popover-width, 300px);
     position: absolute;
     top: calc(
       100% + var(--popover-top-margin) - 1px
     ); /* shift by one pixel to avoid zoom issues */
 
     right: 0;
+    width: var(--popover-width, 300px);
     padding: 20px;
     background: var(--knime-white);
 
     @media only screen and (width <= 900px) {
+      top: auto;
       bottom: calc(
         100% + var(--popover-top-margin) - 1px
       ); /* shift by one pixel to avoid zoom issues */
-
-      top: auto;
     }
   }
 
@@ -200,8 +199,8 @@ defineExpose({
     }
 
     &.disabled {
-      opacity: 0.5;
       pointer-events: none;
+      opacity: 0.5;
     }
   }
 

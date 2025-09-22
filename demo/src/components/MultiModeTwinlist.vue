@@ -412,8 +412,8 @@ export default {
 <style lang="css" scoped>
 .data-type-entry {
   display: flex;
-  align-items: center;
   gap: var(--space-4);
+  align-items: center;
 }
 
 .data-type-text {

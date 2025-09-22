@@ -52,37 +52,37 @@ export default {
 <style type="postcss" scoped>
 ul,
 li {
-  margin: 0;
   padding: 0;
+  margin: 0;
 }
 
 li {
-  background: var(--knime-white);
   display: flex;
   flex-wrap: wrap;
-  margin-bottom: 10px;
   padding: 20px 30px;
+  margin-bottom: 10px;
+  background: var(--knime-white);
 }
 
 h6 {
   display: block;
-  flex-basis: 33%;
   flex-grow: 1;
+  flex-basis: 33%;
+  min-width: 140px;
   margin-top: 0;
   margin-bottom: 10px;
-  min-width: 140px;
 }
 
 .content {
-  flex-basis: 66%;
   flex-grow: 1;
+  flex-basis: 66%;
   padding: 0;
 
   & .name {
-    margin-bottom: 10px;
+    position: relative;
     display: block;
     padding: 0;
-    position: relative;
+    margin-bottom: 10px;
     font-size: 16px;
     line-height: 20px;
   }
@@ -91,23 +91,24 @@ h6 {
 svg {
   width: 18px;
   height: 18px;
-  stroke-width: calc(32px / 18);
+  margin-top: -2px;
   margin-right: 10px;
   vertical-align: middle;
-  margin-top: -2px;
   stroke: var(--knime-masala);
+  stroke-width: calc(32px / 18);
 
   &.interactive {
+    fill: none;
+
     /* scale stroke width: ( viewbox/displayed size ) * intended stroke-width */
     stroke: var(--knime-masala);
     stroke-width: calc((32px / 18) * 1.3);
-    fill: none;
   }
 }
 
 :deep(.description) {
+  margin-top: 0;
   font-size: 16px;
   line-height: 28px;
-  margin-top: 0;
 }
 </style>

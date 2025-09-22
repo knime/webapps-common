@@ -218,16 +218,16 @@ const requestSavePopup = () => {
 .accept-controls {
   display: flex;
   flex-direction: row;
+  align-items: center;
   justify-content: right;
   margin-top: var(--space-8);
-  align-items: center;
 }
 
 .header {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   padding-bottom: var(--space-4);
   border-bottom: 1px solid var(--knime-silver-sand);
 
@@ -244,28 +244,28 @@ const requestSavePopup = () => {
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  padding-bottom: var(--space-4);
   width: 100%;
+  padding-bottom: var(--space-4);
 }
 
 .input-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-8);
   grid-auto-flow: row;
+  gap: var(--space-8);
 
   & .labeled-date-time-input {
     display: flex;
-    flex-direction: column;
     flex-grow: 1;
+    flex-direction: column;
     gap: var(--space-4);
 
     & .input-label {
+      padding: 2px;
       font-size: 13px;
       font-weight: 500;
       line-height: 14px;
       text-align: left;
-      padding: 2px;
     }
   }
 }

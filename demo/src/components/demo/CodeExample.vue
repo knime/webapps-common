@@ -47,8 +47,8 @@ details {
 }
 
 summary {
-  outline: none !important;
   font-weight: 500;
   cursor: pointer;
+  outline: none !important;
 }
 </style>

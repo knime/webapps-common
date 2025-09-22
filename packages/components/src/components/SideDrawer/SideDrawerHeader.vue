@@ -62,22 +62,21 @@ const tooltipOrDiv = computed(() => {
 
 <style lang="postcss" scoped>
 .header {
-  z-index: 1;
   position: relative;
+  z-index: 1;
   padding: 32px 30px 0;
+  background-color: var(--side-drawer-header-background);
   --side-drawer-header-background: var(--knime-white);
 
-  background-color: var(--side-drawer-header-background);
-
   & .subdrawer {
-    margin-bottom: 30px;
     display: flex;
-    align-items: center;
     gap: 9px;
+    align-items: center;
+    margin-bottom: 30px;
 
     & .title {
-      font-weight: 700;
       font-size: 20px;
+      font-weight: 700;
       line-height: 20px;
     }
 
@@ -90,32 +89,32 @@ const tooltipOrDiv = computed(() => {
         width: 36px;
         height: 30px;
         padding-right: 14px;
-        stroke-width: calc(32px / 18);
-        border-right: 1px solid var(--knime-silver-sand);
         margin-right: 5px;
+        border-right: 1px solid var(--knime-silver-sand);
+        stroke-width: calc(32px / 18);
       }
     }
   }
 
   & .headline {
-    margin-bottom: 30px;
     display: flex;
-    align-items: flex-start;
     gap: 9px;
+    align-items: flex-start;
+    margin-bottom: 30px;
 
     & :deep(svg) {
-      flex: 0 0 24px;
-      z-index: 2;
-      height: 24px;
-      stroke-width: calc(32px / 18);
-      stroke: var(--knime-masala);
       position: relative;
+      z-index: 2;
+      flex: 0 0 24px;
+      height: 24px;
+      stroke: var(--knime-masala);
+      stroke-width: calc(32px / 18);
     }
 
     & h4 {
-      flex: 1 1 auto;
       z-index: 1;
       display: inline;
+      flex: 1 1 auto;
       margin: 0;
       font-size: 22px;
       line-height: 26px;
@@ -140,11 +139,11 @@ const tooltipOrDiv = computed(() => {
     }
 
     & :deep(.text) {
+      top: 60px;
+      left: 0;
       width: 100%;
       white-space: normal;
       transform: none;
-      top: 60px;
-      left: 0;
 
       &::after {
         top: -12px;

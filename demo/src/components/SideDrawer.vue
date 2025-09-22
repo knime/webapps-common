@@ -196,22 +196,22 @@ h4 {
 
 .options-controller {
   display: flex;
-  align-items: center;
   gap: 20px;
+  align-items: center;
 }
 
 .side-drawer {
   & .side-drawer-wrapper {
     display: flex;
     flex-direction: column;
-    height: 100%;
     justify-content: space-between;
+    height: 100%;
   }
 
   & .contents-side-drawer {
-    padding: 30px;
     box-sizing: border-box;
     height: 100%;
+    padding: 30px;
   }
 }
 </style>

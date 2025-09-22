@@ -69,24 +69,24 @@ const skipAll = () => {
 
 <style scoped lang="postcss">
 .wrapper {
-  padding: var(--space-16);
-  min-width: 270px;
   position: relative;
   display: flex;
   flex-direction: column;
+  min-width: 270px;
+  padding: var(--space-16);
 }
 
 h6 {
+  display: flex;
+  padding: 0;
+  padding-right: var(--space-16);
+  margin: 0;
+  margin-top: calc(var(--space-4) * -1);
   font-size: 15px;
-  color: var(--knime-masala);
   font-style: normal;
   font-weight: 500;
   line-height: 20px;
-  display: flex;
-  margin: 0;
-  padding: 0;
-  margin-top: calc(var(--space-4) * -1);
-  padding-right: var(--space-16);
+  color: var(--knime-masala);
 }
 
 .header {
@@ -96,19 +96,19 @@ h6 {
 }
 
 .close-button.function-button.single {
-  align-self: flex-start;
   position: absolute;
   top: var(--space-6);
   right: var(--space-6);
+  align-self: flex-start;
 }
 
 .description,
 .link {
-  color: var(--knime-masala);
   font-size: 13px;
   font-style: normal;
   font-weight: 300;
   line-height: 18px;
+  color: var(--knime-masala);
 }
 
 .button-controls {

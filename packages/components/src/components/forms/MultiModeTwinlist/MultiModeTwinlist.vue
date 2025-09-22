@@ -374,8 +374,8 @@ export default {
 <style lang="postcss" scoped>
 .multi-mode-twinlist {
   display: flex;
-  align-items: stretch;
   flex-direction: column;
+  align-items: stretch;
 
   &.disabled {
     opacity: 0.5;

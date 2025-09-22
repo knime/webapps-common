@@ -30,24 +30,23 @@ const hover = ref(false);
 
 <style lang="postcss" scoped>
 .checkbox-input {
-  margin-bottom: -10px;
-
   /**
    * This is necessary to fixate the dialog popovers
   */
   position: relative;
   display: flex;
+  margin-bottom: -10px;
 
   & .checkbox {
-    min-width: 0;
     flex: 1;
+    min-width: 0;
   }
 }
 
 .reexecution-icon {
   display: inline-block;
-  vertical-align: top;
   height: 10px;
   margin: 3px 0 1px 5px;
+  vertical-align: top;
 }
 </style>

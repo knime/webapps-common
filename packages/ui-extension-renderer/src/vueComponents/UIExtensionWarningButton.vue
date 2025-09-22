@@ -30,8 +30,8 @@ const emit = defineEmits<{
 <style lang="postcss" scoped>
 .warning-button {
   position: absolute;
-  bottom: 16px;
   right: 50px;
+  bottom: 16px;
 
   /* Icon is a triangle, which makes it look off-center to the eye even when it's not.
   Offsetting it to the top makes this more pleasing and natural looking */

@@ -54,37 +54,37 @@ export default {
 <style lang="postcss" scoped>
 .button {
   position: relative;
+  width: 100%;
   padding: 0;
   font-size: 18px;
-  line-height: 26px;
   font-weight: bold;
+  line-height: 26px;
+  color: inherit; /* Safari needs this */
+  text-align: left;
+  appearance: none;
+  cursor: pointer;
+  outline: none;
   background-color: transparent;
   border: 0;
-  outline: none;
-  appearance: none;
-  color: inherit; /* Safari needs this */
-  width: 100%;
-  text-align: left;
-  cursor: pointer;
 
   & :deep(svg) {
     position: absolute;
-    margin-right: 4px;
-    float: left;
-    margin-left: 4px;
     top: 17px;
+    float: left;
+    margin-right: 4px;
+    margin-left: 4px;
   }
 
   & .dropdown {
-    text-align: center;
     position: absolute;
+    top: 13px;
     right: 10px;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
     display: flex;
     align-items: center;
-    top: 13px;
+    width: 30px;
+    height: 30px;
+    text-align: center;
+    border-radius: 50%;
 
     &:hover {
       background-color: var(--theme-button-function-background-color-hover);
@@ -92,12 +92,12 @@ export default {
 
     & .dropdown-icon {
       position: relative;
-      margin: auto;
+      top: 0;
       width: 18px;
       height: 18px;
-      stroke-width: calc(32px / 18);
+      margin: auto;
       stroke: var(--knime-masala);
-      top: 0;
+      stroke-width: calc(32px / 18);
       transition: transform 0.4s ease-in-out;
 
       &.flip {
@@ -114,7 +114,7 @@ export default {
 
 :deep(ul),
 :deep(ol) {
-  margin: 0;
   padding-left: 40px;
+  margin: 0;
 }
 </style>

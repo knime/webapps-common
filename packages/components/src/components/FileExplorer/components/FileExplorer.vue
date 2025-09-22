@@ -689,13 +689,12 @@ useResizeObserver(containerProps.ref, containerProps.onScroll);
     min-height: 0;
 
     & .scroll-container {
-      overflow: hidden auto;
-
       /* 'block' to use the virtual height set on its child */
       display: block;
       flex-direction: column;
-      scrollbar-gutter: stable;
       padding-right: var(--space-4);
+      overflow: hidden auto;
+      scrollbar-gutter: stable;
     }
   }
 }
@@ -707,11 +706,11 @@ useResizeObserver(containerProps.ref, containerProps.onScroll);
 thead {
   /* Hide table head for better readability but keeping it for a11y reasons */
   position: absolute;
-  height: 1px;
-  width: 1px;
 
   /* move far far enough outside view, just in case */
   left: -10000px;
+  width: 1px;
+  height: 1px;
   overflow: hidden;
   white-space: nowrap; /* added line */
 }
@@ -737,10 +736,10 @@ table:focus {
 
 .empty {
   display: flex;
-  justify-content: center;
   align-items: center;
-  color: var(--knime-silver-sand);
+  justify-content: center;
   height: 76px;
+  color: var(--knime-silver-sand);
 }
 
 tbody:not(.mini) .empty {
@@ -751,9 +750,9 @@ tbody:not(.mini) .empty {
   position: fixed;
   top: 0;
   left: 0;
-  height: 70px;
-  width: 70px;
-  pointer-events: none;
   z-index: 9;
+  width: 70px;
+  height: 70px;
+  pointer-events: none;
 }
 </style>

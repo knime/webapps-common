@@ -47,9 +47,9 @@
 
 code {
   display: inline-block;
-  border: 1px solid var(--knime-silver-sand);
+  padding: 0.5em;
   font-weight: 300;
   background: white;
-  padding: 0.5em;
+  border: 1px solid var(--knime-silver-sand);
 }
 </style>

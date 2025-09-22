@@ -363,8 +363,8 @@ const hasTools = computed(() => Object.keys(props.baseExtensions).length);
   isolation: isolate;
 
   &.with-border {
-    border: 1px solid var(--knime-stone-gray);
     background-color: var(--theme-input-field-background-color);
+    border: 1px solid var(--knime-stone-gray);
 
     /* stylelint-disable-next-line selector-class-pattern */
     &:has(.ProseMirror-focused) {
@@ -379,14 +379,14 @@ const hasTools = computed(() => Object.keys(props.baseExtensions).length);
 
 .embedded-toolbar {
   height: var(--toolbar-height);
-  border-bottom: 1px solid var(--knime-silver-sand);
   padding: 0 4px;
-  background: var(--knime-white);
-  overscroll-behavior: contain;
   overflow-x: auto;
+  overscroll-behavior: contain;
   white-space: pre;
-  -ms-overflow-style: none; /* needed to hide scroll bar in edge */
   scrollbar-width: none; /* for firefox */
+  background: var(--knime-white);
+  border-bottom: 1px solid var(--knime-silver-sand);
+  -ms-overflow-style: none; /* needed to hide scroll bar in edge */
   &::-webkit-scrollbar {
     display: none;
   }
@@ -412,8 +412,8 @@ const hasTools = computed(() => Object.keys(props.baseExtensions).length);
 .rich-text-editor {
   height: 100%;
   max-height: v-bind("maxHeight");
-  overflow-y: auto;
   padding: var(--rich-text-editor-padding);
+  overflow-y: auto;
 
   &.editable {
     cursor: text;
@@ -444,18 +444,18 @@ const hasTools = computed(() => Object.keys(props.baseExtensions).length);
 
 /* Character count */
 .character-count {
-  pointer-events: none;
-  z-index: 1;
   position: absolute;
   bottom: 0;
-  backdrop-filter: blur(2px);
+  z-index: 1;
   display: flex;
-  align-items: center;
   gap: var(--space-4);
+  align-items: center;
   justify-content: flex-end;
   padding: 2px;
-  color: var(--knime-masala);
   font-size: 10px;
+  color: var(--knime-masala);
+  pointer-events: none;
+  backdrop-filter: blur(2px);
 
   & .progress-counter {
     background: transparent;

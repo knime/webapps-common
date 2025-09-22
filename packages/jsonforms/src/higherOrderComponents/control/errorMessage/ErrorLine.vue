@@ -15,25 +15,25 @@ defineProps<{
 
 <style lang="postcss" scoped>
 .error {
-  font-weight: 300;
-  font-size: 11px;
-  line-height: var(--error-message-single-line-height);
-  min-height: var(--error-message-single-line-height);
-  color: var(--theme-color-error);
   position: relative;
-  overflow: hidden;
-  text-overflow: ellipsis;
 
   /* Limit to two lines */
 
   /* for webkit-browsers (e.g. Chrome) */
   display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
+  min-height: var(--error-message-single-line-height);
 
   /* for other browsers */
   max-height: calc(var(--error-message-single-line-height) * 2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  font-size: 11px;
+  font-weight: 300;
+  line-height: var(--error-message-single-line-height);
+  color: var(--theme-color-error);
+  -webkit-box-orient: vertical;
 
   & .icon {
     height: var(--error-message-single-line-height);

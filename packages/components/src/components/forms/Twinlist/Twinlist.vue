@@ -813,44 +813,44 @@ export default {
 <style lang="postcss" scoped>
 .twinlist {
   display: flex;
-  align-items: stretch;
   flex-direction: column;
+  align-items: stretch;
   --button-bar-width: v-bind(`${constants.BUTTON_WIDTH}px`);
 
   & .title {
-    line-height: 18px;
-    margin-bottom: 3px;
     display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
     gap: 5px;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 3px;
+    line-height: 18px;
 
     & .label {
-      font-weight: 500;
-      font-family: var(--theme-text-medium-font-family);
-      color: var(--theme-text-medium-color);
-      font-size: 13px;
       flex: 1 0 0;
-      text-overflow: ellipsis;
-      overflow: hidden;
       min-width: 50px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-family: var(--theme-text-medium-font-family);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--theme-text-medium-color);
     }
 
     & .info {
-      text-overflow: ellipsis;
+      display: flex;
       overflow: hidden;
+      text-overflow: ellipsis;
       font-size: 8px;
       font-weight: 300;
       white-space: nowrap;
-      display: flex;
     }
   }
 
   & .lists,
   & .header {
     display: flex;
-    align-items: stretch;
     flex-direction: row;
+    align-items: stretch;
   }
 
   & .space,
@@ -870,8 +870,8 @@ export default {
 
   & .list-box {
     display: flex;
-    align-items: stretch;
     flex-direction: row;
+    align-items: stretch;
   }
 
   & .buttons {
@@ -879,26 +879,26 @@ export default {
       `${constants.MAX_HEIGHT_BUTTONS_CENTER_ALIGNMENT}px`
     );
 
+    display: flex;
     flex: 0 0 var(--button-bar-width);
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    display: flex;
-    flex-direction: column;
     max-height: var(--button-bar-max-height);
   }
 
   & [role="button"] {
     --button-height: v-bind(`${constants.BUTTON_HEIGHT}px`);
 
-    cursor: pointer;
-    width: var(--button-bar-width);
-    height: var(--button-height);
     display: flex;
     align-items: center;
     justify-content: center;
+    width: var(--button-bar-width);
+    height: var(--button-height);
+    color: var(--theme-select-control-foreground-color);
+    cursor: pointer;
     user-select: none;
     background: var(--theme-select-control-background-color);
-    color: var(--theme-select-control-foreground-color);
 
     &:hover {
       background: var(--theme-select-control-background-color-hover);
@@ -907,15 +907,15 @@ export default {
     & .icon {
       width: 15px;
       height: 15px;
-      stroke-width: calc(32px / 15);
       pointer-events: none;
       stroke: var(--theme-select-control-foreground-color-hover);
+      stroke-width: calc(32px / 15);
     }
 
     &:focus {
+      color: var(--theme-select-control-foreground-color-focus);
       outline: none;
       background: var(--theme-select-control-background-color-focus);
-      color: var(--theme-select-control-foreground-color-focus);
 
       & .icon {
         stroke: var(--theme-select-control-foreground-color-focus);
@@ -923,8 +923,8 @@ export default {
     }
 
     &:active {
-      background: var(--theme-select-control-background-color-focus);
       color: var(--theme-select-control-foreground-color-focus);
+      background: var(--theme-select-control-background-color-focus);
 
       & .icon {
         stroke: var(--theme-select-control-foreground-color-focus);
@@ -933,10 +933,10 @@ export default {
 
     /* disabled icons */
     &.disabled {
-      cursor: default;
-      opacity: 0.5;
       pointer-events: none;
+      cursor: default;
       background: var(--theme-select-control-background-color-disabled);
+      opacity: 0.5;
 
       & .icon {
         stroke: var(--theme-select-control-foreground-color);
@@ -949,8 +949,8 @@ export default {
           stroke: var(--theme-select-control-foreground-color);
         }
 
-        background: transparent;
         color: var(--theme-select-control-foreground-color);
+        background: transparent;
       }
     }
   }

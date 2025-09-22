@@ -349,33 +349,33 @@ export default {
 <style scoped lang="postcss">
 .checkboxes-wrapper {
   display: flex;
-  align-items: stretch;
   flex-direction: column;
+  align-items: stretch;
   --button-bar-width: 30px;
 
   & .header {
     display: flex;
-    align-items: stretch;
     flex-direction: row;
+    align-items: stretch;
     justify-content: flex-end;
     height: 20px;
 
     & .info {
-      text-overflow: ellipsis;
+      display: flex;
       overflow: hidden;
+      text-overflow: ellipsis;
       font-size: 8px;
       font-weight: 300;
       white-space: nowrap;
-      display: flex;
     }
 
     & .title {
-      line-height: 18px;
-      margin-bottom: 3px;
       display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
       gap: 5px;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 3px;
+      line-height: 18px;
     }
   }
 }
@@ -388,16 +388,16 @@ export default {
   background: var(--theme-empty-multiselect-listbox-background-color);
 
   & .empty-state {
-    height: 100%;
-    width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 100%;
+    height: 100%;
 
     & span {
-      color: var(--theme-dropdown-foreground-color);
-      font-style: italic;
       font-size: 10px;
+      font-style: italic;
+      color: var(--theme-dropdown-foreground-color);
     }
   }
 }

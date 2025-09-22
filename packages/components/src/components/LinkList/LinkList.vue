@@ -46,43 +46,43 @@ ul {
   --icon-size: 18px;
   --icon-spacing: 6px;
 
-  list-style: none;
-  padding: 0;
-  column-count: 2;
   column-gap: 24px;
+  padding: 0;
   font-weight: 500;
+  list-style: none;
+  column-count: 2;
 
   & li {
-    padding-left: calc(var(--icon-size) + var(--icon-spacing));
-    margin-bottom: 8px;
     position: relative;
     display: block;
+    padding-left: calc(var(--icon-size) + var(--icon-spacing));
+    margin-bottom: 8px;
     text-overflow: ellipsis;
   }
 
   & a {
-    color: var(--knime-dove-gray);
-    line-height: 20px;
-    text-decoration: none;
-    overflow-wrap: break-word;
     display: inline-block;
     width: 100%; /* Works together with break-word. Use instead of overflow:hidden which invokes a bug in chrome. */
+    line-height: 20px;
+    color: var(--knime-dove-gray);
+    overflow-wrap: break-word;
+    text-decoration: none;
 
     & svg {
       position: absolute;
-      stroke: var(--knime-dove-gray);
+      left: 0;
       width: var(--icon-size);
       height: var(--icon-size);
+      stroke: var(--knime-dove-gray);
       stroke-width: calc(32px / 18);
-      left: 0;
     }
 
     &:hover,
     &:focus,
     &:active {
-      outline: none;
       color: var(--knime-masala);
       text-decoration: none;
+      outline: none;
 
       & svg {
         stroke: var(--knime-masala);

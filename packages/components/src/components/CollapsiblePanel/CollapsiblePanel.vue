@@ -61,24 +61,24 @@ const { iconFlipStyles } = useIconFlipper({
 @import url("@knime/styles/css/mixins.css");
 
 .collapsible-panel {
-  box-shadow: var(--shadow-elevation-2);
-  border-radius: 4px;
   background: var(--knime-white);
+  border-radius: 4px;
+  box-shadow: var(--shadow-elevation-2);
 
   & .title-bar {
     display: flex;
     align-items: center;
-    padding: var(--space-8) var(--space-16);
-    border-bottom: 1px solid var(--knime-porcelain);
     height: 40px;
+    padding: var(--space-8) var(--space-16);
     font-size: 13px;
     font-weight: 700;
+    border-bottom: 1px solid var(--knime-porcelain);
 
     & .actions {
       display: flex;
+      gap: var(--space-4);
       align-items: center;
       margin-left: auto;
-      gap: var(--space-4);
     }
   }
 }

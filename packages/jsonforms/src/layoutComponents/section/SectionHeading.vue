@@ -19,23 +19,23 @@ defineProps<{
 .section-header {
   position: sticky;
   top: 0;
-  background-color: var(--knime-gray-ultra-light);
   z-index: 1;
   margin: 0 calc(-1 * var(--horizontal-dialog-padding));
+  background-color: var(--knime-gray-ultra-light);
 
   & .section-header-layout-container {
-    border-bottom: 1px solid var(--knime-silver-sand);
     display: flex;
     align-items: center;
     justify-content: space-between;
     width: calc(100% - var(--horizontal-dialog-padding) * 2);
     margin: 0 var(--horizontal-dialog-padding);
+    border-bottom: 1px solid var(--knime-silver-sand);
 
     & h3 {
-      color: var(--knime-masala);
+      margin: 0;
       font-size: 16px;
       line-height: 40px;
-      margin: 0;
+      color: var(--knime-masala);
     }
   }
 }

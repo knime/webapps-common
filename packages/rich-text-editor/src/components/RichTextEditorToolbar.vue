@@ -87,21 +87,21 @@ const onSecondaryToolClick = (
   --item-size: 32;
 
   display: flex;
+  gap: 4px;
   align-items: center;
   height: 100%;
-  gap: 4px;
 
   & .tool {
-    padding: 0;
+    align-items: center;
+    justify-content: center;
     width: calc(var(--item-size) * 1px);
     height: calc(var(--item-size) * 1px);
-    justify-content: center;
-    align-items: center;
+    padding: 0;
 
     & svg {
-      background: initial !important;
       width: calc(calc(var(--item-size) - 14) * 1px);
       height: calc(calc(var(--item-size) - 14) * 1px);
+      background: initial !important;
     }
   }
 }

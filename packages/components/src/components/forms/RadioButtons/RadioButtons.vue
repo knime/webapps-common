@@ -74,70 +74,69 @@ export default {
   & label {
     position: relative;
     display: block;
-    font-weight: 300;
-    font-size: 13px;
-    line-height: 18px;
-    padding: 3px 3px 3px 23px;
-    max-width: 100%;
     width: max-content;
+    max-width: 100%;
+    padding: 3px 3px 3px 23px;
+    font-size: 13px;
+    font-weight: 300;
+    line-height: 18px;
     cursor: pointer;
 
     &.disabled {
-      opacity: 0.5;
       cursor: default;
+      opacity: 0.5;
     }
 
     & input {
-      opacity: 0;
       position: absolute;
       width: 0;
       height: 0;
+      opacity: 0;
 
       & + span {
         display: inline-block;
         width: 100%;
         min-width: 1em;
-        color: var(--knime-masala);
         overflow: hidden;
         text-overflow: ellipsis;
+        color: var(--knime-masala);
       }
 
       /* ◯ */
       & + span::before {
-        border: 1px solid var(--theme-radio-border-color);
-        background: var(--theme-radio-background-color);
+        position: absolute;
+        top: 5px;
+        left: 0;
         display: inline-block;
-        content: "";
         width: 14px;
         height: 14px;
-        border-radius: 100%;
-        left: 0;
-        top: 5px;
-        position: absolute;
         vertical-align: top;
         text-align: center;
+        content: "";
+        background: var(--theme-radio-background-color);
+        border: 1px solid var(--theme-radio-border-color);
+        border-radius: 100%;
       }
 
       &:enabled:hover + span::before {
-        border: 1px solid var(--theme-radio-border-color-hover);
-        background: var(--theme-radio-background-color-hover);
         cursor: pointer;
+        background: var(--theme-radio-background-color-hover);
+        border: 1px solid var(--theme-radio-border-color-hover);
       }
 
       /* 🔘 */
       &:checked {
         /* stylelint-disable no-descending-specificity */
         & + span::before {
+          content: "";
           background: var(--theme-radio-foreground-color-selected);
           border-color: var(--theme-radio-border-color-selected);
-          content: "";
           box-shadow: inset 0 0 0 4px
             var(--theme-radio-background-color-selected);
         }
         /* stylelint-enable no-descending-specificity */
 
         &:enabled:hover + span::before {
-          box-shadow: unset;
           background: radial-gradient(
             ellipse at center,
             var(--theme-radio-foreground-color-selected-hover) 0%,
@@ -146,6 +145,7 @@ export default {
             var(--theme-radio-background-color-selected-hover) 100%
           );
           border-color: var(--theme-radio-border-color-selected-hover);
+          box-shadow: unset;
         }
       }
     }

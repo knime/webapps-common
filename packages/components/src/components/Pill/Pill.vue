@@ -75,16 +75,16 @@ const colorMapper: Record<PillVariant, Color> = {
 .pill {
   --pill-height: 20px;
 
-  border-radius: 9999px;
-  height: var(--pill-height);
-  padding: 0 var(--space-8);
   display: inline-flex;
   align-items: center;
-  background: v-bind("colorMapper[props.variant].background");
-  color: v-bind("colorMapper[props.variant].text");
   width: max-content;
+  height: var(--pill-height);
+  padding: 0 var(--space-8);
   font-size: 13px;
   font-weight: 500;
+  color: v-bind("colorMapper[props.variant].text");
+  background: v-bind("colorMapper[props.variant].background");
+  border-radius: 9999px;
 
   & :slotted(svg) {
     margin-right: var(--space-4);

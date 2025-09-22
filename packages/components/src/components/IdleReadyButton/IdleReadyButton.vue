@@ -93,10 +93,10 @@ export default {
 
 <style lang="postcss" scoped>
 .load-more {
-  min-height: 85px;
-  padding-top: 30px;
   display: flex;
   justify-content: center;
+  min-height: 85px;
+  padding-top: 30px;
 
   & .idle {
     cursor: progress;

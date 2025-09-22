@@ -463,11 +463,11 @@ section {
   position: relative;
 
   & .search {
-    min-width: 250px;
     position: absolute;
-    right: 0;
     top: 0;
+    right: 0;
     z-index: 1;
+    min-width: 250px;
 
     @media only screen and (width <= 1560px) {
       position: relative;

@@ -678,56 +678,56 @@ export default {
 <style lang="postcss" scoped>
 .multiselect-list-box {
   position: relative; /* required by .invalid::after */
-  isolation: isolate;
   display: flex;
-  align-items: stretch;
   flex-direction: column;
+  align-items: stretch;
+  isolation: isolate;
 
   &.invalid {
     &::after {
-      content: "";
       position: absolute;
-      width: 3px;
-      left: 0;
-      margin: 0;
       top: 0;
       bottom: 0;
+      left: 0;
+      width: 3px;
+      margin: 0;
+      content: "";
       background-color: var(--theme-color-error);
     }
   }
 
   & .box {
-    height: 100%;
-    width: 100%;
-    flex-grow: 1;
+    box-sizing: content-box;
     display: flex;
+    flex-grow: 1;
     flex-direction: column;
     justify-content: stretch;
-    font-size: 14px;
+    width: 100%;
+    height: 100%;
     min-height: 22px;
+    font-size: 14px;
     border: 1px solid var(--knime-stone-gray);
-    box-sizing: content-box;
 
     &:has(:focus:not(.disabled)) {
       border-color: var(--knime-masala);
     }
 
     & [role="bottom-box"] {
-      border-top: 1px solid var(--knime-silver-sand);
-      background: var(--theme-multiselect-listbox-background-color);
       flex-grow: 0;
       flex-shrink: 0;
+      background: var(--theme-multiselect-listbox-background-color);
+      border-top: 1px solid var(--knime-silver-sand);
     }
   }
 
   /* this selector is required to override some * rules which interfere - so do not simplify */
   & ul[role="listbox"] {
-    background: var(--theme-multiselect-listbox-background-color);
-    overflow-y: auto;
     position: relative;
+    flex-grow: 1;
     padding: 0;
     margin: 0;
-    flex-grow: 1;
+    overflow-y: auto;
+    background: var(--theme-multiselect-listbox-background-color);
 
     &.empty-box {
       background: var(--theme-empty-multiselect-listbox-background-color);
@@ -739,16 +739,16 @@ export default {
   }
 
   & .empty-state {
-    height: 100%;
-    width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 100%;
+    height: 100%;
 
     & span {
-      color: var(--theme-dropdown-foreground-color);
-      font-style: italic;
       font-size: 10px;
+      font-style: italic;
+      color: var(--theme-dropdown-foreground-color);
     }
   }
 

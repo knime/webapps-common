@@ -190,21 +190,21 @@ const onRenameSubmit = (keyupEvent: KeyboardEvent, isClickAway = false) => {
 
 .file-explorer-item {
   & .item-content {
-    width: 100%;
-    height: 100%;
     display: flex;
     flex: 2 1 auto;
     align-items: center;
+    width: 100%;
+    height: 100%;
     padding: calc(var(--item-padding) * 1px);
-    text-overflow: ellipsis;
     overflow: hidden;
+    text-overflow: ellipsis;
     white-space: nowrap;
   }
 
   & .item-append {
-    height: 100%;
-    align-items: center;
     display: flex;
+    align-items: center;
+    height: 100%;
     padding: calc(var(--item-padding) * 1px);
 
     &:empty {
@@ -239,15 +239,15 @@ const onRenameSubmit = (keyupEvent: KeyboardEvent, isClickAway = false) => {
   }
 
   & .item-error {
-    font-size: 13px;
-    line-height: 1.5;
-    backdrop-filter: blur(10px);
-    font-weight: 300;
     position: absolute;
-    color: var(--theme-color-error);
     padding: 7px 5px;
     margin-top: 5px;
+    font-size: 13px;
+    font-weight: 300;
+    line-height: 1.5;
+    color: var(--theme-color-error);
     white-space: normal;
+    backdrop-filter: blur(10px);
   }
 
   &:not(.selected, .dragging, .dragging-over) .item-content.light,
@@ -263,26 +263,26 @@ const onRenameSubmit = (keyupEvent: KeyboardEvent, isClickAway = false) => {
     }
 
     & .rename-input {
-      pointer-events: auto;
       height: 26px;
       padding: 0;
       margin: 4px 0 5px;
+      pointer-events: auto;
 
       & :deep(input) {
-        font-size: var(--item-font-size);
         padding: 0 calc(var(--item-padding) * 1px);
+        font-size: var(--item-font-size);
       }
     }
   }
 
   & .open-indicator {
     position: absolute;
+    right: 4px;
+    bottom: 4px;
     width: 10px;
     height: 10px;
     background: var(--knime-dove-gray);
     border-radius: 50%;
-    bottom: 4px;
-    right: 4px;
   }
 }
 </style>

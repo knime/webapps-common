@@ -65,8 +65,8 @@ export default {
 .loading-icon {
   width: 24px;
   height: 24px;
-  stroke-width: calc(32px / 24);
   margin: auto;
   stroke: var(--knime-masala);
+  stroke-width: calc(32px / 24);
 }
 </style>

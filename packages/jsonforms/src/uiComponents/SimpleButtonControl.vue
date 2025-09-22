@@ -46,10 +46,10 @@ const hover = ref(false);
 
 <style scoped>
 .simple-button-input {
-  margin-bottom: 10px;
   position: relative;
   display: flex;
   place-content: center space-between;
+  margin-bottom: 10px;
 
   & .button-input {
     min-width: 100px;

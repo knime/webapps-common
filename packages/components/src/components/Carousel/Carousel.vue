@@ -79,19 +79,19 @@ export default defineComponent({
 <style lang="postcss" scoped>
 .shadow-wrapper {
   position: relative;
-  isolation: isolate;
-  margin-left: calc(var(--grid-gap-width) * -1);
   margin-right: calc(var(--grid-gap-width) * -1);
+  margin-left: calc(var(--grid-gap-width) * -1);
+  isolation: isolate;
 
   &::before,
   &::after {
-    content: "";
     position: absolute;
-    display: block;
-    height: 100%;
-    width: 12px;
     top: 0;
     z-index: 2; /* shadows should be on top of the content */
+    display: block;
+    width: 12px;
+    height: 100%;
+    content: "";
   }
 
   &::before {
@@ -114,13 +114,13 @@ export default defineComponent({
 }
 
 .carousel {
+  padding-right: var(--grid-gap-width);
+  padding-left: var(--grid-gap-width);
   overflow-x: auto;
   white-space: nowrap;
-  -ms-overflow-style: none; /* needed to hide scroll bar in edge */
-  scrollbar-width: none; /* for firefox */
-  padding-left: var(--grid-gap-width);
-  padding-right: var(--grid-gap-width);
   user-select: none;
+  scrollbar-width: none; /* for firefox */
+  -ms-overflow-style: none; /* needed to hide scroll bar in edge */
 
   &.is-mouse-down {
     cursor: grabbing;

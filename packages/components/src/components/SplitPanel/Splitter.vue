@@ -247,8 +247,8 @@ const onSplitterPointerDown = (pointerdown: PointerEvent) => {
 
   & .splitter {
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
     background-color: var(--splitter-background-color);
   }
 
@@ -260,8 +260,8 @@ const onSplitterPointerDown = (pointerdown: PointerEvent) => {
     width: 100%;
 
     & > .splitter {
-      cursor: ew-resize;
       width: calc(v-bind(splitterSize) * 1px);
+      cursor: ew-resize;
     }
   }
 
@@ -269,8 +269,8 @@ const onSplitterPointerDown = (pointerdown: PointerEvent) => {
     width: 100%;
 
     & > .splitter {
-      cursor: ns-resize;
       height: calc(v-bind(splitterSize) * 1px);
+      cursor: ns-resize;
     }
   }
 }

@@ -90,23 +90,23 @@ export default {
 
 <style type="postcss" scoped>
 .wrapper {
-  background: var(--knime-white);
   display: flex;
   flex-wrap: wrap;
-  margin-bottom: 10px;
   padding: 20px 30px;
+  margin-bottom: 10px;
+  background: var(--knime-white);
 
   & h6 {
+    flex-grow: 1;
     flex-basis: 33%;
-    margin: 0 0 16px;
     min-width: 140px;
     padding-right: 10px;
-    flex-grow: 1;
+    margin: 0 0 16px;
   }
 
   & .content {
-    flex-basis: 66%;
     flex-grow: 1;
+    flex-basis: 66%;
 
     & .dyn-ports-description {
       margin-bottom: 22px;
@@ -115,24 +115,24 @@ export default {
 }
 
 ol {
-  list-style: none;
-  margin-left: 28px;
   display: block;
   padding: 0;
   margin-top: 0;
+  margin-left: 28px;
+  list-style: none;
 
   & li {
+    position: relative;
     display: block;
     padding: 0;
-    position: relative;
     margin-bottom: 14px;
     font-size: 16px;
     line-height: 20px;
 
     & svg {
       position: absolute;
-      left: -25px;
       top: 4px;
+      left: -25px;
     }
 
     & .port-name {

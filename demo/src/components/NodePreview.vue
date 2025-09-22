@@ -110,8 +110,8 @@ export default {
   justify-content: flex-start;
 
   & > div {
-    outline: 1px solid var(--knime-silver-sand);
     margin-right: 20px;
+    outline: 1px solid var(--knime-silver-sand);
 
     & svg {
       width: 130px;

@@ -183,9 +183,9 @@ export default defineComponent({
 @import url("@knime/styles/css/rich-text-editor.css");
 
 .static-output:deep() {
+  padding: 4px;
   border: 1px solid var(--knime-masala);
   border-radius: 4px;
-  padding: 4px;
 
   /*
   You can apply the styles individually
@@ -205,10 +205,10 @@ export default defineComponent({
 }
 
 .notice {
-  background-color: var(--knime-yellow);
-  color: var(--knime-masala);
-  font-size: 14px;
   padding: 4px;
+  font-size: 14px;
+  color: var(--knime-masala);
+  background-color: var(--knime-yellow);
   border: 1px solid var(--knime-masala);
 }
 
@@ -217,14 +217,14 @@ export default defineComponent({
 
   & .custom-toolbar {
     position: absolute;
-    background: var(--knime-cornflower);
-    height: 40px;
     top: -40px;
     left: -1px;
     display: flex;
     align-items: center;
-    border-radius: 6px 6px 0 0;
+    height: 40px;
     padding: 0 12px;
+    background: var(--knime-cornflower);
+    border-radius: 6px 6px 0 0;
 
     & .tool {
       & svg {

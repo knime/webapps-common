@@ -101,11 +101,12 @@ export default {
 
 <style lang="postcss" scoped>
 .file-link {
+  display: block;
+
   /* figure has browser default margin which is not reset */
   margin: 0;
-  display: block;
-  text-overflow: ellipsis;
   overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 
   & abbr {
@@ -118,21 +119,21 @@ export default {
   }
 
   & :deep(svg) {
+    width: 18px;
+    height: 18px;
     margin-right: 0.8ch;
     vertical-align: middle;
     stroke: var(--theme-text-link-foreground-color);
-    width: 18px;
-    height: 18px;
     stroke-width: calc(32px / 18);
   }
 
   & a {
-    background: var(--theme-text-link-background-color);
     color: var(--theme-text-link-foreground-color);
+    background: var(--theme-text-link-background-color);
 
     &:hover {
-      background: var(--theme-text-link-background-color-hover);
       color: var(--theme-text-link-foreground-color-hover);
+      background: var(--theme-text-link-background-color-hover);
 
       & :deep(svg) {
         stroke: var(--theme-text-link-foreground-color-hover);
@@ -145,8 +146,8 @@ export default {
     }
 
     &:focus {
-      background: var(--theme-text-link-background-color-focus);
       color: var(--theme-text-link-foreground-color-focus);
+      background: var(--theme-text-link-background-color-focus);
 
       & :deep(svg) {
         stroke: var(--theme-text-link-foreground-color-focus);

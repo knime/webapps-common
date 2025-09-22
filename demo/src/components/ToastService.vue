@@ -550,8 +550,8 @@ const apiErrorToast = rfcErrors.toToast({
   display: grid;
   grid-template-columns: repeat(5, max-content);
   gap: 20px;
-  max-width: 100%;
   place-items: center center;
+  max-width: 100%;
 
   @media only screen and (width <= 900px) {
     grid-template-columns: repeat(1, max-content);

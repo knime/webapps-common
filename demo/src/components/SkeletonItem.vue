@@ -68,10 +68,10 @@ const loading = ref(true);
 
 <style lang="postcss" scoped>
 .loaded-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   height: 40px;
   background: var(--knime-porcelain);
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 </style>

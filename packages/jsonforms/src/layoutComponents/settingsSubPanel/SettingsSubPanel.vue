@@ -95,10 +95,10 @@ const styleOverrides = computed(() => ({
 
 <style scoped lang="postcss">
 .side-drawer-content {
-  height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  height: 100%;
 
   & .main-content {
     flex: 1 1 auto;

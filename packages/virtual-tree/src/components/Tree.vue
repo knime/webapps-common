@@ -203,13 +203,13 @@ defineExpose({
 
 .tree-node {
   display: flex;
-  align-items: center;
   gap: var(--space-4);
+  align-items: center;
   width: 100%;
+  max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  max-width: 100%;
 
   & svg {
     stroke: var(--knime-masala);

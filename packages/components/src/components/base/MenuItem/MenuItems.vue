@@ -303,17 +303,17 @@ const hasSelectedChildItem = (item: MenuItem) => {
     & .icon {
       width: 12px;
       height: 12px;
-      stroke-width: calc(32px / 12);
+      vertical-align: middle;
       pointer-events: none;
       stroke: var(--theme-dropdown-foreground-color);
-      vertical-align: middle;
+      stroke-width: calc(32px / 12);
     }
   }
 
   /* target the base item when it has sub-items  */
   &:has(.sub-menu-indicator.highlight) {
-    background-color: var(--theme-dropdown-foreground-color);
     color: var(--theme-dropdown-background-color);
+    background-color: var(--theme-dropdown-foreground-color);
 
     /* apply styles only for the immediate icon */
     & > .item-icon {

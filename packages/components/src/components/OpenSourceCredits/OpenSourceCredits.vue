@@ -138,19 +138,19 @@ dl {
   }
 
   & button {
-    cursor: pointer;
     font-weight: 300;
     color: var(--knime-masala);
-    border: none;
+    cursor: pointer;
     background-color: transparent;
+    border: none;
 
     & svg {
       position: relative;
       top: 3px;
-      height: 16px;
       width: 16px;
-      transition: transform 0.2s ease-in-out;
+      height: 16px;
       pointer-events: none;
+      transition: transform 0.2s ease-in-out;
     }
   }
 
@@ -159,8 +159,8 @@ dl {
   & button:focus,
   & :deep(a:focus),
   & :deep(a:hover) {
-    outline: none;
     font-weight: 400;
+    outline: none;
   }
 
   &.open {

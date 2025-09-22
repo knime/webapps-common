@@ -108,10 +108,10 @@ const onPointerUp = (event: PointerEvent) => {
 
 <style lang="postcss" scoped>
 .resize-handle-container {
-  margin-top: var(--space-4);
+  position: relative;
   display: flex;
   justify-content: space-around;
-  position: relative;
+  margin-top: var(--space-4);
 
   & .handle {
     border: 1px solid var(--knime-stone-gray);
@@ -120,8 +120,8 @@ const onPointerUp = (event: PointerEvent) => {
     &.connection {
       position: absolute;
       top: 50%;
-      transform: translate(0%, -50%);
       border-color: var(--knime-masala);
+      transform: translate(0%, -50%);
     }
   }
 

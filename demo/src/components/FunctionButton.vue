@@ -129,8 +129,8 @@ export default {
 <style lang="postcss" scoped>
 .align-horizontal {
   display: flex;
-  align-items: center;
-  gap: 20px;
   flex-wrap: wrap;
+  gap: 20px;
+  align-items: center;
 }
 </style>

@@ -103,24 +103,24 @@ const onMenuItemClick = (_: Event, item: (typeof menuItems.value)[number]) => {
   margin-left: 30px;
 
   &::before {
-    content: "";
     position: absolute;
-    left: -22px;
     top: 0;
+    left: -22px;
     width: 2px;
     height: calc(100% + 30px);
+    content: "";
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 5 5'%3E%3Ccircle cx='1' cy='1' r='.5' fill='%236E6E6E'/%3E%3C/svg%3E");
-    background-size: 5px;
     background-repeat: repeat-y;
+    background-size: 5px;
   }
 
   & .current-state {
-    background-color: var(--knime-gray-ultra-light);
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
     gap: 10px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    background-color: var(--knime-gray-ultra-light);
     transition: background-color 0.25s ease;
 
     & .left {
@@ -128,24 +128,24 @@ const onMenuItemClick = (_: Event, item: (typeof menuItems.value)[number]) => {
         display: flex;
         flex-direction: column;
         gap: 3px;
-        overflow-wrap: anywhere;
         word-break: normal;
+        overflow-wrap: anywhere;
 
         & h6 {
           display: flex;
           align-items: center;
           margin: 0;
           font-size: 13px;
-          line-height: 18px;
           font-weight: 700;
+          line-height: 18px;
           transition: color 0.25s ease;
 
           & .draft-icon {
             @mixin svg-icon-size 20;
 
+            padding: 4px;
             margin-right: 4px;
             background: var(--knime-carrot-light);
-            padding: 4px;
             border-radius: 1000px;
           }
         }
@@ -153,15 +153,15 @@ const onMenuItemClick = (_: Event, item: (typeof menuItems.value)[number]) => {
         & .labels {
           display: flex;
           flex-flow: row wrap;
-          align-items: center;
           gap: 5px;
+          align-items: center;
         }
 
         & .date {
           margin: 0;
           font-size: 11px;
-          line-height: 16px;
           font-weight: 300;
+          line-height: 16px;
           transition: color 0.25s ease;
         }
       }
@@ -169,9 +169,9 @@ const onMenuItemClick = (_: Event, item: (typeof menuItems.value)[number]) => {
 
     & .right {
       display: flex;
-      justify-content: flex-end;
-      align-items: center;
       gap: 8px;
+      align-items: center;
+      justify-content: flex-end;
 
       & .create-button {
         white-space: nowrap;
@@ -179,34 +179,34 @@ const onMenuItemClick = (_: Event, item: (typeof menuItems.value)[number]) => {
 
       & .controls {
         display: flex;
-        justify-content: center;
         flex-direction: column;
-        border-left: 1px solid var(--knime-silver-sand);
+        justify-content: center;
         padding-left: 5px;
         margin-right: -4px;
+        border-left: 1px solid var(--knime-silver-sand);
       }
     }
 
     &::before {
-      content: "";
+      position: absolute;
+      top: 12px;
+      left: -6px;
       width: 12px;
       height: 12px;
+      content: "";
       background-color: var(--knime-gray-ultra-light);
       transform: rotateZ(45deg);
-      position: absolute;
-      left: -6px;
-      top: 12px;
       transition: background-color 0.25s ease;
     }
 
     &::after {
-      content: "";
       position: absolute;
-      left: -24px;
       top: 15px;
-      background-color: var(--knime-masala);
+      left: -24px;
       width: 6px;
       height: 6px;
+      content: "";
+      background-color: var(--knime-masala);
       border-radius: 100%;
       box-shadow: 0 0 0 0 transparent;
       transition:
@@ -215,8 +215,8 @@ const onMenuItemClick = (_: Event, item: (typeof menuItems.value)[number]) => {
     }
 
     &:hover {
-      box-shadow: 0 2px 10px 0 var(--knime-gray-dark-semi);
       cursor: pointer;
+      box-shadow: 0 2px 10px 0 var(--knime-gray-dark-semi);
     }
 
     &.selected {

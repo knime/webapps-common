@@ -51,26 +51,26 @@ export default defineComponent({
   --selection-color: var(--knime-cornflower-dark);
   --selection-bg-color: var(--knime-cornflower-semi);
 
-  user-select: none;
-  background: var(--item-bg-color);
-  transition: box-shadow 0.15s;
   display: flex;
   flex-flow: row nowrap;
+  align-items: center;
   width: 100%;
   margin-bottom: 2px;
-  align-items: center;
+  font-size: var(--item-font-size);
+  user-select: none;
+  background: var(--item-bg-color);
 
   /* add border that matches background to prevent jumping when the dragging-over styles add a border */
   border: 1px solid var(--item-bg-color);
-  font-size: var(--item-font-size);
+  transition: box-shadow 0.15s;
 
   &:hover:not(.disabled) {
     box-shadow: var(--shadow-elevation-1);
   }
 
   & .item-icon {
-    padding: calc(calc(var(--item-padding) - 2) * 1px);
     position: relative;
+    padding: calc(calc(var(--item-padding) - 2) * 1px);
 
     & :slotted(svg) {
       display: flex;

@@ -33,22 +33,22 @@ header,
 section,
 footer {
   min-width: var(--grid-min-width);
-  padding-left: calc(3 * var(--grid-gap-width));
   padding-right: calc(3 * var(--grid-gap-width));
+  padding-left: calc(3 * var(--grid-gap-width));
 }
 
 header section,
 footer section,
 section section {
-  padding-left: 0;
   padding-right: 0;
+  padding-left: 0;
 }
 
 .grid-container {
-  max-width: calc(var(--grid-max-width) - 6 * var(--grid-gap-width));
-  margin: auto;
   display: flex;
   justify-content: space-between;
+  max-width: calc(var(--grid-max-width) - 6 * var(--grid-gap-width));
+  margin: auto;
 }
 
 .grid-container .grid-container,
@@ -110,13 +110,13 @@ section section {
   footer section,
   .sticky-footer section,
   header {
-    padding-left: var(--grid-gap-width);
     padding-right: var(--grid-gap-width);
+    padding-left: var(--grid-gap-width);
   }
 
   footer {
-    padding-left: 0;
     padding-right: 0;
+    padding-left: 0;
   }
 
   .grid-container {

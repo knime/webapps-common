@@ -25,8 +25,8 @@ onMounted(() => {
 @import url("./skeleton.css");
 
 .loading-dialog {
-  margin: var(--space-16);
   height: 100%;
+  margin: var(--space-16);
 }
 
 .loading-dialog-content {

@@ -20,13 +20,13 @@
       var(--theme-button-split-border-radius);
 
     &::after {
-      content: "";
-      display: block;
       position: absolute;
+      top: 5px;
+      right: 0;
+      display: block;
       width: 1px;
       height: calc(100% - 10px);
-      right: 0;
-      top: 5px;
+      content: "";
       background-color: var(--theme-button-split-divider-color);
     }
   }
@@ -54,10 +54,10 @@
       var(--theme-button-split-border-radius) 0;
 
     & .submenu-toggle {
-      width: 32px;
       display: flex;
       align-items: center;
       justify-content: center;
+      width: 32px;
 
       &.active,
       &:hover,
@@ -66,17 +66,17 @@
       }
 
       & svg {
-        padding: 0;
         width: 14px;
         height: 14px;
-        stroke-width: calc(32px / 14);
+        padding: 0;
         stroke: var(--theme-button-split-foreground-color);
+        stroke-width: calc(32px / 14);
       }
     }
 
     &.disabled {
-      opacity: 0.5;
       pointer-events: none;
+      opacity: 0.5;
     }
   }
 }

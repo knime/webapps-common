@@ -321,10 +321,10 @@ export default {
 <style lang="postcss" scoped>
 .wrapper {
   position: relative;
-  isolation: isolate;
   width: 100%;
   height: var(--single-line-form-height);
   border: var(--form-border-width) solid var(--knime-stone-gray);
+  isolation: isolate;
 
   &.disabled {
     opacity: 0.5;
@@ -335,27 +335,27 @@ export default {
   }
 
   & input[type="number"] {
+    width: calc(100% - 32px);
+    height: 100%;
+    padding: 0 10px;
+    margin: 0;
     font-size: 13px;
     font-weight: 300;
-    letter-spacing: inherit;
-    height: 100%;
     line-height: normal;
-    border: 0;
-    margin: 0;
-    padding: 0 10px;
-    border-radius: 0;
-    width: calc(100% - 32px);
-    outline: none;
-    background-color: var(--theme-input-number-background-color);
+    letter-spacing: inherit;
 
     /* remove browser spinners FF */
     appearance: textfield;
+    outline: none;
+    background-color: var(--theme-input-number-background-color);
+    border: 0;
+    border-radius: 0;
 
     /* remove browser spinners WebKit/Blink */
     &::-webkit-inner-spin-button,
     &::-webkit-outer-spin-button {
-      appearance: none;
       margin: 0;
+      appearance: none;
     }
 
     /* css3 invalid state */
@@ -371,13 +371,13 @@ export default {
 
   & .invalid-marker {
     position: absolute;
+    top: calc(-1 * var(--form-border-width));
+    left: calc(-1 * var(--form-border-width));
     display: block;
     width: 3px;
-    left: calc(-1 * var(--form-border-width));
-    top: calc(-1 * var(--form-border-width));
     height: calc(100% + 2px);
-    background-color: var(--theme-color-error);
     pointer-events: none; /* otherwise :hover of the field doesn't work when hovering the marker */
+    background-color: var(--theme-color-error);
   }
 
   & .increase {
@@ -393,8 +393,8 @@ export default {
     position: absolute;
     width: 32px;
     height: 20px;
-    padding-left: 10px;
     padding-right: 9px;
+    padding-left: 10px;
     background-color: var(--theme-input-number-background-color);
 
     & svg {

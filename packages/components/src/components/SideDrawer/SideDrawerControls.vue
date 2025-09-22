@@ -49,14 +49,14 @@ defineEmits<{
 
 <style lang="postcss" scoped>
 .controls {
-  flex: 0 0 auto;
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  background-color: var(--knime-gray-ultra-light);
-  padding: 12px 30px;
-  border-top: 1px solid var(--knime-silver-sand);
   z-index: 1;
+  display: flex;
+  flex: 0 0 auto;
+  justify-content: space-between;
+  width: 100%;
+  padding: 12px 30px;
+  background-color: var(--knime-gray-ultra-light);
+  border-top: 1px solid var(--knime-silver-sand);
 
   & .loading-icon {
     margin-right: 0;

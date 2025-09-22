@@ -221,25 +221,25 @@ const icon = computed(() => (errorText.value ? CloseIcon : FilePlus));
 @import url("@knime/styles/css/mixins.css");
 
 .dropzone {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+  align-items: center;
+  justify-content: space-between;
   width: 100%;
   min-width: 250px;
-  margin: 0 auto;
   padding: var(--space-16);
+  margin: 0 auto;
+  overflow: hidden;
+  cursor: pointer;
   background-color: var(--knime-gray-ultra-light);
   border: 1px dashed var(--knime-silver-sand-semi);
   border-radius: 12px;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-12);
-  overflow: hidden;
   transition: all 0.2s;
 
   &.disabled {
-    opacity: 0.5;
     cursor: no-drop;
+    opacity: 0.5;
   }
 
   &:focus-visible {
@@ -248,9 +248,9 @@ const icon = computed(() => (errorText.value ? CloseIcon : FilePlus));
 
   &:not(.disabled) {
     &.active {
-      border-color: var(--knime-cornflower);
-      background-color: var(--knime-cornflower-semi);
       cursor: copy;
+      background-color: var(--knime-cornflower-semi);
+      border-color: var(--knime-cornflower);
     }
 
     &:not(.custom-content) {
@@ -259,8 +259,8 @@ const icon = computed(() => (errorText.value ? CloseIcon : FilePlus));
       }
 
       &:hover {
-        border-color: var(--knime-cornflower);
         background-color: var(--knime-cornflower-semi);
+        border-color: var(--knime-cornflower);
       }
     }
   }
@@ -277,9 +277,9 @@ const icon = computed(() => (errorText.value ? CloseIcon : FilePlus));
 
   & .dropzone-icon {
     display: inline-block;
+    flex-shrink: 0;
     vertical-align: middle;
     stroke: var(--knime-dove-gray);
-    flex-shrink: 0;
 
     @mixin svg-icon-size 32;
   }
@@ -287,20 +287,20 @@ const icon = computed(() => (errorText.value ? CloseIcon : FilePlus));
   & .dropzone-info {
     display: flex;
     flex-direction: column;
-    align-items: center;
     gap: 4px;
+    align-items: center;
     color: var(--knime-dove-gray);
     text-align: center;
 
     & .dropzone-text {
-      font-weight: 500;
       font-size: 13px;
+      font-weight: 500;
       line-height: 14px;
     }
 
     & .dropzone-format {
-      font-weight: 400;
       font-size: 10px;
+      font-weight: 400;
       line-height: 12px;
     }
   }
@@ -314,8 +314,8 @@ const icon = computed(() => (errorText.value ? CloseIcon : FilePlus));
   }
 
   &.custom-content {
-    background-color: transparent;
     cursor: auto;
+    background-color: transparent;
   }
 
   &.horizontal .dropzone-content {

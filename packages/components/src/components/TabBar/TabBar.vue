@@ -165,13 +165,13 @@ export default {
 
 <style lang="postcss" scoped>
 .tab-bar {
-  width: 100%;
   position: relative;
-  margin-top: -20px;
+  z-index: 1; /* create local stacking context */
+  display: inline-block;
+  width: 100%;
   padding-top: 20px;
   padding-bottom: 20px;
-  display: inline-block;
-  z-index: 1; /* create local stacking context */
+  margin-top: -20px;
 
   & .overflow {
     height: 55px;
@@ -179,13 +179,13 @@ export default {
 }
 
 :deep(.carousel::after) {
-  content: "";
-  display: block;
   position: absolute;
-  border-bottom: 1px solid var(--knime-silver-sand);
-  left: var(--grid-gap-width);
   right: var(--grid-gap-width);
   bottom: 26px;
+  left: var(--grid-gap-width);
+  display: block;
+  content: "";
+  border-bottom: 1px solid var(--knime-silver-sand);
 }
 
 label {
@@ -193,28 +193,29 @@ label {
 }
 
 input[type="radio"] {
+  position: absolute;
+  top: 0; /* top/left prevent right margin mobile safari */
+  left: 0;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+
   /* https://accessibility.18f.gov/hidden-content/ */
   border: 0;
   clip: rect(0 0 0 0);
-  height: 1px;
-  margin: -1px;
-  overflow: hidden;
-  padding: 0;
-  position: absolute;
-  width: 1px;
-  top: 0; /* top/left prevent right margin mobile safari */
-  left: 0;
 }
 
 .tab {
   position: relative;
+  display: inline-block;
+  height: 51px;
+  padding: 0 var(--space-8);
   font-size: 16px;
   font-weight: 500;
-  padding: 0 var(--space-8);
-  height: 51px;
   line-height: 51px;
   color: var(--knime-dove-gray);
-  display: inline-block;
 }
 
 label:not(:last-child) {
@@ -223,10 +224,10 @@ label:not(:last-child) {
 
 svg {
   display: inline-block;
-  vertical-align: -5px;
   width: 21px;
   height: 21px;
   margin-right: 2px;
+  vertical-align: -5px;
   stroke: var(--knime-dove-gray);
   stroke-width: calc(32px / 21);
 }
@@ -253,13 +254,13 @@ input:not(:disabled) + span:hover {
 }
 
 input:checked:not(:disabled) + span::after {
-  content: "";
   position: absolute;
-  display: block;
+  right: 0;
   bottom: 1px;
   left: 0;
-  right: 0;
-  border-top: 3px solid var(--knime-masala);
   z-index: 1; /* local stacking context because Carousel.vue has isolation: isolate; */
+  display: block;
+  content: "";
+  border-top: 3px solid var(--knime-masala);
 }
 </style>

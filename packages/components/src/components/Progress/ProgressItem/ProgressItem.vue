@@ -62,11 +62,11 @@ const props = defineProps<ProgressItemProps>();
 }
 
 & .progress-item {
-  height: 100%;
   display: flex;
+  gap: var(--space-16);
   align-items: center;
   width: 100%;
-  gap: var(--space-16);
+  height: 100%;
 
   /* add extra margin to prevent content jump when a progress bars appears/disappears */
   &.padded {
@@ -88,43 +88,43 @@ const props = defineProps<ProgressItemProps>();
 
 & .item-info {
   display: flex;
+  flex-grow: 1;
   gap: var(--space-16);
+  overflow: hidden;
   font-size: 13px;
   line-height: 14px;
-  flex-grow: 1;
-  overflow: hidden;
 
   & .item-name {
     display: flex;
+    flex-grow: 1;
     flex-direction: column;
     gap: var(--space-4);
-    flex-grow: 1;
-    overflow: hidden;
     justify-content: center;
+    overflow: hidden;
 
     & .title {
-      white-space: nowrap;
-      font-weight: 700;
+      max-width: 100%;
       overflow: hidden;
       text-overflow: ellipsis;
-      max-width: 100%;
+      font-weight: 700;
+      white-space: nowrap;
     }
 
     & .subtitle {
-      color: var(--knime-dove-gray);
       font-weight: 400;
+      color: var(--knime-dove-gray);
     }
   }
 }
 
 & .item-action {
   display: flex;
-  align-items: center;
-  gap: var(--space-8);
-  font-weight: 500;
-  font-size: 13px;
-  line-height: 13px;
   flex-shrink: 0;
+  gap: var(--space-8);
+  align-items: center;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 13px;
 
   & :slotted(svg) {
     stroke: var(--knime-dove-gray);

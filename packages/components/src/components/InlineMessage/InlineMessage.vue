@@ -39,40 +39,40 @@ defineProps<{
 
 <style lang="postcss" scoped>
 .inline-message {
-  font-size: 12px;
-  line-height: 14px;
   display: grid;
-  grid-template-columns: auto 1fr;
   grid-template-rows: auto auto;
-  border-left-width: 2px;
-  border-left-style: solid;
+  grid-template-columns: auto 1fr;
   gap: 4px 8px;
   padding: 8px;
+  font-size: 12px;
+  line-height: 14px;
+  border-left-style: solid;
+  border-left-width: 2px;
 
   & .title {
-    grid-column: 2;
     grid-row: 1;
+    grid-column: 2;
     font-weight: 700;
   }
 
   & .description {
-    grid-column: 2;
     grid-row: 2;
+    grid-column: 2;
     font-weight: 400;
   }
 
   & .icon {
-    grid-column: 1;
-    grid-row: 1;
     display: inherit;
+    grid-row: 1;
+    grid-column: 1;
     width: 14px;
     height: 14px;
     stroke-width: calc(32px / 14);
   }
 
   &.info {
-    border-color: var(--knime-cornflower);
     background-color: var(--knime-cornflower-ultra-light);
+    border-color: var(--knime-cornflower);
 
     & .icon {
       stroke: var(--knime-cornflower);
@@ -80,8 +80,8 @@ defineProps<{
   }
 
   &.warning {
-    border-color: var(--knime-carrot);
     background-color: var(--knime-carrot-ultra-light);
+    border-color: var(--knime-carrot);
 
     & .icon {
       stroke: var(--knime-carrot);
@@ -89,8 +89,8 @@ defineProps<{
   }
 
   &.error {
-    border-color: var(--knime-error-red);
     background-color: var(--knime-error-red-ultra-light);
+    border-color: var(--knime-error-red);
 
     & .icon {
       stroke: var(--knime-error-red);
@@ -98,8 +98,8 @@ defineProps<{
   }
 
   &.success {
-    border-color: var(--knime-meadow-dark);
     background-color: var(--knime-meadow-ultra-light);
+    border-color: var(--knime-meadow-dark);
 
     & .icon {
       stroke: var(--knime-meadow-dark);
@@ -107,8 +107,8 @@ defineProps<{
   }
 
   &.promotion {
-    border-color: var(--knime-yellow);
     background-color: var(--knime-yellow-ultra-light);
+    border-color: var(--knime-yellow);
 
     & .icon {
       stroke: var(--knime-yellow);

@@ -59,18 +59,18 @@ defineEmits<{
   height: 100%;
 
   & .header {
-    height: 24px;
-    width: 440px;
-    margin-bottom: 10px;
     display: flex;
     align-items: center;
+    width: 440px;
+    height: 24px;
+    margin-bottom: 10px;
 
     & .title {
       display: inline;
       margin: 0;
       font-size: 16px;
-      line-height: 19px;
       font-weight: 700;
+      line-height: 19px;
     }
 
     @media only screen and (width <= 900px) {
@@ -80,6 +80,9 @@ defineEmits<{
 
   & .versions {
     position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 
     /*
       Explicit min-height to ensure submenu is never cut off.
@@ -88,22 +91,19 @@ defineEmits<{
     min-height: 50px;
     padding: 0 0 10px 20px;
     margin-left: 10px;
-    -ms-overflow-style: none; /* Hide scrollbar for IE and Edge */
     scrollbar-width: none; /* Hide scrollbar for Firefox */
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    -ms-overflow-style: none; /* Hide scrollbar for IE and Edge */
 
     &::before {
-      content: "";
       position: absolute;
-      left: -2px;
       top: -30px;
+      left: -2px;
       width: 2px;
       height: calc(100% + 35px);
+      content: "";
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 5 5'%3E%3Ccircle cx='1' cy='1' r='.5' fill='%236E6E6E'/%3E%3C/svg%3E");
-      background-size: 5px;
       background-repeat: repeat-y;
+      background-size: 5px;
     }
 
     &.no-changes::before {
@@ -113,8 +113,8 @@ defineEmits<{
   }
 
   & .empty-versions {
-    font-size: 11px;
     padding: 7px;
+    font-size: 11px;
   }
 
   /* Hide scrollbar for now */

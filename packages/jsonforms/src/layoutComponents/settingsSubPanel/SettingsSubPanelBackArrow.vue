@@ -42,9 +42,9 @@ const styleOverrides = computed(() => ({
   background-color: var(--knime-gray-ultra-light);
 
   & .spacer {
-    border: 0.4pt solid var(--knime-silver-sand);
     height: 25px;
     margin: auto 0.6em auto 0.2em;
+    border: 0.4pt solid var(--knime-silver-sand);
   }
 
   & .bold {

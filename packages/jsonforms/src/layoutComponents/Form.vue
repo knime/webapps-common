@@ -20,8 +20,8 @@ container
 .form {
   --horizontal-dialog-padding: var(--space-16);
 
-  flex-grow: 1;
   display: flex;
+  flex-grow: 1;
   flex-direction: column;
 
   /* We need enough padding bottom to reserve space for error messages */

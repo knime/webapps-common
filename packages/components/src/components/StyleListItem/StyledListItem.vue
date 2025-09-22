@@ -74,17 +74,17 @@ export default {
 
 <style lang="postcss" scoped>
 [role="option"] {
+  position: relative;
   display: block;
   padding: 0 10px;
-  line-height: 22px;
-  position: relative;
-  text-overflow: ellipsis;
   overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 22px;
+  color: var(--theme-dropdown-foreground-color);
   white-space: nowrap;
   cursor: pointer;
-  background: var(--theme-dropdown-background-color);
-  color: var(--theme-dropdown-foreground-color);
   user-select: none;
+  background: var(--theme-dropdown-background-color);
 
   &.empty {
     white-space: pre-wrap;
@@ -95,8 +95,8 @@ export default {
   }
 
   &.selected {
-    background: var(--theme-dropdown-background-color-selected);
     color: var(--theme-dropdown-foreground-color-selected);
+    background: var(--theme-dropdown-background-color-selected);
   }
 
   /* invalid values */
@@ -104,36 +104,36 @@ export default {
     color: var(--theme-color-error);
 
     &.selected {
-      background: var(--theme-color-error);
       color: var(--theme-dropdown-foreground-color-selected);
+      background: var(--theme-color-error);
     }
   }
 
   &:not(.disabled, .selected) {
     &:hover {
-      background: var(--theme-dropdown-background-color-hover);
       color: var(--theme-dropdown-foreground-color-hover);
+      background: var(--theme-dropdown-background-color-hover);
     }
 
     &:focus {
-      background: var(--theme-dropdown-background-color-focus);
       color: var(--theme-dropdown-foreground-color-focus);
+      background: var(--theme-dropdown-background-color-focus);
     }
   }
 
   &.special {
-    border-radius: 3px;
+    position: relative;
+    padding: 0 3px;
+    margin: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
     font-size: 10px;
     font-style: italic;
-    text-align: center;
-    margin: 2px;
-    padding: 0 3px;
     line-height: 16px;
-    position: relative;
-    text-overflow: ellipsis;
-    overflow: hidden;
+    text-align: center;
     white-space: nowrap;
     cursor: pointer;
+    border-radius: 3px;
   }
 }
 </style>

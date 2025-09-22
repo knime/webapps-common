@@ -227,8 +227,8 @@ watch(
 .switch-icon {
   @mixin svg-icon-size 10;
 
-  stroke: var(--knime-masala);
   position: relative;
+  stroke: var(--knime-masala);
 
   &:not(.closed) {
     visibility: hidden;
@@ -285,12 +285,12 @@ watch(
     position: relative;
 
     &::before {
-      content: "";
       position: absolute;
-      left: 0;
       top: 0;
-      opacity: 0;
+      left: 0;
       z-index: var(--z-index-common-splitter, 20);
+      content: "";
+      opacity: 0;
     }
   }
 
@@ -344,8 +344,8 @@ watch(
   }
 
   & :deep(.splitter:hover) {
-    transition: border-color 500ms 300ms ease-in;
     border-color: var(--knime-masala);
+    transition: border-color 500ms 300ms ease-in;
   }
 }
 
@@ -365,23 +365,23 @@ watch(
 
   &::after {
     position: absolute;
-    content: "";
     top: 0;
     left: 0;
+    z-index: var(--z-index-common-splitter, 20);
     width: 100%;
     height: 100%;
+    content: "";
     background-color: var(--will-snap-background-color);
-    z-index: var(--z-index-common-splitter, 20);
   }
 
   &.is-horizontal::after {
-    content: "Release to hide panel.";
     display: flex;
-    font-style: italic;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
     overflow: hidden;
+    font-style: italic;
     white-space: nowrap;
+    content: "Release to hide panel.";
   }
 }
 </style>

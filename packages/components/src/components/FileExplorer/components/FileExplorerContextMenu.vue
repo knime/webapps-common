@@ -190,8 +190,8 @@ onClickOutside(menuWrapper, closeMenu);
 <style lang="postcss" scoped>
 .menu-wrapper {
   position: absolute;
-  z-index: 5;
-  left: calc(v-bind("$props.position.x") * 1px);
   top: calc(v-bind("$props.position.y") * 1px);
+  left: calc(v-bind("$props.position.x") * 1px);
+  z-index: 5;
 }
 </style>

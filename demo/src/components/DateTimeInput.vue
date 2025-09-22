@@ -145,8 +145,8 @@ export default {
 
 <style lang="postcss" scoped>
 .inputs :deep(label) {
-  margin-bottom: 0;
   margin-top: 15px;
+  margin-bottom: 0;
 }
 
 :deep(.label-text.big) {

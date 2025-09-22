@@ -79,10 +79,10 @@ export default {
 
 <style lang="postcss" scoped>
 .filename {
-  font-size: 13px;
-  line-height: 18px;
-  font-weight: 500;
-  color: var(--knime-dove-gray);
   margin-left: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 18px;
+  color: var(--knime-dove-gray);
 }
 </style>

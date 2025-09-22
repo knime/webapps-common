@@ -121,13 +121,13 @@ const closeLabelPopovers = throttle(() => {
 
 .manage-versions-container {
   position: relative;
-  background-color: var(--knime-gray-light-semi);
-  height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
   align-items: flex-start;
+  justify-content: flex-start;
+  height: 100%;
   overscroll-behavior: none;
+  background-color: var(--knime-gray-light-semi);
   isolation: isolate;
 
   & .close {
@@ -144,9 +144,9 @@ const closeLabelPopovers = throttle(() => {
     height: 100%;
 
     & .header {
-      background-color: var(--knime-white);
       z-index: 2;
       padding: 32px 30px 30px;
+      background-color: var(--knime-white);
 
       & h4 {
         display: inline;
@@ -158,11 +158,11 @@ const closeLabelPopovers = throttle(() => {
       & .history-icon {
         @mixin svg-icon-size 24;
 
+        position: relative;
+        top: 1px;
         margin-right: 9px;
         vertical-align: sub;
         stroke: var(--knime-masala);
-        position: relative;
-        top: 1px;
       }
     }
 
@@ -180,9 +180,9 @@ const closeLabelPopovers = throttle(() => {
     }
 
     & .changes {
-      background-color: var(--knime-white);
       width: 100%;
       padding-top: 30px;
+      background-color: var(--knime-white);
     }
   }
 }

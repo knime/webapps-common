@@ -63,17 +63,17 @@ export default {
 
 <style lang="postcss" scoped>
 .demo {
-  margin-bottom: 10px;
   align-items: flex-start;
+  margin-bottom: 10px;
 }
 
 .collapser {
   background-color: var(--knime-porcelain);
 
   & :deep(h5) {
+    position: relative;
     padding: 15px 30px;
     margin: 0;
-    position: relative;
   }
 
   & :deep(.panel) {

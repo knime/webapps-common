@@ -375,8 +375,8 @@ h4 {
 }
 
 & .hover-preview {
-  flex: 1;
   display: flex;
+  flex: 1;
   flex-direction: column;
   align-self: self-start;
   padding: 10px;
@@ -387,17 +387,17 @@ h4 {
   }
 
   & .hover-content {
-    font-size: 12px;
-    overflow: auto;
-    height: 150px;
     max-width: fit-content;
+    height: 150px;
+    overflow: auto;
+    font-size: 12px;
   }
 }
 
 .menu-items {
   display: flex;
-  align-items: center;
   flex-wrap: wrap;
+  align-items: center;
   margin-bottom: 20px;
 
   & .menu-item-wrapper {

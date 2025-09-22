@@ -429,8 +429,8 @@ onUnmounted(() => (isMounted.value = false));
 }
 
 .control-title {
-  font-size: 14px;
   margin-bottom: var(--space-4);
+  font-size: 14px;
   font-weight: 300;
   color: var(--knime-masala);
 }
@@ -440,30 +440,30 @@ onUnmounted(() => (isMounted.value = false));
   outline: none;
 
   &:focus-within::after {
-    content: "";
     position: absolute;
     inset: -2px;
-    border: 1px solid var(--knime-cornflower);
     pointer-events: none;
+    content: "";
+    border: 1px solid var(--knime-cornflower);
   }
 }
 
 .formats-container {
-  border: var(--formats-container-border-width) solid var(--knime-silver-sand);
-  height: 200px;
-  overflow: hidden auto;
   display: flex;
   flex-direction: column;
   width: 100%;
+  height: 200px;
+  overflow: hidden auto;
   outline: none;
+  border: var(--formats-container-border-width) solid var(--knime-silver-sand);
 
   & .no-formats-available {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
     font-style: italic;
     color: var(--knime-stone-gray);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
   }
 
   & .loading-spinner {
@@ -474,35 +474,35 @@ onUnmounted(() => (isMounted.value = false));
 
   & .single-format {
     display: flex;
-    padding: 2px var(--space-8);
-    flex-direction: column;
-    cursor: pointer;
     flex: 0;
+    flex-direction: column;
+    padding: 2px var(--space-8);
+    cursor: pointer;
 
     & .format-preview,
     & .format-pattern {
-      white-space: nowrap;
+      width: 100%;
       overflow-x: hidden;
       text-overflow: ellipsis;
-      width: 100%;
-      line-height: 1.44;
       font-weight: 300;
+      line-height: 1.44;
+      white-space: nowrap;
 
       /* stop double-click from highlighting text */
       user-select: none;
     }
 
     & .format-pattern {
+      min-height: 23px;
       font-size: 16px;
       color: var(--knime-masala);
-      min-height: 23px;
     }
 
     & .format-preview {
+      min-height: 20px;
+      font-size: 14px;
       font-style: italic;
       color: var(--knime-stone-gray);
-      font-size: 14px;
-      min-height: 20px;
     }
 
     &.applied {

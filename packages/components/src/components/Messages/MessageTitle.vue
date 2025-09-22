@@ -116,25 +116,25 @@ export default {
 
 .message {
   flex-grow: 1;
+  margin-top: 3px;
   margin-right: 50px; /* this is set to not interfere with the dropdown or close button */
   overflow: hidden;
   text-overflow: ellipsis;
-  margin-top: 3px;
 }
 
 .close {
-  outline: none;
+  position: relative;
+  top: 0;
+  right: -6px; /* align svg with right border */
+  float: right;
   display: flex;
   align-items: center;
-  position: relative;
-  right: -6px; /* align svg with right border */
-  pointer-events: all;
-  text-align: center;
-  top: 0;
   align-self: flex-start;
-  float: right;
   margin-left: auto;
+  text-align: center;
+  pointer-events: all;
   cursor: pointer;
+  outline: none;
 
   &:hover,
   &:focus {
@@ -148,25 +148,25 @@ export default {
   & svg.close-icon {
     position: relative;
     top: 0;
-    margin: auto;
     width: 18px;
     height: 18px;
+    margin: auto;
     stroke-width: calc(32px / 18);
   }
 }
 
 button.close {
-  flex-shrink: 0;
-  margin-bottom: 0;
   display: flex;
+  flex-shrink: 0;
   width: unset;
+  margin-bottom: 0;
 }
 
 span.close {
-  height: 30px;
-  width: 30px;
-  border-radius: 50%;
   flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
 }
 
 :last-child {

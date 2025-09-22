@@ -234,12 +234,12 @@ export default {
     --bg: none;
     --font: black;
 
-    background: var(--bg);
+    padding: 10px;
+    margin-bottom: 6px;
+    font-weight: bold;
     color: var(--font);
     outline: 1px solid rgb(0 0 0 / 10%);
-    margin-bottom: 6px;
-    padding: 10px;
-    font-weight: bold;
+    background: var(--bg);
   }
 }
 
@@ -252,37 +252,37 @@ export default {
     --bg: none;
     --font: black;
 
-    background: var(--bg);
-    color: var(--font);
-    padding: 1em;
+    flex-grow: 1;
     min-width: 10vmin;
     height: 10vmin;
-    outline: 1px solid rgb(0 0 0 / 10%);
-    text-align: center;
-    line-height: calc(10vmin - 2em);
-    font-weight: bold;
-    flex-grow: 1;
-    white-space: pre-wrap;
+    padding: 1em;
     margin: 4px;
+    font-weight: bold;
+    line-height: calc(10vmin - 2em);
+    color: var(--font);
+    text-align: center;
+    white-space: pre-wrap;
+    outline: 1px solid rgb(0 0 0 / 10%);
+    background: var(--bg);
   }
 
   &.node > div {
     --bg: none;
 
+    height: auto;
     padding-bottom: 0;
     background: transparent;
-    border-radius: 2px;
     border: none;
-    height: auto;
+    border-radius: 2px;
 
     &::before {
-      content: "";
       display: block;
-      margin: auto;
       width: 5vmin;
       height: 5vmin;
-      border-radius: 0.5vmin;
+      margin: auto;
+      content: "";
       background: var(--bg);
+      border-radius: 0.5vmin;
     }
   }
 }

@@ -110,9 +110,9 @@ export default {
 
 <style lang="postcss" scoped>
 .page-content {
-  outline: 2px dotted purple;
-  height: 500px;
   width: 500px;
+  height: 500px;
+  outline: 2px dotted purple;
 
   & .license-content {
     width: 100%;

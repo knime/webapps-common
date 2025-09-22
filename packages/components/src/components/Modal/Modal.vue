@@ -98,24 +98,24 @@ export default defineComponent({
 
     @supports (mask: url("") no-repeat 50% 50%) {
       &[href^="http"]::after {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        margin-left: 4px;
+        vertical-align: -2px;
         content: "";
+        background-color: var(--knime-masala); /* defines icon color */
         mask: url("@knime/styles/img/icons/link-external.svg?data") no-repeat
           50% 50%;
         mask-size: cover;
-        background-color: var(--knime-masala); /* defines icon color */
-        width: 16px;
-        height: 16px;
-        display: inline-block;
-        margin-left: 4px;
-        vertical-align: -2px;
       }
     }
 
     &:hover {
-      outline: none;
       color: var(--theme-text-link-foreground-color-hover);
-      background-color: var(--theme-text-link-background-color-hover);
       text-decoration: none;
+      outline: none;
+      background-color: var(--theme-text-link-background-color-hover);
 
       &::after {
         background-color: var(
@@ -134,8 +134,8 @@ export default defineComponent({
   }
 
   & .closer {
-    margin-left: auto;
     margin-right: -6px;
+    margin-left: auto;
 
     & :deep(svg) {
       stroke: var(--knime-white);
@@ -144,10 +144,10 @@ export default defineComponent({
 
   & .header {
     display: flex;
-    color: var(--knime-white);
+    align-items: center;
     max-width: 100%;
     padding: 0 var(--modal-padding);
-    align-items: center;
+    color: var(--knime-white);
 
     & h2 {
       margin: 0;
@@ -156,14 +156,14 @@ export default defineComponent({
     }
 
     & .header-icon {
-      line-height: 0;
       margin-right: 10px;
+      line-height: 0;
 
       & :deep(svg) {
         width: 22px;
         height: 22px;
-        stroke-width: 2.2px;
         stroke: var(--knime-white);
+        stroke-width: 2.2px;
       }
     }
   }
@@ -226,9 +226,9 @@ export default defineComponent({
   }
 
   & .controls {
-    padding: var(--modal-padding);
     display: flex;
     justify-content: space-between;
+    padding: var(--modal-padding);
   }
 }
 </style>

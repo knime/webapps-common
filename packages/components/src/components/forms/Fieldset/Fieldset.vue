@@ -29,47 +29,48 @@ export default {
 
 <style lang="postcss" scoped>
 fieldset {
+  min-inline-size: unset;
+  padding: 0;
+
   /* reset default styles */
   margin: 0;
-  padding: 0;
   outline: none;
   border: none;
-  min-inline-size: unset;
 
   & > legend {
-    font-weight: 700;
-    font-family: var(--theme-text-bold-font-family);
-    color: var(--theme-text-bold-color);
-    font-size: 16px;
-    line-height: 20px;
-    cursor: default;
-    margin-bottom: 10px;
-    text-overflow: ellipsis;
-    overflow: hidden;
     display: block;
+    margin-bottom: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-family: var(--theme-text-bold-font-family);
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 20px;
+    color: var(--theme-text-bold-color);
+    cursor: default;
 
     & :slotted(svg) {
-      margin-right: 0;
-      height: 14px;
-      width: 14px;
-      stroke-width: calc(32px / 14);
-      stroke: var(--knime-masala);
-      cursor: pointer;
-      display: block;
       float: right;
+      display: block;
+      width: 14px;
+      height: 14px;
       margin-top: 3px;
+      margin-right: 0;
       margin-left: 4px;
+      cursor: pointer;
+      stroke: var(--knime-masala);
+      stroke-width: calc(32px / 14);
     }
   }
 
   /* Second level fieldset legends look smaller (e.g. for Radiobuttons inside of ValueFilterSelectionWidget) */
   & > fieldset > legend {
-    font-weight: 500;
-    font-family: var(--theme-text-medium-font-family);
-    color: var(--theme-text-medium-color);
-    font-size: 13px;
-    line-height: 18px;
     margin-bottom: 3px;
+    font-family: var(--theme-text-medium-font-family);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 18px;
+    color: var(--theme-text-medium-color);
   }
 
   & :deep(.label-wrapper),

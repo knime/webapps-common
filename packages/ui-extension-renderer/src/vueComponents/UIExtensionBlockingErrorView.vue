@@ -23,15 +23,15 @@ defineEmits<{
 
 <style scoped lang="postcss">
 .wrapper {
-  container-type: inline-size;
-  padding: var(--space-16);
-  width: 100%;
-  height: 100%;
   display: flex;
   flex-direction: column;
+  gap: 20px;
   align-items: center;
   justify-content: center;
-  gap: 20px;
+  width: 100%;
+  height: 100%;
+  padding: var(--space-16);
+  container-type: inline-size;
 
   & span {
     text-align: center;

@@ -120,8 +120,8 @@ export default defineComponent({
 
 .slide-enter-from,
 .slide-leave-to {
-  transform: translateY(25%);
   opacity: 0;
+  transform: translateY(25%);
 }
 
 .slide-enter-active,
@@ -135,13 +135,13 @@ export default defineComponent({
 }
 
 .container {
-  z-index: var(--z-index-common-modal, 100);
-  min-height: 50px;
   position: fixed;
-  left: 0;
   top: 0;
-  height: 100%;
+  left: 0;
+  z-index: var(--z-index-common-modal, 100);
   width: 100%;
+  height: 100%;
+  min-height: 50px;
 }
 
 .overlay {
@@ -160,18 +160,18 @@ export default defineComponent({
   left: 0;
   width: 100%;
   height: 100%;
-  pointer-events: none;
   font-size: 16px;
+  pointer-events: none;
 }
 
 .inner {
-  pointer-events: all;
   position: absolute;
-  left: 50%;
   top: var(--modal-top, 40%);
-  transform: translate(-50%, -50%);
+  left: 50%;
   width: min(95%, var(--modal-width, 550px));
   height: var(--modal-height, auto);
+  pointer-events: all;
   background-color: var(--modal-background, var(--knime-white));
+  transform: translate(-50%, -50%);
 }
 </style>

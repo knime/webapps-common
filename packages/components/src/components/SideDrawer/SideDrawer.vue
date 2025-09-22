@@ -69,15 +69,15 @@ withDefaults(
 .side-drawer {
   position: var(--position-common-side-drawer, fixed);
   top: 0;
-  width: var(--width-common-side-drawer, 500px);
   right: 0;
   bottom: 0;
-  box-shadow: -3px 0 7px 0 var(--knime-gray-dark-semi);
+  z-index: var(--z-index-common-side-drawer, 60);
+  width: var(--width-common-side-drawer, 500px);
   background: var(
     --background-color-common-side-drawer,
     var(--knime-porcelain)
   );
-  z-index: var(--z-index-common-side-drawer, 60);
+  box-shadow: -3px 0 7px 0 var(--knime-gray-dark-semi);
 
   @media only screen and (width <= 900px) {
     z-index: var(--z-index-common-mobile-side-drawer, 60);

@@ -70,8 +70,8 @@ const isActive = (index: number) => index === 0;
 
   & .toast {
     position: absolute;
-    pointer-events: none;
     max-height: 300px;
+    pointer-events: none;
 
     &:first-child {
       position: relative;

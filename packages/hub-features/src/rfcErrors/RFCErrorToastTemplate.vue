@@ -160,9 +160,9 @@ const onShowDetailsClicked = () => {
 
 .show-more {
   all: unset;
-  cursor: pointer;
   font-weight: 500;
   white-space: nowrap;
+  cursor: pointer;
 
   &:active,
   &:hover {
@@ -172,9 +172,9 @@ const onShowDetailsClicked = () => {
 
 .copy-button-wrapper {
   & .button {
-    font-size: 13px;
     padding: 0;
     margin-top: 10px;
+    font-size: 13px;
   }
 }
 

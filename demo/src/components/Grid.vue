@@ -136,11 +136,11 @@ export default {
 
 <style scoped lang="postcss">
 .grid-demo {
-  font-weight: 500;
   min-height: 10vmin;
-  background: rgb(0 0 0 / 10%);
-  outline: 1px solid rgb(0 0 0 / 20%);
   margin-bottom: 2vmin;
+  font-weight: 500;
+  outline: 1px solid rgb(0 0 0 / 20%);
+  background: rgb(0 0 0 / 10%);
   transition: box-shadow 0.2s linear;
 
   &:hover {
@@ -148,6 +148,7 @@ export default {
   }
 
   & .grid-container {
+    position: relative;
     outline: 2px dotted purple;
     background-image: linear-gradient(
       45deg,
@@ -161,7 +162,6 @@ export default {
       rgb(128 0 128 / 10%) 100%
     );
     background-size: 4vmin 4vmin;
-    position: relative;
     transition: background-color 0.2s linear;
 
     &:hover {
@@ -169,18 +169,18 @@ export default {
     }
 
     &::before {
-      content: ".grid-container";
-      color: purple;
       position: absolute;
-      left: 1vmin;
       top: 1vmin;
+      left: 1vmin;
+      color: purple;
+      content: ".grid-container";
     }
 
     &::after {
-      content: "section";
       position: absolute;
-      line-height: 10vmin;
       left: calc(-3 * var(--grid-gap-width));
+      line-height: 10vmin;
+      content: "section";
     }
 
     & .grid-container::after {
@@ -188,7 +188,9 @@ export default {
     }
 
     & [class^="grid-item-"] {
-      border: 2px solid green;
+      min-height: 10vmin;
+      overflow: visible;
+      white-space: pre;
       background-image: linear-gradient(
         135deg,
         transparent 0%,
@@ -201,16 +203,14 @@ export default {
         rgb(0 200 0 / 10%) 100%
       );
       background-size: 4vmin 4vmin;
-      white-space: pre;
-      overflow: visible;
-      min-height: 10vmin;
+      border: 2px solid green;
       transition: background-color 0.2s linear;
 
       &::before {
-        content: "." attr(class);
         position: absolute;
-        color: green;
         line-height: 10vmin;
+        color: green;
+        content: "." attr(class);
       }
 
       &:hover {
@@ -230,9 +230,9 @@ table {
 
   & th,
   & td {
-    text-align: center !important;
-    padding-left: 0 !important;
     padding-right: 0 !important;
+    padding-left: 0 !important;
+    text-align: center !important;
   }
 }
 

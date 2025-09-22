@@ -48,16 +48,16 @@ export default defineComponent({
 .plus-button {
   --theme-button-border-radius: 9999px;
 
+  display: flex;
+  justify-content: center;
   width: 60px;
   height: 60px;
-  border: 0;
   cursor: pointer;
   background-color: transparent;
+  border: 0;
   box-shadow:
     0 0 10px var(--knime-gray-dark-semi),
     0 0 4px var(--knime-gray-dark-semi);
-  display: flex;
-  justify-content: center;
 
   &:hover {
     box-shadow:
@@ -69,13 +69,13 @@ export default defineComponent({
     display: flex;
 
     & :deep(svg) {
+      position: absolute;
+      top: 0;
       width: 60px;
       height: 60px;
+      margin: 0;
       stroke: var(--knime-dove-gray);
       stroke-width: calc(32px / 60);
-      position: absolute;
-      margin: 0;
-      top: 0;
     }
   }
 

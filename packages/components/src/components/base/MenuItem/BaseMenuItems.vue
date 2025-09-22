@@ -248,21 +248,20 @@ const onItemClick = (event: MouseEvent, item: MenuItem, id: string) => {
    */
   --menu-items-elevation: var(--shadow-elevation-1);
 
-  margin: 0;
-  padding: 0;
-  background-color: var(--knime-white);
-  color: var(--theme-dropdown-foreground-color);
-  font-size: 13px;
-  line-height: 18px;
-  font-weight: 500;
-  font-family: var(--theme-text-medium-font-family);
-  text-align: left;
-  list-style-type: none;
-  z-index: var(--z-index-common-menu-items-expanded, 1);
-  box-shadow: var(--menu-items-elevation);
-
   /* Determine offsetTop of child elements correctly when using the scrollTo method */
   position: relative;
+  z-index: var(--z-index-common-menu-items-expanded, 1);
+  padding: 0;
+  margin: 0;
+  font-family: var(--theme-text-medium-font-family);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 18px;
+  color: var(--theme-dropdown-foreground-color);
+  text-align: left;
+  list-style-type: none;
+  background-color: var(--knime-white);
+  box-shadow: var(--menu-items-elevation);
 
   &.expanded {
     display: block;

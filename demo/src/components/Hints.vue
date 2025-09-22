@@ -136,8 +136,8 @@ p {
   margin: 3em 0;
 
   & span {
-    background-color: var(--knime-porcelain);
     padding: 10px;
+    background-color: var(--knime-porcelain);
   }
 }
 

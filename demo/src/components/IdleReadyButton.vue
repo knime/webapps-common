@@ -110,16 +110,16 @@ export default {
   }
 
   & ul {
-    list-style-type: none;
     padding: 15px 0 0;
     margin: 0;
+    list-style-type: none;
   }
 
   & li {
     height: 30px;
-    background-color: var(--knime-white);
     padding: 5px 10px;
     margin-bottom: 5px;
+    background-color: var(--knime-white);
   }
 }
 </style>

@@ -139,21 +139,20 @@ const rootComponentProps = computed(() => {
 <style lang="postcss" scoped>
 .base-avatar {
   display: flex;
-  align-items: center;
   gap: 10px;
+  align-items: center;
+  padding: var(--avatar-frame-border-width);
   --avatar-frame-border-width: 2px;
   --avatar-name-trusted-icon-size: 11px;
 
-  padding: var(--avatar-frame-border-width);
-
   & .avatar-frame {
     position: relative;
-    border-radius: 50%;
-    overflow: hidden;
+    flex-shrink: 0;
     width: var(--avatar-size, 30px);
     aspect-ratio: 1/1;
+    overflow: hidden;
     background-color: var(--knime-porcelain);
-    flex-shrink: 0;
+    border-radius: 50%;
 
     /* use box-shadow instead of border to prevent zoom issues */
     box-shadow: 0 0 0 var(--avatar-frame-border-width)
@@ -164,43 +163,44 @@ const rootComponentProps = computed(() => {
     }
 
     & img.avatar-image {
-      /* background-color: var(--knime-porcelain); */
-      color: transparent; /* hide alt text while loading in Firefox */
       width: 100%;
       height: 100%;
+
+      /* background-color: var(--knime-porcelain); */
+      color: transparent; /* hide alt text while loading in Firefox */
     }
 
     & .overlay {
-      width: 100%;
-      height: 100%;
       position: absolute;
       top: 0;
+      width: 100%;
+      height: 100%;
     }
   }
 
   & .avatar-label {
     display: block;
-    font-weight: 300;
-    font-size: 13px;
     max-width: 100%;
     padding-top: 3px; /* center it visually a bit better */
     overflow: hidden;
+    font-size: 13px;
+    font-weight: 300;
     line-height: 1.2;
     text-align: left;
 
     &.with-descriptor {
-      font-weight: 500;
-      font-size: 13px;
-      color: var(--knime-dove-gray);
       padding: 2px 4px 2px 0;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--knime-dove-gray);
     }
 
     & .display-name {
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
       display: inline-block;
       max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
 
       &.trusted {
         max-width: calc(100% - var(--avatar-name-trusted-icon-size));
@@ -208,26 +208,26 @@ const rootComponentProps = computed(() => {
     }
 
     & .descriptor {
-      font-weight: 400;
       font-size: 11px;
+      font-weight: 400;
       color: var(--knime-dove-grey);
     }
 
     & svg.trusted {
-      display: inline-block;
       position: relative;
       top: -6px;
-      border-radius: 100%;
+      display: inline-block;
       width: var(--avatar-name-trusted-icon-size);
       height: var(--avatar-name-trusted-icon-size);
+      border-radius: 100%;
       stroke: var(--knime-masala);
       stroke-width: 2px;
     }
   }
 
   &.vertical {
-    justify-content: center;
     flex-direction: column;
+    justify-content: center;
 
     & .avatar-label {
       padding: 0 10px;
@@ -236,9 +236,9 @@ const rootComponentProps = computed(() => {
 }
 
 .base-avatar.link {
-  pointer-events: all;
   max-width: 100%;
   text-decoration: none;
+  pointer-events: all;
 
   &:focus {
     outline: none;

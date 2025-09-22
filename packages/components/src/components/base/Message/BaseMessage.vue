@@ -32,18 +32,18 @@ export default {
 
 <style lang="postcss" scoped>
 section {
-  border-bottom: 1px solid var(--knime-white);
   overflow: hidden;
+  border-bottom: 1px solid var(--knime-white);
 
   & .grid-item-12 {
-    font-weight: 700;
-    font-style: normal;
-    font-size: 16px;
-    line-height: 24px;
-    padding: 15px 0;
-    display: flex;
     position: relative;
+    display: flex;
     align-items: center;
+    padding: 15px 0;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 24px;
     color: var(--knime-white);
   }
 

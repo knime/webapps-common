@@ -283,30 +283,30 @@ svg {
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  width: 100%;
+  height: 100%;
 }
 
 .value-label {
-  font-family: var(--theme-text-bold-font-family);
-  color: var(--theme-text-bold-color);
-  font-size: 20px;
-  line-height: 20px;
-  font-weight: 700;
   width: 100%;
+  font-family: var(--theme-text-bold-font-family);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 20px;
+  color: var(--theme-text-bold-color);
   text-align: center;
 }
 
 .additional-label {
-  font-family: var(--theme-text-normal-font-family);
-  color: var(--theme-text-normal-color);
-  font-size: 15px;
-  line-height: 30px;
-  font-weight: 300;
   width: 100%;
+  font-family: var(--theme-text-normal-font-family);
+  font-size: 15px;
+  font-weight: 300;
+  line-height: 30px;
+  color: var(--theme-text-normal-color);
   text-align: center;
 }
 </style>

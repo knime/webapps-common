@@ -45,22 +45,22 @@ const emit = defineEmits<{
 <style lang="postcss" scoped>
 .node-popover {
   & .error-wrapper {
+    position: absolute;
+    bottom: calc(50% - 20px);
+    left: calc(50% - 20px);
+    z-index: 2;
     width: 40px;
     height: 40px;
     padding: 8px;
-    border-radius: 50%;
-    z-index: 2;
     overflow: visible;
-    position: absolute;
-    left: calc(50% - 20px);
-    bottom: calc(50% - 20px);
-    background-color: var(--theme-color-error);
-    box-shadow: 0 0 10px 0 var(--knime-gray-dark-semi);
     cursor: pointer;
+    background-color: var(--theme-color-error);
+    border-radius: 50%;
+    box-shadow: 0 0 10px 0 var(--knime-gray-dark-semi);
 
     & .icon {
-      stroke-width: 4;
       stroke: white;
+      stroke-width: 4;
     }
 
     &:hover {

@@ -101,32 +101,32 @@ const onCreate = async () => {
 
 <style lang="postcss" scoped>
 .create-version-form {
-  height: 100%;
-  max-height: 100%;
-  width: 100%;
   display: flex;
   flex-direction: column;
+  width: 100%;
+  height: 100%;
+  max-height: 100%;
 
   & .form-content {
+    z-index: 1;
     display: flex;
     flex-direction: column;
+    gap: 30px;
     height: 100%;
     padding: 30px 30px 0;
-    gap: 30px;
-    overscroll-behavior: none;
-    isolation: isolate;
     overflow: auto;
-    z-index: 1;
+    overscroll-behavior: none;
     background-color: var(--knime-gray-ultra-light);
+    isolation: isolate;
 
     & .description {
+      display: flex;
       width: 100%;
       max-width: unset;
-      display: flex;
 
       & :deep(textarea) {
-        width: 100%;
         box-sizing: content-box;
+        width: 100%;
         max-height: 200px;
         resize: none;
       }
@@ -134,12 +134,12 @@ const onCreate = async () => {
 
     & .error {
       position: absolute;
-      word-break: keep-all;
       margin-top: 6px;
-      font-weight: 300;
       font-size: 13px;
-      color: var(--theme-color-error);
+      font-weight: 300;
       line-height: 18px;
+      color: var(--theme-color-error);
+      word-break: keep-all;
     }
 
     & .controls {

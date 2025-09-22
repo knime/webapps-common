@@ -4,19 +4,19 @@
 
 <style lang="postcss" scoped>
 .no-versions-item {
-  font-weight: 300;
-  font-size: 12px;
-  line-height: 15px;
   padding-top: 4px;
+  font-size: 12px;
+  font-weight: 300;
+  line-height: 15px;
 
   &::after {
-    content: "";
     position: absolute;
-    left: -4px;
     top: 11px;
-    background-color: var(--knime-masala);
+    left: -4px;
     width: 6px;
     height: 6px;
+    content: "";
+    background-color: var(--knime-masala);
     border-radius: 100%;
   }
 }

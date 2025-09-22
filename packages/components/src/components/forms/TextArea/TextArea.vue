@@ -81,24 +81,24 @@ export default {
 <style lang="postcss" scoped>
 div {
   position: relative;
-  isolation: isolate;
   display: block;
   max-width: max-content;
+  isolation: isolate;
 
   &.disabled {
     opacity: 0.5;
   }
 
   & textarea {
+    display: block;
+    padding: 11px 10px;
     font-size: 13px;
     font-weight: 300;
     line-height: 18px;
-    padding: 11px 10px;
-    border-radius: 0;
-    border: 1px solid var(--knime-stone-gray);
-    background-color: var(--theme-text-area-background-color);
     outline: none;
-    display: block;
+    background-color: var(--theme-text-area-background-color);
+    border: 1px solid var(--knime-stone-gray);
+    border-radius: 0;
 
     &::placeholder {
       color: var(--knime-dove-gray);
@@ -115,14 +115,14 @@ div {
 
   & .invalid-marker {
     position: absolute;
-    display: block;
-    width: 3px;
-    left: 0;
-    margin: 0;
     top: 0;
     bottom: 0;
-    background-color: var(--theme-color-error);
+    left: 0;
+    display: block;
+    width: 3px;
+    margin: 0;
     pointer-events: none; /* otherwise :hover of the field doesn't work when hovering the marker */
+    background-color: var(--theme-color-error);
   }
 }
 </style>

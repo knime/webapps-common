@@ -90,22 +90,22 @@ export default {
 }
 
 .message-fade-enter-active {
-  transition-duration: 0.15s;
   transition-delay: 0.3s;
+  transition-duration: 0.15s;
 }
 
 .container {
-  min-height: 50px;
   position: absolute;
-  left: 0;
   top: 0;
-  height: 100%;
+  left: 0;
   width: 100%;
+  height: 100%;
+  min-height: 50px;
 
   &.global {
-    pointer-events: none;
     position: fixed;
     z-index: 3;
+    pointer-events: none;
 
     &.active {
       pointer-events: all;
@@ -121,8 +121,8 @@ export default {
 
     & .slide-fade-enter,
     & .slide-fade-leave-to {
-      transform: translateY(25%);
       opacity: 0;
+      transform: translateY(25%);
     }
   }
 
@@ -137,21 +137,21 @@ export default {
 
     & .slide-fade-enter,
     & .slide-fade-leave-to {
-      transform: translateY(-25%);
       opacity: 0;
+      transform: translateY(-25%);
     }
   }
 }
 
 .overlay {
-  z-index: 1;
   position: absolute;
   top: var(--error-overlay-top, 0);
   left: var(--error-overlay-left, 0);
+  z-index: 1;
   width: 100%;
   height: 100%;
-  box-shadow: inset 0 0 0 1px var(--knime-white);
   background-color: var(--knime-gray-light-semi);
+  box-shadow: inset 0 0 0 1px var(--knime-white);
 
   &.local {
     &.error {
@@ -165,13 +165,13 @@ export default {
 }
 
 .alert-body {
-  font-size: 16px;
-  z-index: 1;
   position: absolute;
   top: 0;
   left: 0;
+  z-index: 1;
   width: 100%;
   height: 100%;
+  font-size: 16px;
   pointer-events: none;
 
   &.global {

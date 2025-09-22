@@ -79,12 +79,12 @@ const onDecrease = () => {
 <style lang="postcss" scoped>
 .quantity-input {
   display: flex;
+  gap: 8px;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  isolation: isolate;
   width: 100%;
   height: var(--single-line-form-height);
+  isolation: isolate;
 
   & .function-button {
     flex: 0 0 30px;
@@ -92,24 +92,24 @@ const onDecrease = () => {
 
   & input {
     flex: 0 0 auto;
-    font-size: 13px;
-    font-weight: 300;
-    text-align: center;
+    min-width: 50px; /* prevent shrinking the input if the range is between 0 and 9999 */
     height: 24px;
     padding: 0 10px;
+    font-size: 13px;
+    font-weight: 300;
     line-height: normal;
-    border-radius: 0;
-    min-width: 50px; /* prevent shrinking the input if the range is between 0 and 9999 */
-    border: 1px solid var(--knime-stone-gray);
+    text-align: center;
+    appearance: textfield; /* Hide native buttons in Firefox */
     outline: none;
     background-color: var(--theme-input-field-background-color);
-    appearance: textfield; /* Hide native buttons in Firefox */
+    border: 1px solid var(--knime-stone-gray);
+    border-radius: 0;
 
     /* Hide native buttons elsewhere */
     &::-webkit-outer-spin-button,
     &::-webkit-inner-spin-button {
-      appearance: none;
       margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+      appearance: none;
     }
 
     &:disabled {

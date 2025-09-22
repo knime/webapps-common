@@ -23,10 +23,10 @@ defineProps<VueControlPropsForLabelContent<string>>();
   max-width: 100%;
 
   & :deep(textarea) {
-    resize: vertical;
     width: 100%;
     min-height: 40px;
     padding: 10px;
+    resize: vertical;
   }
 }
 </style>

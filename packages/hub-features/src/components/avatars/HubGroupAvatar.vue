@@ -56,11 +56,11 @@ const displayText = computed(() => {
 
 .container {
   position: relative;
-  background-color: var(--knime-white);
   display: flex;
   align-items: center;
   justify-content: center;
   height: 100%;
+  background-color: var(--knime-white);
 
   & > svg {
     @mixin svg-icon-size 24;

@@ -65,14 +65,14 @@ const title = computed(() => (props.label === "" ? " " : props.label));
     max-width: 100%;
 
     & .left {
-      min-width: 0;
+      display: flex;
       flex: 1;
       justify-content: flex-start;
-      display: flex;
+      min-width: 0;
 
       & .label {
-        min-width: 0;
         flex-shrink: 1;
+        min-width: 0;
         white-space: pre;
       }
     }

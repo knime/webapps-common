@@ -412,8 +412,8 @@ const onOpenFile = (item: object) => {
 }
 
 .wrapper {
-  background: var(--knime-silver-sand);
   padding: 10px;
+  background: var(--knime-silver-sand);
 }
 
 .options {
@@ -430,48 +430,48 @@ const onOpenFile = (item: object) => {
 }
 
 .custom-drag-preview-target {
-  border: 4px dashed var(--knime-stone-gray);
-  background: var(--knime-porcelain);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 500px;
   height: 400px;
   margin: 8px 12px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   text-align: center;
+  background: var(--knime-porcelain);
+  border: 4px dashed var(--knime-stone-gray);
 }
 
 .custom-preview-element {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   min-width: 300px;
   height: 150px;
-  border-radius: 4px;
-  background-color: var(--knime-masala);
-  color: white;
   padding: 4px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  color: white;
+  background-color: var(--knime-masala);
+  border-radius: 4px;
 }
 
 .custom-context-menu {
   min-width: 60px;
-  border-radius: 4px;
-  background: var(--knime-porcelain);
   color: var(--knime-masala);
+  background: var(--knime-porcelain);
   border: 1px solid black;
+  border-radius: 4px;
 
   & ul {
-    list-style-type: none;
     padding: 0;
     margin: 0;
+    list-style-type: none;
 
     & :deep(li) {
       padding: 6px 10px;
       cursor: pointer;
 
       &:hover {
-        background: var(--knime-masala);
         color: white;
+        background: var(--knime-masala);
       }
     }
 

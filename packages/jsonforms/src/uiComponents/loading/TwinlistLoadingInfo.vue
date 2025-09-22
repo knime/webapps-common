@@ -12,9 +12,9 @@ import { LoadingIcon } from "@knime/components";
 <style scoped lang="postcss">
 .info {
   display: flex;
-  align-items: center;
   flex-direction: column;
   gap: 10px;
+  align-items: center;
 
   & .icon {
     height: 14px;

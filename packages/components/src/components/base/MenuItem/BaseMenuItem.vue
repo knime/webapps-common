@@ -83,33 +83,33 @@ const dynamicAttributes = (item: MenuItem) => {
 .list-item {
   --icon-size: 18;
 
-  border: none;
-  background: none;
+  display: flex;
   width: 100%;
   padding: 6px 13px;
 
   /* <button> does not inherit font-weight from ul in chrome */
   font-weight: 500;
-  display: flex;
-  text-decoration: none;
-  white-space: nowrap;
   color: var(--theme-text-normal-color);
+  white-space: nowrap;
+  text-decoration: none;
+  background: none;
+  border: none;
 
   &.clickable-item {
     cursor: pointer;
 
     &.disabled {
-      opacity: 0.5;
-      cursor: default;
       pointer-events: none;
+      cursor: default;
+      opacity: 0.5;
     }
 
     & .item-icon {
-      stroke: var(--theme-dropdown-foreground-color);
-      stroke-width: calc(32px / var(--icon-size));
       width: calc(var(--icon-size) * 1px);
       height: calc(var(--icon-size) * 1px);
       margin-right: 7px;
+      stroke: var(--theme-dropdown-foreground-color);
+      stroke-width: calc(32px / var(--icon-size));
     }
 
     &:hover {
@@ -117,31 +117,31 @@ const dynamicAttributes = (item: MenuItem) => {
     }
 
     &.focused {
+      color: var(--theme-dropdown-foreground-color-focus);
       outline: transparent;
       background-color: var(--theme-dropdown-background-color-focus);
-      color: var(--theme-dropdown-foreground-color-focus);
 
       & .item-icon {
         stroke: var(--theme-dropdown-foreground-color-focus);
       }
 
       &:hover {
-        background-color: var(--theme-dropdown-background-color-hover);
         color: var(--theme-dropdown-foreground-color-hover);
+        background-color: var(--theme-dropdown-background-color-hover);
       }
     }
 
     &.selected {
-      background-color: var(--theme-dropdown-foreground-color);
       color: var(--theme-dropdown-background-color);
+      background-color: var(--theme-dropdown-foreground-color);
 
       & .item-icon {
         stroke: var(--theme-dropdown-background-color);
       }
 
       &:hover {
-        background-color: var(--theme-dropdown-background-color-hover);
         color: var(--theme-dropdown-foreground-color-hover);
+        background-color: var(--theme-dropdown-background-color-hover);
 
         & .item-icon {
           stroke: var(--theme-dropdown-foreground-color-hover);
@@ -157,17 +157,17 @@ const dynamicAttributes = (item: MenuItem) => {
 
       & .text-and-hotkey {
         display: flex;
-        text-align: left;
+        align-items: center;
         width: 100%;
         height: calc(var(--icon-size) * 1px);
-        align-items: center;
+        text-align: left;
 
         & .checkbox {
+          padding-top: 2px;
           padding-left: 23px; /* Align text horizontally with other items with icons */
 
           /* center-align text + checkbox in item vertically */
           margin-top: 7px;
-          padding-top: 2px;
         }
 
         & .text {
@@ -186,26 +186,26 @@ const dynamicAttributes = (item: MenuItem) => {
       }
 
       & .description {
-        max-width: 250px;
         width: 100%;
-        text-align: left;
-        white-space: normal;
+        max-width: 250px;
         font-size: 11px;
         font-weight: 300;
+        text-align: left;
+        white-space: normal;
       }
     }
   }
 
   &.section-headline {
-    color: var(--knime-stone);
-    padding-top: 13px;
-    pointer-events: none;
-    height: 30px;
-    font-size: 10px;
-    line-height: 15px;
     display: flex;
     align-items: center;
+    height: 30px;
+    padding-top: 13px;
+    font-size: 10px;
+    line-height: 15px;
+    color: var(--knime-stone);
     text-align: left;
+    pointer-events: none;
 
     &:hover,
     &:focus,

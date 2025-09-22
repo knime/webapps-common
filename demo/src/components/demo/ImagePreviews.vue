@@ -40,8 +40,8 @@ export default {
 }
 
 .image {
-  display: inline-block;
   position: relative;
+  display: inline-block;
 
   & > img {
     padding: 10px;
@@ -52,7 +52,6 @@ export default {
     --checkerboard-color: var(--knime-silver-sand);
     --checkerboard-size: 15px;
 
-    border: 1px solid var(--checkerboard-color);
     background-image: linear-gradient(
         45deg,
         var(--checkerboard-color) 25%,
@@ -61,12 +60,13 @@ export default {
       linear-gradient(-45deg, var(--checkerboard-color) 25%, transparent 25%),
       linear-gradient(45deg, transparent 75%, var(--checkerboard-color) 75%),
       linear-gradient(-45deg, transparent 75%, var(--checkerboard-color) 75%);
-    background-size: var(--checkerboard-size) var(--checkerboard-size);
     background-position:
       0 0,
       0 calc(var(--checkerboard-size) / 2),
       calc(var(--checkerboard-size) / 2) calc(var(--checkerboard-size) / 2 * -1),
       calc(var(--checkerboard-size) / 2 * -1) 0;
+    background-size: var(--checkerboard-size) var(--checkerboard-size);
+    border: 1px solid var(--checkerboard-color);
   }
 
   &:hover > img {
@@ -75,17 +75,17 @@ export default {
   }
 
   & > span {
-    display: none;
     position: absolute;
     bottom: -20px;
-    transform: translate(-50%, 0);
     left: 50%;
-    padding: 8px;
     z-index: 1;
-    background-color: var(--knime-masala);
+    display: none;
+    padding: 8px;
     color: var(--knime-white);
     text-align: center;
     white-space: nowrap;
+    background-color: var(--knime-masala);
+    transform: translate(-50%, 0);
   }
 
   &:hover > span {

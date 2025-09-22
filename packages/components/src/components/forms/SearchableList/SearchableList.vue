@@ -313,27 +313,27 @@ export default {
 <style scoped>
 .header {
   display: flex;
-  align-items: stretch;
   flex-direction: row;
+  align-items: stretch;
   justify-content: flex-end;
   height: 20px;
 
   & .info {
-    text-overflow: ellipsis;
+    display: flex;
     overflow: hidden;
+    text-overflow: ellipsis;
     font-size: 8px;
     font-weight: 300;
     white-space: nowrap;
-    display: flex;
   }
 
   & .title {
-    line-height: 18px;
-    margin-bottom: 3px;
     display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
     gap: 5px;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 3px;
+    line-height: 18px;
   }
 }
 </style>

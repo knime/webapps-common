@@ -198,16 +198,16 @@ watch(toRef(props, "active"), (active) => {
   --gap-size: 25px;
   --icon-size: 24px;
 
-  box-shadow: var(--shadow-elevation-2);
-  border-radius: 4px;
-  overflow: hidden;
-  background-color: var(--knime-white);
-  color: var(--knime-masala);
-  width: var(--toast-width, 350px);
-  min-height: 75px;
-  transition: all 0.3s;
   display: flex;
   flex-direction: column;
+  width: var(--toast-width, 350px);
+  min-height: 75px;
+  overflow: hidden;
+  color: var(--knime-masala);
+  background-color: var(--knime-white);
+  border-radius: 4px;
+  box-shadow: var(--shadow-elevation-2);
+  transition: all 0.3s;
 
   &.info {
     --color: var(--theme-color-info);
@@ -226,60 +226,60 @@ watch(toRef(props, "active"), (active) => {
   }
 
   & .container {
-    display: flex;
-    flex-direction: row;
     position: relative;
+    display: flex;
     flex-grow: 1;
+    flex-direction: row;
 
     & .type-indicator {
-      background-color: var(--color);
-      width: 39px;
       display: flex;
+      flex-shrink: 0;
       flex-direction: column;
       align-items: center;
+      width: 39px;
       padding-top: 16px;
-      flex-shrink: 0;
+      background-color: var(--color);
 
       & svg.type-indicator-icon {
+        position: relative;
         width: var(--icon-size);
         stroke: var(--knime-white);
-        position: relative;
         stroke-width: calc(32px / var(--icon-size));
       }
     }
 
     & .content {
-      flex-grow: 1;
       display: flex;
+      flex-grow: 1;
       flex-direction: column;
+      max-width: 100%;
       padding: 15px;
       color: var(--knime-masala);
-      max-width: 100%;
 
       & .headline {
         display: inline-block;
-        color: var(--knime-masala);
-        margin: 0;
+        gap: var(--gap-size);
         padding-right: 12px;
         padding-bottom: 5px;
-        font-weight: 700;
+        margin: 0;
         font-size: 16px;
+        font-weight: 700;
         line-height: 150%;
-        gap: var(--gap-size);
+        color: var(--knime-masala);
       }
 
       & .message {
-        color: var(--knime-masala);
-        font-weight: 300;
         font-size: 13px;
+        font-weight: 300;
         line-height: 150%;
+        color: var(--knime-masala);
         overflow-wrap: anywhere;
         white-space: break-spaces;
 
         & button.show-more {
           all: unset;
-          cursor: pointer;
           font-weight: 500;
+          cursor: pointer;
 
           &:active,
           &:hover {
@@ -289,10 +289,10 @@ watch(toRef(props, "active"), (active) => {
       }
 
       & .buttons {
-        margin-top: 10px;
         display: flex;
         flex-direction: row;
         gap: 33px;
+        margin-top: 10px;
       }
 
       & .close-button {
@@ -303,19 +303,19 @@ watch(toRef(props, "active"), (active) => {
     }
 
     & .progress-bar {
-      display: none;
-      height: 5px;
       position: absolute;
       bottom: 0;
       left: 0;
+      display: none;
       width: 100%;
+      height: 5px;
       background-color: white;
       transform-origin: left;
 
       & .progress-bar-inner {
         height: 100%;
-        opacity: 0.5;
         background-color: var(--color);
+        opacity: 0.5;
       }
     }
   }

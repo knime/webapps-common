@@ -186,8 +186,8 @@ onMounted(() => {
     position: relative;
     display: flex;
     flex-flow: row wrap;
-    align-items: center;
     gap: var(--space-4);
+    align-items: center;
     padding: var(--space-6) 0;
 
     & .function-button {
@@ -222,11 +222,11 @@ onMounted(() => {
 }
 
 & .headline {
-  font-size: 16px;
-  font-weight: 700;
+  padding-right: 18px;
   margin: 0;
   margin: 0 0 var(--space-8);
-  padding-right: 18px;
+  font-size: 16px;
+  font-weight: 700;
 }
 
 & .panel {
@@ -236,8 +236,8 @@ onMounted(() => {
 
   & .message,
   & .description {
-    font-weight: 300;
     font-size: 13px;
+    font-weight: 300;
 
     &:empty {
       display: none;

@@ -28,19 +28,19 @@ withDefaults(defineProps<Props>(), {
 @import url("@knime/styles/css/mixins.css");
 
 .tag {
-  border: 1px solid var(--knime-dove-gray);
-  margin-right: 5px;
-  margin-bottom: 5px;
-  padding: 3px 5px;
-  font-size: 13px;
-  line-height: 13px;
   display: inline-flex;
-  justify-content: center;
   align-items: center;
-  font-weight: 500;
-  color: var(--knime-dove-gray);
+  justify-content: center;
   height: auto;
   min-height: 24px;
+  padding: 3px 5px;
+  margin-right: 5px;
+  margin-bottom: 5px;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 13px;
+  color: var(--knime-dove-gray);
+  border: 1px solid var(--knime-dove-gray);
 
   &:focus-visible {
     @mixin focus-outline 2, 3;
@@ -50,9 +50,9 @@ withDefaults(defineProps<Props>(), {
     position: relative;
     width: 8px;
     height: 8px;
-    stroke-width: calc(32px / 8);
-    stroke: var(--knime-dove-gray);
     margin: 0 -1px 0 auto;
+    stroke: var(--knime-dove-gray);
+    stroke-width: calc(32px / 8);
   }
 
   &.clickable {

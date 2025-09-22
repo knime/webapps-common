@@ -93,9 +93,9 @@ svg {
 }
 
 .demo {
-  margin-bottom: 30px;
   padding-top: 20px;
   padding-bottom: 20px;
+  margin-bottom: 30px;
   background-color: var(--knime-porcelain);
 
   & .grid-container {
@@ -104,9 +104,9 @@ svg {
 }
 
 .demo-line {
-  font-size: 18px;
-  line-height: 18px;
-  font-weight: 500;
   margin: 0;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 18px;
 }
 </style>

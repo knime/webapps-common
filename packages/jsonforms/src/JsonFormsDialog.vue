@@ -126,16 +126,16 @@ provideSideDrawerTeleportDest(subPanelTeleportDest);
 
 <style lang="postcss" scoped>
 .dialog {
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  background-color: var(--knime-gray-ultra-light);
   height: 100%;
 
   /**
    * The settings subpanel does overflow for animation reasons
   */
   overflow-x: hidden;
-  position: relative;
+  background-color: var(--knime-gray-ultra-light);
 }
 </style>

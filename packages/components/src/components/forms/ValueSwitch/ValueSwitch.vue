@@ -72,23 +72,23 @@ export default defineComponent({
 
   display: flex;
   align-items: center;
-  border: 1px solid var(--theme-value-switch-border-color);
-  border-radius: var(--border-radius);
   width: max-content;
   height: calc(var(--wrapper-height) * 1px);
+  border: 1px solid var(--theme-value-switch-border-color);
+  border-radius: var(--border-radius);
 
   & :deep(span) {
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
+    min-width: 41px;
+    height: calc(var(--wrapper-height) * 1px);
+    padding: 0 10px;
+    font-size: 13px;
+    font-weight: 300;
+    line-height: 20px;
     cursor: pointer;
     border-radius: var(--border-radius);
-    min-width: 41px;
-    padding: 0 10px;
-    font-weight: 300;
-    font-size: 13px;
-    line-height: 20px;
-    height: calc(var(--wrapper-height) * 1px);
   }
 
   &.disabled {
@@ -108,24 +108,24 @@ export default defineComponent({
   }
 
   & :deep(input[disabled]) + span {
-    opacity: 0.5;
     pointer-events: none;
+    opacity: 0.5;
   }
 
   & :deep(input) {
-    opacity: 0;
     position: absolute;
     width: 0;
     height: 0;
+    opacity: 0;
 
     & + span:hover {
       background-color: var(--theme-value-switch-background-color-hover);
     }
 
     &:checked + span {
-      background-color: var(--theme-value-switch-background-color-checked);
       color: var(--theme-value-switch-background-color);
       pointer-events: none;
+      background-color: var(--theme-value-switch-background-color-checked);
     }
   }
 }

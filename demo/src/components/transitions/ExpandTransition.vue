@@ -67,10 +67,10 @@ export default {
 
 <style lang="postcss" scoped>
 .demo {
-  margin-bottom: 10px;
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
+  margin-bottom: 10px;
 
   & button {
     margin: 10px 0;
@@ -81,9 +81,9 @@ export default {
   background-color: var(--knime-porcelain);
 
   & :deep(h5) {
+    position: relative;
     padding: 15px 30px;
     margin: 0;
-    position: relative;
   }
 
   & :deep(.panel) {

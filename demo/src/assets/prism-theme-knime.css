@@ -4,22 +4,22 @@
 
 code[class*="language-"],
 pre[class*="language-"] {
-  font-weight: normal;
-  color: var(--knime-masala);
   font-size: 1rem;
-  text-align: left;
-  white-space: pre;
-  word-spacing: normal;
-  word-break: normal;
-  word-wrap: normal;
+  font-weight: normal;
   line-height: 1.5;
-  -moz-tab-size: 4;
-  -o-tab-size: 4;
-  tab-size: 4;
+  color: var(--knime-masala);
+  text-align: left;
+  word-spacing: normal;
   -webkit-hyphens: none;
   -moz-hyphens: none;
   -ms-hyphens: none;
   hyphens: none;
+  word-break: normal;
+  word-wrap: normal;
+  -moz-tab-size: 4;
+  -o-tab-size: 4;
+  tab-size: 4;
+  white-space: pre;
 
   &::selection,
   & ::selection {
@@ -29,19 +29,19 @@ pre[class*="language-"] {
 
 /* Code blocks */
 pre[class*="language-"] {
-  background-color: var(--knime-white);
-  box-shadow: var(--shadow-elevation-1);
   padding: 0.4em 0.7em;
   margin: 0.5em 0;
   overflow: auto;
+  background-color: var(--knime-white);
+  box-shadow: var(--shadow-elevation-1);
 }
 
 /* Inline code */
 :not(pre) > code[class*="language-"] {
-  background: var(--knime-white);
-  border: 1px solid var(--knime-porcelain);
   padding: 0.1em;
   white-space: normal;
+  background: var(--knime-white);
+  border: 1px solid var(--knime-porcelain);
 }
 
 .token.comment,

@@ -4,9 +4,9 @@ When using nuxt the footer sometimes jumps up as "& > *" in a scoped style doesn
 Therefore we must keep the sticky-footer class in an unscoped separate file
 */
 .sticky-footer {
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
+  min-height: 100vh;
 
   & main {
     flex-grow: 1;

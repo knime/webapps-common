@@ -25,8 +25,8 @@ defineProps<{ elements: UISchemaElement[] }>();
 
   /* if a dialog starts with a section header we don't need extra top padding, otherwise adding it here */
   &:not(:has(:first-child > .section:first-child)) {
-    padding-top: var(--vertical-padding);
     gap: var(--error-message-min-reserved-space);
+    padding-top: var(--vertical-padding);
   }
 }
 </style>

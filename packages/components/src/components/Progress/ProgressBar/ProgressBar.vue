@@ -64,23 +64,23 @@ const toolTip = computed(() => {
   --progress-bar-height: var(--space-16);
   --progress-bar-radius: calc(var(--progress-bar-height) - 0.5px);
 
+  position: relative;
   width: 100%;
   height: var(--progress-bar-height);
   border-radius: var(--progress-bar-radius);
-  position: relative;
 
   & .progress {
-    appearance: none;
-    border: none;
-    border-radius: var(--progress-bar-radius);
     display: block;
-    height: var(--progress-bar-height);
-    overflow: hidden;
-    padding: 0;
     width: 100%;
+    height: var(--progress-bar-height);
+    padding: 0;
+    overflow: hidden;
+    appearance: none;
 
     /* Firefox sets the background of the bar from here  */
     background-color: var(--progress-bar-background-color);
+    border: none;
+    border-radius: var(--progress-bar-radius);
   }
 
   &.compact {
@@ -92,8 +92,8 @@ const toolTip = computed(() => {
   }
 
   & .progress::-webkit-progress-value {
-    border-radius: var(--progress-bar-radius);
     background-color: var(--progress-bar-foreground-color);
+    border-radius: var(--progress-bar-radius);
     transition: width 0.5s;
   }
 
@@ -103,19 +103,19 @@ const toolTip = computed(() => {
   }
 
   & .progress:indeterminate {
-    animation-duration: 1.5s;
-    animation-iteration-count: infinite;
-    animation-name: move-indeterminate;
-    animation-timing-function: linear;
     background-color: var(--progress-bar-background-color);
     background-image: linear-gradient(
       to right,
       var(--progress-bar-foreground-color) 30%,
       var(--progress-bar-background-color) 30%
     );
-    background-position: 0 0;
     background-repeat: no-repeat;
+    background-position: 0 0;
     background-size: 150% 150%;
+    animation-name: move-indeterminate;
+    animation-duration: 1.5s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
   }
 
   /* the following two rules need to stay separate, as otherwise it causes it not to be applied in Chrome correctly */

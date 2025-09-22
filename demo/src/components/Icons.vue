@@ -209,11 +209,11 @@ export default {
 }
 
 svg {
-  vertical-align: middle;
   width: 50px;
   height: 50px;
-  stroke-width: calc(32px / 50);
+  vertical-align: middle;
   stroke: var(--knime-masala);
+  stroke-width: calc(32px / 50);
 
   & :deep(.text) {
     fill: var(--knime-masala);

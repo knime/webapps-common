@@ -80,12 +80,12 @@ export default {
 /* if you consider removing this class: don't!
    selector specificity requires it for container system used in page-builder */
 .checkbox {
-  display: inline-block;
   position: relative;
-  isolation: isolate;
-  padding: 3px 0 3px 24px;
+  display: inline-block;
   max-width: 100%;
+  padding: 3px 0 3px 24px;
   cursor: pointer;
+  isolation: isolate;
 
   /* invalid value */
   &.invalid {
@@ -98,77 +98,80 @@ export default {
   }
 
   & input {
-    user-select: none;
-    display: flex;
-    opacity: 0;
     position: absolute;
+    display: flex;
     width: 0;
     height: 0;
+    user-select: none;
+    opacity: 0;
 
     & + span {
       display: inline-block;
-      overflow: hidden;
       min-width: 1em;
+      max-width: 100%;
+      overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      max-width: 100%;
     }
 
     & + span::before {
-      /* □ */
-      border: 1px solid var(--theme-checkbox-border-color);
-      background: var(--theme-checkbox-background-color);
       display: inline-block;
-      content: "";
       width: 14px;
       height: 14px;
+      content: "";
+      background: var(--theme-checkbox-background-color);
+
+      /* □ */
+      border: 1px solid var(--theme-checkbox-border-color);
     }
 
     & + span::before, /* □ */
     & + span::after {
       /* ✓ */
       position: absolute;
-      left: 0;
       top: 4px; /* based on regular line-height of 18px; container will be 24px(2x3px padding) 24-14=10/2 = 5-1 = 4
       to let higher letters appear more centered */
+      left: 0;
     }
 
     &:checked {
       /* □ */
       & + span::before {
+        background: var(--theme-checkbox-background-color-selected);
+
         /* default */
         border-color: var(--theme-checkbox-border-color-selected);
-        background: var(--theme-checkbox-background-color-selected);
       }
 
       &:focus + span::before {
-        border-color: var(--theme-checkbox-border-color-selected-focus);
         background: var(--theme-checkbox-background-color-selected-focus);
+        border-color: var(--theme-checkbox-border-color-selected-focus);
       }
 
       &:hover:enabled + span::before {
-        border-color: var(--theme-checkbox-border-color-selected-hover);
         background: var(--theme-checkbox-background-color-selected-hover);
+        border-color: var(--theme-checkbox-border-color-selected-hover);
       }
 
       &:hover:disabled + span::before {
-        border-color: var(--theme-checkbox-border-color-selected);
         background: var(--theme-checkbox-background-color-selected);
+        border-color: var(--theme-checkbox-border-color-selected);
       }
 
       /* ✓ */
       & + span::after {
-        /* default */
-        content: "";
         position: absolute;
-        display: block;
-        transform: translate(4px, 3.5px) rotate(-45deg);
         left: -1px;
+        display: block;
         width: 8px;
         height: 5px;
+
+        /* default */
+        content: "";
+        border-color: var(--theme-checkbox-foreground-color-selected);
         border-style: solid;
         border-width: 0 0 1.3px 1.3px;
-        border-color: var(--theme-checkbox-foreground-color-selected);
+        transform: translate(4px, 3.5px) rotate(-45deg);
       }
 
       &:focus + span::after {
@@ -215,10 +218,10 @@ export default {
     --large-height: 20px;
 
     font-family: var(--theme-text-bold-font-family);
-    color: var(--theme-text-bold-color);
     font-size: 16px;
     font-weight: 700;
     line-height: var(--large-height);
+    color: var(--theme-text-bold-color);
 
     & > span {
       min-height: var(--large-height);

@@ -84,10 +84,10 @@ import { Avatar } from "@knime/components";
 <style lang="postcss" scoped>
 .flex-container {
   display: flex;
-  align-items: baseline;
   flex-wrap: wrap;
-  width: 100%;
   gap: 10px;
+  align-items: baseline;
+  width: 100%;
 
   /* Fix missing contrast caused by transparent demo avatar image */
   & :deep(.avatar-frame) {

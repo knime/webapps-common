@@ -287,9 +287,9 @@ h4 {
 
 .submenus {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  flex-wrap: wrap;
   margin-bottom: 20px;
 
   & > * {
@@ -311,8 +311,8 @@ h4 {
 }
 
 .scroll-container {
-  overflow: hidden auto;
   height: 50px;
+  overflow: hidden auto;
 }
 
 .translated {

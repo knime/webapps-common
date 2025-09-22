@@ -66,19 +66,19 @@ export default {
 <style lang="postcss" scoped>
 h2 {
   display: flex;
-  justify-content: flex-start;
   align-items: center;
+  justify-content: flex-start;
 }
 
 .function-button {
   display: none;
+  align-items: center;
   padding: 0;
   margin: 5px 12px;
-  align-items: center;
 
   &.active {
-    background-color: var(--theme-color-success);
     display: block;
+    background-color: var(--theme-color-success);
     opacity: 0;
     transition: opacity 2s linear;
     transition-delay: 1s;

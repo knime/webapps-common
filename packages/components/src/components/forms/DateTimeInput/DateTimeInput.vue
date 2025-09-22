@@ -502,17 +502,17 @@ export default {
 <style lang="postcss" scoped>
 .date-time-input {
   display: flex;
-  width: auto;
   flex-wrap: wrap;
   gap: 10px 20px;
+  width: auto;
 
   /* time */
   & .time {
     display: flex;
-    width: auto;
     flex-wrap: wrap;
-    align-items: center;
     gap: 10px 0;
+    align-items: center;
+    width: auto;
 
     & .time-part {
       width: 5rem;
@@ -528,8 +528,8 @@ export default {
 
     & span {
       display: flex;
-      width: auto;
       flex-wrap: nowrap;
+      width: auto;
     }
 
     & .timezone {
@@ -583,9 +583,10 @@ export default {
       --vc-rounded: 0;
       --vc-rounded-lg: 0;
 
+      border: 0;
+
       /* popover box shadow */
       box-shadow: var(--shadow-elevation-2);
-      border: 0;
     }
 
     & :deep(.vc-arrow):not(:hover),
@@ -637,12 +638,13 @@ export default {
       --vc-gray-900: var(--theme-date-input-gray-900);
     }
 
+    position: relative;
+    min-width: 7.5rem;
+
     /* -- end v-calendar 'theme' */
 
     /* input wrapper style */
     max-width: 9rem;
-    min-width: 7.5rem;
-    position: relative;
     border: var(--form-border-width) solid var(--theme-date-input-border-color);
 
     &:focus-within {
@@ -651,20 +653,20 @@ export default {
 
     /* stylelint-disable-next-line no-descending-specificity */
     & input {
-      font-size: 13px;
-      font-weight: 300;
-      letter-spacing: inherit;
+      width: calc(100% - 32px);
       height: calc(
         var(--single-line-form-height) - 2 * var(--form-border-width)
       );
-      line-height: normal;
-      border: 0;
-      margin: 0;
       padding: 0 10px;
-      border-radius: 0;
-      width: calc(100% - 32px);
+      margin: 0;
+      font-size: 13px;
+      font-weight: 300;
+      line-height: normal;
+      letter-spacing: inherit;
       outline: none;
       background-color: var(--theme-date-input-input-background);
+      border: 0;
+      border-radius: 0;
 
       /* css3 invalid state */
       &:invalid {
@@ -682,12 +684,12 @@ export default {
 
     & .invalid-marker {
       position: absolute;
-      display: block;
-      width: 3px;
-      left: -1px;
       top: 0;
       bottom: 0;
+      left: -1px;
       z-index: 1;
+      display: block;
+      width: 3px;
       background-color: var(--theme-color-error);
     }
 
@@ -699,8 +701,8 @@ export default {
       height: calc(
         var(--single-line-form-height) - 2 * var(--form-border-width)
       );
-      padding-left: 10px;
       padding-right: 9px;
+      padding-left: 10px;
 
       &:hover:not(.disabled),
       &:focus:not(.disabled) {

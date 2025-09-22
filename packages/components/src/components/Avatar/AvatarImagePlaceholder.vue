@@ -101,9 +101,9 @@ const styles = computed(() => {
 
 <style lang="postcss" scoped>
 .avatar-placeholder {
+  position: relative;
   width: 100%;
   height: 100%;
-  position: relative;
   background-color: var(--knime-silver-sand);
   border-radius: 50%;
 
@@ -112,15 +112,15 @@ const styles = computed(() => {
 }
 
 span {
-  font-size: calc(var(--placeholder-size, 45px) / 2);
-  color: var(--knime-white);
-  font-weight: 400;
-  text-align: center;
   position: absolute;
-  left: 0;
-  right: 0;
   top: 50%;
+  right: 0;
+  left: 0;
+  font-size: calc(var(--placeholder-size, 45px) / 2);
+  font-weight: 400;
   line-height: 0;
+  color: var(--knime-white);
+  text-align: center;
   pointer-events: none;
   opacity: 0.8;
 }

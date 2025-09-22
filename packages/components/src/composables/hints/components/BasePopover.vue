@@ -107,10 +107,10 @@ const arrowDynamicPositionStyle = computed(() => {
   );
 
   position: relative;
+  z-index: var(--z-index-base-popover, 100);
   display: flex;
   max-width: 350px;
   background: var(--hint-popover-background);
-  z-index: var(--z-index-base-popover, 100);
 
   /* the wrapper is needed to have this proper shadow with two elements */
   filter: drop-shadow(0 2px 10px var(--shadow-base-color));
@@ -120,14 +120,14 @@ const arrowDynamicPositionStyle = computed(() => {
 
     &.left {
       left: var(--hint-popover-negative-offset);
-      transform: rotate(-90deg);
       margin-left: 1px;
+      transform: rotate(-90deg);
     }
 
     &.right {
       right: var(--hint-popover-negative-offset);
-      transform: rotate(90deg);
       margin-right: 1px;
+      transform: rotate(90deg);
     }
 
     &.top {
@@ -137,14 +137,14 @@ const arrowDynamicPositionStyle = computed(() => {
 
     &.bottom {
       bottom: var(--hint-popover-negative-offset);
-      transform: scale(-1);
       margin-bottom: 1px;
+      transform: scale(-1);
     }
 
     & .arrow-inner {
-      background: var(--hint-popover-background);
       width: var(--hint-popover-arrow-size);
       height: var(--hint-popover-arrow-size);
+      background: var(--hint-popover-background);
       clip-path: polygon(50% 50%, 0% 100%, 100% 100%);
     }
   }

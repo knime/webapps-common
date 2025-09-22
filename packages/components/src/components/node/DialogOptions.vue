@@ -90,9 +90,9 @@ export default {
 
 <style lang="postcss" scoped>
 h5 {
+  position: relative;
   padding: 15px 30px;
   margin: 0;
-  position: relative;
 }
 
 .options {
@@ -101,8 +101,8 @@ h5 {
   background-color: var(--knime-white);
 
   & .panel {
-    margin: 0;
     padding: 0 30px 10px 60px;
+    margin: 0;
   }
 
   &.with-section {
@@ -116,12 +116,12 @@ li {
 
 .option-field-name {
   display: block;
-  margin: 0;
   padding: 0;
+  margin: 0;
   font-size: 16px;
-  line-height: 20px;
   font-style: normal;
   font-weight: bold;
+  line-height: 20px;
 }
 
 .option-description {
@@ -134,7 +134,7 @@ li {
 }
 
 .section-description {
-  font-size: 16px;
   padding: 0 30px 15px;
+  font-size: 16px;
 }
 </style>

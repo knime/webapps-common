@@ -364,45 +364,45 @@ export default {
   background-color: var(--knime-white);
 
   &.disabled {
-    opacity: 0.5;
     pointer-events: none;
+    opacity: 0.5;
   }
 
   & label {
     &:focus-within {
-      background-color: var(--theme-dropdown-background-color-hover);
       color: var(--theme-dropdown-foreground-color-hover);
+      background-color: var(--theme-dropdown-background-color-hover);
     }
 
     &:hover {
-      background-color: var(--theme-dropdown-background-color-hover);
       color: var(--theme-dropdown-foreground-color-hover);
+      background-color: var(--theme-dropdown-background-color-hover);
     }
   }
 
   &.invalid::after {
-    content: "";
     position: absolute;
-    width: 3px;
-    left: 0;
-    margin: 0;
     top: 0;
     bottom: 0;
+    left: 0;
+    width: 3px;
+    margin: 0;
+    content: "";
     background-color: var(--theme-color-error);
   }
 
   & [role="button"] {
-    margin: 0;
-    border: var(--form-border-width) solid var(--knime-stone-gray);
-    padding: 0 38px 0 10px;
-    font-size: 13px;
-    font-weight: 300;
     height: var(--single-line-form-height);
-    line-height: var(--single-line-form-height); /* to center text vertically */
-    cursor: pointer;
-    white-space: nowrap;
+    padding: 0 38px 0 10px;
+    margin: 0;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-size: 13px;
+    font-weight: 300;
+    line-height: var(--single-line-form-height); /* to center text vertically */
+    white-space: nowrap;
+    cursor: pointer;
+    border: var(--form-border-width) solid var(--knime-stone-gray);
 
     &.placeholder {
       color: var(--knime-dove-gray);
@@ -439,14 +439,14 @@ export default {
   & .icon {
     --icon-size: 18px;
 
+    position: absolute;
+    top: calc((var(--single-line-form-height) - var(--icon-size)) / 2);
+    right: 10px;
     width: var(--icon-size);
     height: var(--icon-size);
-    stroke-width: calc(32px / 18);
-    stroke: var(--knime-masala);
-    position: absolute;
-    right: 10px;
-    top: calc((var(--single-line-form-height) - var(--icon-size)) / 2);
     pointer-events: none;
+    stroke: var(--knime-masala);
+    stroke-width: calc(32px / 18);
     transition: transform 0.2s ease-in-out;
   }
 
@@ -460,9 +460,9 @@ export default {
     width: 100%;
     padding: 5px 0;
     margin-top: -1px;
+    overflow-y: auto;
     background: var(--theme-multiselect-background-color);
     box-shadow: var(--shadow-elevation-1);
-    overflow-y: auto;
 
     & :deep(span) {
       padding-left: 5px;

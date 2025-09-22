@@ -152,19 +152,19 @@ export default {
 @import url("@knime/styles/css/mixins.css");
 
 .breadcrumb {
-  color: var(--knime-dove-gray);
+  margin: 0;
   font-family: var(--theme-text-bold-font-family);
   font-size: 13px;
-  line-height: 18px;
   font-weight: 500;
-  margin: 0;
+  line-height: 18px;
+  color: var(--knime-dove-gray);
   list-style-type: none;
 
   & ul,
   & li {
     display: inline-block;
-    margin: 0;
     padding: 0;
+    margin: 0;
   }
 
   & li {
@@ -174,22 +174,22 @@ export default {
   & span,
   & a {
     display: inline-block;
-    text-decoration: none;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
     max-width: 100%;
     padding: 10px 5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
     line-height: normal;
     vertical-align: middle;
+    white-space: nowrap;
+    text-decoration: none;
   }
 
   /* stylelint-disable no-descending-specificity */
   & svg {
     position: relative;
+    bottom: 1px;
     vertical-align: top;
     stroke: var(--theme-text-bold-color);
-    bottom: 1px;
   }
 
   & .breadcrumb-icon {
@@ -200,13 +200,13 @@ export default {
   }
 
   & .arrow {
+    position: relative;
+    flex-shrink: 0;
     width: 10px;
     height: 10px;
-    flex-shrink: 0;
     margin: 0 5px;
-    stroke-width: calc(32px / 10);
     vertical-align: middle;
-    position: relative;
+    stroke-width: calc(32px / 10);
   }
 
   /* Unlinked breadcrumb item */
@@ -284,10 +284,10 @@ export default {
     & ul {
       display: inline-flex;
       flex-direction: row-reverse; /* See this.reverseItems for explanation */
-      white-space: nowrap;
       overflow-x: auto; /* Scroll with hidden scrollbar in ... */
-      -ms-overflow-style: none; /* ... Edge */
+      white-space: nowrap;
       scrollbar-width: none; /* ... Firefox */
+      -ms-overflow-style: none; /* ... Edge */
       &::-webkit-scrollbar {
         display: none; /* ... Chrome, Safari and Opera */
       }
@@ -295,16 +295,16 @@ export default {
 
     & li {
       display: inline-flex;
-      align-items: center;
-      transition: flex-shrink 0.1s;
       flex: 1 1 min(400px, 30%);
-      max-width: fit-content;
+      align-items: center;
       min-width: 45px;
+      max-width: fit-content;
+      transition: flex-shrink 0.1s;
 
       &:hover,
       &:focus {
-        flex-basis: unset;
         flex-shrink: 0;
+        flex-basis: unset;
       }
 
       &:nth-child(1),
