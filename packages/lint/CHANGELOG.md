@@ -1,5 +1,11 @@
 # @knime/eslint-config
 
+## 9.2.0
+
+### Minor Changes
+
+- d81e636: auto-sort CSS properties
+
 ## 9.1.3
 
 ### Patch Changes
