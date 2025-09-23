@@ -35,6 +35,7 @@
     "@knime/eslint-config": "workspace:*",
     "@vitejs/plugin-vue": "catalog:",
     "gh-pages": "5.0.0",
+    "v-calendar": "catalog:patch",
     "vite": "catalog:",
     "vite-svg-loader": "catalog:"
   },

@@ -43,7 +43,7 @@
     "postcss": "8.4.5",
     "type-fest": "4.26.1",
     "typescript": "catalog:",
-    "v-calendar": "git+https://bitbucket.org/KNIME/v-calendar",
+    "v-calendar": "catalog:patch",
     "vite": "catalog:",
     "vite-plugin-dts": "catalog:",
     "vite-svg-loader": "catalog:",

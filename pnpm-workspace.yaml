@@ -32,8 +32,12 @@ catalog:
 
 catalogs:
   peer:
+    "@fontsource/roboto": "5.x"
+    "@fontsource/roboto-mono": "5.x"
     consola: 3.x
     eslint: 9.x
     prettier: 3.x
     stylelint: 16.x
     vue: ">=3.5.0"
+  patch:
+    v-calendar: "git+https://bitbucket.org/KNIME/v-calendar#048477f"
