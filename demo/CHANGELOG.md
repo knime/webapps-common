@@ -1,5 +1,18 @@
 # demo
 
+## 1.6.21
+
+### Patch Changes
+
+- 8fc76a1: Update v-calendar, require @fontsource/roboto in version 5
+- Updated dependencies [8fc76a1]
+  - @knime/styles@1.14.0
+  - @knime/components@1.38.4
+  - @knime/hub-features@1.14.13
+  - @knime/rich-text-editor@1.7.17
+  - @knime/utils@1.5.9
+  - @knime/virtual-tree@1.6.17
+
 ## 1.6.20
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @knime/styles
 
+## 1.14.0
+
+### Minor Changes
+
+- 8fc76a1: Update v-calendar, require @fontsource/roboto in version 5
+
 ## 1.13.0
 
 ### Minor Changes

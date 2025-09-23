@@ -1,5 +1,14 @@
 # @knime/components
 
+## 1.38.4
+
+### Patch Changes
+
+- 8fc76a1: Update v-calendar, require @fontsource/roboto in version 5
+- Updated dependencies [8fc76a1]
+  - @knime/styles@1.14.0
+  - @knime/utils@1.5.9
+
 ## 1.38.3
 
 ### Patch Changes
