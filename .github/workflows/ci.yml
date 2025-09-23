@@ -1,0 +1,72 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+jobs:
+  lint-test-build:
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # full history for SonarCloud
+      - uses: pnpm/action-setup@v4
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: "package.json"
+          cache: "pnpm"
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Lint and format
+        run: pnpm run ci:lint-format
+
+      - name: Build UI extension service
+        run: pnpm run build:ui-extension-service
+
+      - name: Type check
+        run: pnpm run type-check
+
+      - name: Run coverage
+        run: pnpm run coverage
+
+      - name: Build packages
+        run: pnpm run build:packages
+
+      - name: Build demo
+        run: pnpm run build:demo
+
+      - name: Audit
+        run: pnpm run audit
+
+      - name: Sonar scan
+        uses: SonarSource/sonarqube-scan-action@v5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: Upload demo build output as pages artifact
+        id: deployment
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: demo/dist/
+
+  # Deploy demo to GitHub pages
+  deploy-demo:
+    needs: lint-test-build
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
