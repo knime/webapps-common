@@ -1,0 +1,1 @@
+import{i}from"./navigator-npViAGhW.js";const s=r=>r.ctrlKey||r.metaKey||r.altKey||r.shiftKey,a=(r,t)=>(Array.isArray(t)?t:[t]).includes(r.key)&&!s(r),o=()=>i()?"metaKey":"ctrlKey";export{o as g,a as i};
