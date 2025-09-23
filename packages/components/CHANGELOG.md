@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.38.3
+
+### Patch Changes
+
+- 5e6e229: Fix bug in Firefox when dragging items in FileExplorer
+
 ## 1.38.2
 
 ### Patch Changes
