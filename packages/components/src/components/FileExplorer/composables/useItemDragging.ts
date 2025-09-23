@@ -238,6 +238,7 @@ export const useItemDragging = (options: UseItemDraggingOptions) => {
   ): DropReturn => {
     const droppedEl = getElementByItemIndex(index, isGoBackItem);
     droppedEl?.classList.remove("dragging-over");
+    const sourceItems = [...selectedItemIds.value];
 
     hasDroppedInside.value = true;
 
@@ -257,7 +258,7 @@ export const useItemDragging = (options: UseItemDraggingOptions) => {
 
     const targetItem = isGoBackItem ? ".." : items.value[index].id;
 
-    const isTargetSelected = selectedItemIds.value.includes(targetItem);
+    const isTargetSelected = sourceItems.includes(targetItem);
 
     if (isTargetSelected) {
       doRemoveGhosts(true);
@@ -269,7 +270,7 @@ export const useItemDragging = (options: UseItemDraggingOptions) => {
     }
 
     return {
-      sourceItems: selectedItemIds.value,
+      sourceItems,
       targetItem,
       onComplete,
     };

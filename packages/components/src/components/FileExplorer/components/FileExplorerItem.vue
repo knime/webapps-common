@@ -145,9 +145,9 @@ const onRenameSubmit = (keyupEvent: KeyboardEvent, isClickAway = false) => {
       </template>
 
       <template v-else>
-        <span v-if="!isRenameActive">
+        <div v-if="!isRenameActive" class="item-name">
           {{ item.name }}
-        </span>
+        </div>
 
         <template v-else>
           <OnClickOutside
@@ -197,8 +197,13 @@ const onRenameSubmit = (keyupEvent: KeyboardEvent, isClickAway = false) => {
     height: 100%;
     padding: calc(var(--item-padding) * 1px);
     overflow: hidden;
-    text-overflow: ellipsis;
     white-space: nowrap;
+
+    & .item-name {
+      width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
   }
 
   & .item-append {

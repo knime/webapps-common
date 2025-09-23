@@ -533,7 +533,10 @@ useResizeObserver(containerProps.ref, containerProps.onScroll);
 </script>
 
 <template>
-  <div class="file-explorer" :class="{ 'virtual-scrolling': props.virtual }">
+  <div
+    class="file-explorer"
+    :class="{ 'virtual-scrolling': props.virtual, empty: items.length === 0 }"
+  >
     <table
       tabindex="0"
       class="scroll-container"
@@ -577,12 +580,9 @@ useResizeObserver(containerProps.ref, containerProps.onScroll);
           ref="virtualItemRefs"
           tabindex="-1"
           class="file-explorer-item"
-          :class="{
-            'keyboard-focus': keyPressedUntilMouseClick,
-          }"
+          :class="{ 'keyboard-focus': keyPressedUntilMouseClick }"
           :disabled="item.disabled ?? false"
           :item="item"
-          :title="item.name"
           :is-dragging="isDragging"
           :is-selected="isSelected(renderedIndices[vIndex])"
           :is-rename-active="item.id === renamedItemId"
@@ -685,7 +685,7 @@ useResizeObserver(containerProps.ref, containerProps.onScroll);
   flex: 1 0 0%;
   flex-direction: column;
 
-  &.virtual-scrolling {
+  &.virtual-scrolling:not(.empty) {
     min-height: 0;
 
     & .scroll-container {
@@ -724,6 +724,7 @@ tbody {
 
 table {
   height: 100%;
+  table-layout: fixed;
 }
 
 table:focus {

@@ -28,6 +28,7 @@ export default defineComponent({
     :class="{
       selected: !isDragging && isSelected,
       dragging: isDragging && isSelected,
+      'anything-is-dragged': isDragging,
       disabled,
     }"
     data-test-id="file-explorer-item"
@@ -97,10 +98,12 @@ export default defineComponent({
     border: 1px solid var(--knime-dove-gray);
   }
 
-  & td,
-  & :slotted(td) {
-    /* Prevent children from interfering with drag events */
-    pointer-events: none;
+  &.anything-is-dragged {
+    & td,
+    & :slotted(td) {
+      /* Prevent children from interfering with drag events */
+      pointer-events: none;
+    }
   }
 }
 </style>
