@@ -1,0 +1,1 @@
+import{c as o,o as t,b as r}from"./index-CdRYFHYy.js";const n={xmlns:"http://www.w3.org/2000/svg",fill:"none",stroke:"currentColor","stroke-linecap":"round",viewBox:"0 0 12 12"};function s(l,e){return t(),o("svg",n,e[0]||(e[0]=[r("path",{d:"M2.5 6h7M6 9.5v-7","vector-effect":"non-scaling-stroke"},null,-1)]))}const a={render:s};export{a as default,s as render};
