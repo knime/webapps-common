@@ -1,8 +1,12 @@
 {
-  "private": true,
-  "type": "module",
+  "name": "@knime/root",
+  "version": "1.0.0",
+  "description": "tbd.",
+  "homepage": "https://knime.github.io/webapps-common/",
   "license": "GPL 3 and Additional Permissions according to Sec. 7 (SEE LICENSE IN license.txt)",
   "author": "KNIME AG, Zurich, Switzerland",
+  "type": "module",
+  "private": true,
   "scripts": {
     "format": "prettier --cache --write .",
     "format:check": "prettier --cache --check .",
