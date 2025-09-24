@@ -1,5 +1,11 @@
 # @knime/licenses
 
+## 1.3.2
+
+### Patch Changes
+
+- 4106e80: support root packages without name & version
+
 ## 1.3.1
 
 ### Patch Changes
