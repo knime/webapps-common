@@ -55,18 +55,21 @@ const checkLicenses = async (knimePackages) => {
   // exclude parent package
   const parentPkg = JSON.parse(await readFile(parentPkgPath, "utf-8"));
 
-  // license-checker only accepts semver versions
-  if (!semver.valid(parentPkg.version)) {
-    throw new Error(`Invalid version ${parentPkg.version}`);
+  if (parentPkg.name && parentPkg.version) {
+    // license-checker only accepts semver versions
+    if (!semver.valid(parentPkg.version)) {
+      throw new Error(`Invalid version ${parentPkg.version}`);
+    }
+
+    // semver.coerce does not respect prerelease, so we use semver.parse instead
+    // see https://github.com/npm/node-semver/issues/473
+    const parentPkgVersion = semver.parse(parentPkg.version, {
+      includePrerelease: true,
+    }).version;
+
+    config.excludePackages.push(`${parentPkg.name}@${parentPkgVersion}`);
   }
 
-  // semver.coerce does not respect prerelease, so we use semver.parse instead
-  // see https://github.com/npm/node-semver/issues/473
-  const parentPkgVersion = semver.parse(parentPkg.version, {
-    includePrerelease: true,
-  }).version;
-
-  config.excludePackages.push(`${parentPkg.name}@${parentPkgVersion}`);
   config.excludePackages.push(...knimePackages);
 
   // collect all used production packages and their licenses
