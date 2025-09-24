@@ -280,7 +280,7 @@ export default {
       const target = e.target as HTMLElement;
       const index = isBottom
         ? this.bottomIndex
-        : target.getAttribute("data-option-index");
+        : this.getDataOptionIndex(target);
       if (index) {
         this.draggingStartIndex = Number(index);
       }
@@ -289,7 +289,7 @@ export default {
       if (this.draggingStartIndex !== -1) {
         // With out HTMLElement type typescript couldn't find getAttribute
         const target = e.target as HTMLElement;
-        const dataIndex = target.getAttribute("data-option-index");
+        const dataIndex = this.getDataOptionIndex(target);
         if (!dataIndex) {
           return;
         }
@@ -306,6 +306,10 @@ export default {
         }
         this.setSelected(sectionValues);
       }
+    },
+    getDataOptionIndex(target: HTMLElement) {
+      return (target.closest("[data-option-index]") as HTMLElement | null)
+        ?.dataset.optionIndex;
     },
     onBottomStartDrag(e: MouseEvent) {
       this.focus();

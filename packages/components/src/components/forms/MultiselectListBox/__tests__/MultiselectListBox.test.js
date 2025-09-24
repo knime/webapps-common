@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { computed, markRaw, nextTick, ref } from "vue";
+import { computed, h, markRaw, nextTick, ref } from "vue";
 import { mount } from "@vue/test-utils";
 
 import LoadingIcon from "../../../LoadingIcon/LoadingIcon.vue";
@@ -584,6 +584,31 @@ describe("MultiselectListBox", () => {
       });
       wrapper.findAll("[role=option]")[1].trigger("mousedown");
       wrapper.findAll("[role=option]")[3].trigger("mousemove");
+      await nextTick();
+
+      expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual([
+        "test2",
+        "test3",
+        "test4",
+      ]);
+    });
+
+    it("selects multiple elements on mouse move while mouse down (drag) with slot content", async () => {
+      const wrapper = mount(MultiselectListBox, {
+        props: {
+          possibleValues,
+          modelValue: [],
+          ariaLabel: "A Label",
+        },
+        slots: {
+          option: (slotData) =>
+            h("div", { class: "outer" }, [
+              h("span", { class: "inner" }, slotData.slotItem.text),
+            ]),
+        },
+      });
+      wrapper.findAll(".inner")[1].trigger("mousedown");
+      wrapper.findAll(".inner")[3].trigger("mousemove");
       await nextTick();
 
       expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual([
