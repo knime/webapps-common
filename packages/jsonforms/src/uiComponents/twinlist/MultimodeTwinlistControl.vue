@@ -243,6 +243,11 @@ const rightLabel = computed(() => includedLabel ?? props.twinlistRightLabel);
   display: flex;
   gap: var(--space-4);
   align-items: center;
+
+  & > span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 
 .data-type-text {

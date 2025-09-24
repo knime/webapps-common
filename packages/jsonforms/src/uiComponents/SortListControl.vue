@@ -184,5 +184,10 @@ const controlElement = ref<typeof SortList | null>(null);
   display: flex;
   gap: var(--space-4);
   align-items: center;
+
+  & > span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 </style>

@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { markRaw, toRef } from "vue";
+import { computed, markRaw, toRef } from "vue";
 
 import { Twinlist } from "@knime/components";
+import { DataType } from "@knime/kds-components";
 
 import type { VueControlPropsForLabelContent } from "../../higherOrderComponents/control/withLabel";
-import type { IdAndText } from "../../types/ChoicesUiSchema";
+import type { TypedIdAndText } from "../../types/ChoicesUiSchema";
 import { useIncludedExcludedLabels } from "../composables/usePossibleValues";
 import TwinlistLoadingInfo from "../loading/TwinlistLoadingInfo.vue";
 
@@ -12,7 +13,7 @@ const props = withDefaults(
   defineProps<
     VueControlPropsForLabelContent<string[]> & {
       twinlistSize?: number;
-      possibleValues: IdAndText[] | null;
+      possibleValues: TypedIdAndText[] | null;
     }
   >(),
   {
@@ -25,6 +26,8 @@ const TwinlistLoadingInfoRaw = markRaw(TwinlistLoadingInfo);
 const { includedLabel, excludedLabel } = useIncludedExcludedLabels(
   toRef(props, "control"),
 );
+
+const withTypes = computed(() => props.possibleValues?.some((v) => v.type));
 </script>
 
 <template>
@@ -43,10 +46,32 @@ const { includedLabel, excludedLabel } = useIncludedExcludedLabels(
     compact
     show-resize-handle
     @update:model-value="changeValue"
-  />
+  >
+    <template v-if="withTypes" #option="{ slotItem }">
+      <div :class="['data-type-entry', { invalid: slotItem.invalid }]">
+        <DataType
+          :icon-name="slotItem?.type?.id"
+          :icon-title="slotItem?.type?.text"
+          size="small"
+        />
+        <span>{{ slotItem.text }}</span>
+      </div>
+    </template>
+  </Twinlist>
 </template>
 
 <style lang="postcss" scoped>
+.data-type-entry {
+  display: flex;
+  gap: var(--space-4);
+  align-items: center;
+
+  & > span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
 .twinlist :deep(.lists) :deep(.multiselect-list-box) :deep([role="listbox"]) {
   font-size: 13px;
 }

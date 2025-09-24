@@ -414,6 +414,11 @@ export default {
   display: flex;
   gap: var(--space-4);
   align-items: center;
+
+  & > span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 
 .data-type-text {

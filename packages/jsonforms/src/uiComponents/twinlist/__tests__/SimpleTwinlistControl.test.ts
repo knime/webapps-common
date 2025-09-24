@@ -11,6 +11,7 @@ import type { VueWrapper } from "@vue/test-utils";
 import { flushPromises } from "@vue/test-utils";
 
 import { Twinlist } from "@knime/components";
+import { DataType } from "@knime/kds-components";
 
 import {
   type ProvidedMethods,
@@ -87,6 +88,31 @@ describe("SimpleTwinlistControl", () => {
 
   it("renders", () => {
     expect(wrapper.findComponent(Twinlist).exists()).toBe(true);
+  });
+
+  it("renders data type icons for typed string choices", async () => {
+    await wrapper.setProps({
+      control: {
+        ...props.control,
+        uischema: {
+          options: {
+            possibleValues: [
+              {
+                id: "test_1",
+                text: "test_1",
+                type: { id: "string-datatype", text: "String" },
+              },
+              {
+                id: "test_2",
+                text: "test_2",
+                type: { id: "string-datatype", text: "String" },
+              },
+            ],
+          },
+        },
+      },
+    });
+    expect(wrapper.findAllComponents(DataType)).toHaveLength(2);
   });
 
   it("sets labelForId", () => {

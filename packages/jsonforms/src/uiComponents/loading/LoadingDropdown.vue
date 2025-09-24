@@ -98,6 +98,11 @@ const possibleValues = computed(() => {
   display: flex;
   gap: var(--space-4);
   align-items: center;
+
+  & > span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 
 .loading-icon {
