@@ -3,7 +3,7 @@ import { computed } from "vue";
 
 import type { VueControlPropsForLabelContent } from "../../higherOrderComponents/control/withLabel";
 
-import TwinlistControl, {
+import MultimodeTwinlistControl, {
   type TwinlistData,
 } from "./MultimodeTwinlistControl.vue";
 
@@ -12,11 +12,12 @@ const options = computed(() => props.control.uischema.options!);
 </script>
 
 <template>
-  <TwinlistControl
+  <MultimodeTwinlistControl
     v-bind="{ ...$props, ...$attrs }"
     show-unknown-values
     :unknown-values-text="options.unknownValuesText"
     :empty-state-label="options.emptyStateLabel"
     :twinlist-size="props.control.uischema.options?.twinlistSize"
+    :show-type-filter="!Boolean(options?.hideTypeFilter)"
   />
 </template>

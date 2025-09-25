@@ -45,6 +45,7 @@ const props = withDefaults(
       twinlistLeftLabel?: string;
       showUnknownValues?: boolean;
       twinlistRightLabel?: string;
+      showTypeFilter?: boolean;
     }
   >(),
   {
@@ -52,6 +53,7 @@ const props = withDefaults(
     twinlistLeftLabel: "Excludes",
     showUnknownValues: false,
     twinlistRightLabel: "Includes",
+    showTypeFilter: false,
   },
 );
 
@@ -175,7 +177,7 @@ const getPreviouslySelectedTypes = () => {
 
 previouslySelectedTypes.value = getPreviouslySelectedTypes();
 
-const withTypes = computed(() =>
+const possibleValuesHaveTypes = computed(() =>
   Boolean(possibleValues.value?.[0]?.hasOwnProperty("type")),
 );
 
@@ -191,7 +193,7 @@ const rightLabel = computed(() => includedLabel ?? props.twinlistRightLabel);
     v-bind="$attrs"
     :id="labelForId"
     :disabled="disabled"
-    :with-types="withTypes"
+    :with-types="showTypeFilter"
     :selected-types="control.data.typeFilter?.selectedTypes"
     :additional-possible-types="previouslySelectedTypes"
     :pattern="control.data.patternFilter.pattern"
@@ -217,7 +219,7 @@ const rightLabel = computed(() => includedLabel ?? props.twinlistRightLabel);
     @update:inverse-pattern="onInversePatternChange"
     @update:case-sensitive-pattern="onCaseSensitiveChange"
   >
-    <template v-if="withTypes" #option="{ slotItem }">
+    <template v-if="possibleValuesHaveTypes" #option="{ slotItem }">
       <div :class="['data-type-entry', { invalid: slotItem.invalid }]">
         <DataType
           :icon-name="slotItem?.type?.id"
@@ -227,7 +229,7 @@ const rightLabel = computed(() => includedLabel ?? props.twinlistRightLabel);
         <span>{{ slotItem.text }}</span>
       </div>
     </template>
-    <template v-if="withTypes" #type="{ slotItem }">
+    <template v-if="showTypeFilter" #type="{ slotItem }">
       <DataType
         :icon-name="slotItem.id"
         :icon-title="slotItem.text"
