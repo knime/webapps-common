@@ -1,5 +1,11 @@
 # @knime/eslint-config
 
+## 9.2.1
+
+### Patch Changes
+
+- cd005ca: configure @typescript-eslint/no-use-before-define
+
 ## 9.2.0
 
 ### Minor Changes
