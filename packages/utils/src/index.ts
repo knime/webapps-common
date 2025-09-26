@@ -25,6 +25,7 @@ import getLocalTimeZone from "./localTimezone";
 import * as navigatorUtils from "./navigator";
 import numIntegerDigits from "./numIntegerDigits";
 import * as promise from "./promise";
+import { sanitization } from "./sanitization";
 import sleep from "./sleep";
 import truncateString from "./truncateString";
 import updateDate from "./updateDate";
@@ -72,4 +73,5 @@ export {
   truncateString,
   updateDate,
   updateTime,
+  sanitization,
 };
