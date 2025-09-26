@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.38.6
+
+### Patch Changes
+
+- 98b2ff5: Fix multi selection via drag in twinlist with data type icons
+
 ## 1.38.5
 
 ### Patch Changes

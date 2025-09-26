@@ -1,5 +1,16 @@
 # demo
 
+## 1.6.23
+
+### Patch Changes
+
+- dfdb7e0: Add option to display type icons to twinlistcontrol and fix issues with text overflow in components using datatype icons
+- Updated dependencies [98b2ff5]
+  - @knime/components@1.38.6
+  - @knime/hub-features@1.14.15
+  - @knime/rich-text-editor@1.7.19
+  - @knime/virtual-tree@1.6.19
+
 ## 1.6.22
 
 ### Patch Changes

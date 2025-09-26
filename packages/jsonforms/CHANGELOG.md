@@ -1,5 +1,15 @@
 # @knime/json-forms
 
+## 1.15.21
+
+### Patch Changes
+
+- dfdb7e0: Add option to display type icons to twinlistcontrol and fix issues with text overflow in components using datatype icons
+- 27a21fe: Add possibility to hide type filters in MultiModeTwinList and its jsonforms renderer
+- Updated dependencies [98b2ff5]
+  - @knime/components@1.38.6
+  - @knime/rich-text-editor@1.7.19
+
 ## 1.15.20
 
 ### Patch Changes
