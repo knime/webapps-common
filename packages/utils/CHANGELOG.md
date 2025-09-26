@@ -1,5 +1,11 @@
 # @knime/utils
 
+## 1.6.0
+
+### Minor Changes
+
+- 07a52b9: Add utils to sanitize/strip HTML
+
 ## 1.5.9
 
 ### Patch Changes

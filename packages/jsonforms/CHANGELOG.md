@@ -1,5 +1,16 @@
 # @knime/json-forms
 
+## 1.15.21
+
+### Patch Changes
+
+- dfdb7e0: Add option to display type icons to twinlistcontrol and fix issues with text overflow in components using datatype icons
+- Updated dependencies [07a52b9]
+- Updated dependencies [98b2ff5]
+  - @knime/utils@1.6.0
+  - @knime/components@1.38.6
+  - @knime/rich-text-editor@1.7.19
+
 ## 1.15.20
 
 ### Patch Changes
