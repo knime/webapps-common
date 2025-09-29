@@ -46,19 +46,12 @@ Every PR must include changeset file(s) out of which the CHANGELOG file of each 
 pnpm run changeset
 ```
 
+Do merge those files with the PR to master.
+
 #### Publishing to npm
 
-When all changes are made and the package(s) should get published to npm:
-
-1. run the following command to bump versions and create the actual changelog entries
-
-   ```sh
-   pnpm run changeset:version
-   ```
-
-2. Push the changes to the PR
-3. Hit the "Deploy" button in the Bitbucket Pipeline
-4. Finally, merge the PR.
+The [`release` GitHub Action](./.github/workflows/release.yml) will automatically create & update a "Version Packages" PR if it detects
+changeset file(s) on master. Once a release should be published to npm, simply do merge this PR.
 
 # Join the Community!
 
