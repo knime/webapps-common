@@ -77,7 +77,6 @@ export default {
         ignorePseudoClasses: ["deep", "global", "slotted"],
       },
     ],
-  },
-
   "csstools/value-no-unknown-custom-properties": true,
+},
 };
