@@ -27,7 +27,9 @@ defineProps<{
     display: flex;
     align-items: center;
     justify-content: space-between;
+    /* stylelint-disable-next-line csstools/value-no-unknown-custom-properties */
     width: calc(100% - var(--horizontal-dialog-padding) * 2);
+    /* stylelint-disable-next-line csstools/value-no-unknown-custom-properties */
     margin: 0 var(--horizontal-dialog-padding);
     border-bottom: 1px solid var(--knime-silver-sand);
 

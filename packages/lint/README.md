@@ -94,6 +94,24 @@ module.exports = {
 
 See [stylelint](stylelint) folder for available configs.
 
+### Global custom CSS properties
+
+If the project uses global custom CSS properties, you have to make Stylelint aware of them, e.g.:
+
+```js
+module.exports = {
+  extends: ["@knime/eslint-config/stylelint/vue"],
+  rules: {
+    "csstools/value-no-unknown-custom-properties": [
+      true,
+      {
+        importFrom: ["src/assets/index.css"],
+      },
+    ],
+  },
+};
+```
+
 ## Using Git hooks in your project
 
 The package supplies the tools to running a couple of commit hooks:
