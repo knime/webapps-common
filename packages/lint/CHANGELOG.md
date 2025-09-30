@@ -1,5 +1,11 @@
 # @knime/eslint-config
 
+## 9.2.2
+
+### Patch Changes
+
+- d71d5d3: Remove legacy one-var rule
+
 ## 9.2.1
 
 ### Patch Changes
