@@ -157,13 +157,6 @@ export default [
       ],
       "no-with": "warn",
       "object-shorthand": "warn",
-      "one-var": [
-        "error",
-        {
-          initialized: "never",
-          uninitialized: "consecutive",
-        },
-      ],
       "operator-assignment": "warn",
       "prefer-promise-reject-errors": "warn",
       "prefer-rest-params": "warn",
