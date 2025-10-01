@@ -1,4 +1,5 @@
 export default {
+  plugins: ["stylelint-value-no-unknown-custom-properties"],
   extends: ["stylelint-config-standard", "stylelint-config-recess-order"],
   rules: {
     "rule-empty-line-before": [
@@ -64,5 +65,6 @@ export default {
         ],
       },
     ],
+    "csstools/value-no-unknown-custom-properties": true,
   },
 };

@@ -1,4 +1,5 @@
 export default {
+  plugins: ["stylelint-value-no-unknown-custom-properties"],
   extends: ["stylelint-config-standard-vue", "stylelint-config-recess-order"],
   rules: {
     "rule-empty-line-before": [
@@ -76,5 +77,6 @@ export default {
         ignorePseudoClasses: ["deep", "global", "slotted"],
       },
     ],
+    "csstools/value-no-unknown-custom-properties": true,
   },
 };

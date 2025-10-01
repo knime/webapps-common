@@ -195,7 +195,7 @@ const onRenameSubmit = (keyupEvent: KeyboardEvent, isClickAway = false) => {
     align-items: center;
     width: 100%;
     height: 100%;
-    padding: calc(var(--item-padding) * 1px);
+    padding: calc(var(--item-padding, 0) * 1px);
     overflow: hidden;
     white-space: nowrap;
 
@@ -210,7 +210,7 @@ const onRenameSubmit = (keyupEvent: KeyboardEvent, isClickAway = false) => {
     display: flex;
     align-items: center;
     height: 100%;
-    padding: calc(var(--item-padding) * 1px);
+    padding: calc(var(--item-padding, 0) * 1px);
 
     &:empty {
       display: none;
@@ -274,8 +274,8 @@ const onRenameSubmit = (keyupEvent: KeyboardEvent, isClickAway = false) => {
       pointer-events: auto;
 
       & :deep(input) {
-        padding: 0 calc(var(--item-padding) * 1px);
-        font-size: var(--item-font-size);
+        padding: 0 calc(var(--item-padding, 0) * 1px);
+        font-size: var(--item-font-size, unset);
       }
     }
   }

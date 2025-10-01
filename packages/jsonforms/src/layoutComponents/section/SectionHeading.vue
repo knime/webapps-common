@@ -20,15 +20,15 @@ defineProps<{
   position: sticky;
   top: 0;
   z-index: 1;
-  margin: 0 calc(-1 * var(--horizontal-dialog-padding));
+  margin: 0 calc(-1 * var(--horizontal-dialog-padding, 0));
   background-color: var(--knime-gray-ultra-light);
 
   & .section-header-layout-container {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    width: calc(100% - var(--horizontal-dialog-padding) * 2);
-    margin: 0 var(--horizontal-dialog-padding);
+    width: calc(100% - var(--horizontal-dialog-padding, 0) * 2);
+    margin: 0 var(--horizontal-dialog-padding, 0);
     border-bottom: 1px solid var(--knime-silver-sand);
 
     & h3 {

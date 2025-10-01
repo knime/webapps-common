@@ -210,7 +210,7 @@ const rootComponentProps = computed(() => {
     & .descriptor {
       font-size: 11px;
       font-weight: 400;
-      color: var(--knime-dove-grey);
+      color: var(--knime-dove-gray);
     }
 
     & svg.trusted {

@@ -89,8 +89,19 @@ The following code block should give an understanding of a commonly used setup i
 ```js
 module.exports = {
   extends: ["@knime/eslint-config/stylelint/vue"],
+  rules: {
+    "csstools/value-no-unknown-custom-properties": [
+      true,
+      {
+        // adjust this to point to global custom CSS properties (or remove if the project doesn't have any)
+        importFrom: ["src/assets/index.css"],
+      },
+    ],
+  },
 };
 ```
+
+There might be cases where CSS properties are shared between multiple nested Vue components, which Stylelint doesn't know. Do set default values for those to avoid linting errors, e.g. `height: var(--toolbar-height, 0);`.
 
 See [stylelint](stylelint) folder for available configs.
 

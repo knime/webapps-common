@@ -97,7 +97,7 @@ const linkToolOptions = computed<typeof defaultLinkToolOptions>(() =>
 
 .editor-editable {
   &:deep(.rich-text-editor) {
-    height: calc(100% - var(--toolbar-height));
+    height: calc(100% - var(--toolbar-height, 0));
   }
 }
 </style>
