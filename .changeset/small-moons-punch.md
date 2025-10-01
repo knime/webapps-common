@@ -2,7 +2,7 @@
 "@knime/eslint-config": minor
 ---
 
-Enforce that all used CSS custom properties do exist (via https://github.com/csstools/stylelint-value-no-unknown-custom-properties).
+Enforce that all used CSS custom properties do exist (via [stylelint-value-no-unknown-custom-properties](https://github.com/csstools/stylelint-value-no-unknown-custom-properties)).
 
 **Breaking change:** If the project uses global custom CSS properties (very likely), you have to make Stylelint aware of them in `.stylelintrc.cjs`, e.g.:
 
