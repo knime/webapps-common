@@ -101,6 +101,8 @@ module.exports = {
 };
 ```
 
+There might be cases where CSS properties are shared between multiple nested Vue components, which Stylelint doesn't know. Do set default values for those to avoid linting errors, e.g. `height: var(--toolbar-height, 0);`.
+
 See [stylelint](stylelint) folder for available configs.
 
 ## Using Git hooks in your project
