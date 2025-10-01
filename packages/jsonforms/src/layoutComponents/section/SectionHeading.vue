@@ -20,18 +20,15 @@ defineProps<{
   position: sticky;
   top: 0;
   z-index: 1;
-  /* stylelint-disable-next-line csstools/value-no-unknown-custom-properties */
-  margin: 0 calc(-1 * var(--horizontal-dialog-padding));
+  margin: 0 calc(-1 * var(--horizontal-dialog-padding, 0));
   background-color: var(--knime-gray-ultra-light);
 
   & .section-header-layout-container {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    /* stylelint-disable-next-line csstools/value-no-unknown-custom-properties */
-    width: calc(100% - var(--horizontal-dialog-padding) * 2);
-    /* stylelint-disable-next-line csstools/value-no-unknown-custom-properties */
-    margin: 0 var(--horizontal-dialog-padding);
+    width: calc(100% - var(--horizontal-dialog-padding, 0) * 2);
+    margin: 0 var(--horizontal-dialog-padding, 0);
     border-bottom: 1px solid var(--knime-silver-sand);
 
     & h3 {

@@ -97,8 +97,7 @@ const linkToolOptions = computed<typeof defaultLinkToolOptions>(() =>
 
 .editor-editable {
   &:deep(.rich-text-editor) {
-    /* stylelint-disable-next-line csstools/value-no-unknown-custom-properties */
-    height: calc(100% - var(--toolbar-height));
+    height: calc(100% - var(--toolbar-height, 0));
   }
 }
 </style>

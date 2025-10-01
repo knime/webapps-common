@@ -17,5 +17,4 @@ rules: {
 }
 ```
 
-There might be cases where CSS properties are shared between multiple nested Vue components, there you can add
-`/* stylelint-disable-next-line csstools/value-no-unknown-custom-properties */`.
+There might be cases where CSS properties are shared between multiple nested Vue components, which Stylelint doesn't know. Do set default values for those to avoid linting errors, e.g. `height: var(--toolbar-height, 0);`.

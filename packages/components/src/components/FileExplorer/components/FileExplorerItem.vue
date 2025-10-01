@@ -195,8 +195,7 @@ const onRenameSubmit = (keyupEvent: KeyboardEvent, isClickAway = false) => {
     align-items: center;
     width: 100%;
     height: 100%;
-    /* stylelint-disable-next-line csstools/value-no-unknown-custom-properties */
-    padding: calc(var(--item-padding) * 1px);
+    padding: calc(var(--item-padding, 0) * 1px);
     overflow: hidden;
     white-space: nowrap;
 
@@ -211,8 +210,7 @@ const onRenameSubmit = (keyupEvent: KeyboardEvent, isClickAway = false) => {
     display: flex;
     align-items: center;
     height: 100%;
-    /* stylelint-disable-next-line csstools/value-no-unknown-custom-properties */
-    padding: calc(var(--item-padding) * 1px);
+    padding: calc(var(--item-padding, 0) * 1px);
 
     &:empty {
       display: none;
@@ -276,10 +274,8 @@ const onRenameSubmit = (keyupEvent: KeyboardEvent, isClickAway = false) => {
       pointer-events: auto;
 
       & :deep(input) {
-        /* stylelint-disable-next-line csstools/value-no-unknown-custom-properties */
-        padding: 0 calc(var(--item-padding) * 1px);
-        /* stylelint-disable-next-line csstools/value-no-unknown-custom-properties */
-        font-size: var(--item-font-size);
+        padding: 0 calc(var(--item-padding, 0) * 1px);
+        font-size: var(--item-font-size, unset);
       }
     }
   }
