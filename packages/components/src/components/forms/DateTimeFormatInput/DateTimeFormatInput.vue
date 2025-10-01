@@ -168,7 +168,6 @@ const { floatingStyles: popoverFloatingStyles } = useFloating(
 
     & .trigger-popover-button {
       pointer-events: none;
-      background-color: var(--theme-time-part-input-background-color-disabled);
     }
   }
 

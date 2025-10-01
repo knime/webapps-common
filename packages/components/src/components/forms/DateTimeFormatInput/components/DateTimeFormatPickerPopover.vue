@@ -377,7 +377,6 @@ onUnmounted(() => (isMounted.value = false));
           id="dateFormats"
           ref="formatContainerRef"
           class="formats-container"
-          :style="{ '--formats-container-border-width': BORDER_WIDTH + 'px' }"
           tabindex="0"
           role="menu"
           @keydown="onKeydown"
@@ -455,7 +454,7 @@ onUnmounted(() => (isMounted.value = false));
   height: 200px;
   overflow: hidden auto;
   outline: none;
-  border: var(--formats-container-border-width) solid var(--knime-silver-sand);
+  border: calc(v-bind(BORDER_WIDTH) * 1px) solid var(--knime-silver-sand);
 
   & .no-formats-available {
     display: flex;

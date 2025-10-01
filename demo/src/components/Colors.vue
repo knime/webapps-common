@@ -237,6 +237,7 @@ export default {
     padding: 10px;
     margin-bottom: 6px;
     font-weight: bold;
+    /* stylelint-disable-next-line csstools/value-no-unknown-custom-properties */
     color: var(--font);
     outline: 1px solid rgb(0 0 0 / 10%);
     background: var(--bg);
@@ -259,6 +260,7 @@ export default {
     margin: 4px;
     font-weight: bold;
     line-height: calc(10vmin - 2em);
+    /* stylelint-disable-next-line csstools/value-no-unknown-custom-properties */
     color: var(--font);
     text-align: center;
     white-space: pre-wrap;

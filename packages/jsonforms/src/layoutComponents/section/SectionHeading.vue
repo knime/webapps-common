@@ -20,6 +20,7 @@ defineProps<{
   position: sticky;
   top: 0;
   z-index: 1;
+  /* stylelint-disable-next-line csstools/value-no-unknown-custom-properties */
   margin: 0 calc(-1 * var(--horizontal-dialog-padding));
   background-color: var(--knime-gray-ultra-light);
 
