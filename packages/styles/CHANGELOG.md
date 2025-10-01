@@ -1,5 +1,11 @@
 # @knime/styles
 
+## 1.14.1
+
+### Patch Changes
+
+- 490ab62: Add a rename icon.
+
 ## 1.14.0
 
 ### Minor Changes
