@@ -89,28 +89,19 @@ The following code block should give an understanding of a commonly used setup i
 ```js
 module.exports = {
   extends: ["@knime/eslint-config/stylelint/vue"],
-};
-```
-
-See [stylelint](stylelint) folder for available configs.
-
-### Global custom CSS properties
-
-If the project uses global custom CSS properties, you have to make Stylelint aware of them, e.g.:
-
-```js
-module.exports = {
-  extends: ["@knime/eslint-config/stylelint/vue"],
   rules: {
     "csstools/value-no-unknown-custom-properties": [
       true,
       {
+        // adjust this to point to global custom CSS properties (or remove if the project doesn't have any)
         importFrom: ["src/assets/index.css"],
       },
     ],
   },
 };
 ```
+
+See [stylelint](stylelint) folder for available configs.
 
 ## Using Git hooks in your project
 
