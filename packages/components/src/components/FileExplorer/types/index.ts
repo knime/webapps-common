@@ -22,6 +22,7 @@ export type Anchor = {
   item: FileExplorerItem;
   index: number;
   element: HTMLElement;
+  openedBy: "keyboard" | "mouse" | "optionsMenu";
 };
 
 export type FileExplorerMenuItem = BaseMenuItem & {

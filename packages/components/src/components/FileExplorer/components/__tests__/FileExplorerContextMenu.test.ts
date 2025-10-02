@@ -6,7 +6,7 @@ import { useFloating } from "@floating-ui/vue";
 import MenuItems from "../../../base/MenuItem/MenuItems.vue";
 import FileExplorerContextMenu from "../../components/FileExplorerContextMenu.vue";
 import { MockIntersectionObserver } from "../../composables/useTestUtils";
-import type { FileExplorerItem } from "../../types";
+import type { Anchor, FileExplorerItem } from "../../types";
 
 vi.mock("@floating-ui/vue", () => ({
   useFloating: vi.fn().mockReturnValue({
@@ -44,7 +44,8 @@ describe("FileExplorerContextMenu", () => {
       item: mockItem,
       element: document.createElement("td"),
       index: 0,
-    },
+      openedBy: "mouse",
+    } as Anchor,
     isMultipleSelectionActive: false,
     selectedItems: [mockItem],
   };

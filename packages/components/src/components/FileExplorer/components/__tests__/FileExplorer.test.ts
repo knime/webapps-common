@@ -846,6 +846,7 @@ describe("FileExplorer", () => {
         element: firstItem.element,
         index: 0,
         item: MOCK_DATA.at(0),
+        openedBy: "mouse",
       });
     });
 
@@ -892,6 +893,7 @@ describe("FileExplorer", () => {
         element: firstItem.element,
         index: 0,
         item: MOCK_DATA.at(0),
+        openedBy: "mouse",
       });
     });
 
@@ -906,7 +908,7 @@ describe("FileExplorer", () => {
         await openContextMenu(_wrapper, itemIndex);
 
         const renameOption = getRenameOptionElement(_wrapper);
-        renameOption.trigger("click");
+        await renameOption.trigger("click");
       };
 
       it("should handle event from contextmenu and activate rename option on item", async () => {
@@ -1145,6 +1147,7 @@ describe("FileExplorer", () => {
           item: MOCK_DATA.at(0),
           element: firstItem.element,
           index: 0,
+          openedBy: "mouse",
         });
         expect(
           getSlottedStubProp({ wrapper, propName: "isContextMenuVisible" }),

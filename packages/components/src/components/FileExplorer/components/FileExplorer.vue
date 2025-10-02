@@ -4,6 +4,7 @@ import { type Ref, computed, nextTick, ref, toRef, toRefs, watch } from "vue";
 import { onClickOutside, useResizeObserver } from "@vueuse/core";
 import { debounce } from "lodash-es";
 
+import OptionsIcon from "@knime/styles/img/icons/menu-options.svg";
 import { getMetaOrCtrlKey } from "@knime/utils";
 import {
   SameSizeManager,
@@ -12,12 +13,14 @@ import {
 
 import { useFocusableMultiSelection } from "../../../composables/multiSelection/useFocusableMultiSelection";
 import useKeyPressedUntilMouseClick from "../../../composables/useKeyPressedUntilMouseClick";
+import FunctionButton from "../../Buttons/FunctionButton.vue";
 import { useItemDragging } from "../composables/useItemDragging";
 import type {
   Anchor,
   FileExplorerItem as FileExplorerItemType,
   ItemClickPayload,
 } from "../types";
+import { filterSlotsForDynamicColumns } from "../utils/filterSlotsForDynamicColumns";
 
 import FileExplorerContextMenu from "./FileExplorerContextMenu.vue";
 import FileExplorerItem from "./FileExplorerItem.vue";
@@ -60,6 +63,11 @@ type Props = {
    * Disable the context menu completely
    */
   disableContextMenu?: boolean;
+  /**
+   * Disable the options menu (three dots) that calls the context menu on click.
+   * Has no effect when `disableContextMenu` is `true`.
+   */
+  disableOptionsMenu?: boolean;
   /**
    * Disable multi-selection
    */
@@ -417,35 +425,77 @@ watch(fullPath, async () => {
   focusIndex(0);
 });
 
-const openContextMenu = (
-  event: MouseEvent | KeyboardEvent,
-  clickedItem: FileExplorerItemType,
+const setContextMenuOpen = (
+  position: { x: number; y: number },
+  item: FileExplorerItemType,
+  element: HTMLElement,
   index: number,
+  openedBy: Anchor["openedBy"],
+  // eslint-disable-next-line max-params
 ) => {
-  const element = getItemElement(index);
+  contextMenuPos.value = { ...position };
 
-  if (!element) {
-    return;
-  }
-
-  if (event instanceof MouseEvent) {
-    contextMenuPos.value.x = event.clientX;
-    contextMenuPos.value.y = event.clientY;
-  } else {
-    const rect = element.getBoundingClientRect();
-
-    // eslint-disable-next-line no-magic-numbers
-    contextMenuPos.value.x = rect.x + rect.width * 0.8;
-    contextMenuPos.value.y = rect.y + rect.height / 2;
-  }
-
-  contextMenuAnchor.value = { item: clickedItem, index, element };
+  contextMenuAnchor.value = { item, index, element, openedBy };
 
   if (!isSelected(index)) {
     handleSelectionClick(index);
   }
 
   isContextMenuVisible.value = true;
+};
+
+const openContextMenuByMouse = (
+  event: MouseEvent,
+  clickedItem: FileExplorerItemType,
+  index: number,
+) => {
+  setContextMenuOpen(
+    { x: event.clientX, y: event.clientY },
+    clickedItem,
+    getItemElement(index)!,
+    index,
+    "mouse",
+  );
+};
+
+const openContextMenuByKeyboard = (
+  clickedItem: FileExplorerItemType,
+  index: number,
+) => {
+  const element = getItemElement(index);
+  if (!element) {
+    return;
+  }
+  const rect = element.getBoundingClientRect();
+
+  setContextMenuOpen(
+    // eslint-disable-next-line no-magic-numbers
+    { x: rect.x + rect.width * 0.8, y: rect.y + rect.height / 2 },
+    clickedItem,
+    element,
+    index,
+    "keyboard",
+  );
+};
+
+const openContextMenuByOptionsMenu = (
+  element: HTMLElement,
+  clickedItem: FileExplorerItemType,
+  index: number,
+) => {
+  const rect = element.getBoundingClientRect();
+
+  // only the one with the menu should be selected
+  handleSelectionClick(index);
+
+  setContextMenuOpen(
+    // eslint-disable-next-line no-magic-numbers
+    { x: rect.x, y: rect.y + rect.height + 4 },
+    clickedItem,
+    element,
+    index,
+    "optionsMenu",
+  );
 };
 
 const deleteSelectedItems = () => {
@@ -595,9 +645,11 @@ useResizeObserver(containerProps.ref, containerProps.onScroll);
           @dragend="forwardEmit('dragend', onDragEnd($event, item))"
           @drag="forwardEmit('drag', onDrag($event, item))"
           @click="onItemClick(item, $event, renderedIndices[vIndex])"
-          @contextmenu="openContextMenu($event, item, renderedIndices[vIndex])"
+          @contextmenu="
+            openContextMenuByMouse($event, item, renderedIndices[vIndex])
+          "
           @keydown.shift.f10="
-            openContextMenu($event, item, renderedIndices[vIndex])
+            openContextMenuByKeyboard(item, renderedIndices[vIndex])
           "
           @drop="
             forwardEmit('moveItems', onDrop($event, renderedIndices[vIndex]))
@@ -622,13 +674,34 @@ useResizeObserver(containerProps.ref, containerProps.onScroll);
             />
           </template>
 
-          <template v-if="$slots.itemAppend" #itemAppend="slotProps">
-            <slot
-              name="itemAppend"
-              :item="item"
-              :is-rename-active="slotProps.isRenameActive"
-              :is-selected="slotProps.isSelected"
-            />
+          <template
+            v-for="(renderFn, name) of filterSlotsForDynamicColumns($slots)"
+            #[name]="slotProps"
+          >
+            <slot :name="name" v-bind="slotProps" :item="item" />
+          </template>
+
+          <template
+            v-if="!props.disableContextMenu && !props.disableOptionsMenu"
+            #optionsMenu
+          >
+            <FunctionButton
+              :active="
+                contextMenuAnchor?.openedBy === 'optionsMenu' &&
+                contextMenuAnchor?.item.id === item.id
+              "
+              compact
+              @dblclick.stop
+              @pointerdown.stop
+              @click.stop="
+                openContextMenuByOptionsMenu(
+                  $event.currentTarget,
+                  item,
+                  renderedIndices[vIndex],
+                )
+              "
+              ><OptionsIcon
+            /></FunctionButton>
           </template>
         </FileExplorerItem>
 
