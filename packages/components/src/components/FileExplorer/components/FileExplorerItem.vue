@@ -141,36 +141,32 @@ const onRenameSubmit = (keyupEvent: KeyboardEvent, isClickAway = false) => {
       }"
       :title="item.name"
     >
-      <template v-if="$slots.default">
-        <slot :is-rename-active="isRenameActive" :is-selected="isSelected" />
-      </template>
+      <div v-if="!isRenameActive" class="item-name">
+        <slot :is-rename-active="isRenameActive" :is-selected="isSelected">{{
+          item.name
+        }}</slot>
+      </div>
 
       <template v-else>
-        <div v-if="!isRenameActive" class="item-name">
-          {{ item.name }}
-        </div>
-
-        <template v-else>
-          <OnClickOutside
-            class="rename-input-container"
-            @trigger="($event: any) => onRenameSubmit($event, true)"
-          >
-            <div>
-              <InputField
-                ref="renameInput"
-                v-model="renameValue"
-                class="rename-input"
-                type="text"
-                title="rename"
-                :is-valid="isValid"
-                @keydown.stop="onRenameSubmit($event)"
-              />
-              <div v-if="!isValid" class="item-error">
-                <span>{{ errorMessage }}</span>
-              </div>
+        <OnClickOutside
+          class="rename-input-container"
+          @trigger="($event: any) => onRenameSubmit($event, true)"
+        >
+          <div>
+            <InputField
+              ref="renameInput"
+              v-model="renameValue"
+              class="rename-input"
+              type="text"
+              title="rename"
+              :is-valid="isValid"
+              @keydown.stop="onRenameSubmit($event)"
+            />
+            <div v-if="!isValid" class="item-error">
+              <span>{{ errorMessage }}</span>
             </div>
-          </OnClickOutside>
-        </template>
+          </div>
+        </OnClickOutside>
       </template>
     </td>
     <td
