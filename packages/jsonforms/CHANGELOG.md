@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.15.24
+
+### Patch Changes
+
+- a81819a: Enable dynamic possible values in ComboBox jsonforms renderer
+
 ## 1.15.23
 
 ### Patch Changes
