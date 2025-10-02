@@ -65,7 +65,7 @@ type Props = {
   disableContextMenu?: boolean;
   /**
    * Disable the options menu (three dots) that calls the context menu on click.
-   * Is disabled when `disableContextMenu` is `true`.
+   * Has no effect when `disableContextMenu` is `true`.
    */
   disableOptionsMenu?: boolean;
   /**
