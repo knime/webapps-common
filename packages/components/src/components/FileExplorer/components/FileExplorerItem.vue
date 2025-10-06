@@ -8,6 +8,7 @@ import FolderIcon from "@knime/styles/img/icons/folder.svg";
 import { useNameValidator } from "../../../composables";
 import InputField from "../../forms/InputField/InputField.vue";
 import type { FileExplorerItem, ItemIconRenderer } from "../types";
+import { filterSlotsForDynamicColumns } from "../utils/filterSlotsForDynamicColumns";
 
 import FileExplorerItemBase from "./FileExplorerItemBase.vue";
 
@@ -140,47 +141,50 @@ const onRenameSubmit = (keyupEvent: KeyboardEvent, isClickAway = false) => {
       }"
       :title="item.name"
     >
-      <template v-if="$slots.default">
-        <slot :is-rename-active="isRenameActive" :is-selected="isSelected" />
-      </template>
+      <div v-if="!isRenameActive" class="item-name">
+        <slot :is-rename-active="isRenameActive" :is-selected="isSelected">{{
+          item.name
+        }}</slot>
+      </div>
 
       <template v-else>
-        <div v-if="!isRenameActive" class="item-name">
-          {{ item.name }}
-        </div>
-
-        <template v-else>
-          <OnClickOutside
-            class="rename-input-container"
-            @trigger="($event: any) => onRenameSubmit($event, true)"
-          >
-            <div>
-              <InputField
-                ref="renameInput"
-                v-model="renameValue"
-                class="rename-input"
-                type="text"
-                title="rename"
-                :is-valid="isValid"
-                @keydown.stop="onRenameSubmit($event)"
-              />
-              <div v-if="!isValid" class="item-error">
-                <span>{{ errorMessage }}</span>
-              </div>
+        <OnClickOutside
+          class="rename-input-container"
+          @trigger="($event: any) => onRenameSubmit($event, true)"
+        >
+          <div>
+            <InputField
+              ref="renameInput"
+              v-model="renameValue"
+              class="rename-input"
+              type="text"
+              title="rename"
+              :is-valid="isValid"
+              @keydown.stop="onRenameSubmit($event)"
+            />
+            <div v-if="!isValid" class="item-error">
+              <span>{{ errorMessage }}</span>
             </div>
-          </OnClickOutside>
-        </template>
+          </div>
+        </OnClickOutside>
       </template>
     </td>
     <td
-      v-if="$slots.itemAppend"
-      :class="['item-append', { light: !item.isDirectory }]"
+      v-for="(_, name) of filterSlotsForDynamicColumns($slots)"
+      :key="`dynamicColumn-${name}`"
+      :class="['content-column', { light: !item.isDirectory }]"
     >
       <slot
-        name="itemAppend"
+        :name="name"
         :is-rename-active="isRenameActive"
         :is-selected="isSelected"
       />
+    </td>
+    <td
+      v-if="$slots.optionsMenu"
+      :class="['content-column', { light: !item.isDirectory }]"
+    >
+      <slot name="optionsMenu" />
     </td>
   </FileExplorerItemBase>
 </template>
@@ -206,7 +210,7 @@ const onRenameSubmit = (keyupEvent: KeyboardEvent, isClickAway = false) => {
     }
   }
 
-  & .item-append {
+  & .content-column {
     display: flex;
     align-items: center;
     height: 100%;
@@ -256,7 +260,7 @@ const onRenameSubmit = (keyupEvent: KeyboardEvent, isClickAway = false) => {
   }
 
   &:not(.selected, .dragging, .dragging-over) .item-content.light,
-  &:not(.selected, .dragging, .dragging-over) .item-append.light {
+  &:not(.selected, .dragging, .dragging-over) .content-column.light {
     background-color: var(--knime-white);
   }
 
