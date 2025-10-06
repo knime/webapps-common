@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from "vue";
 import { DispatchRenderer } from "@jsonforms/vue";
 
 import { FunctionButton } from "@knime/components";
@@ -10,7 +11,10 @@ import VerticalLayoutBase from "./VerticalLayoutBase.vue";
 import SectionHeading from "./section/SectionHeading.vue";
 import SettingsSubPanel from "./settingsSubPanel/SettingsSubPanel.vue";
 
-defineProps<VueLayoutProps>();
+const props = defineProps<VueLayoutProps>();
+
+const options = computed(() => props.layout.uischema.options ?? {});
+const setText = computed(() => options.value.setText ?? "Set");
 </script>
 
 <template>
@@ -22,7 +26,7 @@ defineProps<VueLayoutProps>();
       <SectionHeading :title-text="layout.uischema.label">
         <template #right-buttons>
           <FunctionButton compact class="set-button" @click="expand">
-            <span>Set</span>
+            <span>{{ setText }}</span>
             <NextIcon />
           </FunctionButton>
         </template>
