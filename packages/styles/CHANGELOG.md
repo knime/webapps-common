@@ -1,5 +1,11 @@
 # @knime/styles
 
+## 1.14.2
+
+### Patch Changes
+
+- 28c4851: FileExplorer: Add dynamic (dynamicColumn<NAME>) slot to allow any number of columns instead one (itemAppend). Add an options menu (three dots) at the end of the row which triggeres the context menu. Fix rename icon.
+
 ## 1.14.1
 
 ### Patch Changes
