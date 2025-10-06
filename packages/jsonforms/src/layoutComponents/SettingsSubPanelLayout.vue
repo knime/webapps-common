@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { DispatchRenderer } from "@jsonforms/vue";
 
 import { FunctionButton } from "@knime/components";
@@ -15,39 +15,45 @@ const props = defineProps<VueLayoutProps>();
 
 const options = computed(() => props.layout.uischema.options ?? {});
 const setText = computed(() => options.value.setText ?? "Set");
+const hover = ref(false);
 </script>
 
 <template>
-  <SettingsSubPanel
-    show-back-arrow
-    background-color-override="var(--knime-gray-ultra-light"
-  >
-    <template #expand-button="{ expand }">
-      <SectionHeading :title-text="layout.uischema.label">
-        <template #right-buttons>
-          <FunctionButton compact class="set-button" @click="expand">
-            <span>{{ setText }}</span>
-            <NextIcon />
-          </FunctionButton>
-        </template>
-      </SectionHeading>
-    </template>
-
-    <VerticalLayoutBase
-      #default="{ element, index }"
-      :elements="layout.uischema.elements"
+  <div @mouseover="hover = true" @mouseleave="hover = false">
+    <SettingsSubPanel
+      show-back-arrow
+      background-color-override="var(--knime-gray-ultra-light)"
     >
-      <DispatchRenderer
-        :key="`${layout.path}-${index}`"
-        :schema="layout.schema"
-        :uischema="element"
-        :path="layout.path"
-        :enabled="layout.enabled"
-        :renderers="layout.renderers"
-        :cells="layout.cells"
-      />
-    </VerticalLayoutBase>
-  </SettingsSubPanel>
+      <template #expand-button="{ expand }">
+        <SectionHeading :title-text="layout.uischema.label">
+          <template #right-buttons>
+            <div class="flex-row">
+              <slot name="buttons" :hover="hover" />
+              <FunctionButton compact class="set-button" @click="expand">
+                <span>{{ setText }}</span>
+                <NextIcon />
+              </FunctionButton>
+            </div>
+          </template>
+        </SectionHeading>
+      </template>
+
+      <VerticalLayoutBase
+        #default="{ element, index }"
+        :elements="layout.uischema.elements"
+      >
+        <DispatchRenderer
+          :key="`${layout.path}-${index}`"
+          :schema="layout.schema"
+          :uischema="element"
+          :path="layout.path"
+          :enabled="layout.enabled"
+          :renderers="layout.renderers"
+          :cells="layout.cells"
+        />
+      </VerticalLayoutBase>
+    </SettingsSubPanel>
+  </div>
 </template>
 
 <style lang="postcss" scoped>
@@ -55,5 +61,13 @@ const setText = computed(() => options.value.setText ?? "Set");
   & span {
     margin: 0 var(--space-4);
   }
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+  gap: var(--space-8);
+  align-items: center;
+  justify-content: flex-end;
 }
 </style>
