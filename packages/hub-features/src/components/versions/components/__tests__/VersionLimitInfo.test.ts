@@ -12,6 +12,7 @@ describe("VersionLimitInfo", () => {
       currentUsage: 42,
     },
     upgradeUrl: "https://www.knime.com/knime-hub-pricing",
+    isPrivate: true,
   };
 
   const doMount = ({ props = {} }: { props?: Partial<Props> } = {}) => {
@@ -27,7 +28,9 @@ describe("VersionLimitInfo", () => {
   it("renders component", () => {
     const { wrapper } = doMount();
     expect(wrapper.text()).toContain("Using 42 of 123 versions");
-    expect(wrapper.text()).toContain("Upgrade to use unlimited versions");
+    expect(wrapper.text()).toContain(
+      "Upgrade to use unlimited versions for private items",
+    );
     expect(wrapper.find("a").attributes("href")).toBe(defaultProps.upgradeUrl);
   });
 
