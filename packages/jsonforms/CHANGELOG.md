@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.15.26
+
+### Patch Changes
+
+- 90a1674: Enable setting the set text in side drawer sections.
+
 ## 1.15.25
 
 ### Patch Changes
