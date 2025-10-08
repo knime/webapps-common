@@ -1,5 +1,11 @@
 # @knime/hub-features
 
+## 1.14.19
+
+### Patch Changes
+
+- 2b7c731: add visibility info in version limit hint in ManageVersions panel
+
 ## 1.14.18
 
 ### Patch Changes
