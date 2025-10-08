@@ -52,6 +52,8 @@ export default defineComponent({
   --selection-color: var(--knime-cornflower-dark);
   --selection-bg-color: var(--knime-cornflower-semi);
 
+  /* required for positioning of  renaming (.item-error) */
+  position: relative;
   display: flex;
   flex-flow: row nowrap;
   align-items: center;

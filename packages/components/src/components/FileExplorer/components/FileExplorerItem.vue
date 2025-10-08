@@ -1,5 +1,13 @@
 <script setup lang="ts">
-import { type Ref, nextTick, ref, toRefs, watch } from "vue";
+import {
+  type Ref,
+  computed,
+  nextTick,
+  ref,
+  toRefs,
+  useSlots,
+  watch,
+} from "vue";
 import { OnClickOutside } from "@vueuse/components";
 
 import FileTextIcon from "@knime/styles/img/icons/file-text.svg";
@@ -102,6 +110,17 @@ const onRenameSubmit = (keyupEvent: KeyboardEvent, isClickAway = false) => {
     focusItem();
   }
 };
+
+const slots = useSlots();
+
+const dynamicDefaultGridColumns = computed(() => {
+  const length = Object.keys(filterSlotsForDynamicColumns(slots) ?? {}).length;
+  return length === 0 ? "" : `repeat(${length}, auto)`;
+});
+
+const optionsMenuGridColumn = computed(() => {
+  return slots.optionsMenu ? "30px" : "";
+});
 </script>
 
 <template>
@@ -134,14 +153,14 @@ const onRenameSubmit = (keyupEvent: KeyboardEvent, isClickAway = false) => {
     </template>
 
     <td
-      class="item-content"
+      class="column"
       :class="{
         light: !item.isDirectory,
         'rename-active': isRenameActive,
       }"
       :title="item.name"
     >
-      <div v-if="!isRenameActive" class="item-name">
+      <div v-if="!isRenameActive" class="inner">
         <slot :is-rename-active="isRenameActive" :is-selected="isSelected">{{
           item.name
         }}</slot>
@@ -172,17 +191,19 @@ const onRenameSubmit = (keyupEvent: KeyboardEvent, isClickAway = false) => {
     <td
       v-for="(_, name) of filterSlotsForDynamicColumns($slots)"
       :key="`dynamicColumn-${name}`"
-      :class="['content-column', { light: !item.isDirectory }]"
+      :class="['column', 'dynamic-column', { light: !item.isDirectory }]"
     >
-      <slot
-        :name="name"
-        :is-rename-active="isRenameActive"
-        :is-selected="isSelected"
-      />
+      <div class="inner">
+        <slot
+          :name="name"
+          :is-rename-active="isRenameActive"
+          :is-selected="isSelected"
+        />
+      </div>
     </td>
     <td
       v-if="$slots.optionsMenu"
-      :class="['content-column', { light: !item.isDirectory }]"
+      :class="['column', { light: !item.isDirectory }]"
     >
       <slot name="optionsMenu" />
     </td>
@@ -193,30 +214,26 @@ const onRenameSubmit = (keyupEvent: KeyboardEvent, isClickAway = false) => {
 @import url("@knime/styles/css/mixins.css");
 
 .file-explorer-item {
-  & .item-content {
+  display: grid;
+  grid-template-columns:
+    30px var(--file-explorer-item-grid, 1fr v-bind("dynamicDefaultGridColumns"))
+    v-bind("optionsMenuGridColumn");
+
+  & .column {
     display: flex;
-    flex: 2 1 auto;
     align-items: center;
-    width: 100%;
     height: 100%;
-    padding: calc(var(--item-padding, 0) * 1px);
     overflow: hidden;
     white-space: nowrap;
 
-    & .item-name {
+    & .inner {
       width: 100%;
+      padding: calc(var(--item-padding, 0) * 1px);
       overflow: hidden;
       text-overflow: ellipsis;
     }
-  }
 
-  & .content-column {
-    display: flex;
-    align-items: center;
-    height: 100%;
-    padding: calc(var(--item-padding, 0) * 1px);
-
-    &:empty {
+    &.dynamic-column:empty {
       display: none;
     }
   }
@@ -249,6 +266,8 @@ const onRenameSubmit = (keyupEvent: KeyboardEvent, isClickAway = false) => {
 
   & .item-error {
     position: absolute;
+    bottom: 0;
+    z-index: 10;
     padding: 7px 5px;
     margin-top: 5px;
     font-size: 13px;
@@ -257,10 +276,10 @@ const onRenameSubmit = (keyupEvent: KeyboardEvent, isClickAway = false) => {
     color: var(--theme-color-error);
     white-space: normal;
     backdrop-filter: blur(10px);
+    transform: translateY(100%);
   }
 
-  &:not(.selected, .dragging, .dragging-over) .item-content.light,
-  &:not(.selected, .dragging, .dragging-over) .content-column.light {
+  &:not(.selected, .dragging, .dragging-over) .column.light {
     background-color: var(--knime-white);
   }
 
