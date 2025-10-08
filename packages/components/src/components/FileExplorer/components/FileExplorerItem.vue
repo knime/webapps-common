@@ -154,6 +154,7 @@ const optionsMenuGridColumn = computed(() => {
 
     <td
       class="column"
+      data-test-id="item-name"
       :class="{
         light: !item.isDirectory,
         'rename-active': isRenameActive,
@@ -284,8 +285,6 @@ const optionsMenuGridColumn = computed(() => {
   }
 
   & td.rename-active {
-    padding: 0;
-
     & .rename-input-container {
       flex: 1;
     }

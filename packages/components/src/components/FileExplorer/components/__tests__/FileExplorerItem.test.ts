@@ -38,12 +38,12 @@ describe("FileExplorerItem", () => {
   it("should render correctly", () => {
     const { wrapper } = doMount();
 
-    expect(wrapper.find(".item-content").text()).toMatch(
+    expect(wrapper.find("[data-test-id='item-name']").text()).toMatch(
       defaultProps.item.name,
     );
-    expect(wrapper.find(".item-content").attributes("title")).toEqual(
-      defaultProps.item.name,
-    );
+    expect(
+      wrapper.find("[data-test-id='item-name']").attributes("title"),
+    ).toEqual(defaultProps.item.name);
   });
 
   it("should set the light class for Workflow type items", () => {
@@ -53,7 +53,9 @@ describe("FileExplorerItem", () => {
       },
     });
 
-    expect(wrapper.find(".item-content").classes()).toContain("light");
+    expect(wrapper.find("[data-test-id='item-name']").classes()).toContain(
+      "light",
+    );
   });
 
   it("should forward `isDragging` and `isSelected` props", () => {
