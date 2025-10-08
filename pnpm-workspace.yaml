@@ -42,3 +42,7 @@ catalogs:
     vue: ">=3.5.0"
   patch:
     v-calendar: "git+https://bitbucket.org/KNIME/v-calendar#048477f"
+
+minimumReleaseAge: 1440
+minimumReleaseAgeExclude:
+  - "@knime/*"
