@@ -30,6 +30,7 @@ type ManageVersionsProps = {
   hasEditCapability: boolean;
   versionLimit?: VersionLimit;
   upgradeUrl?: string;
+  isPrivate?: boolean;
 };
 
 defineProps<ManageVersionsProps>();
@@ -109,6 +110,7 @@ const closeLabelPopovers = throttle(() => {
               currentUsage: versionLimit.currentUsage,
             }"
             :upgrade-url
+            :is-private
           />
         </div>
       </div>

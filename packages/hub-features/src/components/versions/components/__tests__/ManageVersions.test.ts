@@ -58,6 +58,7 @@ const doMount = ({ mountProps }: { mountProps?: Partial<Props> } = {}) => {
     loading: false,
     versionHistory: mockHistory,
     unversionedSavepoint: mockSavepoint,
+    isPrivate: true,
   };
   const wrapper = shallowMount(ManageVersions, {
     props: { ...defaultProps, ...mountProps },

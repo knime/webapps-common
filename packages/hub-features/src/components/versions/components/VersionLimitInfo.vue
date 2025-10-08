@@ -5,9 +5,14 @@ import { InlineMessage } from "@knime/components";
 
 import type { VersionLimit } from "../types";
 
-const { versionLimit, upgradeUrl = undefined } = defineProps<{
+const {
+  versionLimit,
+  upgradeUrl = undefined,
+  isPrivate = false,
+} = defineProps<{
   versionLimit: Required<VersionLimit>;
   upgradeUrl?: string;
+  isPrivate?: boolean;
 }>();
 
 const isLimitReached = computed(
@@ -27,6 +32,6 @@ const title = computed(() => {
   <InlineMessage variant="info" :title>
     <template v-if="upgradeUrl"><a :href="upgradeUrl">Upgrade</a></template>
     <template v-else>Upgrade</template>
-    to use unlimited versions.
+    to use unlimited versions{{ isPrivate ? " for private items." : "." }}
   </InlineMessage>
 </template>
