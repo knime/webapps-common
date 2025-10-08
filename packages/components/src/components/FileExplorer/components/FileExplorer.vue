@@ -614,12 +614,6 @@ useResizeObserver(containerProps.ref, containerProps.onScroll);
           @click="changeDirectory('..')"
         />
       </tbody>
-      <thead>
-        <tr>
-          <th scope="col">Type</th>
-          <th class="name" scope="col">Name</th>
-        </tr>
-      </thead>
       <tbody
         :class="mode"
         :style="{ ...scrolledAreaStyles, flexDirection: 'column' }"
@@ -757,6 +751,7 @@ useResizeObserver(containerProps.ref, containerProps.onScroll);
   display: flex;
   flex: 1 0 0%;
   flex-direction: column;
+  isolation: isolate;
 
   &.virtual-scrolling:not(.empty) {
     min-height: 0;
