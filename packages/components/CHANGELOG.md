@@ -1,5 +1,14 @@
 # @knime/components
 
+## 1.39.1
+
+### Patch Changes
+
+- 637189c: FileExplorer:
+
+  - improve dynamic columns: allow customizable sizes via css variable for grid template
+  - bug fix QA-1367 when the rename error appears at wrong positions
+
 ## 1.39.0
 
 ### Minor Changes
