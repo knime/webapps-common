@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.39.2
+
+### Patch Changes
+
+- a554e60: - fix type issue in FileExplorer when used in knime-ui
+
 ## 1.39.1
 
 ### Patch Changes
