@@ -4,5 +4,7 @@ export const filterSlotsForDynamicColumns = (
   slots: ReturnType<typeof useSlots>,
 ) =>
   Object.fromEntries(
-    Object.entries(slots).filter(([key]) => key.startsWith("dynamicColumn")),
+    Object.entries(slots).filter(([key]) =>
+      String(key).startsWith("dynamicColumn"),
+    ),
   );
