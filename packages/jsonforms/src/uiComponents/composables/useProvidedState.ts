@@ -79,3 +79,29 @@ export default <
 
   return state;
 };
+
+/**
+ * For accessing state providers that are not registered in the uischema
+ * (e.g. custom validation messages)
+ */
+export const useInternalProvidedState = <D = unknown>(
+  uischema: { scope: string } | { id: string },
+  providedOptionName: string,
+  defaultValue: D | null = null,
+) => {
+  const addStateProviderListener = inject("addStateProviderListener");
+
+  const state = ref(defaultValue) as Ref<D | null>;
+  const uischemaValue = unref(uischema);
+
+  onMounted(() => {
+    addStateProviderListener(
+      { ...uischemaValue, providedOptionName },
+      (providedValue: unknown) => {
+        state.value = providedValue as D;
+      },
+    );
+  });
+
+  return state;
+};

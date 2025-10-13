@@ -18,11 +18,21 @@ import type { AlertParams } from "./types/alert";
 import type { Provided, StateProviderLocation } from "./types/provided";
 import "./assets/main.css";
 
-defineProps<{
+const props = defineProps<{
   schema: JsonSchema;
   uischema: UISchemaElement;
   data: unknown;
   renderers: readonly NamedRenderer[];
+  /**
+   * Called by elements who have custom validation needs.
+   * Calling this method on every value change (debounced) starts when the ui option
+   * `validatorId` is provided with a non-`null` value  and stops when `null` is provided
+   * as id. Also one call is issued when the `validatorId` is provided.
+   *
+   * @param id the id of the validator
+   * @param data the current data to validate
+   */
+  validate?: (id: string, data: unknown) => Promise<string | null>;
 }>();
 
 const emit = defineEmits<{
@@ -63,6 +73,18 @@ const provided: Provided = {
   addStateProviderListener: (identifier, callback) =>
     emit("stateProviderListener", identifier, callback),
   sendAlert: (alert) => emit("alert", alert),
+  validate: (id, data) => {
+    // Default implementation that always returns valid
+    // Override by providing a custom implementation
+    if (!props.validate) {
+      throw new Error(
+        `No validate function provided to JsonFormsDialog but validate called with arguments ${JSON.stringify(
+          { id, data },
+        )}`,
+      );
+    }
+    return props.validate(id, data);
+  },
 };
 
 Object.entries(provided).forEach(([key, value]) => provide(key, value));

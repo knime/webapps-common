@@ -10,6 +10,7 @@ import { getAsyncSetupMethod } from "../utils";
 
 import type { VueControl } from "./types";
 import type { PerformExternalValidation } from "./validation/types";
+import useCustomValidation from "./validation/useCustomValidation";
 import { useValidation } from "./validation/useValidation";
 
 /**
@@ -31,9 +32,15 @@ export const controlToRenderer = ({
       const processedProps = useJsonFormsControl(props as ControlProps);
       const isVisible = computed(() => processedProps.control.value.visible);
       const data = computed(() => processedProps.control.value.data);
-      const options = computed(
-        () => processedProps.control.value.uischema.options || {},
+
+      const uischema = computed(
+        () => processedProps.control.value.uischema || {},
       );
+
+      const { customValidationMessage, performCustomValidationDebounced } =
+        useCustomValidation({ data, uischema });
+
+      const options = computed(() => uischema.value.options || {});
       const {
         messages,
         isValid,
@@ -43,22 +50,24 @@ export const controlToRenderer = ({
         data,
         options,
         performExternalValidation: config?.performExternalValidation,
+        customValidationMessage,
       });
       await (asyncSetup || getAsyncSetupMethod(component))?.();
+      const handleChange = (path: string, value: unknown) => {
+        processedProps.handleChange(path, value);
+        performExternalValidationDebounced(value);
+        performCustomValidationDebounced(value);
+      };
       return () =>
         isVisible.value
           ? h(
               component,
               {
-                handleChange: processedProps.handleChange,
+                handleChange,
                 control: processedProps.control.value,
                 disabled: !processedProps.control.value.enabled,
                 changeValue: (newValue: unknown) => {
-                  processedProps.handleChange(
-                    processedProps.control.value.path,
-                    newValue,
-                  );
-                  performExternalValidationDebounced(newValue);
+                  handleChange(processedProps.control.value.path, newValue);
                 },
                 isValid: isValid.value,
                 messages: messages.value,

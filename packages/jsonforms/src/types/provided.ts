@@ -41,6 +41,16 @@ export interface Provided {
   addStateProviderListener: addStateProviderListener<unknown>;
   trigger: (triggerId: unknown) => void;
   sendAlert: (params: AlertParams) => void;
+  /**
+   * Called by elements who have custom validation needs.
+   * Calling this method on every value change (debounced) starts when the ui option
+   * `validatorId` is provided with a non-`null` value  and stops when `null` is provided
+   * as id. Also one call is issued when the `validatorId` is provided.
+   *
+   * @param id the id of the validator
+   * @param data the current data to validate
+   */
+  validate: (id: string, data: unknown) => Promise<string | null>;
   // To be removed (see JsonFormsDialog.vue)
   registerWatcher: registerWatcher;
   getData: getData;
