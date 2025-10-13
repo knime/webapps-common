@@ -23,10 +23,10 @@ const useDragPatchPosition = () => {
     lastWindowDragEvent.value = event;
   };
   const startTrack = () => {
-    window.addEventListener("dragover", trackClientXY);
+    window.addEventListener("dragover", trackClientXY, { capture: true });
   };
   const stopTrack = () => {
-    window.removeEventListener("dragover", trackClientXY);
+    window.removeEventListener("dragover", trackClientXY, { capture: true });
   };
 
   const updateClientXY = (event: DragEvent) => {

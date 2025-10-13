@@ -306,7 +306,7 @@ export const createDragGhosts = ({
   const updatePosition = createGhostPositionUpdateHandler(ghostElements);
 
   // use dragover on window because drag does not work in firefox https://bugzilla.mozilla.org/show_bug.cgi?id=505521#c95
-  window.addEventListener("dragover", updatePosition);
+  window.addEventListener("dragover", updatePosition, { capture: true });
 
   const setGhostDisplay =
     (display: string) =>
@@ -329,7 +329,7 @@ export const createDragGhosts = ({
         // in which case it would result in an exception when attempting to remove
         // an element that no longer exists
       }
-      window.removeEventListener("dragover", updatePosition);
+      window.removeEventListener("dragover", updatePosition, { capture: true });
     };
 
     hideCustomGhostPreviewElement();
@@ -368,7 +368,9 @@ export const createDragGhosts = ({
       customGhostPreviewElement = ghostPreviewEl;
 
       if (shouldUseCustomPreview) {
-        window.removeEventListener("dragover", updatePosition);
+        window.removeEventListener("dragover", updatePosition, {
+          capture: true,
+        });
 
         showCustomGhostPreviewElement();
 
@@ -385,16 +387,20 @@ export const createDragGhosts = ({
           }px`;
         };
 
-        window.addEventListener("dragover", updateCustomDragPreview);
+        window.addEventListener("dragover", updateCustomDragPreview, {
+          capture: true,
+        });
 
         cleanupCustomDragPreviewEventHandlers?.();
         cleanupCustomDragPreviewEventHandlers = () => {
-          window.removeEventListener("dragover", updateCustomDragPreview);
+          window.removeEventListener("dragover", updateCustomDragPreview, {
+            capture: true,
+          });
         };
 
         allGhosts.forEach(setGhostDisplay("none"));
       } else {
-        window.addEventListener("dragover", updatePosition);
+        window.addEventListener("dragover", updatePosition, { capture: true });
 
         hideCustomGhostPreviewElement();
 
