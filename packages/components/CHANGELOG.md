@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.39.3
+
+### Patch Changes
+
+- 3b8b06f: FileExplorer: Fix bug introduced in 1.38.3 with the firefox bug workaround for drag & drop.
+
 ## 1.39.2
 
 ### Patch Changes
