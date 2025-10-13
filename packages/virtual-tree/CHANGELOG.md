@@ -1,5 +1,12 @@
 # @knime/virtual-tree
 
+## 1.6.26
+
+### Patch Changes
+
+- Updated dependencies [2933ca3]
+  - @knime/components@1.39.4
+
 ## 1.6.25
 
 ### Patch Changes
