@@ -95,11 +95,13 @@ const menuItemsData: MenuItem[] = [
     disabled: true,
     icon: markRaw(StarIcon),
     hotkeyText: "Ctrl + 3",
+    accountTypeBadgeText: "Team",
   },
   {
     to: "/testing-nuxt-link",
     text: "Ananas",
     icon: markRaw(HeartIcon),
+    accountTypeBadgeText: "Pro",
   },
   {
     href: "https://www.urbandictionary.com/define.php?term=go%20bananas",

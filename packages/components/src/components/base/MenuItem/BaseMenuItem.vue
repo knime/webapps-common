@@ -68,6 +68,7 @@ const dynamicAttributes = (item: MenuItem) => {
             :text="item.text"
             :use-max-menu-width="useMaxMenuWidth"
             :hotkey-text="item.hotkeyText"
+            :account-type-badge-text="item.accountTypeBadgeText"
           />
           <slot name="submenu" :item-element="$refs.listItemComponent" />
         </template>
