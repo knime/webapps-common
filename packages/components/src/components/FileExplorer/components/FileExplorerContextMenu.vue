@@ -192,6 +192,6 @@ onClickOutside(menuWrapper, closeMenu);
   position: absolute;
   top: calc(v-bind("$props.position.y") * 1px);
   left: calc(v-bind("$props.position.x") * 1px);
-  z-index: 5;
+  z-index: var(--file-explorer-context-menu-z-index, 5);
 }
 </style>

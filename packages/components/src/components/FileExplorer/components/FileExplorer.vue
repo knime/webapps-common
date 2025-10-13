@@ -449,6 +449,11 @@ const openContextMenuByMouse = (
   clickedItem: FileExplorerItemType,
   index: number,
 ) => {
+  if (isContextMenuVisible.value) {
+    closeContextMenu();
+    return;
+  }
+
   setContextMenuOpen(
     { x: event.clientX, y: event.clientY },
     clickedItem,
@@ -642,7 +647,7 @@ useResizeObserver(containerProps.ref, containerProps.onScroll);
           @contextmenu="
             openContextMenuByMouse($event, item, renderedIndices[vIndex])
           "
-          @keydown.shift.f10="
+          @keydown.shift.f10.prevent="
             openContextMenuByKeyboard(item, renderedIndices[vIndex])
           "
           @drop="
@@ -715,32 +720,31 @@ useResizeObserver(containerProps.ref, containerProps.onScroll);
           <div ref="customDragPreviewPlaceholder" />
         </slot>
       </div>
-
-      <FileExplorerContextMenu
-        v-if="
-          !props.disableContextMenu && isContextMenuVisible && contextMenuAnchor
-        "
-        :position="contextMenuPos"
-        :anchor="contextMenuAnchor"
-        :selected-items="selectedItems"
-        @item-click="onContextMenuItemClick"
-        @close="() => closeContextMenu()"
-      >
-        <template #default="slotProps">
-          <slot
-            name="contextMenu"
-            :is-context-menu-visible="isContextMenuVisible"
-            :position="contextMenuPos"
-            :anchor="contextMenuAnchor"
-            :close-context-menu="() => closeContextMenu()"
-            :is-multiple-selection-active="
-              isMultipleSelectionActive(contextMenuAnchor.index)
-            "
-            v-bind="slotProps"
-          />
-        </template>
-      </FileExplorerContextMenu>
     </table>
+    <FileExplorerContextMenu
+      v-if="
+        !props.disableContextMenu && isContextMenuVisible && contextMenuAnchor
+      "
+      :position="contextMenuPos"
+      :anchor="contextMenuAnchor"
+      :selected-items="selectedItems"
+      @item-click="onContextMenuItemClick"
+      @close="() => closeContextMenu()"
+    >
+      <template #default="slotProps">
+        <slot
+          name="contextMenu"
+          :is-context-menu-visible="isContextMenuVisible"
+          :position="contextMenuPos"
+          :anchor="contextMenuAnchor"
+          :close-context-menu="() => closeContextMenu()"
+          :is-multiple-selection-active="
+            isMultipleSelectionActive(contextMenuAnchor.index)
+          "
+          v-bind="slotProps"
+        />
+      </template>
+    </FileExplorerContextMenu>
   </div>
 </template>
 
@@ -751,7 +755,6 @@ useResizeObserver(containerProps.ref, containerProps.onScroll);
   display: flex;
   flex: 1 0 0%;
   flex-direction: column;
-  isolation: isolate;
 
   &.virtual-scrolling:not(.empty) {
     min-height: 0;
@@ -793,6 +796,7 @@ tbody {
 table {
   height: 100%;
   table-layout: fixed;
+  isolation: isolate;
 }
 
 table:focus {
