@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.39.4
+
+### Patch Changes
+
+- 2933ca3: Fix z-index for context menu. Close context menu on right-click outside to prevent positioning bugs
+
 ## 1.39.3
 
 ### Patch Changes
