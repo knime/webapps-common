@@ -270,14 +270,14 @@ describe("MenuItems", () => {
             items: [
               {
                 text: "Item 1",
-                accountTypeBadgeText: badgeText,
+                badgeText,
               },
             ],
           },
         });
 
-        expect(wrapper.find(".account-type-badge").exists()).toBe(true);
-        expect(wrapper.find(".account-type-badge").text()).toBe(badgeText);
+        expect(wrapper.find(".badge-text").exists()).toBe(true);
+        expect(wrapper.find(".badge-text").text()).toBe(badgeText);
       });
     },
   );

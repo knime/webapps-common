@@ -14,7 +14,7 @@ defineProps<{
     {{ text }}
   </span>
   <span v-if="hotkeyText" class="hotkey">{{ hotkeyText }}</span>
-  <Pill v-if="badgeText" variant="info" class="account-type-badge">{{
+  <Pill v-if="badgeText" variant="info" class="badge-text">{{
     badgeText
   }}</Pill>
 </template>
@@ -25,7 +25,7 @@ defineProps<{
   font-weight: 400;
 }
 
-.account-type-badge {
+.badge-text {
   margin-left: 8px;
 }
 
