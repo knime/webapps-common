@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.15.31
+
+### Patch Changes
+
+- 1cfaa97: Add custom validation to JsonForms renderers
+
 ## 1.15.30
 
 ### Patch Changes
