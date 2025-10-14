@@ -5,6 +5,7 @@ import { DOMWrapper, VueWrapper, mount } from "@vue/test-utils";
 
 import FileTextIcon from "@knime/styles/img/icons/file-text.svg";
 import FolderIcon from "@knime/styles/img/icons/folder.svg";
+import { sleep } from "@knime/utils";
 
 import {
   MockIntersectionObserver,
@@ -111,6 +112,7 @@ describe("FileExplorer", () => {
   type DoMountOptions = {
     props?: Props | object;
     customSlots?: { contextMenu?: any; itemIcon?: any; itemContent?: any };
+    attachTo?: Element;
   };
 
   const scrollTo = vi.fn();
@@ -129,6 +131,7 @@ describe("FileExplorer", () => {
       itemIcon: null,
       itemContent: null,
     },
+    attachTo,
   }: DoMountOptions = {}) => {
     const defaultProps: Props = {
       items: MOCK_DATA,
@@ -149,6 +152,7 @@ describe("FileExplorer", () => {
     const wrapper = mount(FileExplorer, {
       props: { ...defaultProps, ...props },
       slots,
+      attachTo,
     });
 
     return { wrapper };
@@ -157,17 +161,17 @@ describe("FileExplorer", () => {
   const getRenderedItems = (_wrapper: VueWrapper<any>) =>
     _wrapper.findAll('[data-test-id="file-explorer-item"]');
 
-  it("should only allow navigating into directories", () => {
+  it("should only allow navigating into directories", async () => {
     const { wrapper } = doMount();
 
     const allItems = getRenderedItems(wrapper);
-    allItems.at(0)?.trigger("dblclick");
+    await allItems.at(0)?.trigger("dblclick");
 
     expect(wrapper.emitted("changeDirectory")?.[0][0]).toBe(
       MOCK_DATA.at(0)?.id,
     );
 
-    allItems.at(3)?.trigger("dblclick");
+    await allItems.at(3)?.trigger("dblclick");
     expect(wrapper.emitted("changeDirectory")?.[1]).toBeUndefined();
   });
 
@@ -202,7 +206,7 @@ describe("FileExplorer", () => {
     };
   };
 
-  it("should navigate back to parent", () => {
+  it("should navigate back to parent", async () => {
     const { wrapper } = doMount({ props: { isRootFolder: false } });
 
     const allItems = getRenderedItems(wrapper);
@@ -210,7 +214,7 @@ describe("FileExplorer", () => {
     // includes go back button
     expect(allItems.length).toBe(MOCK_DATA.length + 1);
 
-    allItems.at(0)?.trigger("click");
+    await allItems.at(0)?.trigger("click");
     expect(wrapper.emitted("changeDirectory")?.[0][0]).toBe("..");
   });
 
@@ -334,28 +338,43 @@ describe("FileExplorer", () => {
         "selected",
       );
     });
+
+    it("should reset selection when clicking outside", async () => {
+      const { wrapper } = doMount();
+      await getRenderedItems(wrapper).at(1)?.trigger("click");
+      await getRenderedItems(wrapper)
+        .at(3)
+        ?.trigger("click", { shiftKey: true });
+
+      window.document.body.dispatchEvent(new Event("click"));
+      await nextTick();
+
+      getRenderedItems(wrapper).forEach((item) => {
+        expect(item.classes()).not.toContain("selected");
+      });
+    });
   });
 
   describe("keyboard navigation", () => {
-    it("should allow navigating into directories with enter", () => {
+    it("should allow navigating into directories with enter", async () => {
       const { wrapper } = doMount();
 
       const allItems = getRenderedItems(wrapper);
-      allItems.at(0)?.trigger("keydown.enter");
+      await allItems.at(0)?.trigger("keydown.enter");
 
       expect(wrapper.emitted("changeDirectory")?.[0][0]).toBe(
         MOCK_DATA.at(0)?.id,
       );
 
-      allItems.at(3)?.trigger("keydown.enter");
+      await allItems.at(3)?.trigger("keydown.enter");
       expect(wrapper.emitted("changeDirectory")?.[1]).toBeUndefined();
     });
 
-    it("should allow open file with enter", () => {
+    it("should allow open file with enter", async () => {
       const { wrapper } = doMount();
 
       const allItems = getRenderedItems(wrapper);
-      allItems.at(2)?.trigger("keydown.enter");
+      await allItems.at(2)?.trigger("keydown.enter");
 
       expect(wrapper.emitted("openFile")?.[0][0]).toMatchObject({
         id: MOCK_DATA.at(2)?.id,
@@ -364,11 +383,12 @@ describe("FileExplorer", () => {
 
     it("should select items on arrow up/down", async () => {
       const { wrapper } = doMount();
-      wrapper.find("table").trigger("keydown", { key: "ArrowDown" });
-      wrapper.find("table").trigger("keydown", { key: "ArrowUp" });
+      await wrapper.find("table").trigger("keydown", { key: "ArrowDown" });
+      await wrapper.find("table").trigger("keydown", { key: "ArrowUp" });
       await nextTick();
       expect(getRenderedItems(wrapper).at(0)?.classes()).toContain("selected");
-      expect(wrapper.emitted("update:selectedItemIds")?.[0][0]).toStrictEqual([
+      expect(wrapper.emitted("update:selectedItemIds")?.length).toBe(2);
+      expect(wrapper.emitted("update:selectedItemIds")?.[1][0]).toStrictEqual([
         "0",
       ]);
     });
@@ -380,11 +400,11 @@ describe("FileExplorer", () => {
       const allItems = getRenderedItems(wrapper);
 
       // select item
-      allItems.at(renamedItemIndex)?.trigger("click");
+      await allItems.at(renamedItemIndex)?.trigger("click");
       await nextTick();
 
       // rename with keyboard
-      allItems.at(renamedItemIndex)?.trigger("keydown.f2");
+      await allItems.at(renamedItemIndex)?.trigger("keydown.f2");
 
       const firstItemComponent = wrapper
         .findAllComponents(FileExplorerItemComp)
@@ -399,7 +419,7 @@ describe("FileExplorer", () => {
       const renamedItemIndex = 5;
       const { wrapper } = doMount();
       const allItems = getRenderedItems(wrapper);
-      allItems.at(renamedItemIndex)?.trigger("keydown.f2");
+      await allItems.at(renamedItemIndex)?.trigger("keydown.f2");
 
       const firstItemComponent = wrapper
         .findAllComponents(FileExplorerItemComp)
@@ -415,16 +435,16 @@ describe("FileExplorer", () => {
       const { wrapper } = doMount();
 
       // select some items
-      wrapper.find("table").trigger("keydown", { key: "ArrowDown" });
-      wrapper
+      await wrapper.find("table").trigger("keydown", { key: "ArrowDown" });
+      await wrapper
         .find("table")
         .trigger("keydown", { key: "ArrowDown", shiftKey: true });
-      wrapper
+      await wrapper
         .find("table")
         .trigger("keydown", { key: "ArrowDown", shiftKey: true });
 
       const allItems = getRenderedItems(wrapper);
-      allItems.at(renamedItemIndex)?.trigger("keydown.delete");
+      await allItems.at(renamedItemIndex)?.trigger("keydown.delete");
 
       await nextTick();
 
@@ -440,25 +460,25 @@ describe("FileExplorer", () => {
       const { wrapper } = doMount();
 
       // select all items (including index/id 5 which is now allowed to be deleted)
-      wrapper.find("table").trigger("keydown", { key: "ArrowDown" });
-      wrapper
+      await wrapper.find("table").trigger("keydown", { key: "ArrowDown" });
+      await wrapper
         .find("table")
         .trigger("keydown", { key: "ArrowDown", shiftKey: true });
-      wrapper
+      await wrapper
         .find("table")
         .trigger("keydown", { key: "ArrowDown", shiftKey: true });
-      wrapper
+      await wrapper
         .find("table")
         .trigger("keydown", { key: "ArrowDown", shiftKey: true });
-      wrapper
+      await wrapper
         .find("table")
         .trigger("keydown", { key: "ArrowDown", shiftKey: true });
-      wrapper
+      await wrapper
         .find("table")
         .trigger("keydown", { key: "ArrowDown", shiftKey: true });
 
       const allItems = getRenderedItems(wrapper);
-      allItems.at(renamedItemIndex)?.trigger("keydown.delete");
+      await allItems.at(renamedItemIndex)?.trigger("keydown.delete");
 
       await nextTick();
 
@@ -721,18 +741,18 @@ describe("FileExplorer", () => {
     });
   });
 
-  it("should emit an event when opening a file", () => {
+  it("should emit an event when opening a file", async () => {
     const { wrapper } = doMount();
 
     // workflow-group
-    getRenderedItems(wrapper).at(0)!.trigger("dblclick");
+    await getRenderedItems(wrapper).at(0)!.trigger("dblclick");
     // component
-    getRenderedItems(wrapper).at(4)!.trigger("dblclick");
+    await getRenderedItems(wrapper).at(4)!.trigger("dblclick");
 
     expect(wrapper.emitted("openFile")).toBeUndefined();
 
     // workflow
-    getRenderedItems(wrapper).at(3)?.trigger("dblclick");
+    await getRenderedItems(wrapper).at(3)?.trigger("dblclick");
     expect(wrapper.emitted("openFile")?.[0][0]).toEqual(MOCK_DATA[3]);
   });
 
@@ -823,6 +843,10 @@ describe("FileExplorer", () => {
       await firstItem.trigger("click");
       await secondItem.trigger("click", { ctrlKey: true });
 
+      expect(wrapper.findComponent(FileExplorerContextMenu).exists()).toBe(
+        false,
+      );
+
       await openContextMenu(wrapper, 0);
 
       expect(wrapper.findComponent(FileExplorerContextMenu).exists()).toBe(
@@ -871,6 +895,31 @@ describe("FileExplorer", () => {
       expect(wrapper.findComponent(FileExplorerContextMenu).exists()).toBe(
         false,
       );
+    });
+
+    it("should NOT reset selection when clicking on a context menu item", async () => {
+      const root = document.createElement("div");
+      document.body.appendChild(root);
+      const { wrapper } = doMount({ attachTo: root });
+
+      await getRenderedItems(wrapper).at(0)?.trigger("click");
+      expect(getRenderedItems(wrapper).at(0)?.classes()).toContain("selected");
+      await openContextMenu(wrapper, 1);
+
+      await sleep(0);
+
+      const renameOption = wrapper
+        .findComponent(FileExplorerContextMenu)
+        .findAll("li")
+        .at(0)!;
+      await renameOption.trigger("click");
+      await nextTick();
+
+      expect(wrapper.findComponent(FileExplorerContextMenu).exists()).toBe(
+        false,
+      );
+
+      expect(getRenderedItems(wrapper).at(1)?.classes()).toContain("selected");
     });
 
     it("should reset selection when opening context menu from an unselected item", async () => {
@@ -939,8 +988,8 @@ describe("FileExplorer", () => {
 
         const newName = "this is the new name";
         const itemElement = getRenderedItems(wrapper).at(renamedItemIndex)!;
-        itemElement.find("input").setValue(newName);
-        itemElement.find("input").trigger("keydown", { key: "Enter" });
+        await itemElement.find("input").setValue(newName);
+        await itemElement.find("input").trigger("keydown", { key: "Enter" });
 
         expect(wrapper.emitted("renameFile")?.[0][0]).toEqual({
           itemId: MOCK_DATA.at(0)?.id,
@@ -1040,7 +1089,7 @@ describe("FileExplorer", () => {
         await openContextMenu(wrapper, 0);
 
         const deleteOption = getDeleteOptionElement(wrapper);
-        deleteOption.trigger("click");
+        await deleteOption.trigger("click");
 
         expect(wrapper.emitted("deleteItems")?.[0][0]).toEqual({
           items: [MOCK_DATA.at(0), MOCK_DATA.at(1)],

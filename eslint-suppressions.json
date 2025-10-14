@@ -34,11 +34,6 @@
       "count": 3
     }
   },
-  "packages/components/src/components/FileExplorer/components/__tests__/FileExplorer.test.ts": {
-    "@typescript-eslint/no-floating-promises": {
-      "count": 28
-    }
-  },
   "packages/components/src/components/FileExplorer/components/__tests__/FileExplorerItem.test.ts": {
     "@typescript-eslint/no-floating-promises": {
       "count": 6
