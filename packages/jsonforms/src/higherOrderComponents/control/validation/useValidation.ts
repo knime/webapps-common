@@ -14,10 +14,12 @@ export const useValidation = <T = unknown>({
   data,
   options,
   performExternalValidation,
+  customValidationMessage,
 }: {
   data: Ref<T>;
   options: Ref<Record<string, any>>;
   performExternalValidation?: PerformExternalValidation<unknown>;
+  customValidationMessage?: Ref<string | null>;
 }) => {
   const hasExternalValidationHandler = computed(() =>
     Boolean(options.value?.externalValidationHandler),
@@ -80,6 +82,9 @@ export const useValidation = <T = unknown>({
         ({ errors } = { errors: [] }) => errors,
       ),
       ...externalValidationMessages.value,
+      ...(customValidationMessage?.value
+        ? [customValidationMessage.value]
+        : []),
     ],
   }));
 
