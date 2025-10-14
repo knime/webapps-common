@@ -259,4 +259,26 @@ describe("MenuItems", () => {
       expect(wrapper.findAllComponents(MenuItems).length).toBe(0);
     });
   });
+
+  describe.each(["Pro", "Team"])(
+    "renders account type badge when accountTypeBadgeText is '%s'",
+    (badgeText) => {
+      it(`renders Pill with text '${badgeText}'`, () => {
+        const wrapper = mount(MenuItems, {
+          props: {
+            menuAriaLabel: "",
+            items: [
+              {
+                text: "Item 1",
+                badgeText,
+              },
+            ],
+          },
+        });
+
+        expect(wrapper.find(".badge-text").exists()).toBe(true);
+        expect(wrapper.find(".badge-text").text()).toBe(badgeText);
+      });
+    },
+  );
 });

@@ -1,8 +1,11 @@
 <script setup lang="ts">
+import Pill from "../../Pill/Pill.vue";
+
 defineProps<{
   text: string;
   hotkeyText?: string;
   useMaxMenuWidth: boolean;
+  badgeText?: string;
 }>();
 </script>
 
@@ -11,12 +14,19 @@ defineProps<{
     {{ text }}
   </span>
   <span v-if="hotkeyText" class="hotkey">{{ hotkeyText }}</span>
+  <Pill v-if="badgeText" variant="info" class="badge-text">{{
+    badgeText
+  }}</Pill>
 </template>
 
 <style lang="postcss" scoped>
 .text,
 .hotkey {
   font-weight: 400;
+}
+
+.badge-text {
+  margin-left: 8px;
 }
 
 .text {

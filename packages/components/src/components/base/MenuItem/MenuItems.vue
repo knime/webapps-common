@@ -79,6 +79,8 @@ export type MenuItem<TMetadata = unknown, TChildrenMetadata = TMetadata> = {
     checked: boolean;
     setBoolean: (checked: boolean) => void;
   };
+  /** If this field is set, the item will be displayed with a badge showing the text */
+  badgeText?: string;
 };
 
 export type MenuItemsProps = {
