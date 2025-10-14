@@ -1,5 +1,16 @@
 # demo
 
+## 1.6.32
+
+### Patch Changes
+
+- d394585: Added account type badge to MenuItem component
+- Updated dependencies [d394585]
+  - @knime/components@1.40.0
+  - @knime/hub-features@1.14.24
+  - @knime/rich-text-editor@1.7.27
+  - @knime/virtual-tree@1.6.27
+
 ## 1.6.31
 
 ### Patch Changes
