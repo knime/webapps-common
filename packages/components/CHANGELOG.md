@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.40.0
+
+### Minor Changes
+
+- d394585: Added badge to MenuItem item component
+
 ## 1.39.4
 
 ### Patch Changes
