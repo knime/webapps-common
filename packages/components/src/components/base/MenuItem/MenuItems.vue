@@ -80,7 +80,7 @@ export type MenuItem<TMetadata = unknown, TChildrenMetadata = TMetadata> = {
     setBoolean: (checked: boolean) => void;
   };
   /** If this field is set, the item will be displayed with a badge showing the text */
-  accountTypeBadgeText?: "Team" | "Pro";
+  badgeText?: string;
 };
 
 export type MenuItemsProps = {

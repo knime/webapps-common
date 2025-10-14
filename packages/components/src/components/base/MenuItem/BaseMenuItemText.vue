@@ -1,13 +1,11 @@
 <script setup lang="ts">
 import Pill from "../../Pill/Pill.vue";
 
-import type { MenuItem } from "./MenuItems.vue";
-
 defineProps<{
   text: string;
   hotkeyText?: string;
   useMaxMenuWidth: boolean;
-  accountTypeBadgeText?: MenuItem["accountTypeBadgeText"];
+  badgeText?: string;
 }>();
 </script>
 
@@ -16,8 +14,8 @@ defineProps<{
     {{ text }}
   </span>
   <span v-if="hotkeyText" class="hotkey">{{ hotkeyText }}</span>
-  <Pill v-if="accountTypeBadgeText" variant="info" class="account-type-badge">{{
-    accountTypeBadgeText
+  <Pill v-if="badgeText" variant="info" class="account-type-badge">{{
+    badgeText
   }}</Pill>
 </template>
 
