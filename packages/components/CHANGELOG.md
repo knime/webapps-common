@@ -4,7 +4,7 @@
 
 ### Minor Changes
 
-- d394585: Added account type badge to MenuItem component
+- d394585: Added badge to MenuItem item component
 
 ## 1.39.4
 

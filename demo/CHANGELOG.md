@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- d394585: Added account type badge to MenuItem component
+- d394585: Added badge to MenuItem item component
 - Updated dependencies [d394585]
   - @knime/components@1.40.0
   - @knime/hub-features@1.14.24
