@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.40.1
+
+### Patch Changes
+
+- fd66ef6: Fix issue with click-outside in FileExplorer context-menu
+
 ## 1.40.0
 
 ### Minor Changes
