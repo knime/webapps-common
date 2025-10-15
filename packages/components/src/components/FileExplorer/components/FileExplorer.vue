@@ -579,7 +579,7 @@ const handleEnterKey = (event: KeyboardEvent, item: FileExplorerItemType) => {
 };
 
 onClickOutside(table, () => resetSelection(focusedIndex.value), {
-  ignore: props.clickOutsideExceptions,
+  ignore: [...props.clickOutsideExceptions, "#file-explorer-context-menu"],
 });
 
 // Force update the virtual scroll position at the end of setup
@@ -725,6 +725,7 @@ useResizeObserver(containerProps.ref, containerProps.onScroll);
       v-if="
         !props.disableContextMenu && isContextMenuVisible && contextMenuAnchor
       "
+      id="file-explorer-context-menu"
       :position="contextMenuPos"
       :anchor="contextMenuAnchor"
       :selected-items="selectedItems"
