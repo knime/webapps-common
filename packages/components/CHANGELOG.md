@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.41.0
+
+### Minor Changes
+
+- 69ee640: add optional max height prop to SubMenu
+
 ## 1.40.1
 
 ### Patch Changes
