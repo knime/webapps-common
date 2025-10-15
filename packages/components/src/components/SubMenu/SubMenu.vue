@@ -58,6 +58,10 @@ export default {
       type: String,
       default: "",
     },
+    maxHeight: {
+      type: String,
+      default: "",
+    },
     /**
      * Alignment of the submenu with the menu button left or right. Defaults to 'right'.
      */
@@ -172,6 +176,13 @@ export default {
       activeDescendant: undefined,
     } as { activeDescendant: string | undefined };
   },
+  computed: {
+    maxHeightStyle() {
+      return {
+        ...(this.maxHeight ? { "max-height": this.maxHeight } : {}),
+      };
+    },
+  },
   methods: {
     toggleMenu(event: Event) {
       if (this.disabled) {
@@ -242,7 +253,7 @@ export default {
       <div
         v-show="expanded"
         ref="menuWrapper"
-        :style="menuWrapperFloatingStyles"
+        :style="{ ...menuWrapperFloatingStyles, ...maxHeightStyle }"
         :class="['menu-wrapper', { disabled }]"
       >
         <MenuItems
@@ -267,6 +278,8 @@ export default {
 <style lang="postcss" scoped>
 .menu-wrapper {
   z-index: var(--z-index-common-menu-items-expanded, 57);
+  max-height: var(--sub-menu-max-height, unset);
+  overflow-y: scroll;
 
   & .menu-items {
     margin: 5px 0;
