@@ -169,6 +169,17 @@ export default {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       return subMenuItems.map(({ icon, hotkeyText, ...rest }) => rest);
     },
+    manySubMenuItems() {
+      return [
+        ...subMenuItems,
+        ...subMenuItems,
+        ...subMenuItems,
+        ...subMenuItems,
+        ...subMenuItems,
+        ...subMenuItems,
+        ...subMenuItems,
+      ];
+    },
   },
 };
 </script>
@@ -253,6 +264,36 @@ export default {
             </div>
           </div>
         </div>
+
+        <div class="submenus">
+          <div class="card">
+            <span class="menu-name">With max height</span>
+            <SubMenu
+              :items="manySubMenuItems"
+              :max-height="'300px'"
+              button-title="Open my submenu"
+            >
+              <MenuIcon class="open-icon" />
+            </SubMenu>
+          </div>
+
+          <div class="scroll-container">
+            <div class="card translated">
+              <input v-model="teleport" type="checkbox" />
+              <span class="menu-name">With max height and teleport</span>
+              <SubMenu
+                :teleport-to-body="teleport"
+                appendTo="self"
+                :max-height="'300px'"
+                :items="manySubMenuItems"
+                button-title="Open my submenu"
+              >
+                <MenuIcon class="open-icon" />
+              </SubMenu>
+            </div>
+          </div>
+        </div>
+
         <CodeExample summary="Show usage example">{{
           codeExampleStandalone
         }}</CodeExample>
