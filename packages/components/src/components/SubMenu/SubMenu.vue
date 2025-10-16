@@ -286,7 +286,6 @@ export default {
   z-index: var(--z-index-common-menu-items-expanded, 57);
 
   & .menu-items {
-    padding: 5px 0;
     margin: 5px 0;
   }
 
