@@ -179,7 +179,12 @@ export default {
   computed: {
     maxHeightStyle() {
       return {
-        ...(this.maxHeight ? { "max-height": this.maxHeight } : {}),
+        ...(this.maxHeight
+          ? {
+              "max-height": this.maxHeight,
+              "overflow-y": "auto",
+            }
+          : {}),
       };
     },
   },
@@ -253,14 +258,15 @@ export default {
       <div
         v-show="expanded"
         ref="menuWrapper"
-        :style="{ ...menuWrapperFloatingStyles, ...maxHeightStyle }"
         :class="['menu-wrapper', { disabled }]"
+        :style="menuWrapperFloatingStyles"
       >
         <MenuItems
           v-if="expanded"
           :id="id"
           ref="menuItems"
           :class="['menu-items', `orient-${orientation}`]"
+          :style="{ ...maxHeightStyle }"
           :items="items"
           :max-menu-width="maxMenuWidth"
           :clipping-boundary="clippingBoundary"
@@ -278,10 +284,9 @@ export default {
 <style lang="postcss" scoped>
 .menu-wrapper {
   z-index: var(--z-index-common-menu-items-expanded, 57);
-  max-height: var(--sub-menu-max-height, unset);
-  overflow-y: scroll;
 
   & .menu-items {
+    padding: 5px 0;
     margin: 5px 0;
   }
 

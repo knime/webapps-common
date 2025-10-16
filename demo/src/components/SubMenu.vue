@@ -123,6 +123,20 @@ const subMenuItems = [
       {
         text: "I am part of a submenu",
         icon: StarIcon,
+        children: [
+          {
+            text: "Grandchild 1",
+            icon: markRaw(HelpIcon),
+          },
+          {
+            text: "Grandchild 2",
+            icon: markRaw(HelpIcon),
+          },
+          {
+            text: "Grandchild 3",
+            icon: markRaw(HelpIcon),
+          },
+        ],
       },
       {
         text: "Woohooo",
@@ -270,7 +284,7 @@ export default {
             <span class="menu-name">With max height</span>
             <SubMenu
               :items="manySubMenuItems"
-              :max-height="'300px'"
+              :max-height="'500px'"
               button-title="Open my submenu"
             >
               <MenuIcon class="open-icon" />
