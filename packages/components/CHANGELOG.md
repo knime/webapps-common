@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.41.1
+
+### Patch Changes
+
+- 4fa675a: fix submenu style issues
+
 ## 1.41.0
 
 ### Minor Changes
