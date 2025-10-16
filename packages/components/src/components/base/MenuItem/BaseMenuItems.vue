@@ -7,13 +7,7 @@ import {
   toRef,
   watch,
 } from "vue";
-import {
-  type Boundary,
-  autoUpdate,
-  flip,
-  shift,
-  useFloating,
-} from "@floating-ui/vue";
+import { type Boundary, autoUpdate, flip, useFloating } from "@floating-ui/vue";
 import { uniqueId } from "lodash-es"; // eslint-disable-line depend/ban-dependencies
 
 import BaseMenuItem from "./BaseMenuItem.vue";
@@ -78,10 +72,7 @@ const { floatingStyles } = positionRelativeToElement.value
   ? useFloating(positionRelativeToElement, listContainer, {
       strategy: "fixed",
       placement: "right-start",
-      middleware: [
-        flip({ boundary: props.clippingBoundary }),
-        shift({ boundary: props.clippingBoundary }),
-      ],
+      middleware: [flip({ boundary: props.clippingBoundary })],
       whileElementsMounted: autoUpdate,
     })
   : { floatingStyles: null };
