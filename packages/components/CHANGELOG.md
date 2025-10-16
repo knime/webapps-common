@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.41.2
+
+### Patch Changes
+
+- f2ce76e: fix centering of checkbox in BaseMenuItem
+
 ## 1.41.1
 
 ### Patch Changes
