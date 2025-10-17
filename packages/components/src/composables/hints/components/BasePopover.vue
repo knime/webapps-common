@@ -118,6 +118,9 @@ const arrowDynamicPositionStyle = computed(() => {
   & .arrow {
     position: absolute;
 
+    /* this allows the user to interact with elements that are maybe overlapped by the arrow */
+    pointer-events: none;
+
     &.left {
       left: var(--hint-popover-negative-offset);
       margin-left: 1px;
