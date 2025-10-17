@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.41.3
+
+### Patch Changes
+
+- dae9c04: Hints: Do pointer-events: none on the arrow of a hint so users can interact with the element that it points to.
+
 ## 1.41.2
 
 ### Patch Changes
