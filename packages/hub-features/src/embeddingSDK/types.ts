@@ -9,7 +9,7 @@ import type { Toast } from "@knime/components";
  *    deprecated property
  * 3. The message variable name can change, but not it's value. This is because
  *    these values are used since AP browser embedding was first implemented, so
- *    they must be retained in order to preserve backwars compatibility
+ *    they must be retained in order to preserve backwards compatibility
  */
 
 export type EmbeddingContext = {
