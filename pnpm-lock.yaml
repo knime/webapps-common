@@ -28,14 +28,14 @@ catalogs:
       specifier: 2.4.6
       version: 2.4.6
     '@vueuse/components':
-      specifier: ~13.6.0
-      version: 13.6.0
+      specifier: ~13.8.0
+      version: 13.8.0
     '@vueuse/core':
-      specifier: ~13.6.0
-      version: 13.6.0
+      specifier: ~13.8.0
+      version: 13.8.0
     '@vueuse/shared':
-      specifier: ~13.6.0
-      version: 13.6.0
+      specifier: ~13.8.0
+      version: 13.8.0
     consola:
       specifier: 3.4.2
       version: 3.4.2
@@ -64,8 +64,8 @@ catalogs:
       specifier: ^5.8.3
       version: 5.8.3
     vite:
-      specifier: 7.0.7
-      version: 7.0.7
+      specifier: 7.1.11
+      version: 7.1.11
     vite-plugin-css-injected-by-js:
       specifier: ^3.5.2
       version: 3.5.2
@@ -118,9 +118,7 @@ overrides:
   '@eslint/plugin-kit@<0.3.3': '>=0.3.3'
   form-data@>=4.0.0 <4.0.4: '>=4.0.4'
   linkifyjs@<4.3.2: '>=4.3.2'
-  vite@>=7.0.0 <=7.0.6: '>=7.0.7'
   tmp@<=0.2.3: '>=0.2.4'
-  vite@>=7.0.0 <=7.0.7: '>=7.0.8'
 
 importers:
 
@@ -200,7 +198,7 @@ importers:
         version: link:../packages/hub-features
       '@knime/kds-components':
         specifier: 'catalog:'
-        version: 0.0.8(@fontsource/roboto-mono@5.2.6)(@fontsource/roboto@5.2.6)(@vueuse/core@13.6.0(vue@3.5.18(typescript@5.8.3)))(vue@3.5.18(typescript@5.8.3))
+        version: 0.0.8(@fontsource/roboto-mono@5.2.6)(@fontsource/roboto@5.2.6)(@vueuse/core@13.8.0(vue@3.5.18(typescript@5.8.3)))(vue@3.5.18(typescript@5.8.3))
       '@knime/kds-styles':
         specifier: 'catalog:'
         version: 0.0.8
@@ -221,7 +219,7 @@ importers:
         version: link:../packages/virtual-tree
       '@vueuse/core':
         specifier: 'catalog:'
-        version: 13.6.0(vue@3.5.18(typescript@5.8.3))
+        version: 13.8.0(vue@3.5.18(typescript@5.8.3))
       consola:
         specifier: 'catalog:'
         version: 3.4.2
@@ -240,7 +238,7 @@ importers:
         version: link:../packages/lint
       '@vitejs/plugin-vue':
         specifier: 'catalog:'
-        version: 6.0.1(vite@7.0.7(@types/node@22.12.0)(terser@5.43.1)(tsx@4.20.3))(vue@3.5.18(typescript@5.8.3))
+        version: 6.0.1(vite@7.1.11(@types/node@22.12.0)(terser@5.43.1)(tsx@4.20.3))(vue@3.5.18(typescript@5.8.3))
       gh-pages:
         specifier: 5.0.0
         version: 5.0.0
@@ -249,7 +247,7 @@ importers:
         version: https://bitbucket.org/KNIME/v-calendar/get/048477f.tar.gz(@popperjs/core@2.11.8)(vue@3.5.18(typescript@5.8.3))
       vite:
         specifier: 'catalog:'
-        version: 7.0.7(@types/node@22.12.0)(terser@5.43.1)(tsx@4.20.3)
+        version: 7.1.11(@types/node@22.12.0)(terser@5.43.1)(tsx@4.20.3)
       vite-svg-loader:
         specifier: 'catalog:'
         version: 5.1.0(vue@3.5.18(typescript@5.8.3))
@@ -270,13 +268,13 @@ importers:
         version: 0.1.3(vue@3.5.18(typescript@5.8.3))
       '@vueuse/components':
         specifier: 'catalog:'
-        version: 13.6.0(vue@3.5.18(typescript@5.8.3))
+        version: 13.8.0(vue@3.5.18(typescript@5.8.3))
       '@vueuse/core':
         specifier: 'catalog:'
-        version: 13.6.0(vue@3.5.18(typescript@5.8.3))
+        version: 13.8.0(vue@3.5.18(typescript@5.8.3))
       '@vueuse/shared':
         specifier: 'catalog:'
-        version: 13.6.0(vue@3.5.18(typescript@5.8.3))
+        version: 13.8.0(vue@3.5.18(typescript@5.8.3))
       color-hash:
         specifier: 2.0.2
         version: 2.0.2
@@ -316,7 +314,7 @@ importers:
         version: 2.0.0
       '@vitejs/plugin-vue':
         specifier: 'catalog:'
-        version: 6.0.1(vite@7.0.7(@types/node@22.12.0)(terser@5.43.1)(tsx@4.20.3))(vue@3.5.18(typescript@5.8.3))
+        version: 6.0.1(vite@7.1.11(@types/node@22.12.0)(terser@5.43.1)(tsx@4.20.3))(vue@3.5.18(typescript@5.8.3))
       '@vue/test-utils':
         specifier: 'catalog:'
         version: 2.4.6
@@ -325,10 +323,10 @@ importers:
         version: 3.4.2
       vite:
         specifier: 'catalog:'
-        version: 7.0.7(@types/node@22.12.0)(terser@5.43.1)(tsx@4.20.3)
+        version: 7.1.11(@types/node@22.12.0)(terser@5.43.1)(tsx@4.20.3)
       vite-plugin-css-injected-by-js:
         specifier: 'catalog:'
-        version: 3.5.2(vite@7.0.7(@types/node@22.12.0)(terser@5.43.1)(tsx@4.20.3))
+        version: 3.5.2(vite@7.1.11(@types/node@22.12.0)(terser@5.43.1)(tsx@4.20.3))
       vite-svg-loader:
         specifier: 'catalog:'
         version: 5.1.0(vue@3.5.18(typescript@5.8.3))
@@ -352,13 +350,13 @@ importers:
         version: link:../utils
       '@vueuse/components':
         specifier: 'catalog:'
-        version: 13.6.0(vue@3.5.18(typescript@5.8.3))
+        version: 13.8.0(vue@3.5.18(typescript@5.8.3))
       '@vueuse/core':
         specifier: 'catalog:'
-        version: 13.6.0(vue@3.5.18(typescript@5.8.3))
+        version: 13.8.0(vue@3.5.18(typescript@5.8.3))
       '@vueuse/shared':
         specifier: 'catalog:'
-        version: 13.6.0(vue@3.5.18(typescript@5.8.3))
+        version: 13.8.0(vue@3.5.18(typescript@5.8.3))
       lodash-es:
         specifier: 'catalog:'
         version: 4.17.21
@@ -374,7 +372,7 @@ importers:
     devDependencies:
       '@vitejs/plugin-vue':
         specifier: 'catalog:'
-        version: 6.0.1(vite@7.0.7(@types/node@22.12.0)(terser@5.43.1)(tsx@4.20.3))(vue@3.5.18(typescript@5.8.3))
+        version: 6.0.1(vite@7.1.11(@types/node@22.12.0)(terser@5.43.1)(tsx@4.20.3))(vue@3.5.18(typescript@5.8.3))
       '@vue/test-utils':
         specifier: 'catalog:'
         version: 2.4.6
@@ -383,7 +381,7 @@ importers:
         version: 3.4.2
       vite:
         specifier: 'catalog:'
-        version: 7.0.7(@types/node@22.12.0)(terser@5.43.1)(tsx@4.20.3)
+        version: 7.1.11(@types/node@22.12.0)(terser@5.43.1)(tsx@4.20.3)
       vite-svg-loader:
         specifier: 'catalog:'
         version: 5.1.0(vue@3.5.18(typescript@5.8.3))
@@ -410,7 +408,7 @@ importers:
         version: link:../components
       '@knime/kds-components':
         specifier: 'catalog:'
-        version: 0.0.8(@fontsource/roboto-mono@5.2.6)(@fontsource/roboto@5.2.6)(@vueuse/core@13.6.0(vue@3.5.18(typescript@5.8.3)))(vue@3.5.18(typescript@5.8.3))
+        version: 0.0.8(@fontsource/roboto-mono@5.2.6)(@fontsource/roboto@5.2.6)(@vueuse/core@13.8.0(vue@3.5.18(typescript@5.8.3)))(vue@3.5.18(typescript@5.8.3))
       '@knime/rich-text-editor':
         specifier: workspace:*
         version: link:../rich-text-editor
@@ -438,7 +436,7 @@ importers:
         version: 10.0.0
       '@vitejs/plugin-vue':
         specifier: 'catalog:'
-        version: 6.0.1(vite@7.0.7(@types/node@22.12.0)(terser@5.43.1)(tsx@4.20.3))(vue@3.5.18(typescript@5.8.3))
+        version: 6.0.1(vite@7.1.11(@types/node@22.12.0)(terser@5.43.1)(tsx@4.20.3))(vue@3.5.18(typescript@5.8.3))
       '@vue/test-utils':
         specifier: 'catalog:'
         version: 2.4.6
@@ -465,10 +463,10 @@ importers:
         version: https://bitbucket.org/KNIME/v-calendar/get/048477f.tar.gz(@popperjs/core@2.11.8)(vue@3.5.18(typescript@5.8.3))
       vite:
         specifier: 'catalog:'
-        version: 7.0.7(@types/node@22.12.0)(terser@5.43.1)(tsx@4.20.3)
+        version: 7.1.11(@types/node@22.12.0)(terser@5.43.1)(tsx@4.20.3)
       vite-plugin-dts:
         specifier: 'catalog:'
-        version: 4.5.4(@types/node@22.12.0)(rollup@4.45.1)(typescript@5.8.3)(vite@7.0.7(@types/node@22.12.0)(terser@5.43.1)(tsx@4.20.3))
+        version: 4.5.4(@types/node@22.12.0)(rollup@4.45.1)(typescript@5.8.3)(vite@7.1.11(@types/node@22.12.0)(terser@5.43.1)(tsx@4.20.3))
       vite-svg-loader:
         specifier: 'catalog:'
         version: 5.1.0(vue@3.5.18(typescript@5.8.3))
@@ -635,7 +633,7 @@ importers:
     devDependencies:
       '@vitejs/plugin-vue':
         specifier: 'catalog:'
-        version: 6.0.1(vite@7.0.7(@types/node@22.12.0)(terser@5.43.1)(tsx@4.20.3))(vue@3.5.18(typescript@5.8.3))
+        version: 6.0.1(vite@7.1.11(@types/node@22.12.0)(terser@5.43.1)(tsx@4.20.3))(vue@3.5.18(typescript@5.8.3))
       '@vue/test-utils':
         specifier: 'catalog:'
         version: 2.4.6
@@ -647,10 +645,10 @@ importers:
         version: 5.8.3
       vite:
         specifier: 'catalog:'
-        version: 7.0.7(@types/node@22.12.0)(terser@5.43.1)(tsx@4.20.3)
+        version: 7.1.11(@types/node@22.12.0)(terser@5.43.1)(tsx@4.20.3)
       vite-plugin-css-injected-by-js:
         specifier: 'catalog:'
-        version: 3.5.2(vite@7.0.7(@types/node@22.12.0)(terser@5.43.1)(tsx@4.20.3))
+        version: 3.5.2(vite@7.1.11(@types/node@22.12.0)(terser@5.43.1)(tsx@4.20.3))
       vite-svg-loader:
         specifier: 'catalog:'
         version: 5.1.0(vue@3.5.18(typescript@5.8.3))
@@ -699,7 +697,7 @@ importers:
         version: link:../styles
       '@vueuse/shared':
         specifier: 'catalog:'
-        version: 13.6.0(vue@3.5.18(typescript@5.8.3))
+        version: 13.8.0(vue@3.5.18(typescript@5.8.3))
       vue:
         specifier: catalog:peer
         version: 3.5.18(typescript@5.8.3)
@@ -758,10 +756,10 @@ importers:
         version: 5.8.3
       vite:
         specifier: 'catalog:'
-        version: 7.0.7(@types/node@22.12.0)(terser@5.43.1)(tsx@4.20.3)
+        version: 7.1.11(@types/node@22.12.0)(terser@5.43.1)(tsx@4.20.3)
       vite-plugin-dts:
         specifier: 'catalog:'
-        version: 4.5.4(@types/node@22.12.0)(rollup@4.45.1)(typescript@5.8.3)(vite@7.0.7(@types/node@22.12.0)(terser@5.43.1)(tsx@4.20.3))
+        version: 4.5.4(@types/node@22.12.0)(rollup@4.45.1)(typescript@5.8.3)(vite@7.1.11(@types/node@22.12.0)(terser@5.43.1)(tsx@4.20.3))
       vitest:
         specifier: 'catalog:'
         version: 3.2.4(@types/node@22.12.0)(jsdom@26.1.0)(terser@5.43.1)(tsx@4.20.3)
@@ -814,7 +812,7 @@ importers:
     devDependencies:
       '@vitejs/plugin-vue':
         specifier: 'catalog:'
-        version: 6.0.1(vite@7.0.7(@types/node@22.12.0)(terser@5.43.1)(tsx@4.20.3))(vue@3.5.18(typescript@5.8.3))
+        version: 6.0.1(vite@7.1.11(@types/node@22.12.0)(terser@5.43.1)(tsx@4.20.3))(vue@3.5.18(typescript@5.8.3))
       '@vue/test-utils':
         specifier: 'catalog:'
         version: 2.4.6
@@ -823,10 +821,10 @@ importers:
         version: 3.4.2
       vite:
         specifier: 'catalog:'
-        version: 7.0.7(@types/node@22.12.0)(terser@5.43.1)(tsx@4.20.3)
+        version: 7.1.11(@types/node@22.12.0)(terser@5.43.1)(tsx@4.20.3)
       vite-plugin-css-injected-by-js:
         specifier: 'catalog:'
-        version: 3.5.2(vite@7.0.7(@types/node@22.12.0)(terser@5.43.1)(tsx@4.20.3))
+        version: 3.5.2(vite@7.1.11(@types/node@22.12.0)(terser@5.43.1)(tsx@4.20.3))
       vite-svg-loader:
         specifier: 'catalog:'
         version: 5.1.0(vue@3.5.18(typescript@5.8.3))
@@ -2175,7 +2173,7 @@ packages:
     resolution: {integrity: sha512-+MaE752hU0wfPFJEUAIxqw18+20euHHdxVtMvbFcOEpjEyfqXH/5DCoTHiVJ0J29EhTJdoTkjEv5YBKU9dnoTw==}
     engines: {node: ^20.19.0 || >=22.12.0}
     peerDependencies:
-      vite: '>=7.0.8'
+      vite: ^5.0.0 || ^6.0.0 || ^7.0.0
       vue: ^3.2.25
 
   '@vitest/coverage-v8@3.2.4':
@@ -2207,7 +2205,7 @@ packages:
     resolution: {integrity: sha512-46ryTE9RZO/rfDd7pEqFl7etuyzekzEhUbTW3BvmeO/BcCMEgq59BKhek3dXDWgAj4oMK6OZi+vRr1wPW6qjEQ==}
     peerDependencies:
       msw: ^2.4.9
-      vite: '>=7.0.8'
+      vite: ^5.0.0 || ^6.0.0 || ^7.0.0-0
     peerDependenciesMeta:
       msw:
         optional: true
@@ -2306,30 +2304,30 @@ packages:
   '@vue/tsconfig@0.5.1':
     resolution: {integrity: sha512-VcZK7MvpjuTPx2w6blwnwZAu5/LgBUtejFOi3pPGQFXQN5Ela03FUtd2Qtg4yWGGissVL0dr6Ro1LfOFh+PCuQ==}
 
-  '@vueuse/components@13.6.0':
-    resolution: {integrity: sha512-wJmXlQhCRWBqpnRW4KVbbKqCW28AZ/5hoA/gy7cvTXJUiRdKKfjHFo+7MGwn80dFfIkCA5253T7Y3fbNK4/lUw==}
+  '@vueuse/components@13.8.0':
+    resolution: {integrity: sha512-lAunbZhYdQB/eVQVJqTKTfPnyZUYgd5wgWDl6HymnM1jF1RT/lI/a2oLZNBu49Yr1cY2Eq/7jNvuZz/dMa1EIw==}
     peerDependencies:
       vue: ^3.5.0
 
   '@vueuse/core@10.7.0':
     resolution: {integrity: sha512-4EUDESCHtwu44ZWK3Gc/hZUVhVo/ysvdtwocB5vcauSV4B7NiGY5972WnsojB3vRNdxvAt7kzJWE2h9h7C9d5w==}
 
-  '@vueuse/core@13.6.0':
-    resolution: {integrity: sha512-DJbD5fV86muVmBgS9QQPddVX7d9hWYswzlf4bIyUD2dj8GC46R1uNClZhVAmsdVts4xb2jwp1PbpuiA50Qee1A==}
+  '@vueuse/core@13.8.0':
+    resolution: {integrity: sha512-rmBcgpEpxY0ZmyQQR94q1qkUcHREiLxQwNyWrtjMDipD0WTH/JBcAt0gdcn2PsH0SA76ec291cHFngmyaBhlxA==}
     peerDependencies:
       vue: ^3.5.0
 
   '@vueuse/metadata@10.7.0':
     resolution: {integrity: sha512-GlaH7tKP2iBCZ3bHNZ6b0cl9g0CJK8lttkBNUX156gWvNYhTKEtbweWLm9rxCPIiwzYcr/5xML6T8ZUEt+DkvA==}
 
-  '@vueuse/metadata@13.6.0':
-    resolution: {integrity: sha512-rnIH7JvU7NjrpexTsl2Iwv0V0yAx9cw7+clymjKuLSXG0QMcLD0LDgdNmXic+qL0SGvgSVPEpM9IDO/wqo1vkQ==}
+  '@vueuse/metadata@13.8.0':
+    resolution: {integrity: sha512-BYMp3Gp1kBUPv7AfQnJYP96mkX7g7cKdTIgwv/Jgd+pfQhz678naoZOAcknRtPLP4cFblDDW7rF4e3KFa+PfIA==}
 
   '@vueuse/shared@10.7.0':
     resolution: {integrity: sha512-kc00uV6CiaTdc3i1CDC4a3lBxzaBE9AgYNtFN87B5OOscqeWElj/uza8qVDmk7/U8JbqoONLbtqiLJ5LGRuqlw==}
 
-  '@vueuse/shared@13.6.0':
-    resolution: {integrity: sha512-pDykCSoS2T3fsQrYqf9SyF0QXWHmcGPQ+qiOVjlYSzlWd9dgppB2bFSM1GgKKkt7uzn0BBMV3IbJsUfHG2+BCg==}
+  '@vueuse/shared@13.8.0':
+    resolution: {integrity: sha512-x4nfM0ykW+RmNJ4/1IzZsuLuWWrNTxlTWUiehTGI54wnOxIgI9EDdu/O5S77ac6hvQ3hk2KpOVFHaM0M796Kbw==}
     peerDependencies:
       vue: ^3.5.0
 
@@ -3194,14 +3192,6 @@ packages:
 
   fd-package-json@1.2.0:
     resolution: {integrity: sha512-45LSPmWf+gC5tdCQMNH4s9Sr00bIkiD9aN7dc5hqkrEw1geRYyDQS1v1oMHAW3ysfxfndqGsrDREHHjNNbKUfA==}
-
-  fdir@6.4.6:
-    resolution: {integrity: sha512-hiFoqpyZcfNm1yc4u8oWCf9A2c4D3QjCrks3zmoVKVxpQRzmPNar1hUJcBG2RQHvEVGDN+Jm81ZheVLAQMK6+w==}
-    peerDependencies:
-      picomatch: ^3 || ^4
-    peerDependenciesMeta:
-      picomatch:
-        optional: true
 
   fdir@6.5.0:
     resolution: {integrity: sha512-tIbYtZbucOs0BRGqPJkshJUYdL+SDH7dVM8gjy+ERp3WAUjLEFJE+02kanyHtwjWOnwrKYBiwAmM0p4kLJAnXg==}
@@ -5240,13 +5230,13 @@ packages:
   vite-plugin-css-injected-by-js@3.5.2:
     resolution: {integrity: sha512-2MpU/Y+SCZyWUB6ua3HbJCrgnF0KACAsmzOQt1UvRVJCGF6S8xdA3ZUhWcWdM9ivG4I5az8PnQmwwrkC2CAQrQ==}
     peerDependencies:
-      vite: '>=7.0.8'
+      vite: '>2.0.0-0'
 
   vite-plugin-dts@4.5.4:
     resolution: {integrity: sha512-d4sOM8M/8z7vRXHHq/ebbblfaxENjogAAekcfcDCCwAyvGqnPrc7f4NZbvItS+g4WTgerW0xDwSz5qz11JT3vg==}
     peerDependencies:
       typescript: '*'
-      vite: '>=7.0.8'
+      vite: '*'
     peerDependenciesMeta:
       vite:
         optional: true
@@ -5255,46 +5245,6 @@ packages:
     resolution: {integrity: sha512-M/wqwtOEjgb956/+m5ZrYT/Iq6Hax0OakWbokj8+9PXOnB7b/4AxESHieEtnNEy7ZpjsjYW1/5nK8fATQMmRxw==}
     peerDependencies:
       vue: '>=3.2.13'
-
-  vite@7.0.7:
-    resolution: {integrity: sha512-hc6LujN/EkJHmxeiDJMs0qBontZ1cdBvvoCbWhVjzUFTU329VRyOC46gHNSA8NcOC5yzCeXpwI40tieI3DEZqg==}
-    engines: {node: ^20.19.0 || >=22.12.0}
-    hasBin: true
-    peerDependencies:
-      '@types/node': ^20.19.0 || >=22.12.0
-      jiti: '>=1.21.0'
-      less: ^4.0.0
-      lightningcss: ^1.21.0
-      sass: ^1.70.0
-      sass-embedded: ^1.70.0
-      stylus: '>=0.54.8'
-      sugarss: ^5.0.0
-      terser: ^5.16.0
-      tsx: ^4.8.1
-      yaml: ^2.4.2
-    peerDependenciesMeta:
-      '@types/node':
-        optional: true
-      jiti:
-        optional: true
-      less:
-        optional: true
-      lightningcss:
-        optional: true
-      sass:
-        optional: true
-      sass-embedded:
-        optional: true
-      stylus:
-        optional: true
-      sugarss:
-        optional: true
-      terser:
-        optional: true
-      tsx:
-        optional: true
-      yaml:
-        optional: true
 
   vite@7.1.11:
     resolution: {integrity: sha512-uzcxnSDVjAopEUjljkWh8EIrg6tlzrjFUfMcR1EVsRDGwf/ccef0qQPRyOrROwhrTDaApueq+ja+KLPlzR/zdg==}
@@ -6411,12 +6361,12 @@ snapshots:
 
   '@keyv/serialize@1.1.0': {}
 
-  '@knime/kds-components@0.0.8(@fontsource/roboto-mono@5.2.6)(@fontsource/roboto@5.2.6)(@vueuse/core@13.6.0(vue@3.5.18(typescript@5.8.3)))(vue@3.5.18(typescript@5.8.3))':
+  '@knime/kds-components@0.0.8(@fontsource/roboto-mono@5.2.6)(@fontsource/roboto@5.2.6)(@vueuse/core@13.8.0(vue@3.5.18(typescript@5.8.3)))(vue@3.5.18(typescript@5.8.3))':
     dependencies:
       '@knime/kds-styles': 0.0.8
       '@knime/styles': 1.11.0(@fontsource/roboto-mono@5.2.6)(@fontsource/roboto@5.2.6)
       '@knime/utils': 1.5.4(@fontsource/roboto-mono@5.2.6)(@fontsource/roboto@5.2.6)(consola@3.4.2)
-      '@vueuse/core': 13.6.0(vue@3.5.18(typescript@5.8.3))
+      '@vueuse/core': 13.8.0(vue@3.5.18(typescript@5.8.3))
       consola: 3.4.2
       vue: 3.5.18(typescript@5.8.3)
     transitivePeerDependencies:
@@ -7141,12 +7091,6 @@ snapshots:
   '@unrs/resolver-binding-win32-x64-msvc@1.11.1':
     optional: true
 
-  '@vitejs/plugin-vue@6.0.1(vite@7.0.7(@types/node@22.12.0)(terser@5.43.1)(tsx@4.20.3))(vue@3.5.18(typescript@5.8.3))':
-    dependencies:
-      '@rolldown/pluginutils': 1.0.0-beta.29
-      vite: 7.0.7(@types/node@22.12.0)(terser@5.43.1)(tsx@4.20.3)
-      vue: 3.5.18(typescript@5.8.3)
-
   '@vitejs/plugin-vue@6.0.1(vite@7.1.11(@types/node@22.12.0)(terser@5.43.1)(tsx@4.20.3))(vue@3.5.18(typescript@5.8.3))':
     dependencies:
       '@rolldown/pluginutils': 1.0.0-beta.29
@@ -7344,10 +7288,10 @@ snapshots:
 
   '@vue/tsconfig@0.5.1': {}
 
-  '@vueuse/components@13.6.0(vue@3.5.18(typescript@5.8.3))':
+  '@vueuse/components@13.8.0(vue@3.5.18(typescript@5.8.3))':
     dependencies:
-      '@vueuse/core': 13.6.0(vue@3.5.18(typescript@5.8.3))
-      '@vueuse/shared': 13.6.0(vue@3.5.18(typescript@5.8.3))
+      '@vueuse/core': 13.8.0(vue@3.5.18(typescript@5.8.3))
+      '@vueuse/shared': 13.8.0(vue@3.5.18(typescript@5.8.3))
       vue: 3.5.18(typescript@5.8.3)
 
   '@vueuse/core@10.7.0(vue@3.5.18(typescript@5.8.3))':
@@ -7360,16 +7304,16 @@ snapshots:
       - '@vue/composition-api'
       - vue
 
-  '@vueuse/core@13.6.0(vue@3.5.18(typescript@5.8.3))':
+  '@vueuse/core@13.8.0(vue@3.5.18(typescript@5.8.3))':
     dependencies:
       '@types/web-bluetooth': 0.0.21
-      '@vueuse/metadata': 13.6.0
-      '@vueuse/shared': 13.6.0(vue@3.5.18(typescript@5.8.3))
+      '@vueuse/metadata': 13.8.0
+      '@vueuse/shared': 13.8.0(vue@3.5.18(typescript@5.8.3))
       vue: 3.5.18(typescript@5.8.3)
 
   '@vueuse/metadata@10.7.0': {}
 
-  '@vueuse/metadata@13.6.0': {}
+  '@vueuse/metadata@13.8.0': {}
 
   '@vueuse/shared@10.7.0(vue@3.5.18(typescript@5.8.3))':
     dependencies:
@@ -7378,7 +7322,7 @@ snapshots:
       - '@vue/composition-api'
       - vue
 
-  '@vueuse/shared@13.6.0(vue@3.5.18(typescript@5.8.3))':
+  '@vueuse/shared@13.8.0(vue@3.5.18(typescript@5.8.3))':
     dependencies:
       vue: 3.5.18(typescript@5.8.3)
 
@@ -8390,10 +8334,6 @@ snapshots:
   fd-package-json@1.2.0:
     dependencies:
       walk-up-path: 3.0.1
-
-  fdir@6.4.6(picomatch@4.0.3):
-    optionalDependencies:
-      picomatch: 4.0.3
 
   fdir@6.5.0(picomatch@4.0.3):
     optionalDependencies:
@@ -10673,7 +10613,7 @@ snapshots:
 
   tinyglobby@0.2.14:
     dependencies:
-      fdir: 6.4.6(picomatch@4.0.3)
+      fdir: 6.5.0(picomatch@4.0.3)
       picomatch: 4.0.3
 
   tinyglobby@0.2.15:
@@ -10894,11 +10834,11 @@ snapshots:
       - tsx
       - yaml
 
-  vite-plugin-css-injected-by-js@3.5.2(vite@7.0.7(@types/node@22.12.0)(terser@5.43.1)(tsx@4.20.3)):
+  vite-plugin-css-injected-by-js@3.5.2(vite@7.1.11(@types/node@22.12.0)(terser@5.43.1)(tsx@4.20.3)):
     dependencies:
-      vite: 7.0.7(@types/node@22.12.0)(terser@5.43.1)(tsx@4.20.3)
+      vite: 7.1.11(@types/node@22.12.0)(terser@5.43.1)(tsx@4.20.3)
 
-  vite-plugin-dts@4.5.4(@types/node@22.12.0)(rollup@4.45.1)(typescript@5.8.3)(vite@7.0.7(@types/node@22.12.0)(terser@5.43.1)(tsx@4.20.3)):
+  vite-plugin-dts@4.5.4(@types/node@22.12.0)(rollup@4.45.1)(typescript@5.8.3)(vite@7.1.11(@types/node@22.12.0)(terser@5.43.1)(tsx@4.20.3)):
     dependencies:
       '@microsoft/api-extractor': 7.52.8(@types/node@22.12.0)
       '@rollup/pluginutils': 5.2.0(rollup@4.45.1)
@@ -10911,7 +10851,7 @@ snapshots:
       magic-string: 0.30.17
       typescript: 5.8.3
     optionalDependencies:
-      vite: 7.0.7(@types/node@22.12.0)(terser@5.43.1)(tsx@4.20.3)
+      vite: 7.1.11(@types/node@22.12.0)(terser@5.43.1)(tsx@4.20.3)
     transitivePeerDependencies:
       - '@types/node'
       - rollup
@@ -10921,20 +10861,6 @@ snapshots:
     dependencies:
       svgo: 3.3.2
       vue: 3.5.18(typescript@5.8.3)
-
-  vite@7.0.7(@types/node@22.12.0)(terser@5.43.1)(tsx@4.20.3):
-    dependencies:
-      esbuild: 0.25.8
-      fdir: 6.4.6(picomatch@4.0.3)
-      picomatch: 4.0.3
-      postcss: 8.5.6
-      rollup: 4.45.1
-      tinyglobby: 0.2.14
-    optionalDependencies:
-      '@types/node': 22.12.0
-      fsevents: 2.3.3
-      terser: 5.43.1
-      tsx: 4.20.3
 
   vite@7.1.11(@types/node@22.12.0)(terser@5.43.1)(tsx@4.20.3):
     dependencies:
