@@ -19,7 +19,7 @@
     "@knime/components": "workspace:*",
     "@knime/hub-features": "workspace:*",
     "@knime/kds-components": "catalog:",
-    "@knime/kds-styles": "0.0.4",
+    "@knime/kds-styles": "catalog:",
     "@knime/licenses": "workspace:*",
     "@knime/rich-text-editor": "workspace:*",
     "@knime/styles": "workspace:*",
