@@ -1,5 +1,11 @@
 # @knime/ui-extension-service
 
+## 2.5.2
+
+### Patch Changes
+
+- 4099706: Update vite and vueuse
+
 ## 2.5.1
 
 ### Patch Changes

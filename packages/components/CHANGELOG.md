@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.41.5
+
+### Patch Changes
+
+- 4099706: Update vite and vueuse
+
 ## 1.41.4
 
 ### Patch Changes
