@@ -1,5 +1,11 @@
 # @knime/utils
 
+## 1.7.0
+
+### Minor Changes
+
+- 34a4517: Add createUnwrappedPromise util
+
 ## 1.6.2
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # @knime/hub-features
 
+## 1.15.0
+
+### Minor Changes
+
+- 34a4517: Add embedding SDK
+
+### Patch Changes
+
+- Updated dependencies [34a4517]
+  - @knime/utils@1.7.0
+  - @knime/components@1.41.4
+
 ## 1.14.29
 
 ### Patch Changes
