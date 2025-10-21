@@ -1,5 +1,13 @@
 # @knime/hub-features
 
+## 1.15.1
+
+### Patch Changes
+
+- 4099706: Update vite and vueuse
+- Updated dependencies [4099706]
+  - @knime/components@1.41.5
+
 ## 1.15.0
 
 ### Minor Changes

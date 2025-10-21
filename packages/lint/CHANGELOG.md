@@ -1,5 +1,11 @@
 # @knime/eslint-config
 
+## 9.3.1
+
+### Patch Changes
+
+- 4099706: Update @vitest/eslint-plugin to address audit issues
+
 ## 9.3.0
 
 ### Minor Changes

@@ -1,5 +1,15 @@
 # @knime/json-forms
 
+## 1.15.39
+
+### Patch Changes
+
+- 4099706: Update vite and vueuse
+- 4099706: Updating kds-styles to address icon subpixel rendering issues
+- Updated dependencies [4099706]
+  - @knime/components@1.41.5
+  - @knime/rich-text-editor@1.7.34
+
 ## 1.15.38
 
 ### Patch Changes
