@@ -1,7 +1,11 @@
 <script setup lang="ts">
 /* eslint-disable max-lines */
-import { type Ref, computed, nextTick, ref, toRef, toRefs, watch } from "vue";
-import { onClickOutside, useResizeObserver } from "@vueuse/core";
+import { computed, nextTick, ref, toRef, toRefs, watch } from "vue";
+import {
+  type MaybeElementRef,
+  onClickOutside,
+  useResizeObserver,
+} from "@vueuse/core";
 import { debounce } from "lodash-es";
 
 import OptionsIcon from "@knime/styles/img/icons/menu-options.svg";
@@ -98,7 +102,7 @@ type Props = {
    * Pass in refs to HTML elements which, when clicked,
    * should not unset the current selection.
    */
-  clickOutsideExceptions?: Array<Ref<HTMLElement | null>>;
+  clickOutsideExceptions?: Array<MaybeElementRef | string>;
   /**
    * Selected item ids
    */
