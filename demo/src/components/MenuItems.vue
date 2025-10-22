@@ -1,5 +1,5 @@
 <script lang="ts">
-import { markRaw } from "vue";
+import { markRaw, h } from "vue";
 
 import { Avatar, type MenuItem, MenuItems } from "@knime/components";
 import HelpIcon from "@knime/styles/img/icons/circle-help.svg";
@@ -9,7 +9,6 @@ import LeaveIcon from "@knime/styles/img/icons/leave.svg";
 import StarIcon from "@knime/styles/img/icons/star.svg";
 
 import CodeExample from "./demo/CodeExample.vue";
-import { h } from "vue";
 // import code from "webapps-common/ui/components/MenuItems.vue?raw";
 const code = "";
 
@@ -105,12 +104,15 @@ const menuItemsData: MenuItem[] = [
     badgeText: "123",
   },
   {
-    text: "",
+    text: "KNIME Avatar",
     icon: h(Avatar, {
       image: { url: "https://www.knime.com/images/knime-logo.svg" },
       name: "KNIME Avatar",
-      showText: "name",
+      showText: "none",
       layout: "horizontal",
+      style: {
+        "margin-right": "8px",
+      },
     }),
     badgeText: "Team",
   },

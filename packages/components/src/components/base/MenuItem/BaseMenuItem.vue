@@ -160,7 +160,6 @@ const dynamicAttributes = (item: MenuItem) => {
         display: flex;
         align-items: center;
         width: 100%;
-        height: calc(var(--icon-size) * 1px);
         height: 100%;
         text-align: left;
 
