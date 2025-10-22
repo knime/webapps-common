@@ -2,6 +2,11 @@
   "name": "@knime/styles",
   "version": "1.14.2",
   "description": "Internal style definitions and icons shared across @knime packages",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/knime/webapps-common.git",
+    "directory": "packages/styles"
+  },
   "homepage": "https://knime.github.io/webapps-common/",
   "license": "GPL 3 and Additional Permissions according to Sec. 7 (SEE the file LICENSE)",
   "author": "KNIME AG, Zurich, Switzerland",

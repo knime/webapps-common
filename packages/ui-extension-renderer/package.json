@@ -2,6 +2,11 @@
   "name": "@knime/ui-extension-renderer",
   "version": "2.3.34",
   "description": "Internal shared components and utilities to render UI-Extensions. Used in other consuming `@knime` packages.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/knime/webapps-common.git",
+    "directory": "packages/ui-extension-renderer"
+  },
   "homepage": "https://knime.github.io/webapps-common/",
   "license": "GPL 3 and Additional Permissions according to Sec. 7 (SEE LICENSE IN license.txt)",
   "author": "KNIME AG, Zurich, Switzerland",

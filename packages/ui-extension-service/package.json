@@ -2,13 +2,14 @@
   "name": "@knime/ui-extension-service",
   "version": "2.5.2",
   "description": "KNIME UI Extension Service for KNIME Analytics Platform",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/knime/webapps-common.git",
+    "directory": "packages/ui-extension-service"
+  },
   "license": "GPL 3 and Additional Permissions according to Sec. 7 (SEE LICENSE IN license.txt)",
   "author": "KNIME AG, Zurich, Switzerland",
   "type": "module",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/knime/webapps-common"
-  },
   "scripts": {
     "build": "npm-run-all cleanDist --parallel build:* -l",
     "build:es": "vite build --mode es",

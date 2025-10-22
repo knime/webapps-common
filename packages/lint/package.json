@@ -2,6 +2,13 @@
   "name": "@knime/eslint-config",
   "version": "9.3.1",
   "description": "ESLint/Stylelint configs designed for typical KNIME frontend projects using JavaScript/TypeScript as well as Vue, Nuxt and Vitest.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/knime/webapps-common.git",
+    "directory": "packages/lint"
+  },
+  "license": "GPL 3 and Additional Permissions according to Sec. 7 (SEE the file LICENSE)",
+  "author": "KNIME AG, Zurich, Switzerland",
   "type": "module",
   "scripts": {
     "lint": "eslint --cache .",
@@ -11,13 +18,6 @@
     "knime-eslint-config-prepare-commit-msg": "./scripts/prepare-commit-msg"
   },
   "main": "index.js",
-  "license": "GPL 3 and Additional Permissions according to Sec. 7 (SEE the file LICENSE)",
-  "author": "KNIME AG, Zurich, Switzerland",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/knime/webapps-common",
-    "directory": "packages/lint"
-  },
   "dependencies": {
     "@eslint/js": "^9.27.0",
     "@nuxt/eslint-config": "^1.2.0",

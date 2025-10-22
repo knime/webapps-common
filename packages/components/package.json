@@ -2,6 +2,11 @@
   "name": "@knime/components",
   "version": "1.41.5",
   "description": "Vue components & composables, that can be used for the frontend of all KNIME web projects.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/knime/webapps-common.git",
+    "directory": "packages/components"
+  },
   "homepage": "https://knime.github.io/webapps-common/",
   "license": "GPL 3 and Additional Permissions according to Sec. 7 (SEE the file LICENSE)",
   "author": "KNIME AG, Zurich, Switzerland",
