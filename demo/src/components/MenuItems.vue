@@ -1,7 +1,7 @@
 <script lang="ts">
-import { markRaw } from "vue";
+import { markRaw, h } from "vue";
 
-import { type MenuItem, MenuItems } from "@knime/components";
+import { Avatar, type MenuItem, MenuItems } from "@knime/components";
 import HelpIcon from "@knime/styles/img/icons/circle-help.svg";
 import DownloadIcon from "@knime/styles/img/icons/cloud-download.svg";
 import HeartIcon from "@knime/styles/img/icons/heart.svg";
@@ -102,6 +102,19 @@ const menuItemsData: MenuItem[] = [
     text: "Ananas",
     icon: markRaw(HeartIcon),
     badgeText: "123",
+  },
+  {
+    text: "KNIME Avatar",
+    icon: h(Avatar, {
+      image: { url: "https://www.knime.com/images/knime-logo.svg" },
+      name: "KNIME Avatar",
+      showText: "none",
+      layout: "horizontal",
+      style: {
+        "margin-right": "8px",
+      },
+    }),
+    badgeText: "Team",
   },
   {
     href: "https://www.urbandictionary.com/define.php?term=go%20bananas",
