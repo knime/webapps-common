@@ -1,5 +1,13 @@
 # @knime/json-forms
 
+## 1.15.41
+
+### Patch Changes
+
+- Updated dependencies [640ba04]
+  - @knime/components@1.41.7
+  - @knime/rich-text-editor@1.7.36
+
 ## 1.15.40
 
 ### Patch Changes

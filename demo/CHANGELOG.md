@@ -1,5 +1,16 @@
 # demo
 
+## 1.6.41
+
+### Patch Changes
+
+- 640ba04: Centering MenuItem badge
+- Updated dependencies [640ba04]
+  - @knime/components@1.41.7
+  - @knime/hub-features@1.15.3
+  - @knime/rich-text-editor@1.7.36
+  - @knime/virtual-tree@1.6.36
+
 ## 1.6.40
 
 ### Patch Changes

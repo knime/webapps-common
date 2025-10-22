@@ -1,6 +1,6 @@
 {
   "name": "@knime/rich-text-editor",
-  "version": "1.7.35",
+  "version": "1.7.36",
   "description": "Vue components of a rich text editor that can be used for the frontend of all KNIME web projects.",
   "repository": {
     "type": "git",

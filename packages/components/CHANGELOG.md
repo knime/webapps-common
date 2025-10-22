@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.41.7
+
+### Patch Changes
+
+- 640ba04: Centering MenuItem badge
+
 ## 1.41.6
 
 ### Patch Changes
