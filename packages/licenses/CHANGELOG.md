@@ -1,5 +1,11 @@
 # @knime/licenses
 
+## 1.3.3
+
+### Patch Changes
+
+- b6c2eb9: add repository link to package.json
+
 ## 1.3.2
 
 ### Patch Changes

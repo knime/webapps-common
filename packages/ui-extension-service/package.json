@@ -1,6 +1,6 @@
 {
   "name": "@knime/ui-extension-service",
-  "version": "2.5.2",
+  "version": "2.5.3",
   "description": "KNIME UI Extension Service for KNIME Analytics Platform",
   "repository": {
     "type": "git",

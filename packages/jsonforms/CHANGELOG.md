@@ -1,5 +1,16 @@
 # @knime/json-forms
 
+## 1.15.40
+
+### Patch Changes
+
+- b6c2eb9: add repository link to package.json
+- Updated dependencies [b6c2eb9]
+  - @knime/rich-text-editor@1.7.35
+  - @knime/components@1.41.6
+  - @knime/styles@1.14.3
+  - @knime/utils@1.7.1
+
 ## 1.15.39
 
 ### Patch Changes

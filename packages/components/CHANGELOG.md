@@ -1,5 +1,14 @@
 # @knime/components
 
+## 1.41.6
+
+### Patch Changes
+
+- b6c2eb9: add repository link to package.json
+- Updated dependencies [b6c2eb9]
+  - @knime/styles@1.14.3
+  - @knime/utils@1.7.1
+
 ## 1.41.5
 
 ### Patch Changes

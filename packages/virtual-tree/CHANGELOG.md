@@ -1,5 +1,15 @@
 # @knime/virtual-tree
 
+## 1.6.35
+
+### Patch Changes
+
+- b6c2eb9: add repository link to package.json
+- Updated dependencies [b6c2eb9]
+  - @knime/components@1.41.6
+  - @knime/styles@1.14.3
+  - @knime/utils@1.7.1
+
 ## 1.6.34
 
 ### Patch Changes

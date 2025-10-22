@@ -1,6 +1,6 @@
 {
   "name": "@knime/virtual-tree",
-  "version": "1.6.34",
+  "version": "1.6.35",
   "description": "Vue components of a tree that can be used for the frontend of all KNIME web projects.",
   "repository": {
     "type": "git",

@@ -1,5 +1,11 @@
 # @knime/eslint-config
 
+## 9.3.2
+
+### Patch Changes
+
+- b6c2eb9: add repository link to package.json
+
 ## 9.3.1
 
 ### Patch Changes

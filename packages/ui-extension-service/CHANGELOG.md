@@ -1,5 +1,11 @@
 # @knime/ui-extension-service
 
+## 2.5.3
+
+### Patch Changes
+
+- b6c2eb9: add repository link to package.json
+
 ## 2.5.2
 
 ### Patch Changes
