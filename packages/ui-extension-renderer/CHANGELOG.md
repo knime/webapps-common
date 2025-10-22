@@ -1,5 +1,14 @@
 # @knime/ui-extension-renderer
 
+## 2.3.35
+
+### Patch Changes
+
+- b6c2eb9: add repository link to package.json
+- Updated dependencies [b6c2eb9]
+  - @knime/components@1.41.6
+  - @knime/styles@1.14.3
+
 ## 2.3.34
 
 ### Patch Changes

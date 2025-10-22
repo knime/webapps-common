@@ -1,5 +1,13 @@
 # @knime/utils
 
+## 1.7.1
+
+### Patch Changes
+
+- b6c2eb9: add repository link to package.json
+- Updated dependencies [b6c2eb9]
+  - @knime/styles@1.14.3
+
 ## 1.7.0
 
 ### Minor Changes
