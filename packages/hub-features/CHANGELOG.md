@@ -1,5 +1,13 @@
 # @knime/hub-features
 
+## 1.15.4
+
+### Patch Changes
+
+- e44c108: fix rfcErrors parser and return undefined on error
+- Updated dependencies [e44c108]
+  - @knime/components@1.41.8
+
 ## 1.15.3
 
 ### Patch Changes

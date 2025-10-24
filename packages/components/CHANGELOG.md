@@ -1,5 +1,12 @@
 # @knime/components
 
+## 1.41.8
+
+### Patch Changes
+
+- e44c108: FileExplorer: fix types of OnClickOutside ignores
+  FileExplorer: disable options menu when multiple items are selected
+
 ## 1.41.7
 
 ### Patch Changes
