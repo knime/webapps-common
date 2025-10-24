@@ -9,6 +9,7 @@ import {
   UPDATE_DATA,
 } from "@jsonforms/core";
 import { JsonForms } from "@jsonforms/vue";
+import type Ajv from "ajv";
 
 import type { NamedRenderer } from "./higherOrderComponents/types";
 import Form from "./layoutComponents/Form.vue";
@@ -18,11 +19,26 @@ import type { AlertParams } from "./types/alert";
 import type { Provided, StateProviderLocation } from "./types/provided";
 import "./assets/main.css";
 
-const props = defineProps<{
+const {
+  data,
+  schema,
+  uischema,
+  renderers,
+  ajv = undefined,
+  validate = undefined,
+} = defineProps<{
   schema: JsonSchema;
   uischema: UISchemaElement;
   data: unknown;
   renderers: readonly NamedRenderer[];
+  /**
+   * Optional AJV instance for JSON Schema validation.
+   *
+   * By default, JsonForms creates its own AJV instance internally, which uses `eval()`
+   * to compile validation functions from JSON schemas. This can cause CSP (Content Security Policy)
+   * violations in environments that restrict dynamic code execution with 'unsafe-eval'.
+   */
+  ajv?: Ajv;
   /**
    * Called by elements who have custom validation needs.
    * Calling this method on every value change (debounced) starts when the ui option
@@ -76,14 +92,14 @@ const provided: Provided = {
   validate: (id, data) => {
     // Default implementation that always returns valid
     // Override by providing a custom implementation
-    if (!props.validate) {
+    if (!validate) {
       throw new Error(
         `No validate function provided to JsonFormsDialog but validate called with arguments ${JSON.stringify(
           { id, data },
         )}`,
       );
     }
-    return props.validate(id, data);
+    return validate(id, data);
   },
 };
 
@@ -121,6 +137,15 @@ defineExpose({
 
 const subPanelTeleportDest = ref<HTMLElement | null>(null);
 provideSideDrawerTeleportDest(subPanelTeleportDest);
+
+const jsonFormsDialogBindings = computed(() => ({
+  data,
+  schema,
+  uischema,
+  renderers,
+  middleware: updateDataMiddleware,
+  ...(ajv ? { ajv } : {}),
+}));
 </script>
 
 <template>
@@ -132,11 +157,7 @@ provideSideDrawerTeleportDest(subPanelTeleportDest);
         <slot name="top" />
         <JsonForms
           ref="jsonforms"
-          :data
-          :schema
-          :uischema
-          :renderers
-          :middleware="updateDataMiddleware"
+          v-bind="jsonFormsDialogBindings"
           @change="onSettingsChanged"
         />
         <slot name="bottom" />

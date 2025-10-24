@@ -29,6 +29,7 @@
     "@knime/rich-text-editor": "workspace:*",
     "@knime/styles": "workspace:*",
     "@knime/utils": "workspace:*",
+    "ajv": "8.13.0",
     "date-fns": "2.30.0",
     "focus-trap-vue": "4.0.3",
     "tabbable": "6.2.0",
