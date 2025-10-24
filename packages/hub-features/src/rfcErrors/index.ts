@@ -35,21 +35,28 @@ const toToast = ({
 };
 
 /**
- * Try to parse an ofetch's `FetchError` to an `RFCError`. When parsing is not possible
- * it returns the same `FetchError` given unchanged.
+ * Parse an ofetch's `FetchError` to an `RFCError`.
+ * When parsing is not possible it returns undefined.
  */
-const tryParse = (error: FetchError): RFCError | FetchError => {
+const tryParse = (error: unknown): RFCError | undefined => {
+  if (!(error instanceof FetchError)) {
+    return undefined;
+  }
+
   if (!error.response) {
-    return error;
+    return undefined;
   }
 
   const responseDate = error.response.headers.get("date")
     ? new Date(error.response.headers.get("date")!)
     : undefined;
 
+  const title =
+    typeof error.data === "string" ? error.data : error.data?.title ?? "";
+
   const rfcErrorData: RFCErrorData = {
-    title: error.data.title as string,
-    details: error.data.details as string[] | undefined,
+    title: title as string,
+    details: error.data?.details as string[] | undefined,
     status: error.statusCode as number,
     date: responseDate,
     requestId: error.response.headers.get("x-request-id") ?? undefined,

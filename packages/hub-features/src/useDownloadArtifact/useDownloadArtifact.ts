@@ -284,10 +284,7 @@ export const useDownloadArtifact = (
     } catch (error: unknown) {
       // here only errors thrown by the initial requests are caught;
       // errors occurring while polling will be handled in pollDownloadItem
-      if (error instanceof FetchError) {
-        throw rfcErrors.tryParse(error);
-      }
-      throw error;
+      throw rfcErrors.tryParse(error) ?? error;
     }
   };
 

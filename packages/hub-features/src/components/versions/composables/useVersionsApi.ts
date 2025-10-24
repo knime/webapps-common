@@ -1,4 +1,4 @@
-import { FetchError, type FetchOptions } from "ofetch";
+import { type FetchOptions } from "ofetch";
 
 import { type HubAvatarData, rfcErrors } from "@knime/hub-features";
 import { VERSION_DEFAULT_LIMIT } from "@knime/hub-features/versions";
@@ -37,11 +37,7 @@ export const useVersionsApi = ({
 
       return await $ofetch(path, { ...defaults, ...fetchOptions });
     } catch (error) {
-      if (error instanceof FetchError) {
-        throw rfcErrors.tryParse(error);
-      }
-
-      throw error;
+      throw rfcErrors.tryParse(error) ?? error;
     }
   };
 
