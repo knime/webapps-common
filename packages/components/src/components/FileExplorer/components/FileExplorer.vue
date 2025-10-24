@@ -689,6 +689,7 @@ useResizeObserver(containerProps.ref, containerProps.onScroll);
                 contextMenuAnchor?.openedBy === 'optionsMenu' &&
                 contextMenuAnchor?.item.id === item.id
               "
+              :disabled="selectedItems.length > 1"
               compact
               @dblclick.stop
               @pointerdown.stop

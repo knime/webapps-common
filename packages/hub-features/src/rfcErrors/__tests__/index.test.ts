@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { FetchError } from "ofetch";
+import { FetchError } from "ofetch";
 
 import { rfcErrors } from "..";
 import { RFCError } from "../types";
@@ -46,16 +46,15 @@ describe("rfcErrors", () => {
       response.headers.set("x-request-id", "request-id");
       response.headers.set("x-error-id", "error-id");
 
-      const fetchError: FetchError = {
-        data: {
-          title: "The title",
-          details: ["detail 1"],
-        },
-        statusCode: 400,
-        response,
-        name: "",
-        message: "",
+      const fetchError = new FetchError("");
+      fetchError.data = {
+        title: "The title",
+        details: ["detail 1"],
       };
+      fetchError.statusCode = 400;
+      fetchError.response = response;
+      fetchError.name = "";
+      fetchError.message = "";
 
       const expectedError = new RFCError({
         title: "The title",
@@ -71,21 +70,27 @@ describe("rfcErrors", () => {
       expect(parsedError).toEqual(expectedError);
     });
 
-    it("should NOT parse into RFCError", () => {
-      const fetchError: FetchError = {
-        data: {
-          title: "The title",
-          details: ["detail 1"],
-        },
-        statusCode: 400,
-        name: "",
-        message: "",
+    it("should NOT parse into RFCError if response is missing", () => {
+      const fetchError = new FetchError("");
+      fetchError.data = {
+        title: "The title",
+        details: ["detail 1"],
       };
+      fetchError.statusCode = 400;
+      fetchError.name = "";
+      fetchError.message = "";
 
       const parsedError = rfcErrors.tryParse(fetchError);
 
-      expect(parsedError instanceof rfcErrors.RFCError).toBe(false);
-      expect(parsedError).toBe(fetchError);
+      expect(parsedError).toBeUndefined();
+    });
+
+    it("should NOT parse into RFCError if no FetchError is given", () => {
+      const error = new Error("");
+
+      const parsedError = rfcErrors.tryParse(error);
+
+      expect(parsedError).toBeUndefined();
     });
   });
 });

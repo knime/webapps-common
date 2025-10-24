@@ -287,11 +287,7 @@ export const useFileUpload = (options: UseFileUploadOptions = {}) => {
 
         useUploadManagerResult.start(parentId, uploadPayload);
       } catch (error) {
-        if (error instanceof FetchError) {
-          throw rfcErrors.tryParse(error);
-        }
-
-        throw error;
+        throw rfcErrors.tryParse(error) ?? error;
       } finally {
         // errors can only be thrown in the prepareUpload call, useUploadManagerResult.start does its own error handling
         prepareQueueSize.value -= enqueableFiles.length;
