@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.15.43
+
+### Patch Changes
+
+- b277ca1: passed ajv as an optional parameter to JsonFormsDialog
+
 ## 1.15.42
 
 ### Patch Changes
