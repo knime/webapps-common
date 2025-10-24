@@ -45,11 +45,13 @@ jobs:
         run: pnpm run audit
 
       - name: Sonar scan
+        if: github.actor != 'dependabot[bot]'
         uses: SonarSource/sonarqube-scan-action@v6
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
       - name: Upload demo build output as pages artifact
+        if: github.actor != 'dependabot[bot]'
         id: deployment
         uses: actions/upload-pages-artifact@v3
         with:
