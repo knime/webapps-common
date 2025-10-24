@@ -418,6 +418,9 @@ importers:
       '@knime/utils':
         specifier: workspace:*
         version: link:../utils
+      ajv:
+        specifier: 8.13.0
+        version: 8.13.0
       date-fns:
         specifier: 2.30.0
         version: 2.30.0
