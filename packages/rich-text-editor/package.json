@@ -30,7 +30,7 @@
     "@knime/styles": "workspace:*",
     "@knime/utils": "workspace:*",
     "@tiptap/core": "^2.26.1",
-    "@tiptap/extension-character-count": "^2.26.1",
+    "@tiptap/extension-character-count": "^3.7.2",
     "@tiptap/extension-hard-break": "^2.26.1",
     "@tiptap/extension-heading": "^2.26.1",
     "@tiptap/extension-link": "^2.26.1",
