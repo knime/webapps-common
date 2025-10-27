@@ -313,11 +313,6 @@
       "count": 1
     }
   },
-  "packages/licenses/src/collect-packages.js": {
-    "depend/ban-dependencies": {
-      "count": 1
-    }
-  },
   "packages/rich-text-editor/src/components/__tests__/CreateLinkModal.test.ts": {
     "@typescript-eslint/no-floating-promises": {
       "count": 5
