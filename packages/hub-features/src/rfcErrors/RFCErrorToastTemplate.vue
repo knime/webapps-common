@@ -102,7 +102,12 @@ const onShowDetailsClicked = () => {
     <div class="title">
       {{ props.title }}
     </div>
-    <button v-if="!showDetails" class="show-more" @click="onShowDetailsClicked">
+    <button
+      v-if="!showDetails"
+      data-test-id="show-details"
+      class="show-more"
+      @click="onShowDetailsClicked"
+    >
       Show details
     </button>
     <div v-if="showDetails" class="additional-info">
@@ -124,11 +129,11 @@ const onShowDetailsClicked = () => {
       <div v-if="date"><strong>Date: </strong>{{ formattedDate }}</div>
       <div v-if="requestId"><strong>Request id: </strong>{{ requestId }}</div>
       <div v-if="errorId"><strong>Error id: </strong>{{ errorId }}</div>
-      <div v-if="stacktrace">
+      <div v-if="stacktrace && canCopyToClipboard">
         <strong>Stacktrace: </strong>Part of clipboard text
       </div>
       <div v-if="canCopyToClipboard" class="copy-button-wrapper">
-        <Button @click="copyToClipboard">
+        <Button data-test-id="copy-to-clipboard" @click="copyToClipboard">
           <template v-if="copied">
             <CheckIcon class="copy-icon" />Error was copied
           </template>
