@@ -77,12 +77,16 @@ describe("RFCErrorToastTemplate", () => {
     const { wrapper, copyMock } = doMount({
       ...defaultProps,
       stacktrace: "cannot read property explosion of undefined at foo.bar.baz",
+      canCopyToClipboard: false,
     } as any);
-    await wrapper.find("button").trigger("click");
+
+    await wrapper.find("[data-test-id='show-details']").trigger("click");
+
+    expect(wrapper.text()).not.toContain("Stacktrace: Part of clipboard text");
+    await wrapper.setProps({ canCopyToClipboard: true });
     expect(wrapper.text()).toContain("Stacktrace: Part of clipboard text");
 
-    await wrapper.find("button").trigger("click"); // first show details
-    await wrapper.find("button").trigger("click"); // then the clipboard button
+    await wrapper.find("[data-test-id='copy-to-clipboard']").trigger("click");
 
     // @ts-expect-error
     const copiedText = copyMock.mock.calls[0][0];
