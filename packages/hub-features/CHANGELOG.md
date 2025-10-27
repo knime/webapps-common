@@ -1,5 +1,11 @@
 # @knime/hub-features
 
+## 1.15.5
+
+### Patch Changes
+
+- 301cfc2: Fix inconsistent error toast text when stack trace is provided but copying to clipboard is not allowed
+
 ## 1.15.4
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @knime/licenses
 
+## 1.3.4
+
+### Patch Changes
+
+- 6fcac18: Remove/replace `chalk` and `pkg-up` dependencies
+
 ## 1.3.3
 
 ### Patch Changes
