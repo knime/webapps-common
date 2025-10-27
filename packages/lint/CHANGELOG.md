@@ -1,5 +1,11 @@
 # @knime/eslint-config
 
+## 9.3.3
+
+### Patch Changes
+
+- 18bb7f5: Update eslint-plugin-depend
+
 ## 9.3.2
 
 ### Patch Changes

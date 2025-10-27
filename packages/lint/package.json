@@ -1,6 +1,6 @@
 {
   "name": "@knime/eslint-config",
-  "version": "9.3.2",
+  "version": "9.3.3",
   "description": "ESLint/Stylelint configs designed for typical KNIME frontend projects using JavaScript/TypeScript as well as Vue, Nuxt and Vitest.",
   "repository": {
     "type": "git",
