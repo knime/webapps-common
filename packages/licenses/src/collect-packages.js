@@ -4,12 +4,12 @@
 
 import fs from "node:fs";
 import { readFile } from "node:fs/promises";
+import { styleText } from "node:util";
 import path from "path";
 
-import chalk from "chalk";
 import { Command } from "commander";
+import * as pkg from "empathic/package";
 import licensechecker from "license-checker";
-import pkgUp from "pkg-up";
 import semver from "semver";
 
 // esm requires file extensions
@@ -46,9 +46,9 @@ const outFile = path.resolve(basePath, programOptions.output);
 
 const parentPkgPath =
   // find the package.json file path of the webapps-common parent project
-  pkgUp.sync({ cwd: basePath }) ||
+  pkg.up({ cwd: basePath }) ||
   // if used in development, there will be no parent project, so fallback to the root dir
-  pkgUp.sync({ cwd: ".." });
+  pkg.up({ cwd: ".." });
 const parentRoot = path.resolve(parentPkgPath, "..");
 
 const checkLicenses = async (knimePackages) => {
@@ -94,7 +94,7 @@ const checkLicenses = async (knimePackages) => {
     }
     if (programOptions.checkOnly) {
       console.log(
-        chalk.green("License checker succeeded. All licenses allowed."),
+        styleText("green", "License checker succeeded. All licenses allowed."),
       );
       return;
     }
