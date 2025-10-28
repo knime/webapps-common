@@ -589,6 +589,10 @@ onClickOutside(table, () => resetSelection(focusedIndex.value), {
 // Force update the virtual scroll position at the end of setup
 // needed for the initial set of virtual items to be correct
 useResizeObserver(containerProps.ref, containerProps.onScroll);
+
+const showOptionsMenu = computed(() => {
+  return !props.disableContextMenu && !props.disableOptionsMenu;
+});
 </script>
 
 <template>
@@ -641,6 +645,7 @@ useResizeObserver(containerProps.ref, containerProps.onScroll);
           :is-rename-active="item.id === renamedItemId"
           :blacklisted-names="blacklistedNames"
           :is-dragging-enabled="!disableDragging"
+          :has-options-menu="showOptionsMenu"
           @dragstart="onDragStart($event, renderedIndices[vIndex])"
           @dragenter="onDragEnter($event, renderedIndices[vIndex])"
           @dragover="onDragOver($event)"
@@ -684,10 +689,7 @@ useResizeObserver(containerProps.ref, containerProps.onScroll);
             <slot :name="name" v-bind="slotProps" :item="item" />
           </template>
 
-          <template
-            v-if="!props.disableContextMenu && !props.disableOptionsMenu"
-            #optionsMenu
-          >
+          <template v-if="showOptionsMenu" #optionsMenu>
             <FunctionButton
               :active="
                 contextMenuAnchor?.openedBy === 'optionsMenu' &&
