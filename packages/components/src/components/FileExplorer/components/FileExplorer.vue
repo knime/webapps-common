@@ -590,7 +590,7 @@ onClickOutside(table, () => resetSelection(focusedIndex.value), {
 // needed for the initial set of virtual items to be correct
 useResizeObserver(containerProps.ref, containerProps.onScroll);
 
-const showOptionsMenu = computed(() => {
+const hasOptionsMenu = computed(() => {
   return !props.disableContextMenu && !props.disableOptionsMenu;
 });
 </script>
@@ -645,7 +645,7 @@ const showOptionsMenu = computed(() => {
           :is-rename-active="item.id === renamedItemId"
           :blacklisted-names="blacklistedNames"
           :is-dragging-enabled="!disableDragging"
-          :has-options-menu="showOptionsMenu"
+          :has-options-menu="hasOptionsMenu"
           @dragstart="onDragStart($event, renderedIndices[vIndex])"
           @dragenter="onDragEnter($event, renderedIndices[vIndex])"
           @dragover="onDragOver($event)"
@@ -689,7 +689,7 @@ const showOptionsMenu = computed(() => {
             <slot :name="name" v-bind="slotProps" :item="item" />
           </template>
 
-          <template v-if="showOptionsMenu" #optionsMenu>
+          <template v-if="hasOptionsMenu" #optionsMenu>
             <FunctionButton
               :active="
                 contextMenuAnchor?.openedBy === 'optionsMenu' &&
