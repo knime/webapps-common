@@ -1,13 +1,5 @@
 <script setup lang="ts">
-import {
-  type Ref,
-  computed,
-  nextTick,
-  ref,
-  toRefs,
-  useSlots,
-  watch,
-} from "vue";
+import { type Ref, nextTick, ref, toRefs, watch } from "vue";
 import { OnClickOutside } from "@vueuse/components";
 
 import FileTextIcon from "@knime/styles/img/icons/file-text.svg";
@@ -28,6 +20,7 @@ type Props = {
   isRenameActive: boolean;
   disabled: boolean;
   isDraggingEnabled?: boolean;
+  hasOptionsMenu?: boolean;
 };
 
 const props = withDefaults(defineProps<Props>(), {
@@ -110,17 +103,6 @@ const onRenameSubmit = (keyupEvent: KeyboardEvent, isClickAway = false) => {
     focusItem();
   }
 };
-
-const slots = useSlots();
-
-const dynamicDefaultGridColumns = computed(() => {
-  const length = Object.keys(filterSlotsForDynamicColumns(slots) ?? {}).length;
-  return length === 0 ? "" : `repeat(${length}, auto)`;
-});
-
-const optionsMenuGridColumn = computed(() => {
-  return slots.optionsMenu ? "30px" : "";
-});
 </script>
 
 <template>
@@ -129,6 +111,7 @@ const optionsMenuGridColumn = computed(() => {
     class="file-explorer-item"
     :class="{
       disabled,
+      'has-options-menu': props.hasOptionsMenu,
     }"
     :is-dragging="isDragging"
     :is-selected="isSelected"
@@ -216,9 +199,14 @@ const optionsMenuGridColumn = computed(() => {
 
 .file-explorer-item {
   display: grid;
-  grid-template-columns:
-    30px var(--file-explorer-item-grid, 1fr v-bind("dynamicDefaultGridColumns"))
-    v-bind("optionsMenuGridColumn");
+  grid-template-columns: 30px var(--file-explorer-item-grid, 1fr); /* first two */
+  grid-auto-columns: auto; /* middle ones are auto */
+  grid-auto-flow: column;
+
+  /* force the last column to 30px if the options menu is visible */
+  &.has-options-menu > td:last-child {
+    width: 30px;
+  }
 
   & .column {
     display: flex;
