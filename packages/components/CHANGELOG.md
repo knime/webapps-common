@@ -1,5 +1,13 @@
 # @knime/components
 
+## 1.41.9
+
+### Patch Changes
+
+- 9092994: FileExplorer: use a css only solution to the dynamic column grid sizes
+
+  This should fix problems while loading and for the ui extensions.
+
 ## 1.41.8
 
 ### Patch Changes
