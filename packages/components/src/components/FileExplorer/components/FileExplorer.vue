@@ -454,7 +454,7 @@ const openContextMenuByMouse = (
   index: number,
 ) => {
   if (isContextMenuVisible.value) {
-    closeContextMenu();
+    closeContextMenu(false);
     return;
   }
 
@@ -492,6 +492,11 @@ const openContextMenuByOptionsMenu = (
   clickedItem: FileExplorerItemType,
   index: number,
 ) => {
+  if (isContextMenuVisible.value) {
+    closeContextMenu(false);
+    return;
+  }
+
   const rect = element.getBoundingClientRect();
 
   // only the one with the menu should be selected
@@ -691,6 +696,7 @@ const hasOptionsMenu = computed(() => {
 
           <template v-if="hasOptionsMenu" #optionsMenu>
             <FunctionButton
+              tabindex="-1"
               :active="
                 contextMenuAnchor?.openedBy === 'optionsMenu' &&
                 contextMenuAnchor?.item.id === item.id
@@ -737,7 +743,7 @@ const hasOptionsMenu = computed(() => {
       :anchor="contextMenuAnchor"
       :selected-items="selectedItems"
       @item-click="onContextMenuItemClick"
-      @close="() => closeContextMenu()"
+      @close="closeContextMenu(false)"
     >
       <template #default="slotProps">
         <slot

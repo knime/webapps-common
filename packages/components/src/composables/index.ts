@@ -1,3 +1,4 @@
+import onContextMenuOutside from "./onContextMenuOutside";
 import useClickOutside from "./useClickOutside";
 import useDropdownNavigation from "./useDropdownNavigation";
 import useKeyPressedUntilMouseClick from "./useKeyPressedUntilMouseClick";
@@ -9,4 +10,9 @@ export * from "./useFileSizeFormatting";
 export * from "./useBeforeUnload";
 export * from "./useAutoCloseOnCompletion";
 
-export { useClickOutside, useDropdownNavigation, useKeyPressedUntilMouseClick };
+export {
+  useClickOutside,
+  onContextMenuOutside,
+  useDropdownNavigation,
+  useKeyPressedUntilMouseClick,
+};
