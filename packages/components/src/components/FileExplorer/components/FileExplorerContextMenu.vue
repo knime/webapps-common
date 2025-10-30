@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, toRefs, watch } from "vue";
 import { onClickOutside } from "@vueuse/core";
-import { autoUpdate, offset, useFloating } from "@floating-ui/vue";
+import { autoUpdate, flip, offset, useFloating } from "@floating-ui/vue";
 
 import MenuItems from "../../base/MenuItem/MenuItems.vue";
 import type { MenuItem as BaseMenuItem } from "../../types";
@@ -71,6 +71,7 @@ const offsetY = computed(() => {
 
 const middleware = computed(() => [
   offset({ mainAxis: offsetY.value, crossAxis: offsetX.value }),
+  flip(),
 ]);
 
 const { floatingStyles, update: updateFloating } = useFloating(
