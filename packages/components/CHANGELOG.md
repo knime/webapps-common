@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.41.10
+
+### Patch Changes
+
+- af48f67: Flip FileExplorerContextMenu if it doesn't have enough space in the desired position
+
 ## 1.41.9
 
 ### Patch Changes
