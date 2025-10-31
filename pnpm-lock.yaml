@@ -102,7 +102,7 @@ catalogs:
       specifier: 16.x
       version: 16.23.0
     vue:
-      specifier: '>=3.5.0'
+      specifier: ~3.5.0
       version: 3.5.18
 
 overrides:
