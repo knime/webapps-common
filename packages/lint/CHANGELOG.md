@@ -1,5 +1,11 @@
 # @knime/eslint-config
 
+## 9.4.0
+
+### Minor Changes
+
+- bae5bca: Update eslint, @typescript-eslint/\*, @nuxt/eslint-config, eslint-plugin-vue
+
 ## 9.3.3
 
 ### Patch Changes
