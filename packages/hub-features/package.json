@@ -1,6 +1,6 @@
 {
   "name": "@knime/hub-features",
-  "version": "1.15.7",
+  "version": "1.15.8",
   "description": "Vue components & composables for shared hub features",
   "repository": {
     "type": "git",
