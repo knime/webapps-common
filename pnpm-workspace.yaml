@@ -16,7 +16,7 @@ catalog:
   "@vueuse/core": ~13.8.0
   "@vueuse/shared": ~13.8.0
   consola: 3.4.2
-  eslint: 9.29.0
+  eslint: 9.38.0
   lodash-es: 4.17.21
   npm-run-all2: ^8.0.4
   globals: ^16.3.0
@@ -37,7 +37,7 @@ catalogs:
     "@fontsource/roboto": "5.x"
     "@fontsource/roboto-mono": "5.x"
     consola: 3.x
-    eslint: 9.x
+    eslint: ">=9.38.0"
     prettier: 3.x
     stylelint: 16.x
     vue: ">=3.5.0"
