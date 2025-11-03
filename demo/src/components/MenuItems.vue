@@ -112,6 +112,7 @@ const menuItemsData: MenuItem[] = [
       layout: "horizontal",
       style: {
         "margin-right": "8px",
+        "--avatar-size": "16px",
       },
     }),
     badgeText: "Team",

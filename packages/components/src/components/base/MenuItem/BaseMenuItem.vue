@@ -153,7 +153,7 @@ const dynamicAttributes = (item: MenuItem) => {
     & .label {
       display: flex;
       flex-direction: column;
-      place-content: flex-start center;
+      justify-content: center;
       width: 100%;
 
       & .text-and-hotkey {
