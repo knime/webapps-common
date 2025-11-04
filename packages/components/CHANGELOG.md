@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.42.1
+
+### Patch Changes
+
+- 8060c2f: Fix layout of MenuItem component by adjusting flex properties
+
 ## 1.42.0
 
 ### Minor Changes

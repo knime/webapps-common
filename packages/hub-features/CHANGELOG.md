@@ -1,5 +1,12 @@
 # @knime/hub-features
 
+## 1.15.9
+
+### Patch Changes
+
+- Updated dependencies [8060c2f]
+  - @knime/components@1.42.1
+
 ## 1.15.8
 
 ### Patch Changes
