@@ -153,14 +153,14 @@ const dynamicAttributes = (item: MenuItem) => {
     & .label {
       display: flex;
       flex-direction: column;
-      align-content: flex-start;
+      justify-content: center;
       width: 100%;
 
       & .text-and-hotkey {
         display: flex;
         align-items: center;
         width: 100%;
-        height: 100%;
+        height: calc(var(--icon-size) * 1px);
         text-align: left;
 
         & .checkbox {
