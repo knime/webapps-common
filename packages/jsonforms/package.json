@@ -1,6 +1,6 @@
 {
   "name": "@knime/jsonforms",
-  "version": "1.15.46",
+  "version": "1.15.47",
   "description": "Internal JSON Forms integration for frontend KNIME projects",
   "repository": {
     "type": "git",
