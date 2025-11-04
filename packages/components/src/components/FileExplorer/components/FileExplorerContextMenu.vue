@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, toRefs, watch } from "vue";
 import { onClickOutside } from "@vueuse/core";
-import { autoUpdate, flip, offset, useFloating } from "@floating-ui/vue";
+import { autoUpdate, flip, offset, shift, useFloating } from "@floating-ui/vue";
 
+import { onContextMenuOutside } from "../../../composables";
 import MenuItems from "../../base/MenuItem/MenuItems.vue";
 import type { MenuItem as BaseMenuItem } from "../../types";
 import type {
@@ -72,6 +73,7 @@ const offsetY = computed(() => {
 const middleware = computed(() => [
   offset({ mainAxis: offsetY.value, crossAxis: offsetX.value }),
   flip(),
+  shift(),
 ]);
 
 const { floatingStyles, update: updateFloating } = useFloating(
@@ -161,7 +163,21 @@ const closeMenu = () => {
   emit("close");
 };
 
-onClickOutside(menuWrapper, closeMenu);
+onClickOutside(menuWrapper, (event) => {
+  if (
+    props.anchor.openedBy === "optionsMenu" &&
+    props.anchor.element.contains(event.target as Node)
+  ) {
+    return;
+  }
+  closeMenu();
+});
+onContextMenuOutside(menuWrapper, (event) => {
+  if (props.anchor.element.contains(event.target as Node)) {
+    return;
+  }
+  closeMenu();
+});
 </script>
 
 <template>
@@ -190,9 +206,6 @@ onClickOutside(menuWrapper, closeMenu);
 
 <style lang="postcss" scoped>
 .menu-wrapper {
-  position: absolute;
-  top: calc(v-bind("$props.position.y") * 1px);
-  left: calc(v-bind("$props.position.x") * 1px);
   z-index: var(--file-explorer-context-menu-z-index, 5);
 }
 </style>

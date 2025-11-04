@@ -208,6 +208,7 @@ const onItemClick = (event: MouseEvent, item: MenuItem, id: string) => {
       :style="useMaxMenuWidth ? { 'max-width': `${maxMenuWidth}px` } : {}"
       :title="item.title"
       @click="onItemClick($event, item, id)"
+      @contextmenu.prevent
       @pointerenter="onPointerEnter($event, item, index)"
     >
       <slot
