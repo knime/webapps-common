@@ -12,3 +12,31 @@ updates:
       default-days: 5
       exclude:
         - "@knime/*"
+    groups:
+      knimeKds:
+        patterns:
+          - "@knime/kds-*"
+      vueuse:
+        patterns:
+          - "*vueuse*"
+      vitest:
+        patterns:
+          - "*vitest*"
+      jsonforms:
+        patterns:
+          - "@jsonforms/*"
+      tiptap:
+        patterns:
+          - "@tiptap/*"
+      typescriptEslint:
+        patterns:
+          - "@typescript-eslint/*"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+      time: "18:00"
+    cooldown:
+      default-days: 5
