@@ -53,7 +53,7 @@ jobs:
       - name: Upload demo build output as pages artifact
         if: github.actor != 'dependabot[bot]'
         id: deployment
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: demo/dist/
 
