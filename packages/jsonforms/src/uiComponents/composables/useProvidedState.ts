@@ -2,7 +2,7 @@ import { type Ref, onMounted, ref, unref } from "vue";
 
 import inject from "../../utils/inject";
 
-export type UiSchemaWithProvidedOptions<T extends Record<string, unknown>> = {
+export type UiSchemaWithProvidedOptions<T extends object> = {
   options?: T;
   providedOptions?: string[];
 } & (
@@ -46,7 +46,7 @@ export type ExtractNestedValue<
     ? T[P]
     : never;
 export default <
-  U extends UiSchemaWithProvidedOptions<Record<string, unknown>>,
+  U extends UiSchemaWithProvidedOptions<object>,
   K extends Paths<NonUndefined<U["options"]>>,
   D = ExtractNestedValue<NonUndefined<U["options"]>, K> | null,
 >(
@@ -57,6 +57,7 @@ export default <
   const addStateProviderListener = inject("addStateProviderListener");
 
   const state = ref(
+    // @ts-expect-error options is of type object and cannot be indexed with K
     uischema.value.options?.[providedOptionName] ?? defaultValue,
   ) as Ref<NonUndefined<D>>;
 
