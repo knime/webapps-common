@@ -117,8 +117,7 @@ describe("RadioControl", () => {
     ]);
   });
 
-  it("uses possible values if oneOf is not given", async () => {
-    delete props.control.schema.oneOf;
+  it("uses possible values", async () => {
     props.control.uischema.options!.possibleValues = [
       { id: "VAL 1", text: "Val 1" },
       { id: "VAL 2", text: "Val 2" },
@@ -131,22 +130,6 @@ describe("RadioControl", () => {
     ).toStrictEqual([
       { id: "VAL 1", text: "Val 1" },
       { id: "VAL 2", text: "Val 2" },
-    ]);
-  });
-
-  it("favors oneOf over possible Values", async () => {
-    props.control.uischema.options!.possibleValues = [
-      { id: "VAL 1", text: "Val 1" },
-      { id: "VAL 2", text: "Val 2" },
-    ];
-    const { wrapper } = await mountJsonFormsControlLabelContent(RadioControl, {
-      props,
-    });
-    expect(
-      wrapper.findComponent(RadioButtons).props().possibleValues,
-    ).toStrictEqual([
-      { id: "LOG", text: "Logarithmic" },
-      { id: "VALUE", text: "Linear" },
     ]);
   });
 });

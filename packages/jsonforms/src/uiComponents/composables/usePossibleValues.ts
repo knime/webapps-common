@@ -15,6 +15,9 @@ export const usePossibleValues = <
   control: Ref<{
     uischema: ChoicesUiSchemaWithProvidedOptions<SpecialChoicesProps>;
   }>,
+  options?: {
+    defaultOnNonProvided?: [] | null; // default is []
+  },
 ) => {
   const uischema = computed(() => control.value.uischema);
   const providedPossibleValues = useProvidedState(uischema, "possibleValues");
@@ -22,7 +25,12 @@ export const usePossibleValues = <
     if (uischema.value.providedOptions?.includes("possibleValues")) {
       return providedPossibleValues.value;
     }
-    return uischema.value.options?.possibleValues ?? [];
+    return (
+      uischema.value.options?.possibleValues ??
+      (typeof options?.defaultOnNonProvided === "undefined"
+        ? []
+        : options?.defaultOnNonProvided)
+    );
   });
   return { possibleValues };
 };

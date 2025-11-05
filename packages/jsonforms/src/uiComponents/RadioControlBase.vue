@@ -33,10 +33,12 @@ const uiComponent = computed(() =>
 const staticOptions: Ref<PossiblyDisabledOption[] | null | undefined> =
   ref(null);
 
-const { possibleValues } = usePossibleValues(toRef(props, "control"));
+const { possibleValues } = usePossibleValues(toRef(props, "control"), {
+  defaultOnNonProvided: null,
+});
 
 const options = computed(() =>
-  (staticOptions.value ?? possibleValues.value)?.map(disableOption),
+  (possibleValues.value ?? staticOptions.value)?.map(disableOption),
 );
 
 onMounted(() => {
