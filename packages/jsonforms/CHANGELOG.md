@@ -1,5 +1,12 @@
 # @knime/json-forms
 
+## 1.15.48
+
+### Patch Changes
+
+- 0caa432: Loosen type bound of internal jsonforms type construction
+- d63645e: Prefer uischema possible values over oneOf options in RadioControl and ValueSwitchControl
+
 ## 1.15.47
 
 ### Patch Changes
