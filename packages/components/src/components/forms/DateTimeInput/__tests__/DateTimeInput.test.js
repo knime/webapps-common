@@ -43,11 +43,11 @@ describe("DateTimeInput", () => {
   });
 
   beforeAll(() => {
-    global.ResizeObserver = vi.fn().mockImplementation(() => ({
-      observe: vi.fn(),
-      unobserve: vi.fn(),
-      disconnect: vi.fn(),
-    }));
+    global.ResizeObserver = vi.fn(function ResizeObserver() {
+      this.observe = vi.fn();
+      this.unobserve = vi.fn();
+      this.disconnect = vi.fn();
+    });
   });
 
   describe("renders", () => {
