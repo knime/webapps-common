@@ -15,10 +15,14 @@ const props = defineProps<
 
 const DEFAULT_STEP_SIZE_INTEGER = 1;
 const DEFAULT_STEP_SIZE_DOUBLE = 0.1;
-const stepSize =
-  props.type === "integer"
-    ? DEFAULT_STEP_SIZE_INTEGER
-    : DEFAULT_STEP_SIZE_DOUBLE;
+
+const stepSize = computed(
+  () =>
+    props.control.uischema.options?.stepSize ??
+    (props.type === "integer"
+      ? DEFAULT_STEP_SIZE_INTEGER
+      : DEFAULT_STEP_SIZE_DOUBLE),
+);
 
 type BoundValidationParameters = {
   isExclusive: boolean;
@@ -61,7 +65,7 @@ const onFocusOut = () => {
   if (minParams.value && !respectsMin(minParams.value)(comparisonValue)) {
     const { min, isExclusive } = minParams.value;
     if (isExclusive) {
-      updatedValue = min + stepSize;
+      updatedValue = min + stepSize.value;
     } else {
       updatedValue = min;
     }
@@ -71,7 +75,7 @@ const onFocusOut = () => {
   ) {
     const { max, isExclusive } = maxParams.value;
     if (isExclusive) {
-      updatedValue = max - stepSize;
+      updatedValue = max - stepSize.value;
     } else {
       updatedValue = max;
     }
@@ -91,6 +95,7 @@ const onFocusOut = () => {
     :type="type"
     :min="minParams?.min"
     :max="maxParams?.max"
+    :step="stepSize"
     :is-valid
     compact
     @update:model-value="changeValue"
