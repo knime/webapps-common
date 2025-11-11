@@ -1,6 +1,5 @@
 import { onMounted, ref } from "vue";
 import type { Ref } from "vue";
-import { merge } from "lodash-es"; // eslint-disable-line depend/ban-dependencies
 
 export default function useAnimation(
   targetRef: Ref<HTMLElement | null>,
@@ -12,11 +11,10 @@ export default function useAnimation(
     fill: "forwards",
   };
 
-  const mergedAnimationOptions = merge(
-    {},
-    DEFAULT_ANIMATION_OPTIONS,
-    animationOptions,
-  );
+  const mergedAnimationOptions = {
+    ...DEFAULT_ANIMATION_OPTIONS,
+    ...animationOptions,
+  };
 
   const animation: Ref<null | Animation> = ref(null);
 

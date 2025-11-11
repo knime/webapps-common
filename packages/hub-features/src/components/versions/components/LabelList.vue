@@ -2,7 +2,7 @@
 import { type Ref, computed, onMounted, ref } from "vue";
 import { useEventBus } from "@vueuse/core";
 import { autoUpdate, offset, useFloating } from "@floating-ui/vue";
-import { isEqual } from "lodash-es"; // eslint-disable-line depend/ban-dependencies
+import equal from "fast-deep-equal";
 
 import { FunctionButton } from "@knime/components";
 import { truncateString } from "@knime/utils";
@@ -85,7 +85,7 @@ const calculateDistanceToUpperBorder = (labelElement: HTMLElement) => {
 };
 
 const isActiveLabel = (label: AssignedLabel) =>
-  isEqual(activeLabel.value, label);
+  equal(activeLabel.value, label);
 
 const togglePopover = (label: AssignedLabel, labelElement: HTMLElement) => {
   if (isActiveLabel(label)) {

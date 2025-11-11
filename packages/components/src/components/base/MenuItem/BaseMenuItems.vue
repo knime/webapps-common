@@ -8,10 +8,12 @@ import {
   watch,
 } from "vue";
 import { type Boundary, autoUpdate, flip, useFloating } from "@floating-ui/vue";
-import { uniqueId } from "lodash-es"; // eslint-disable-line depend/ban-dependencies
 
 import BaseMenuItem from "./BaseMenuItem.vue";
 import type { MenuItem } from "./MenuItems.vue";
+
+let uniqueIdCounter = 0;
+const generateUniqueId = () => `menu-${++uniqueIdCounter}`;
 
 type ElementTemplateRef = HTMLElement | { $el: HTMLElement };
 
@@ -46,11 +48,13 @@ type Props = {
 
 const props = withDefaults(defineProps<Props>(), {
   focusedItemIndex: null,
-  id: () => `__BaseMenuItems-${uniqueId()}__`,
+  id: undefined,
   clippingBoundary: () => document.body,
   maxMenuWidth: null,
   positionRelativeToElement: null,
 });
+
+const menuId = props.id ?? `__BaseMenuItems-${generateUniqueId()}__`;
 
 const emit = defineEmits<{
   "item-click": [MouseEvent, MenuItem, string];
@@ -89,7 +93,7 @@ const enabledItemsIndices = computed(() => {
 });
 
 const menuItemId = (index: number) => {
-  return `menu-item-${props.id}-${index}`;
+  return `menu-item-${menuId}-${index}`;
 };
 
 const emitItemFocused = () => {
@@ -163,7 +167,7 @@ const onPointerEnter = (_event: Event, item: MenuItem, index: number) => {
   emit(
     "item-hovered",
     item.disabled || item.sectionHeadline ? null : item,
-    props.id,
+    menuId,
     index,
   );
 };
@@ -197,7 +201,7 @@ const onItemClick = (event: MouseEvent, item: MenuItem, id: string) => {
     :style="listContainerFloatingStyles"
     role="menu"
     tabindex="-1"
-    @pointerleave="$emit('item-hovered', null, id, null)"
+    @pointerleave="$emit('item-hovered', null, menuId, null)"
   >
     <li
       v-for="(item, index) in items"
@@ -207,7 +211,7 @@ const onItemClick = (event: MouseEvent, item: MenuItem, id: string) => {
       :class="[{ separator: item.separator }]"
       :style="useMaxMenuWidth ? { 'max-width': `${maxMenuWidth}px` } : {}"
       :title="item.title"
-      @click="onItemClick($event, item, id)"
+      @click="onItemClick($event, item, menuId)"
       @contextmenu.prevent
       @pointerenter="onPointerEnter($event, item, index)"
     >
@@ -215,7 +219,7 @@ const onItemClick = (event: MouseEvent, item: MenuItem, id: string) => {
         name="item"
         :item="item"
         :index="index"
-        :menu-id="id"
+        :menu-id="menuId"
         :menu-item-id="menuItemId"
         :max-menu-width="maxMenuWidth"
         :focused-item-index="focusedItemIndex"

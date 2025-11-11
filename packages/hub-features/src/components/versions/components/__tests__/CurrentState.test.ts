@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import { flushPromises, shallowMount } from "@vue/test-utils";
-import { find } from "lodash-es"; // eslint-disable-line depend/ban-dependencies
 
 import { Button, LocalDateTime, SubMenu } from "@knime/components";
 import MenuIcon from "@knime/styles/img/icons/menu-options.svg";
@@ -148,9 +147,9 @@ describe("CurrentState", () => {
         },
       });
 
-      const discardItem = find(wrapper.getComponent(SubMenu).props("items"), {
-        text: "Discard",
-      });
+      const discardItem = wrapper.getComponent(SubMenu).props("items").find(
+        (item: { text: string }) => item.text === "Discard",
+      );
       expect(discardItem).toBeDefined();
     });
 
@@ -169,7 +168,9 @@ describe("CurrentState", () => {
       await wrapper.setProps(props);
 
       // @ts-expect-error menuItems private field accessed in test
-      const discardItem = find(wrapper.vm.menuItems, { text: "Discard" });
+      const discardItem = wrapper.vm.menuItems.find(
+        (item: { text: string }) => item.text === "Discard",
+      );
       expect(discardItem).toBeUndefined();
     });
 

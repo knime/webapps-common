@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, toRef, watch } from "vue";
-import { difference } from "lodash-es"; // eslint-disable-line depend/ban-dependencies
 
 import Tag from "./Tag.vue";
 
@@ -62,9 +61,10 @@ const mappedTags = computed(() => {
   const { tags, sortByActive, activeTags } = props;
 
   if (sortByActive) {
+    const activeTagsSet = new Set(activeTags);
     return [
       ...activeTags.map((tag) => ({ name: tag, isActive: true })),
-      ...difference(tags, activeTags).map((tag) => ({
+      ...tags.filter((tag) => !activeTagsSet.has(tag)).map((tag) => ({
         name: tag,
         isActive: false,
       })),

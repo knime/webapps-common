@@ -23,14 +23,6 @@ vi.mock("motion", () => ({
   },
 }));
 
-vi.mock("lodash-es", async (importOriginal) => {
-  const original = await importOriginal<typeof import("lodash-es")>();
-  return {
-    ...original,
-    debounce: (fn: (...args: never[]) => unknown) => fn, // bypass debounce
-  };
-});
-
 type Props = InstanceType<typeof FileExplorer>["$props"];
 
 describe("FileExplorer", () => {
@@ -265,6 +257,7 @@ describe("FileExplorer", () => {
       const { wrapper } = doMount({ props: { mode: "mini" } });
 
       await wrapper.setProps({ selectedItemIds: ["2", "3"] });
+      await sleep(60); // wait for debounce (50ms + buffer)
 
       expect(getRenderedItems(wrapper).at(2)?.classes()).toContain("selected");
       expect(getRenderedItems(wrapper).at(3)?.classes()).toContain("selected");
@@ -282,6 +275,7 @@ describe("FileExplorer", () => {
           { ...MOCK_DATA[0], id: "6", name: "Some new Folder" },
         ],
       });
+      await sleep(60); // wait for debounce (50ms + buffer)
 
       expect(getRenderedItems(wrapper).at(6)?.classes()).toContain("selected");
       expect(scrollTo).toHaveBeenCalled();

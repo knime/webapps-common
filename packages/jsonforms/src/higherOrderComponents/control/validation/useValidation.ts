@@ -1,5 +1,4 @@
 import { type Ref, computed, reactive, unref } from "vue";
-import { debounce } from "lodash-es"; // eslint-disable-line depend/ban-dependencies
 import { v4 as uuidv4 } from "uuid";
 
 import type {
@@ -9,6 +8,17 @@ import type {
 } from "./types";
 
 const EXTERNAL_VALIDATION_DEBOUNCE = 500;
+
+const createDebounce = <T extends (...args: never[]) => unknown>(
+  fn: T,
+  delay: number,
+): T => {
+  let timeoutId: ReturnType<typeof setTimeout>;
+  return ((...args: Parameters<T>) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => fn(...args), delay);
+  }) as T;
+};
 
 export const useValidation = <T = unknown>({
   data,
@@ -62,7 +72,7 @@ export const useValidation = <T = unknown>({
     }
   };
 
-  const performExternalValidationDebounced = debounce((value: T) => {
+  const performExternalValidationDebounced = createDebounce((value: T) => {
     performExternalValidationIfAvailable(value);
   }, EXTERNAL_VALIDATION_DEBOUNCE);
 

@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { useEventBus } from "@vueuse/core";
-import { throttle } from "lodash-es"; // eslint-disable-line depend/ban-dependencies
+import { useEventBus, useThrottleFn } from "@vueuse/core";
 
 import { FunctionButton } from "@knime/components";
 import CloseIcon from "@knime/styles/img/icons/close.svg";
@@ -47,10 +46,14 @@ defineEmits<{
 
 const labelsEventBus = useEventBus("versionLabels");
 
-const closeLabelPopovers = throttle(() => {
+const closeLabelPopoversImpl = () => {
   labelsEventBus.emit("versionLabelShowPopover");
-  // eslint-disable-next-line no-magic-numbers
-}, 10000); // Arbitrary delay to reduce overhead, is automatically reset @scrollend
+};
+ 
+const closeLabelPopovers = Object.assign(
+  useThrottleFn(closeLabelPopoversImpl, 10000), // Arbitrary delay to reduce overhead, is automatically reset @scrollend
+  { cancel: () => {} }, // No-op cancel for compatibility
+);
 </script>
 
 <template>
