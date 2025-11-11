@@ -103,4 +103,22 @@ describe("FileLink", () => {
     expect(wrapper.find("abbr").attributes("title")).toBe("gigabytes");
     expect(wrapper.find("figcaption").text()).toContain("1.86");
   });
+
+  it("uses modes", async () => {
+    const wrapper = shallowMount(FileLink, {
+      props: {
+        text: "A Word File",
+        href: "https://example.com/file.doc",
+        fileExt: "doc",
+        size: 2000000000,
+        mode: "download",
+      },
+    });
+    expect(wrapper.find("a").attributes("download")).toBeDefined();
+    expect(wrapper.find("a").attributes("target")).toBeUndefined();
+
+    await wrapper.setProps({ mode: "external" });
+    expect(wrapper.find("a").attributes("download")).toBeUndefined();
+    expect(wrapper.find("a").attributes("target")).toBe("_blank");
+  });
 });

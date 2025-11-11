@@ -32,6 +32,15 @@ export default {
       type: Number,
       default: 0,
     },
+    /**
+     * Which mode to use. Available modes are:
+     * - "download". Uses the `download` attribute https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/a#download
+     * - "external". Doesn't use the `download` attribute and adds a `target="_blank"`
+     * */
+    mode: {
+      type: String,
+      default: "download",
+    },
   },
   computed: {
     icon() {
@@ -86,9 +95,15 @@ export default {
 
 <template>
   <figure class="file-link">
-    <a :href="href" download :title="linkHtmlTitle" :type="mimeType"
-      ><Component :is="icon" />{{ text || "Download File" }}</a
+    <a
+      :href="href"
+      :download="mode === 'download' ? '' : undefined"
+      :target="mode === 'external' ? '_blank' : undefined"
+      :title="linkHtmlTitle"
+      :type="mimeType"
     >
+      <Component :is="icon" />{{ text || "Download File" }}
+    </a>
     <figcaption v-if="hasFileInfo">
       ({{ fileInfoText
       }}<abbr v-if="size" :title="humanFileSizeUnitFull">{{
