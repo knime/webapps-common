@@ -85,6 +85,7 @@ export default defineComponent({
   line-height: 19px;
   color: var(--knime-dove-gray);
   text-align: center;
+  white-space: nowrap;
   text-decoration: none;
   cursor: pointer;
   background-color: transparent;
