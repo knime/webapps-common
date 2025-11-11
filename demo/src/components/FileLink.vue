@@ -79,6 +79,7 @@ export default {
 
           <FileLink
             href="https://example.com/unkown.file"
+            mode="external"
             text="Another File"
           />
         </div>
