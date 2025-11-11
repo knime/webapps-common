@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from "vue";
-import { indexOf, keyBy, partition } from "lodash-es"; // eslint-disable-line depend/ban-dependencies
 
 import ArrowDownIcon from "@knime/styles/img/icons/arrow-down.svg";
 import ArrowDownloadIcon from "@knime/styles/img/icons/arrow-download.svg";
@@ -25,7 +24,9 @@ const emit = defineEmits<{
   "update:modelValue": [string[]];
 }>();
 
-const possibleValuesMap = computed(() => keyBy(props.possibleValues, "id"));
+const possibleValuesMap = computed(() =>
+  Object.fromEntries(props.possibleValues.map((item) => [item.id, item])),
+);
 
 const possibleValues = computed(() =>
   props.modelValue.map(
@@ -62,11 +63,18 @@ const withIndex = <T, V>(fn: (item: T, index: number) => V) => {
 const partitionByIndices = <T,>(
   array: T[],
   indexPredicate: (index: number) => boolean,
-) =>
-  partition(
-    array,
-    withIndex((_item, i) => indexPredicate(i)),
-  );
+) => {
+  const truthy: T[] = [];
+  const falsy: T[] = [];
+  array.forEach(withIndex((item, i) => {
+    if (indexPredicate(i)) {
+      truthy.push(item);
+    } else {
+      falsy.push(item);
+    }
+  }));
+  return [truthy, falsy];
+};
 
 const listBox = ref<null | typeof MultiselectListBox>(null);
 
@@ -74,7 +82,7 @@ const move =
   (upOrDown: "up" | "down") =>
   ({ to }: { to?: number } = {}) => {
     const positions = selected.value
-      .map((item) => indexOf(props.modelValue, item))
+      .map((item) => props.modelValue.indexOf(item))
       .sort((a, b) => a - b);
     const minPos =
       (upOrDown === "up" ? to : null) ?? Math.max(positions[0] - 1, 0); // one up

@@ -1,7 +1,6 @@
 <script lang="ts">
 import { type PropType, computed, nextTick, ref, toRefs, watch } from "vue";
 import { OnClickOutside } from "@vueuse/components";
-import { isEmpty } from "lodash-es"; // eslint-disable-line depend/ban-dependencies
 import { v4 as uuidv4 } from "uuid";
 
 import DropdownIcon from "@knime/styles/img/icons/arrow-dropdown.svg";
@@ -220,7 +219,7 @@ export default {
         return false;
       }
       return this.possibleValues.every(
-        (value) => value.slotData && !isEmpty(value.slotData),
+        (value) => value.slotData && Object.keys(value.slotData).length > 0,
       );
     },
     selectedOption() {

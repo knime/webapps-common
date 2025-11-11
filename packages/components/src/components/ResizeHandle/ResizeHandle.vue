@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { computed, ref } from "vue";
-import { throttle } from "lodash-es"; // eslint-disable-line depend/ban-dependencies
+import { useThrottleFn } from "@vueuse/core";
 
 const ON_POINTER_MOVE_THROTTLE = 10;
 const HANDLE_PADDING = "2px";
@@ -59,7 +59,7 @@ const onPointerDown = (event: PointerEvent) => {
   currentPointerY.value = event.clientY;
 };
 
-const onPointerMove = throttle((event: PointerEvent) => {
+const onPointerMove = useThrottleFn((event: PointerEvent) => {
   if (pointerId.value === event.pointerId) {
     const deltaY = event.clientY - currentPointerY.value;
     if (

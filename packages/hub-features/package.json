@@ -40,8 +40,9 @@
     "@vueuse/components": "catalog:",
     "@vueuse/core": "catalog:",
     "@vueuse/shared": "catalog:",
-    "lodash-es": "catalog:",
+    "fast-deep-equal": "^3.1.3",
     "ofetch": "^1.4.1",
+    "rfdc": "^1.4.1",
     "typescript": "catalog:"
   },
   "peerDependencies": {
