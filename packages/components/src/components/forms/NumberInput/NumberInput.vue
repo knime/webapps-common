@@ -42,6 +42,10 @@ export default {
       default: Number.MAX_SAFE_INTEGER,
       type: Number,
     },
+    step: {
+      default: null,
+      type: Number,
+    },
     /**
      * Validity controlled by the parent component to be flexible.
      */
@@ -87,6 +91,10 @@ export default {
       return this.type === "integer";
     },
     stepSize() {
+      if (this.step !== null) {
+        return this.step;
+      }
+
       return this.isInteger
         ? DEFAULT_STEP_SIZE_INTEGER
         : DEFAULT_STEP_SIZE_DOUBLE;
@@ -204,7 +212,12 @@ export default {
 
       /** Mimic stepping to nearest step with safe value rounding */
       let parsedVal = value + increment;
-      parsedVal = Math.round(parsedVal * 10) / 10; // eslint-disable-line no-magic-numbers
+      let scaleFactor = 1 / Math.abs(increment); // eslint-disable-line no-magic-numbers
+      if (Math.abs(increment) < 1) {
+        // Avoid rounding errors induced by fractional increments
+        scaleFactor = Math.round(scaleFactor);
+      }
+      parsedVal = Math.round(parsedVal * scaleFactor) / scaleFactor;
 
       /**
        * All measures have been taken to ensure a valid value at this point, so if the last
