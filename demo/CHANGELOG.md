@@ -1,5 +1,17 @@
 # demo
 
+## 1.6.48
+
+### Patch Changes
+
+- 426657f: add 'external' mode to FileLink
+- Updated dependencies [426657f]
+- Updated dependencies [79be334]
+  - @knime/components@1.42.2
+  - @knime/hub-features@1.15.10
+  - @knime/rich-text-editor@1.7.42
+  - @knime/virtual-tree@1.6.42
+
 ## 1.6.47
 
 ### Patch Changes

@@ -1,5 +1,12 @@
 # @knime/components
 
+## 1.42.2
+
+### Patch Changes
+
+- 426657f: add 'external' mode to FileLink
+- 79be334: remove whitespace wrapping on Button text
+
 ## 1.42.1
 
 ### Patch Changes
