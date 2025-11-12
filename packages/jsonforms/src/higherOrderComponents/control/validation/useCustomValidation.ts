@@ -1,10 +1,21 @@
 import { type MaybeRef, type Ref, ref, watch } from "vue";
-import { debounce } from "lodash-es"; // eslint-disable-line depend/ban-dependencies
 
 import { useInternalProvidedState } from "../../../uiComponents/composables/useProvidedState";
 import inject from "../../../utils/inject";
 
 const CUSTOM_VALIDATION_DEBOUNCE = 500;
+
+const createDebounce = <T extends (...args: never[]) => unknown>(
+  fn: T,
+  delay: number,
+): T => {
+  let timeoutId: ReturnType<typeof setTimeout>;
+  return ((...args: Parameters<T>) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => fn(...args), delay);
+  }) as T;
+};
+
 export default ({
   data,
   uischema,
@@ -37,7 +48,7 @@ export default ({
     () => performCustomValidationIfAvailable(data.value),
     { immediate: true },
   );
-  const performCustomValidationDebounced = debounce((data: unknown) => {
+  const performCustomValidationDebounced = createDebounce((data: unknown) => {
     performCustomValidationIfAvailable(data).catch((_err) => {});
   }, CUSTOM_VALIDATION_DEBOUNCE);
 

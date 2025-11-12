@@ -4,7 +4,6 @@ export const DEFAULT_ANY_UNKNOWN_VALUES_ID = "<any unknown new column>";
 
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from "vue";
-import { indexOf } from "lodash-es"; // eslint-disable-line depend/ban-dependencies
 
 import { Button, SortList } from "@knime/components";
 import { DataType } from "@knime/kds-components";
@@ -64,7 +63,7 @@ const addUnknownValuesToData = (currentPossibleValues: { id: string }[]) => {
     resetAll();
     return;
   }
-  const unknownValuesIndex = indexOf(data.value, props.anyUnknownValuesId);
+  const unknownValuesIndex = data.value.indexOf(props.anyUnknownValuesId);
   if (unknownValuesIndex === -1) {
     throw new Error(
       `SortList data have to contain the value "${props.anyUnknownValuesId}"`,

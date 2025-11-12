@@ -4,9 +4,9 @@ import { computed, nextTick, ref, toRef, toRefs, watch } from "vue";
 import {
   type MaybeElementRef,
   onClickOutside,
+  useDebounceFn,
   useResizeObserver,
 } from "@vueuse/core";
-import { debounce } from "lodash-es";
 
 import OptionsIcon from "@knime/styles/img/icons/menu-options.svg";
 import { getMetaOrCtrlKey } from "@knime/utils";
@@ -202,13 +202,15 @@ const scrollIntoView = (
 
   // wait 50ms for DOM changes (e.g. changes in table ref) to take effect before scrolling
   const scrollDebounceMs = 50;
-  const debouncedScroll = debounce(() => {
+  const debouncedScroll = useDebounceFn(() => {
     containerProps.ref.value?.scrollTo({
       top: virtualSizeManager.toOffset(index),
       behavior,
     });
   }, scrollDebounceMs);
-  debouncedScroll();
+  debouncedScroll().catch(() => {
+    // Ignore debounce errors
+  });
 };
 
 /** MULTISELECTION */

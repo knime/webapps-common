@@ -1,4 +1,3 @@
-import { merge } from "lodash-es"; // eslint-disable-line depend/ban-dependencies
 import { type FetchOptions, ofetch } from "ofetch";
 
 import { DEFAULT_API_BASE_URL } from "./constants";
@@ -16,7 +15,13 @@ export const getFetchClient = (customOptions?: FetchOptions) => {
   const { baseURL = DEFAULT_API_BASE_URL, ...otherCustomOptions } =
     customOptions ?? {};
 
-  return ofetch.create(
-    merge({ baseURL, ...otherCustomOptions }, defaultConfig),
-  );
+  return ofetch.create({
+    baseURL,
+    ...otherCustomOptions,
+    ...defaultConfig,
+    headers: {
+      ...defaultConfig.headers,
+      ...(otherCustomOptions.headers || {}),
+    },
+  });
 };

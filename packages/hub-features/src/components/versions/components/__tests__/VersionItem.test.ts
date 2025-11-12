@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { shallowMount } from "@vue/test-utils";
-import { cloneDeep } from "lodash-es"; // eslint-disable-line depend/ban-dependencies
+import clone from "rfdc";
 
 import {
   LocalDateTime,
@@ -19,6 +19,8 @@ import type {
 } from "../../types";
 import LabelList from "../LabelList.vue";
 import VersionItem from "../VersionItem.vue";
+
+const cloneDeep = clone();
 
 const mockVersion: NamedItemVersion & WithAvatar & WithLabels = {
   author: "Mira Mock",

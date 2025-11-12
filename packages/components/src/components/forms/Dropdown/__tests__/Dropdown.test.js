@@ -1,12 +1,14 @@
 /* eslint-disable max-lines */
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { flushPromises, mount } from "@vue/test-utils";
-import { cloneDeep, isUndefined } from "lodash-es"; // eslint-disable-line depend/ban-dependencies
+import clone from "rfdc";
 
 import DropdownIcon from "@knime/styles/img/icons/arrow-dropdown.svg";
 
 import FunctionButton from "../../../Buttons/FunctionButton.vue";
 import Dropdown from "../Dropdown.vue";
+
+const cloneDeep = clone();
 
 vi.useFakeTimers();
 
@@ -134,7 +136,7 @@ const doMount = ({
     modelValue,
     placeholder,
     name,
-    isValid: isUndefined(isValid) ? true : isValid,
+    isValid: isValid === undefined ? true : isValid,
     useGroupLabels,
   };
   const wrapper = mount(Dropdown, {
