@@ -127,6 +127,18 @@ describe("NumberControl", () => {
     expect(changeValue).toHaveBeenCalledWith(result);
   });
 
+  it("sets 0 if value is not a number on focusout", async () => {
+    props.control.data = NaN;
+    const { wrapper, changeValue } = mountJsonFormsControlLabelContent(
+      NumberControl,
+      {
+        props,
+      },
+    );
+    await wrapper.findComponent(NumberControl).trigger("focusout");
+    expect(changeValue).toHaveBeenCalledWith(0);
+  });
+
   it("sets the minimum via state provider", async () => {
     props.control.uischema.providedOptions = ["validation.min"];
     let provideMin: (params: {

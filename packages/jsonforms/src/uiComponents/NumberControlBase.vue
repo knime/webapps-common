@@ -53,21 +53,31 @@ const minParams = computed(() => validationParams.value.min);
 const maxParams = computed(() => validationParams.value.max);
 
 const onFocusOut = () => {
-  const num = props.control.data;
-  if (minParams.value && !respectsMin(minParams.value)(num)) {
+  const currentDataValue = props.control.data;
+  const isNotANumber =
+    typeof currentDataValue !== "number" || isNaN(currentDataValue);
+  let updatedValue = isNotANumber ? 0 : null;
+  const comparisonValue = isNotANumber ? 0 : currentDataValue;
+  if (minParams.value && !respectsMin(minParams.value)(comparisonValue)) {
     const { min, isExclusive } = minParams.value;
     if (isExclusive) {
-      props.changeValue(min + stepSize);
+      updatedValue = min + stepSize;
     } else {
-      props.changeValue(min);
+      updatedValue = min;
     }
-  } else if (maxParams.value && !respectsMax(maxParams.value)(num)) {
+  } else if (
+    maxParams.value &&
+    !respectsMax(maxParams.value)(comparisonValue)
+  ) {
     const { max, isExclusive } = maxParams.value;
     if (isExclusive) {
-      props.changeValue(max - stepSize);
+      updatedValue = max - stepSize;
     } else {
-      props.changeValue(max);
+      updatedValue = max;
     }
+  }
+  if (updatedValue !== null) {
+    props.changeValue(updatedValue);
   }
 };
 </script>
