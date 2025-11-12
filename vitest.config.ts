@@ -5,7 +5,7 @@ export default defineConfig({
     projects: ["packages/*"],
     reporters: ["default", "junit"],
     coverage: {
-      all: true,
+      include: ["packages/*/src/**/*.{js,jsx,ts,tsx,vue}"],
       exclude: [
         "**/.DS_Store",
         "coverage/",

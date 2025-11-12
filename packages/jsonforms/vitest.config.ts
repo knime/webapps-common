@@ -55,12 +55,13 @@ export default defineConfig(({ mode }) => {
       ],
       root: fileURLToPath(new URL("./", import.meta.url)),
       coverage: {
-        all: true,
+        include: ["src/**/*.{js,jsx,ts,tsx,vue}"],
         exclude: [
           "coverage/**",
           "dist/**",
           "**/*.d.ts",
           "**/__tests__/**",
+          "**/__integrationTests__/**",
           "**/{vite,vitest,postcss,lint-staged}.config.{js,cjs,mjs,ts}",
           "**/.{eslint,prettier,stylelint}rc.{js,cjs,yml}",
           "**/types/**",
