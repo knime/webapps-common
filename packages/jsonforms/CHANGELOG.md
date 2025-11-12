@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.15.50
+
+### Patch Changes
+
+- bee90f7: Set a value on focusout when the number provided by the number input is not a number in the NumberControl.
+
 ## 1.15.49
 
 ### Patch Changes
