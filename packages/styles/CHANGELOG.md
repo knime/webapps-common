@@ -1,5 +1,11 @@
 # @knime/styles
 
+## 1.15.0
+
+### Minor Changes
+
+- f2d266c: Updated node version range for support for node 22 - 24
+
 ## 1.14.3
 
 ### Patch Changes

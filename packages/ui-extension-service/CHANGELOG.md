@@ -1,5 +1,11 @@
 # @knime/ui-extension-service
 
+## 2.6.0
+
+### Minor Changes
+
+- f2d266c: Updated node version range for support for node 22 - 24
+
 ## 2.5.3
 
 ### Patch Changes
