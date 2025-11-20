@@ -6,7 +6,7 @@ import type { PartialDeep } from "type-fest";
 
 import type { TwinlistModelValue } from "@knime/components";
 import { MultiModeTwinList } from "@knime/components";
-import { DataType } from "@knime/kds-components";
+import { KdsDataType } from "@knime/kds-components";
 
 import type { VueControlPropsForLabelContent } from "../../higherOrderComponents/control/withLabel";
 import type { IdAndText } from "../../types/ChoicesUiSchema";
@@ -221,7 +221,7 @@ const rightLabel = computed(() => includedLabel ?? props.twinlistRightLabel);
   >
     <template v-if="possibleValuesHaveTypes" #option="{ slotItem }">
       <div :class="['data-type-entry', { invalid: slotItem.invalid }]">
-        <DataType
+        <KdsDataType
           :icon-name="slotItem?.type?.id"
           :icon-title="slotItem?.type?.text"
           size="small"
@@ -230,7 +230,7 @@ const rightLabel = computed(() => includedLabel ?? props.twinlistRightLabel);
       </div>
     </template>
     <template v-if="showTypeFilter" #type="{ slotItem }">
-      <DataType
+      <KdsDataType
         :icon-name="slotItem.id"
         :icon-title="slotItem.text"
         size="small"

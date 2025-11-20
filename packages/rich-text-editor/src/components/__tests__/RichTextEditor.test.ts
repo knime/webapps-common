@@ -8,7 +8,7 @@ import {
   it,
   vi,
 } from "vitest";
-import { type Slot, h, nextTick, shallowRef } from "vue";
+import { type ShallowRef, type Slot, h, nextTick, shallowRef } from "vue";
 import { ref } from "vue";
 import { VueWrapper, mount } from "@vue/test-utils";
 import { useEditor } from "@tiptap/vue-3";
@@ -30,7 +30,27 @@ vi.mock("../../composables/useLinkTool", () => ({
 const mockEditorIsActive = vi.fn();
 const mockCharacterCount = ref(0);
 
-export const createMockEditor = (params: any) => {
+type MockEditorType = ShallowRef<{
+  isActive: Mock;
+  isFocused: boolean;
+  chain: () => any;
+  setEditable: Mock;
+  getHTML: () => string;
+  commands: {
+    insertContent: Mock;
+    setTextSelection: Mock;
+    focus: Mock;
+  };
+  view: { state: { selection: { from: number } } };
+  params: any;
+  storage: {
+    characterCount: {
+      characters: () => number;
+    };
+  };
+}>;
+
+export const createMockEditor = (params: any): MockEditorType => {
   const actionNames = [
     "toggleBold",
     "toggleItalic",

@@ -1,6 +1,6 @@
 import { type Mock, vi } from "vitest";
 import { type Component, type ExtractPropTypes, ref } from "vue";
-import { flushPromises, mount } from "@vue/test-utils";
+import { type VueWrapper, flushPromises, mount } from "@vue/test-utils";
 import * as jsonformsVueModule from "@jsonforms/vue";
 
 import type {
@@ -34,7 +34,15 @@ export const getGlobal = ({
 }: {
   provide?: Partial<ProvidedMethods>;
   stubs?: Record<RecordKeyTypes, unknown>;
-}) => ({
+}): {
+  provide: {
+    sendAlert: Mock;
+    addStateProviderListener: Mock;
+    trigger: Mock;
+    [key: symbol]: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+  };
+  stubs: Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+} => ({
   provide: {
     sendAlert: provide?.sendAlert || vi.fn(),
     addStateProviderListener: provide?.addStateProviderListener || vi.fn(),
@@ -45,7 +53,7 @@ export const getGlobal = ({
   stubs: {
     DispatchRenderer: true,
     ...stubs,
-  },
+  } as Record<string, any>, // eslint-disable-line @typescript-eslint/no-explicit-any
 });
 
 export const mountJsonFormsControl = <D>(
@@ -64,7 +72,12 @@ export const mountJsonFormsControl = <D>(
     provide?: Partial<ProvidedMethods>;
     stubs?: Record<RecordKeyTypes, unknown>;
   },
-) => {
+): {
+  wrapper: VueWrapper;
+  handleChange: Mock;
+  changeValue: Mock;
+  onRegisterValidation: Mock;
+} => {
   const handleChange = vi.fn();
   const changeValue = vi.fn();
   const onRegisterValidation = vi.fn();
@@ -102,7 +115,12 @@ export const mountJsonFormsControlLabelContent = <D>(
     provide?: Partial<ProvidedMethods>;
     stubs?: Record<RecordKeyTypes, unknown>;
   },
-) => {
+): {
+  wrapper: VueWrapper;
+  handleChange: Mock;
+  changeValue: Mock;
+  onRegisterValidation: Mock;
+} => {
   const handleChange = vi.fn();
   const changeValue = vi.fn();
   const onRegisterValidation = vi.fn();

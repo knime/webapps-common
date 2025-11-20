@@ -55,7 +55,7 @@ export default defineConfig(({ mode }) => {
       ],
       root: fileURLToPath(new URL("./", import.meta.url)),
       coverage: {
-        all: true,
+        include: ["packages/*/src/**/*.{js,ts,vue}"],
         exclude: [
           "coverage/**",
           "dist/**",

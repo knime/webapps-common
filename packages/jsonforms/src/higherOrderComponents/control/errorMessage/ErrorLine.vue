@@ -33,7 +33,7 @@ defineProps<{
   font-weight: 300;
   line-height: var(--error-message-single-line-height);
   color: var(--theme-color-error);
-  -webkit-box-orient: vertical;
+  -webkit-box-orient: vertical; /* stylelint-disable-line property-no-deprecated */
 
   & .icon {
     height: var(--error-message-single-line-height);

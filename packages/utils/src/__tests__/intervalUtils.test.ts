@@ -187,6 +187,7 @@ describe("intervalUtils", () => {
     },
   );
 
+  // eslint-disable-next-line vitest/expect-expect
   it.fails.for(isoInvalidParseTestCases)(
     "fails to parse the invalid ISO string '%s'",
     (iso) => {
@@ -224,6 +225,7 @@ describe("intervalUtils", () => {
     },
   );
 
+  // eslint-disable-next-line vitest/expect-expect
   it.fails.for(humanReadableInvalidParseTestCases)(
     "fails to parse the invalid human-readable string '%s'",
     (str) => {

@@ -216,12 +216,12 @@ onMounted(() => {
   position: initial;
 }
 
-& .headline,
-& .panel {
+.headline,
+.panel {
   line-height: 1.5;
 }
 
-& .headline {
+.headline {
   padding-right: 18px;
   margin: 0;
   margin: 0 0 var(--space-8);
@@ -229,7 +229,7 @@ onMounted(() => {
   font-weight: 700;
 }
 
-& .panel {
+.panel {
   & .description {
     margin-bottom: var(--space-6);
   }

@@ -40,10 +40,10 @@
     "@changesets/cli": "^2.27.7",
     "@knime/eslint-config": "workspace:*",
     "@knime/licenses": "workspace:*",
-    "@tsconfig/node22": "22.0.0",
+    "@tsconfig/node24": "24.0.3",
     "@types/jsdom": "^21.1.7",
     "@types/lodash-es": "4.17.12",
-    "@types/node": "22.12.0",
+    "@types/node": "24.10.1",
     "@vitest/coverage-v8": "catalog:",
     "@vue/tsconfig": "^0.5.1",
     "eslint": "catalog:",
@@ -64,25 +64,26 @@
       ]
     },
     "overrides": {
-      "semver@>=6.0.0 <6.3.1": ">=6.3.1",
-      "braces@<3.0.3": ">=3.0.3",
-      "ws@>=8.0.0 <8.17.1": ">=8.17.1",
-      "micromatch@<4.0.8": ">=4.0.8",
-      "rollup@<4.22.4": ">=4.22.4",
-      "cross-spawn@<7.0.5": ">=7.0.5",
-      "postcss@<8.4.31": ">=8.4.31",
-      "esbuild@<=0.24.2": ">=0.25.0",
       "@babel/runtime@<7.26.10": ">=7.26.10",
       "@eslint/plugin-kit@<0.3.3": ">=0.3.3",
-      "form-data@>=4.0.0 <4.0.4": ">=4.0.4",
-      "linkifyjs@<4.3.2": ">=4.3.2",
-      "tmp@<=0.2.3": ">=0.2.4",
       "@typescript-eslint/eslint-plugin": "8.46.2",
-      "@typescript-eslint/parser": "8.46.2"
+      "@typescript-eslint/parser": "8.46.2",
+      "braces@<3.0.3": ">=3.0.3",
+      "cross-spawn@<7.0.5": ">=7.0.5",
+      "esbuild@<=0.24.2": ">=0.25.0",
+      "form-data@>=4.0.0 <4.0.4": ">=4.0.4",
+      "glob@>=10.0.0 <10.5.0": ">=10.5.0",
+      "linkifyjs@<4.3.2": ">=4.3.2",
+      "micromatch@<4.0.8": ">=4.0.8",
+      "postcss@<8.4.31": ">=8.4.31",
+      "rollup@<4.22.4": ">=4.22.4",
+      "semver@>=6.0.0 <6.3.1": ">=6.3.1",
+      "tmp@<=0.2.3": ">=0.2.4",
+      "ws@>=8.0.0 <8.17.1": ">=8.17.1"
     }
   },
   "engines": {
-    "node": "22.x"
+    "node": ">=22 <25"
   },
-  "packageManager": "pnpm@10.18.1"
+  "packageManager": "pnpm@10.22.0"
 }

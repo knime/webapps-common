@@ -260,7 +260,7 @@ describe("ManualTwinlistControl", () => {
     };
     const { wrapper, changeValue } = mountManualTwinlistControl();
     await flushPromises();
-    expect(wrapper.vm.control.data).toMatchObject({
+    expect((wrapper.vm as any).control.data).toMatchObject({
       manuallySelected: ["missing"],
     });
     await wrapper

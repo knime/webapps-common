@@ -390,7 +390,7 @@ h4 {
   overflow-y: auto;
 }
 
-& .hover-preview {
+.hover-preview {
   display: flex;
   flex: 1;
   flex-direction: column;

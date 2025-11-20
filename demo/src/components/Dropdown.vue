@@ -8,7 +8,7 @@ import RocketIcon from "@knime/styles/img/icons/rocket.svg";
 
 import CodeExample from "./demo/CodeExample.vue";
 import { defineComponent } from "vue";
-import { DataType } from "@knime/kds-components";
+import { KdsDataType } from "@knime/kds-components";
 // import code from "webapps-common/ui/components/forms/Dropdown.vue?raw";
 const code = "";
 
@@ -87,7 +87,7 @@ const slottedCodeExample = `<Dropdown
 
 export default defineComponent({
   components: {
-    DataType,
+    KdsDataType,
     Dropdown,
     CodeExample,
     LoadingIcon,

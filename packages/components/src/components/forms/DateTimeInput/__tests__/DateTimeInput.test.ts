@@ -17,7 +17,23 @@ import DateTimeInput from "../DateTimeInput.vue";
 
 // TODO fix test
 describe("DateTimeInput", () => {
-  let context, props;
+  let context: { global: { stubs: Record<string, any> } };
+  let props: {
+    modelValue: Date;
+    id: string;
+    min: Date | null;
+    max: Date | null;
+    isValid: boolean;
+    showSeconds: boolean;
+    showMilliseconds: boolean;
+    showTime: boolean;
+    showDate: boolean;
+    required: boolean;
+    timezone: string;
+    dateFormat?: string;
+    timeFormat?: string;
+    showTimezone?: boolean;
+  };
 
   beforeEach(() => {
     props = {
@@ -43,16 +59,14 @@ describe("DateTimeInput", () => {
   });
 
   beforeAll(() => {
-    global.ResizeObserver = vi.fn().mockImplementation(() => ({
-      observe: vi.fn(),
-      unobserve: vi.fn(),
-      disconnect: vi.fn(),
-    }));
+    global.ResizeObserver = vi.fn().mockImplementation(function () {
+      return { observe: vi.fn(), unobserve: vi.fn(), disconnect: vi.fn() };
+    }) as any;
   });
 
   describe("renders", () => {
     it("renders with datepicker and time", () => {
-      let wrapper = mount(DateTimeInput, {
+      const wrapper = mount(DateTimeInput, {
         ...context,
         props,
       });
@@ -71,7 +85,7 @@ describe("DateTimeInput", () => {
         ...props,
         showTimezone: true,
       };
-      let wrapper = mount(DateTimeInput, {
+      const wrapper = mount(DateTimeInput, {
         ...context,
         props: localProps,
       });
@@ -87,7 +101,7 @@ describe("DateTimeInput", () => {
 
     it("renders without time", () => {
       props.showTime = false;
-      let wrapper = mount(DateTimeInput, {
+      const wrapper = mount(DateTimeInput, {
         ...context,
         props,
       });
@@ -101,7 +115,7 @@ describe("DateTimeInput", () => {
 
     it("renders without date", () => {
       props.showDate = false;
-      let wrapper = mount(DateTimeInput, {
+      const wrapper = mount(DateTimeInput, {
         ...context,
         props,
       });
@@ -114,7 +128,7 @@ describe("DateTimeInput", () => {
     it("renders without milliseconds and seconds", () => {
       props.showSeconds = false;
       props.showMilliseconds = false;
-      let wrapper = mount(DateTimeInput, {
+      const wrapper = mount(DateTimeInput, {
         ...context,
         props,
       });
@@ -122,7 +136,7 @@ describe("DateTimeInput", () => {
     });
 
     it("has default props", () => {
-      let wrapper = mount(DateTimeInput, {
+      const wrapper = mount(DateTimeInput, {
         ...context,
         props: {
           modelValue: new Date(),
@@ -148,7 +162,7 @@ describe("DateTimeInput", () => {
         },
       });
       const hours = wrapper.findAllComponents(TimePartInput).at(0);
-      const getHours = () => hours.props().modelValue;
+      const getHours = () => hours?.props().modelValue;
       expect(getHours()).toBe(8);
       await wrapper.setProps({ timezone: "Europe/Berlin" });
       expect(getHours()).toBe(9);
@@ -157,7 +171,7 @@ describe("DateTimeInput", () => {
 
   describe("updates", () => {
     it("updates date on datepicker changes", () => {
-      let wrapper = mount(DateTimeInput, {
+      const wrapper = mount(DateTimeInput, {
         ...context,
         props,
       });
@@ -167,12 +181,12 @@ describe("DateTimeInput", () => {
         .vm.$emit("update:modelValue", d);
       expect(wrapper.emitted("update:modelValue")).toBeTruthy();
       expect(
-        getDayOfYear(wrapper.emitted("update:modelValue")[0][0]),
+        getDayOfYear(wrapper.emitted("update:modelValue")![0][0] as number),
       ).toStrictEqual(getDayOfYear(d));
     });
 
     it("updates date if datepicker emits @update:model-value", () => {
-      let wrapper = mount(DateTimeInput, {
+      const wrapper = mount(DateTimeInput, {
         ...context,
         props,
       });
@@ -183,13 +197,13 @@ describe("DateTimeInput", () => {
 
       expect(wrapper.emitted("update:modelValue")).toBeTruthy();
       expect(
-        getDayOfYear(wrapper.emitted("update:modelValue")[0][0]),
+        getDayOfYear(wrapper.emitted("update:modelValue")![0][0] as number),
       ).toStrictEqual(getDayOfYear(d));
     });
 
     it("updates date on manual input to date field", () => {
       props.dateFormat = "yyyy-MM-dd";
-      let wrapper = mount(DateTimeInput, {
+      const wrapper = mount(DateTimeInput, {
         ...context,
         props,
       });
@@ -202,7 +216,7 @@ describe("DateTimeInput", () => {
       wrapper.vm.onTextInputChange({ target: { value: input } }, () => "");
 
       expect(wrapper.emitted("update:modelValue")).toBeTruthy();
-      const date = wrapper.emitted("update:modelValue")[0][0];
+      const date = wrapper.emitted("update:modelValue")![0][0] as number;
 
       expect(getDate(date)).toStrictEqual(dayOfMonth);
       expect(getMonth(date)).toStrictEqual(month - 1);
@@ -212,7 +226,7 @@ describe("DateTimeInput", () => {
     it("does not update date if invalid input is entered", () => {
       props.modelValue = new Date("2020-05-03T09:54:55");
       props.dateFormat = "yyyy-MM-dd";
-      let wrapper = mount(DateTimeInput, {
+      const wrapper = mount(DateTimeInput, {
         ...context,
         props,
       });
@@ -220,7 +234,7 @@ describe("DateTimeInput", () => {
       wrapper.vm.onTextInputChange({ target: { value: "asdf" } }, () => "");
 
       expect(wrapper.emitted("update:modelValue")).toBeTruthy();
-      const date = wrapper.emitted("update:modelValue")[0][0];
+      const date = wrapper.emitted("update:modelValue")![0][0] as number;
 
       expect(getDate(date)).toStrictEqual(getDate(props.modelValue));
       expect(getMonth(date)).toStrictEqual(getMonth(props.modelValue));
@@ -228,7 +242,7 @@ describe("DateTimeInput", () => {
     });
 
     it("updates hours if input changes", () => {
-      let wrapper = mount(DateTimeInput, {
+      const wrapper = mount(DateTimeInput, {
         ...context,
         props,
       });
@@ -239,15 +253,15 @@ describe("DateTimeInput", () => {
 
       expect(wrapper.emitted("update:modelValue")).toBeTruthy();
       expect(
-        getHours(wrapper.emitted("update:modelValue")[0][0]),
+        getHours(wrapper.emitted("update:modelValue")![0][0] as number),
       ).toStrictEqual(hours);
       expect(
-        getDayOfYear(wrapper.emitted("update:modelValue")[0][0]),
+        getDayOfYear(wrapper.emitted("update:modelValue")![0][0] as number),
       ).toStrictEqual(getDayOfYear(props.modelValue));
     });
 
     it("updates minutes if input changes", () => {
-      let wrapper = mount(DateTimeInput, {
+      const wrapper = mount(DateTimeInput, {
         ...context,
         props,
       });
@@ -258,15 +272,15 @@ describe("DateTimeInput", () => {
 
       expect(wrapper.emitted("update:modelValue")).toBeTruthy();
       expect(
-        getMinutes(wrapper.emitted("update:modelValue")[0][0]),
+        getMinutes(wrapper.emitted("update:modelValue")![0][0] as number),
       ).toStrictEqual(minutes);
       expect(
-        getDayOfYear(wrapper.emitted("update:modelValue")[0][0]),
+        getDayOfYear(wrapper.emitted("update:modelValue")![0][0] as number),
       ).toStrictEqual(getDayOfYear(props.modelValue));
     });
 
     it("updates seconds if input changes", () => {
-      let wrapper = mount(DateTimeInput, {
+      const wrapper = mount(DateTimeInput, {
         ...context,
         props,
       });
@@ -277,15 +291,15 @@ describe("DateTimeInput", () => {
 
       expect(wrapper.emitted("update:modelValue")).toBeTruthy();
       expect(
-        getSeconds(wrapper.emitted("update:modelValue")[0][0]),
+        getSeconds(wrapper.emitted("update:modelValue")![0][0] as number),
       ).toStrictEqual(seconds);
       expect(
-        getDayOfYear(wrapper.emitted("update:modelValue")[0][0]),
+        getDayOfYear(wrapper.emitted("update:modelValue")![0][0] as number),
       ).toStrictEqual(getDayOfYear(props.modelValue));
     });
 
     it("updates milliseconds if input changes", () => {
-      let wrapper = mount(DateTimeInput, {
+      const wrapper = mount(DateTimeInput, {
         ...context,
         props,
       });
@@ -296,10 +310,10 @@ describe("DateTimeInput", () => {
 
       expect(wrapper.emitted("update:modelValue")).toBeTruthy();
       expect(
-        getMilliseconds(wrapper.emitted("update:modelValue")[0][0]),
+        getMilliseconds(wrapper.emitted("update:modelValue")![0][0] as number),
       ).toStrictEqual(milliseconds);
       expect(
-        getDayOfYear(wrapper.emitted("update:modelValue")[0][0]),
+        getDayOfYear(wrapper.emitted("update:modelValue")![0][0] as number),
       ).toStrictEqual(getDayOfYear(props.modelValue));
     });
 
@@ -320,7 +334,7 @@ describe("DateTimeInput", () => {
         .findComponent(Dropdown)
         .vm.$emit("update:modelValue", newTimeZone);
 
-      expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual(
+      expect(wrapper.emitted("update:modelValue")![0][0]).toStrictEqual(
         new Date("2020-05-03T09:00:00.000Z"),
       );
     });
@@ -328,21 +342,21 @@ describe("DateTimeInput", () => {
 
   describe("over- and underflow of time values", () => {
     it("keeps days on overflow of hours", () => {
-      let wrapper = mount(DateTimeInput, {
+      const wrapper = mount(DateTimeInput, {
         ...context,
         props,
       });
       wrapper
         .findComponent({ ref: "hours" })
         .vm.$emit("bounds", { type: "max", input: 25, value: 23 });
-      expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual(
+      expect(wrapper.emitted("update:modelValue")![0][0]).toStrictEqual(
         new Date("2020-05-03T21:54:55.000Z"),
       );
     });
 
     it("keeps day on overflow of hours if date is not shown", () => {
       props.showDate = false;
-      let wrapper = mount(DateTimeInput, {
+      const wrapper = mount(DateTimeInput, {
         ...context,
         props,
       });
@@ -353,7 +367,7 @@ describe("DateTimeInput", () => {
     });
 
     it("keeps days on underflow of hours", () => {
-      let wrapper = mount(DateTimeInput, {
+      const wrapper = mount(DateTimeInput, {
         ...context,
         props,
       });
@@ -361,85 +375,85 @@ describe("DateTimeInput", () => {
       wrapper
         .findComponent({ ref: "hours" })
         .vm.$emit("bounds", { type: "min", input: -1, value: 0 });
-      expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual(
+      expect(wrapper.emitted("update:modelValue")![0][0]).toStrictEqual(
         new Date("2020-05-02T22:54:55.000Z"),
       );
     });
 
     it("keeps hours on overflow of minutes", () => {
-      let wrapper = mount(DateTimeInput, {
+      const wrapper = mount(DateTimeInput, {
         ...context,
         props,
       });
       wrapper
         .findComponent({ ref: "minutes" })
         .vm.$emit("bounds", { type: "min", input: 63, value: 59 });
-      expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual(
+      expect(wrapper.emitted("update:modelValue")![0][0]).toStrictEqual(
         new Date("2020-05-03T07:59:55.000Z"),
       );
     });
 
     it("keeps hours on underflow of minutes", () => {
-      let wrapper = mount(DateTimeInput, {
+      const wrapper = mount(DateTimeInput, {
         ...context,
         props,
       });
       wrapper
         .findComponent({ ref: "minutes" })
         .vm.$emit("bounds", { type: "min", input: -1, value: 0 });
-      expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual(
+      expect(wrapper.emitted("update:modelValue")![0][0]).toStrictEqual(
         new Date("2020-05-03T07:00:55.000Z"),
       );
     });
 
     it("keeps minutes on overflow of seconds", () => {
-      let wrapper = mount(DateTimeInput, {
+      const wrapper = mount(DateTimeInput, {
         ...context,
         props,
       });
       wrapper
         .findComponent({ ref: "seconds" })
         .vm.$emit("bounds", { type: "max", input: 61, value: 59 });
-      expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual(
+      expect(wrapper.emitted("update:modelValue")![0][0]).toStrictEqual(
         new Date("2020-05-03T07:54:59.000Z"),
       );
     });
 
     it("keeps minutes on underflow of seconds", () => {
-      let wrapper = mount(DateTimeInput, {
+      const wrapper = mount(DateTimeInput, {
         ...context,
         props,
       });
       wrapper
         .findComponent({ ref: "seconds" })
         .vm.$emit("bounds", { type: "min", input: -1, value: 0 });
-      expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual(
+      expect(wrapper.emitted("update:modelValue")![0][0]).toStrictEqual(
         new Date("2020-05-03T07:54:00.000Z"),
       );
     });
 
     it("keeps seconds on overflow of milliseconds", () => {
-      let wrapper = mount(DateTimeInput, {
+      const wrapper = mount(DateTimeInput, {
         ...context,
         props,
       });
       wrapper
         .findComponent({ ref: "milliseconds" })
         .vm.$emit("bounds", { type: "max", input: 1000, value: 999 });
-      expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual(
+      expect(wrapper.emitted("update:modelValue")![0][0]).toStrictEqual(
         new Date("2020-05-03T07:54:55.999Z"),
       );
     });
 
     it("keeps seconds on underflow of milliseconds", () => {
-      let wrapper = mount(DateTimeInput, {
+      const wrapper = mount(DateTimeInput, {
         ...context,
         props,
       });
       wrapper
         .findComponent({ ref: "milliseconds" })
         .vm.$emit("bounds", { type: "min", input: -1, value: 0 });
-      expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual(
+      expect(wrapper.emitted("update:modelValue")![0][0]).toStrictEqual(
         new Date("2020-05-03T07:54:55.000Z"),
       );
     });
@@ -450,7 +464,7 @@ describe("DateTimeInput", () => {
       props.modelValue = new Date("2020-05-03T09:54:50");
       props.min = new Date("2020-05-03T09:54:54");
       props.max = new Date("2020-05-03T09:54:56");
-      let wrapper = mount(DateTimeInput, {
+      const wrapper = mount(DateTimeInput, {
         ...context,
         props,
       });
@@ -466,7 +480,7 @@ describe("DateTimeInput", () => {
       props.max = new Date("2020-05-02T09:54:56");
       props.dateFormat = "yyy-MM-dd";
       props.showTime = false;
-      let wrapper = mount(DateTimeInput, {
+      const wrapper = mount(DateTimeInput, {
         ...context,
         props,
       });
@@ -484,7 +498,7 @@ describe("DateTimeInput", () => {
       props.timeFormat = "HH:mm:ss";
       props.showTime = true;
       props.showDate = false;
-      let wrapper = mount(DateTimeInput, {
+      const wrapper = mount(DateTimeInput, {
         ...context,
         props,
       });
@@ -500,7 +514,7 @@ describe("DateTimeInput", () => {
       props.max = new Date("2020-05-05T09:54:56");
       props.dateFormat = "yyy-MM-dd";
       props.showTime = false;
-      let wrapper = mount(DateTimeInput, {
+      const wrapper = mount(DateTimeInput, {
         ...context,
         props,
       });
@@ -519,7 +533,7 @@ describe("DateTimeInput", () => {
     it("invalidates null value if required", () => {
       props.modelValue = new Date("");
       props.required = true;
-      let wrapper = mount(DateTimeInput, {
+      const wrapper = mount(DateTimeInput, {
         ...context,
         props,
       });
@@ -534,7 +548,7 @@ describe("DateTimeInput", () => {
       props.min = new Date("2020-05-03T09:54:54");
       props.max = new Date("2020-05-03T09:54:56");
       props.dateFormat = "yyy-MM-dd";
-      let wrapper = mount(DateTimeInput, {
+      const wrapper = mount(DateTimeInput, {
         ...context,
         props,
       });
@@ -548,7 +562,7 @@ describe("DateTimeInput", () => {
       props.min = new Date("2020-05-03T09:54:54");
       props.max = null;
       props.dateFormat = "yyy-MM-dd";
-      let wrapper = mount(DateTimeInput, {
+      const wrapper = mount(DateTimeInput, {
         ...context,
         props,
       });
@@ -562,7 +576,7 @@ describe("DateTimeInput", () => {
       props.min = null;
       props.max = new Date("2020-05-03T09:54:54");
       props.dateFormat = "yyy-MM-dd";
-      let wrapper = mount(DateTimeInput, {
+      const wrapper = mount(DateTimeInput, {
         ...context,
         props,
       });

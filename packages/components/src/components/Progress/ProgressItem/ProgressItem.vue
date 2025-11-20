@@ -61,7 +61,7 @@ const props = defineProps<ProgressItemProps>();
     calc(var(--vertical-padding) - var(--progress-bar-height));
 }
 
-& .progress-item {
+.progress-item {
   display: flex;
   gap: var(--space-16);
   align-items: center;
@@ -74,19 +74,19 @@ const props = defineProps<ProgressItemProps>();
   }
 }
 
-& .progress {
+.progress {
   display: flex;
   align-items: flex-end;
   min-height: var(--progress-bar-height);
 }
 
-& .prepend :slotted(svg) {
+.prepend :slotted(svg) {
   @mixin svg-icon-size 24;
 
   flex-shrink: 0;
 }
 
-& .item-info {
+.item-info {
   display: flex;
   flex-grow: 1;
   gap: var(--space-16);
@@ -117,7 +117,7 @@ const props = defineProps<ProgressItemProps>();
   }
 }
 
-& .item-action {
+.item-action {
   display: flex;
   flex-shrink: 0;
   gap: var(--space-8);

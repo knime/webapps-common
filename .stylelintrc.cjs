@@ -13,4 +13,13 @@ module.exports = {
       },
     ],
   },
+
+  overrides: [
+    {
+      files: ["demo/**/*.{css,scss,vue}"],
+      rules: {
+        "no-invalid-position-declaration": null,
+      },
+    },
+  ],
 };

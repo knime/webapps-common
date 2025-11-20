@@ -11,7 +11,7 @@ import type { VueWrapper } from "@vue/test-utils";
 import { flushPromises } from "@vue/test-utils";
 
 import { Button, SortList } from "@knime/components";
-import { DataType } from "@knime/kds-components";
+import { KdsDataType } from "@knime/kds-components";
 
 import {
   type VueControlTestProps,
@@ -248,7 +248,7 @@ describe("SortListControl", () => {
       const type1ListEntry = wrapper.find("ul").findAll("li")[0];
       expect(type1ListEntry.find(".data-type-entry").exists()).toBeTruthy();
       expect(type1ListEntry.text()).toBe("Type 1");
-      const dataTypeComp = type1ListEntry.findComponent(DataType);
+      const dataTypeComp = type1ListEntry.findComponent(KdsDataType);
       expect(dataTypeComp.exists()).toBeTruthy();
       expect(dataTypeComp.props()).toStrictEqual({
         iconName: "type_1",
@@ -262,7 +262,7 @@ describe("SortListControl", () => {
       const specialListEntry = wrapper.find("ul").findAll("li")[1];
       expect(specialListEntry.find(".data-type-entry").exists()).toBeTruthy();
       expect(specialListEntry.text()).toBe("Any unknown column");
-      expect(specialListEntry.findComponent(DataType).exists()).toBeFalsy();
+      expect(specialListEntry.findComponent(KdsDataType).exists()).toBeFalsy();
     });
 
     it("renders an invalid item", () => {
@@ -273,7 +273,7 @@ describe("SortListControl", () => {
       ).toBeTruthy();
       expect(missingTypeListEntry.text()).toBe("(MISSING) missing_type");
       expect(
-        missingTypeListEntry.findComponent(DataType).exists(),
+        missingTypeListEntry.findComponent(KdsDataType).exists(),
       ).toBeTruthy();
     });
   });

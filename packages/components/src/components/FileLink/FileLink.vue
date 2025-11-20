@@ -1,12 +1,12 @@
 <script>
 import { partial } from "filesize";
 
-import { icons } from "@knime/utils";
+import { fileTypeIcons } from "../../composables/fileTypeIcons";
 
 export default {
   name: "FileLink",
   components: {
-    ...icons,
+    ...fileTypeIcons,
   },
   props: {
     /** display text for the download link */

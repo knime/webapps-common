@@ -11,7 +11,7 @@ import type { VueWrapper } from "@vue/test-utils";
 import { flushPromises } from "@vue/test-utils";
 
 import { Twinlist } from "@knime/components";
-import { DataType } from "@knime/kds-components";
+import { KdsDataType } from "@knime/kds-components";
 
 import {
   type ProvidedMethods,
@@ -112,7 +112,7 @@ describe("SimpleTwinlistControl", () => {
         },
       },
     });
-    expect(wrapper.findAllComponents(DataType)).toHaveLength(2);
+    expect(wrapper.findAllComponents(KdsDataType)).toHaveLength(2);
   });
 
   it("sets labelForId", () => {
@@ -136,7 +136,7 @@ describe("SimpleTwinlistControl", () => {
   it("moves missing values correctly", async () => {
     props.control.data = ["missing"];
     const { wrapper, changeValue } = await mountSimpleTwinlistControl();
-    expect(wrapper.vm.control.data).toStrictEqual(["missing"]);
+    expect((wrapper.vm as any).control.data).toStrictEqual(["missing"]);
     await wrapper
       .findComponent(Twinlist)
       .find({ ref: "moveAllLeft" })
