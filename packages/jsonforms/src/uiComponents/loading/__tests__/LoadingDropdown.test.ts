@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { type VueWrapper, mount } from "@vue/test-utils";
 
-import { DataType } from "@knime/kds-components";
+import { KdsDataType } from "@knime/kds-components";
 
 import { type VueControlTestProps } from "../../../../testUtils";
 import LoadingDropdown from "../LoadingDropdown.vue";
@@ -55,7 +55,7 @@ describe("LoadingDropdown", () => {
       expect(slots).toHaveLength(props.possibleValues!.length + 1);
       const summary = slots[0];
       expect(summary.exists()).toBeTruthy();
-      expect(summary.findComponent(DataType).exists()).toBeFalsy();
+      expect(summary.findComponent(KdsDataType).exists()).toBeFalsy();
       expect(summary.text()).toBe("First");
     });
 
@@ -68,8 +68,8 @@ describe("LoadingDropdown", () => {
       expect(slots).toHaveLength(props.possibleValues!.length + 1);
       const summary = slots[0];
       expect(summary.exists()).toBeTruthy();
-      expect(summary.findComponent(DataType).exists()).toBeTruthy();
-      expect(summary.findComponent(DataType).props()).toStrictEqual({
+      expect(summary.findComponent(KdsDataType).exists()).toBeTruthy();
+      expect(summary.findComponent(KdsDataType).props()).toStrictEqual({
         iconName: "secondType",
         iconTitle: "Second Type",
         size: "small",
@@ -86,7 +86,7 @@ describe("LoadingDropdown", () => {
       expect(slots).toHaveLength(props.possibleValues!.length + 1);
       const summary = slots[0];
       expect(summary.exists()).toBeTruthy();
-      expect(summary.findComponent(DataType).exists()).toBeTruthy();
+      expect(summary.findComponent(KdsDataType).exists()).toBeTruthy();
       expect(summary.text()).toBe("(MISSING) missingValue");
     });
 

@@ -11,7 +11,7 @@ import type { VueWrapper } from "@vue/test-utils";
 import { flushPromises } from "@vue/test-utils";
 
 import { Checkboxes, MultiModeTwinList, Twinlist } from "@knime/components";
-import { DataType } from "@knime/kds-components";
+import { KdsDataType } from "@knime/kds-components";
 
 import {
   type ProvidedMethods,
@@ -456,7 +456,7 @@ describe("TwinlistControl", () => {
     };
     const { wrapper, changeValue } = mountTwinlistControl();
     await flushPromises();
-    expect(wrapper.vm.control.data.manualFilter).toMatchObject({
+    expect((wrapper.vm as any).control.data.manualFilter).toMatchObject({
       manuallySelected: ["missing"],
     });
     await wrapper
@@ -534,13 +534,13 @@ describe("TwinlistControl", () => {
     ];
     optionItems.forEach((item, index) => {
       expect(item.text()).toBe(expectedOptionResult[index][0]);
-      expect(item.findComponent(DataType).props("iconName")).toBe(
+      expect(item.findComponent(KdsDataType).props("iconName")).toBe(
         expectedOptionResult[index][1],
       );
     });
 
     const checkboxes = wrapper.findComponent(Checkboxes);
-    const labelItems = checkboxes.findAllComponents(DataType);
+    const labelItems = checkboxes.findAllComponents(KdsDataType);
     const expectedLabelResult = ["IntValue", "StringValue", "DoubleValue"];
     labelItems.forEach((item, index) => {
       expect(item.props("iconName")).toBe(expectedLabelResult[index]);

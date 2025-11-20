@@ -2,7 +2,7 @@
 import { computed } from "vue";
 
 import { Dropdown, LoadingIcon } from "@knime/components";
-import { DataType } from "@knime/kds-components";
+import { KdsDataType } from "@knime/kds-components";
 
 import type { LoadingDropdownProps } from "./types/LoadingDropdownProps";
 
@@ -70,12 +70,12 @@ const possibleValues = computed(() => {
           ]"
         >
           <template v-if="isMissing">
-            <DataType size="small" />
+            <KdsDataType size="small" />
             <span>(MISSING) {{ selectedValue }}</span>
           </template>
           <template v-else>
             <template v-if="slotData.typeId">
-              <DataType
+              <KdsDataType
                 :icon-name="slotData.typeId"
                 :icon-title="slotData.typeText"
                 size="small"

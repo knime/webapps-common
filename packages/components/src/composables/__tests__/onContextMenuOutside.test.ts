@@ -33,7 +33,7 @@ describe("onContextMenuOutside", () => {
     const targetElement = document.createElement("div");
     const targetRef = ref(targetElement);
 
-    onContextMenuOutside(targetRef, mockHandler);
+    onContextMenuOutside(targetRef, mockHandler as (event: MouseEvent) => void);
 
     expect(mockUseEventListener).toHaveBeenCalledWith(
       "contextmenu",
@@ -50,7 +50,7 @@ describe("onContextMenuOutside", () => {
 
     targetElement.contains = vi.fn().mockReturnValue(false);
 
-    onContextMenuOutside(targetRef, mockHandler);
+    onContextMenuOutside(targetRef, mockHandler as (event: MouseEvent) => void);
 
     const mockEvent = new MouseEvent("contextmenu", { bubbles: true });
     Object.defineProperty(mockEvent, "target", {
@@ -72,7 +72,7 @@ describe("onContextMenuOutside", () => {
 
     targetElement.contains = vi.fn().mockReturnValue(true);
 
-    onContextMenuOutside(targetRef, mockHandler);
+    onContextMenuOutside(targetRef, mockHandler as (event: MouseEvent) => void);
 
     const mockEvent = new MouseEvent("contextmenu", { bubbles: true });
     Object.defineProperty(mockEvent, "target", { value: insideElement });
@@ -89,7 +89,7 @@ describe("onContextMenuOutside", () => {
 
     mockUnrefElement.mockReturnValue(null);
 
-    onContextMenuOutside(targetRef, mockHandler);
+    onContextMenuOutside(targetRef, mockHandler as (event: MouseEvent) => void);
 
     const mockEvent = new MouseEvent("contextmenu", { bubbles: true });
     Object.defineProperty(mockEvent, "target", {
@@ -107,7 +107,7 @@ describe("onContextMenuOutside", () => {
 
     mockUnrefElement.mockReturnValue(undefined);
 
-    onContextMenuOutside(targetRef, mockHandler);
+    onContextMenuOutside(targetRef, mockHandler as (event: MouseEvent) => void);
 
     const mockEvent = new MouseEvent("contextmenu", { bubbles: true });
     Object.defineProperty(mockEvent, "target", {
@@ -126,7 +126,10 @@ describe("onContextMenuOutside", () => {
     mockUnrefElement.mockReturnValue(targetElement);
     targetElement.contains = vi.fn().mockReturnValue(false);
 
-    onContextMenuOutside(targetElement, mockHandler);
+    onContextMenuOutside(
+      targetElement,
+      mockHandler as (event: MouseEvent) => void,
+    );
 
     const mockEvent = new MouseEvent("contextmenu", { bubbles: true });
     Object.defineProperty(mockEvent, "target", {
@@ -148,7 +151,10 @@ describe("onContextMenuOutside", () => {
       mockUnrefElement.mockReturnValue(targetElement);
       targetElement.contains = vi.fn().mockReturnValue(false);
 
-      onContextMenuOutside(targetRef, mockHandler);
+      onContextMenuOutside(
+        targetRef,
+        mockHandler as (event: MouseEvent) => void,
+      );
 
       const mockEvent = new MouseEvent("contextmenu", { bubbles: true });
       Object.defineProperty(mockEvent, "target", { value: eventTarget });
@@ -172,7 +178,10 @@ describe("onContextMenuOutside", () => {
       mockUnrefElement.mockReturnValue(targetElement);
       targetElement.contains = vi.fn().mockReturnValue(true);
 
-      onContextMenuOutside(targetRef, mockHandler);
+      onContextMenuOutside(
+        targetRef,
+        mockHandler as (event: MouseEvent) => void,
+      );
 
       const mockEvent = new MouseEvent("contextmenu", { bubbles: true });
       Object.defineProperty(mockEvent, "target", { value: nestedElement });
@@ -197,7 +206,10 @@ describe("onContextMenuOutside", () => {
 
       mockUnrefElement.mockReturnValue(targetElement);
 
-      onContextMenuOutside(targetRef, mockHandler);
+      onContextMenuOutside(
+        targetRef,
+        mockHandler as (event: MouseEvent) => void,
+      );
 
       const mockEvent = new MouseEvent("contextmenu", { bubbles: true });
       Object.defineProperty(mockEvent, "target", { value: outsideElement });
@@ -219,7 +231,10 @@ describe("onContextMenuOutside", () => {
 
       mockUnrefElement.mockReturnValue(targetElement);
 
-      onContextMenuOutside(targetRef, mockHandler);
+      onContextMenuOutside(
+        targetRef,
+        mockHandler as (event: MouseEvent) => void,
+      );
 
       const mockEvent = new MouseEvent("contextmenu", { bubbles: true });
       Object.defineProperty(mockEvent, "target", { value: childElement });

@@ -2,7 +2,7 @@
 import { computed, markRaw, toRef } from "vue";
 
 import { Twinlist } from "@knime/components";
-import { DataType } from "@knime/kds-components";
+import { KdsDataType } from "@knime/kds-components";
 
 import type { VueControlPropsForLabelContent } from "../../higherOrderComponents/control/withLabel";
 import type { TypedIdAndText } from "../../types/ChoicesUiSchema";
@@ -49,7 +49,7 @@ const withTypes = computed(() => props.possibleValues?.some((v) => v.type));
   >
     <template v-if="withTypes" #option="{ slotItem }">
       <div :class="['data-type-entry', { invalid: slotItem.invalid }]">
-        <DataType
+        <KdsDataType
           :icon-name="slotItem?.type?.id"
           :icon-title="slotItem?.type?.text"
           size="small"

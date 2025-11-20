@@ -7,7 +7,7 @@ import { computed, onMounted, ref, watch } from "vue";
 import { indexOf } from "lodash-es"; // eslint-disable-line depend/ban-dependencies
 
 import { Button, SortList } from "@knime/components";
-import { DataType } from "@knime/kds-components";
+import { KdsDataType } from "@knime/kds-components";
 
 import LabeledControl from "../higherOrderComponents/control/LabeledControl.vue";
 import ErrorMessages from "../higherOrderComponents/control/errorMessage/ErrorMessages.vue";
@@ -138,12 +138,12 @@ const controlElement = ref<typeof SortList | null>(null);
               ]"
             >
               <template v-if="slotItem.invalid">
-                <DataType size="small" />
+                <KdsDataType size="small" />
                 <span>{{ slotItem.text }}</span>
               </template>
               <template v-else>
                 <template v-if="slotItem.type?.id">
-                  <DataType
+                  <KdsDataType
                     :icon-name="slotItem.type.id"
                     :icon-title="slotItem.type.text"
                     size="small"

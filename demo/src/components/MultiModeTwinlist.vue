@@ -2,7 +2,7 @@
 import { MultiModeTwinList } from "@knime/components";
 
 import CodeExample from "./demo/CodeExample.vue";
-import { DataType } from "@knime/kds-components";
+import { KdsDataType } from "@knime/kds-components";
 // import code from "webapps-common/ui/components/forms/MultiModeTwinList.vue?raw";
 const code = "";
 
@@ -93,7 +93,7 @@ export default {
   components: {
     MultiModeTwinList,
     CodeExample,
-    DataType,
+    KdsDataType,
   },
   data() {
     return {
