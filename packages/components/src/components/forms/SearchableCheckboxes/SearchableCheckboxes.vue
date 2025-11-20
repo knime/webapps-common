@@ -384,7 +384,7 @@ export default {
   overflow: hidden;
 }
 
-& .empty-box {
+.empty-box {
   background: var(--theme-empty-multiselect-listbox-background-color);
 
   & .empty-state {
