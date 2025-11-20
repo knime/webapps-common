@@ -769,9 +769,6 @@ importers:
 
   packages/utils:
     dependencies:
-      '@knime/styles':
-        specifier: workspace:*
-        version: link:../styles
       date-fns:
         specifier: 2.30.0
         version: 2.30.0

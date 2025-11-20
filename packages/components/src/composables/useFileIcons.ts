@@ -1,7 +1,9 @@
 import { type Ref, computed } from "vue";
 
 import FileIcon from "@knime/styles/img/icons/file.svg";
-import { getFileExtension, icons, isIconExisting } from "@knime/utils";
+import { getFileExtension } from "@knime/utils";
+
+import { fileTypeIcons, isFileTypeIconExisting } from "./fileTypeIcons";
 
 type UseFileIconOptions = {
   filename: Ref<string>;
@@ -14,9 +16,11 @@ type UseFileIconOptions = {
 export const useFileIcon = (options: UseFileIconOptions) => {
   const icon = computed(() => {
     const candidate =
-      `${getFileExtension(options.filename.value)}Icon` as keyof typeof icons;
+      `${getFileExtension(options.filename.value)}Icon` as keyof typeof fileTypeIcons;
 
-    return isIconExisting(candidate) ? icons[candidate] : FileIcon;
+    return isFileTypeIconExisting(candidate)
+      ? fileTypeIcons[candidate]
+      : FileIcon;
   });
 
   return { icon };

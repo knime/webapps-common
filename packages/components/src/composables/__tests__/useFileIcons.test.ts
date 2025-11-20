@@ -5,18 +5,18 @@ import FileIcon from "@knime/styles/img/icons/file.svg";
 
 import { useFileIcon } from "../useFileIcons";
 
-vi.mock("@knime/utils", async (importOriginal) => {
+vi.mock("../fileTypeIcons", async (importOriginal) => {
   const actual = await importOriginal();
 
-  const icons = {
+  const fileTypeIcons = {
     csvIcon: "MockCSVComponent",
     docxIcon: "MockDocxComponent",
   };
   return {
     // @ts-expect-error Spread types may only be created from object types
     ...actual,
-    icons,
-    isIconExisting: (name: string) => name in icons,
+    fileTypeIcons,
+    isFileTypeIconExisting: (name: string) => name in fileTypeIcons,
   };
 });
 

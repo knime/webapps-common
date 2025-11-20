@@ -1,7 +1,6 @@
 import { capitalize, caseFormatter } from "./capitalize";
 import { isAfterMaxDate, isBeforeMinDate } from "./dateMinMaxCheck";
 import debounce from "./debounce";
-import { icons, isIconExisting } from "./fileTypeIcons";
 import { filters } from "./filters";
 import {
   formatDateString,
@@ -62,10 +61,8 @@ export {
   getLocalTimeZone,
   getWrappedAroundIndex,
   hotkeys,
-  icons,
   isAfterMaxDate,
   isBeforeMinDate,
-  isIconExisting,
   intervalUtils,
   navigatorUtils,
   numIntegerDigits,

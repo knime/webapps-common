@@ -204,7 +204,7 @@ input[type="radio"] {
 
   /* https://accessibility.18f.gov/hidden-content/ */
   border: 0;
-  clip-path: rect(0 0 0 0);
+  clip-path: inset(0);
 }
 
 .tab {

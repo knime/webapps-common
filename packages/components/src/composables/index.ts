@@ -1,3 +1,4 @@
+import { fileTypeIcons, isFileTypeIconExisting } from "./fileTypeIcons";
 import onContextMenuOutside from "./onContextMenuOutside";
 import useClickOutside from "./useClickOutside";
 import useDropdownNavigation from "./useDropdownNavigation";
@@ -11,8 +12,10 @@ export * from "./useBeforeUnload";
 export * from "./useAutoCloseOnCompletion";
 
 export {
-  useClickOutside,
+  fileTypeIcons,
+  isFileTypeIconExisting,
   onContextMenuOutside,
+  useClickOutside,
   useDropdownNavigation,
   useKeyPressedUntilMouseClick,
 };

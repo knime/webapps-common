@@ -16,7 +16,7 @@ import xmlIcon from "@knime/styles/img/icons/file-xml.svg";
 import exeIcon from "@knime/styles/img/icons/file-zip-exe.svg";
 import zipIcon from "@knime/styles/img/icons/file-zip.svg";
 
-export const icons = {
+export const fileTypeIcons = {
   csvIcon,
   docxIcon,
   htmlIcon,
@@ -36,6 +36,6 @@ export const icons = {
   fileIcon,
 };
 
-export const isIconExisting = function (iconName: string): boolean {
-  return icons.hasOwnProperty(iconName);
+export const isFileTypeIconExisting = function (iconName: string): boolean {
+  return fileTypeIcons.hasOwnProperty(iconName);
 };
