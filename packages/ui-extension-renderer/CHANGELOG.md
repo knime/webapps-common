@@ -1,5 +1,18 @@
 # @knime/ui-extension-renderer
 
+## 2.4.0
+
+### Minor Changes
+
+- f2d266c: Updated node version range for support for node 22 - 24
+
+### Patch Changes
+
+- Updated dependencies [f2d266c]
+- Updated dependencies [f2d266c]
+  - @knime/components@1.43.0
+  - @knime/styles@1.15.0
+
 ## 2.3.42
 
 ### Patch Changes

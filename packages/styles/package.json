@@ -1,6 +1,6 @@
 {
   "name": "@knime/styles",
-  "version": "1.14.3",
+  "version": "1.15.0",
   "description": "Internal style definitions and icons shared across @knime packages",
   "repository": {
     "type": "git",

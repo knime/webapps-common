@@ -1,5 +1,19 @@
 # @knime/components
 
+## 1.43.0
+
+### Minor Changes
+
+- f2d266c: Move `icons` and `isIconExisting` from @knime/utils to @knime/components and rename to `fileTypeIcons` and `isFileTypeIconExisting` respectively.
+- f2d266c: Updated node version range for support for node 22 - 24
+
+### Patch Changes
+
+- Updated dependencies [f2d266c]
+- Updated dependencies [f2d266c]
+  - @knime/utils@1.8.0
+  - @knime/styles@1.15.0
+
 ## 1.42.2
 
 ### Patch Changes

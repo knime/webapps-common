@@ -1,6 +1,6 @@
 {
   "name": "@knime/utils",
-  "version": "1.7.1",
+  "version": "1.8.0",
   "description": "Internal utility functions and constants shared across @knime packages.",
   "repository": {
     "type": "git",

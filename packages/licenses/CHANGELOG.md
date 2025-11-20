@@ -1,5 +1,11 @@
 # @knime/licenses
 
+## 1.4.0
+
+### Minor Changes
+
+- f2d266c: Updated node version range for support for node 22 - 24
+
 ## 1.3.4
 
 ### Patch Changes
