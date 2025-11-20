@@ -34,7 +34,15 @@ export const getGlobal = ({
 }: {
   provide?: Partial<ProvidedMethods>;
   stubs?: Record<RecordKeyTypes, unknown>;
-}) => ({
+}): {
+  provide: {
+    sendAlert: Mock;
+    addStateProviderListener: Mock;
+    trigger: Mock;
+    [key: symbol]: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+  };
+  stubs: Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+} => ({
   provide: {
     sendAlert: provide?.sendAlert || vi.fn(),
     addStateProviderListener: provide?.addStateProviderListener || vi.fn(),
