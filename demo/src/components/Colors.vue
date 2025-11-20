@@ -16,7 +16,6 @@ export default {
 };
 </script>
 
-<!-- stylelint-disable no-invalid-position-declaration -->
 <template>
   <section>
     <div class="grid-container">
