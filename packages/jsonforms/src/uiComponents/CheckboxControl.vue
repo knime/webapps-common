@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
-import { Checkbox } from "@knime/components";
+import { KdsCheckbox } from "@knime/kds-components";
 
 import type { VueControlProps } from "../higherOrderComponents/control/types";
 
@@ -15,15 +15,16 @@ const hover = ref(false);
     @mouseover="hover = true"
     @mouseleave="hover = false"
   >
-    <Checkbox
-      class="checkbox"
-      :disabled="disabled"
-      :model-value="control.data"
-      @update:model-value="changeValue"
-    >
-      {{ control.label }}
+    <div class="checkbox-container">
+      <KdsCheckbox
+        class="checkbox"
+        :disabled="disabled"
+        :model-value="control.data"
+        :label="control.label"
+        @update:model-value="(value) => changeValue(value as boolean)"
+      />
       <slot name="icon" />
-    </Checkbox>
+    </div>
     <slot name="buttons" :hover="hover" />
   </div>
 </template>
@@ -37,12 +38,14 @@ const hover = ref(false);
   display: flex;
   margin-bottom: -10px;
 
-  & .checkbox {
+  & .checkbox-container {
+    display: flex;
     flex: 1;
     min-width: 0;
   }
 }
 
+/* via slot */
 .reexecution-icon {
   display: inline-block;
   height: 10px;
