@@ -1,5 +1,14 @@
 # @knime/eslint-config
 
+## 9.5.1
+
+### Patch Changes
+
+- 7f7a872: lint-staged config: improve cache for eslint and stylelint
+
+  - move into `node_modules/.cache/.eslintcache` / `node_modules/.cache/.stylelintcache`
+  - consistently enable the cache
+
 ## 9.5.0
 
 ### Minor Changes
