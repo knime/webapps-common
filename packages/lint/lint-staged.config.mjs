@@ -8,7 +8,7 @@ const prettier = "prettier --cache --write --ignore-unknown";
 
 export default {
   "*.{js,jsx,cjs,mjs,ts,tsx,cts,mts}": [eslint, prettier],
-  "*.vue": [stylelint, eslint, prettier],
+  "*.vue": [eslint, stylelint, prettier],
   "*.css": [stylelint, prettier],
   "*.!({js,jsx,cjs,mjs,ts,tsx,cts,mts,vue,css})": [prettier],
 };
