@@ -133,6 +133,9 @@ importers:
       '@knime/eslint-config':
         specifier: workspace:*
         version: link:packages/lint
+      '@knime/kds-styles':
+        specifier: 'catalog:'
+        version: 0.2.1
       '@knime/licenses':
         specifier: workspace:*
         version: link:packages/licenses

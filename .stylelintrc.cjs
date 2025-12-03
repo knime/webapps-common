@@ -9,6 +9,7 @@ module.exports = {
           "packages/styles/css/variables/index.css",
           "packages/components/src/components/forms/variables.css",
           "packages/jsonforms/src/higherOrderComponents/control/errorMessage/error-messages.css",
+          "node_modules/@knime/kds-styles/dist/tokens/css/_variables.css",
         ],
       },
     ],
