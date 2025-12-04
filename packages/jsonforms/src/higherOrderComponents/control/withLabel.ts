@@ -1,6 +1,6 @@
 import { computed, h, ref, toRef } from "vue";
 
-import { Checkbox } from "@knime/components";
+import { KdsCheckbox } from "@knime/kds-components";
 
 import useHideOnNull from "../../uiComponents/composables/useHideOnNull";
 
@@ -53,7 +53,7 @@ const addLabelToComponent =
           },
           {
             "before-label": () =>
-              showCheckbox.value ? h(Checkbox, checkboxProps.value) : null,
+              showCheckbox.value ? h(KdsCheckbox, checkboxProps.value) : null,
             default: ({ labelForId }: { labelForId: string }) => {
               if (!showControl.value) {
                 return null;
