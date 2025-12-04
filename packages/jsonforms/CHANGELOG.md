@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.16.1
+
+### Patch Changes
+
+- 21bd28c: KDS-442: use KdsCheckbox in JSONForms
+
 ## 1.16.0
 
 ### Minor Changes
