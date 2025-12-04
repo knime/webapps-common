@@ -1,5 +1,11 @@
 # @knime/eslint-config
 
+## 9.5.2
+
+### Patch Changes
+
+- de971ec: lint-staged: disabled caching as tools only run for individual files
+
 ## 9.5.1
 
 ### Patch Changes
