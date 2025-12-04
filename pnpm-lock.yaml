@@ -10,11 +10,11 @@ catalogs:
       specifier: 1.1.8
       version: 1.1.8
     '@knime/kds-components':
-      specifier: 0.2.1
-      version: 0.2.1
+      specifier: 0.3.1
+      version: 0.3.1
     '@knime/kds-styles':
-      specifier: 0.2.1
-      version: 0.2.1
+      specifier: 0.3.1
+      version: 0.3.1
     '@knime/vue-headless-virtual-scroller':
       specifier: 0.1.3
       version: 0.1.3
@@ -135,7 +135,7 @@ importers:
         version: link:packages/lint
       '@knime/kds-styles':
         specifier: 'catalog:'
-        version: 0.2.1
+        version: 0.3.1
       '@knime/licenses':
         specifier: workspace:*
         version: link:packages/licenses
@@ -204,10 +204,10 @@ importers:
         version: link:../packages/hub-features
       '@knime/kds-components':
         specifier: 'catalog:'
-        version: 0.2.1(@fontsource/roboto-mono@5.2.8)(@fontsource/roboto@5.2.8)(@vueuse/core@13.8.0(vue@3.5.24(typescript@5.9.3)))(vue@3.5.24(typescript@5.9.3))
+        version: 0.3.1(@fontsource/roboto-mono@5.2.8)(@fontsource/roboto@5.2.8)(@vueuse/core@13.8.0(vue@3.5.24(typescript@5.9.3)))(vue@3.5.24(typescript@5.9.3))
       '@knime/kds-styles':
         specifier: 'catalog:'
-        version: 0.2.1
+        version: 0.3.1
       '@knime/licenses':
         specifier: workspace:*
         version: link:../packages/licenses
@@ -414,7 +414,7 @@ importers:
         version: link:../components
       '@knime/kds-components':
         specifier: 'catalog:'
-        version: 0.2.1(@fontsource/roboto-mono@5.2.8)(@fontsource/roboto@5.2.8)(@vueuse/core@13.8.0(vue@3.5.24(typescript@5.9.3)))(vue@3.5.24(typescript@5.9.3))
+        version: 0.3.1(@fontsource/roboto-mono@5.2.8)(@fontsource/roboto@5.2.8)(@vueuse/core@13.8.0(vue@3.5.24(typescript@5.9.3)))(vue@3.5.24(typescript@5.9.3))
       '@knime/rich-text-editor':
         specifier: workspace:*
         version: link:../rich-text-editor
@@ -1509,15 +1509,15 @@ packages:
   '@keyv/serialize@1.1.1':
     resolution: {integrity: sha512-dXn3FZhPv0US+7dtJsIi2R+c7qWYiReoEh5zUntWCf4oSpMNib8FDhSoed6m3QyZdx5hK7iLFkYk3rNxwt8vTA==}
 
-  '@knime/kds-components@0.2.1':
-    resolution: {integrity: sha512-X/1kJ0s/WLH7NJ/wCc4jWXSgYTzpuwEoNAjDs/05x6gsZTQMwdxD9SqvsCQAL2SN1iu5dfXdIhPbOLrTTY3D5A==}
+  '@knime/kds-components@0.3.1':
+    resolution: {integrity: sha512-s3tL+DZkm8U5kHLjD+FinICacFdLfKLYVFtoXUVNiCH8XDsyY0tUS53i6vvb5EHkVMs0ufvkioAQKU9TPdPKCw==}
     engines: {node: 24.10.0, npm: please-use-pnpm}
     peerDependencies:
       '@vueuse/core': ~13.8.0
       vue: ~3.5.0
 
-  '@knime/kds-styles@0.2.1':
-    resolution: {integrity: sha512-mhlNImTq7mpCIwXCF+vfK0n0WfBTZrTlkpvXvYp/8878CuS2YVeufoTlcOBHfJOPNoq/Ve/4vjhndQMg2VRnkQ==}
+  '@knime/kds-styles@0.3.1':
+    resolution: {integrity: sha512-J34uuR88X8kksNbs1y7VkXKwJGbz50H+HMh9gxHAV9s/VxDgwraXJMmBzyzDUiqbmsulzouajaGsKq8E/RHebw==}
     engines: {node: 24.10.0, npm: please-use-pnpm}
 
   '@knime/styles@1.14.3':
@@ -6194,9 +6194,9 @@ snapshots:
 
   '@keyv/serialize@1.1.1': {}
 
-  '@knime/kds-components@0.2.1(@fontsource/roboto-mono@5.2.8)(@fontsource/roboto@5.2.8)(@vueuse/core@13.8.0(vue@3.5.24(typescript@5.9.3)))(vue@3.5.24(typescript@5.9.3))':
+  '@knime/kds-components@0.3.1(@fontsource/roboto-mono@5.2.8)(@fontsource/roboto@5.2.8)(@vueuse/core@13.8.0(vue@3.5.24(typescript@5.9.3)))(vue@3.5.24(typescript@5.9.3))':
     dependencies:
-      '@knime/kds-styles': 0.2.1
+      '@knime/kds-styles': 0.3.1
       '@knime/styles': 1.14.3(@fontsource/roboto-mono@5.2.8)(@fontsource/roboto@5.2.8)
       '@knime/utils': 1.8.0(consola@3.4.2)
       '@vueuse/core': 13.8.0(vue@3.5.24(typescript@5.9.3))
@@ -6206,7 +6206,7 @@ snapshots:
       - '@fontsource/roboto'
       - '@fontsource/roboto-mono'
 
-  '@knime/kds-styles@0.2.1':
+  '@knime/kds-styles@0.3.1':
     dependencies:
       '@fontsource/roboto': 5.2.8
       '@fontsource/roboto-condensed': 5.2.8

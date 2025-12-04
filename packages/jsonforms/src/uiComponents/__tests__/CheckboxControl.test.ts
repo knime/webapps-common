@@ -64,20 +64,18 @@ describe("CheckboxControl", () => {
   });
 
   it("calls changeValue when checkbox is changed", async () => {
-    await wrapper
-      .findComponent(KdsCheckbox)
-      .vm.$emit("update:modelValue", true);
+    await wrapper.getComponent(KdsCheckbox).vm.$emit("update:modelValue", true);
     expect(changeValue).toHaveBeenCalledWith(true);
   });
 
   it("sets correct initial value", () => {
-    expect(wrapper.findComponent(KdsCheckbox).props().modelValue).toBe(
+    expect(wrapper.getComponent(KdsCheckbox).props().modelValue).toBe(
       props.control.data,
     );
   });
 
   it("sets correct label", () => {
-    expect(wrapper.findComponent(KdsCheckbox).props().label).toBe(
+    expect(wrapper.getComponent(KdsCheckbox).props().label).toBe(
       props.control.label,
     );
   });
