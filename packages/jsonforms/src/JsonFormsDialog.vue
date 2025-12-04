@@ -179,6 +179,6 @@ const jsonFormsDialogBindings = computed(() => ({
    * The settings subpanel does overflow for animation reasons
   */
   overflow-x: hidden;
-  background-color: var(--knime-gray-ultra-light);
+  background-color: var(--kds-color-surface-default);
 }
 </style>

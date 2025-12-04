@@ -21,7 +21,7 @@ defineProps<{
   top: 0;
   z-index: 1;
   margin: 0 calc(-1 * var(--horizontal-dialog-padding, 0));
-  background-color: var(--knime-gray-ultra-light);
+  background-color: var(--kds-color-surface-default);
 
   & .section-header-layout-container {
     display: flex;
@@ -29,13 +29,13 @@ defineProps<{
     justify-content: space-between;
     width: calc(100% - var(--horizontal-dialog-padding, 0) * 2);
     margin: 0 var(--horizontal-dialog-padding, 0);
-    border-bottom: 1px solid var(--knime-silver-sand);
+    border-bottom: var(--kds-border-base-muted);
 
     & h3 {
       margin: 0;
       font-size: 16px;
       line-height: 40px;
-      color: var(--knime-masala);
+      color: var(--kds-color-text-and-icon-neutral);
     }
   }
 }

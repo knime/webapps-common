@@ -9,7 +9,7 @@ import {
 } from "vitest";
 import type { VueWrapper } from "@vue/test-utils";
 
-import { Checkbox } from "@knime/components";
+import { KdsCheckbox } from "@knime/kds-components";
 
 import {
   type VueControlTestProps,
@@ -60,21 +60,23 @@ describe("CheckboxControl", () => {
   });
 
   it("renders", () => {
-    expect(wrapper.findComponent(Checkbox).exists()).toBe(true);
+    expect(wrapper.findComponent(KdsCheckbox).exists()).toBe(true);
   });
 
   it("calls changeValue when checkbox is changed", async () => {
-    await wrapper.findComponent(Checkbox).vm.$emit("update:modelValue", true);
+    await wrapper.getComponent(KdsCheckbox).vm.$emit("update:modelValue", true);
     expect(changeValue).toHaveBeenCalledWith(true);
   });
 
   it("sets correct initial value", () => {
-    expect(wrapper.findComponent(Checkbox).vm.modelValue).toBe(
+    expect(wrapper.getComponent(KdsCheckbox).props().modelValue).toBe(
       props.control.data,
     );
   });
 
   it("sets correct label", () => {
-    expect(wrapper.find("label").text()).toBe(props.control.label);
+    expect(wrapper.getComponent(KdsCheckbox).props().label).toBe(
+      props.control.label,
+    );
   });
 });

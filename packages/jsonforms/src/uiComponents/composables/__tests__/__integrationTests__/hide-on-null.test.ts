@@ -1,7 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
 import { VueWrapper, flushPromises, mount } from "@vue/test-utils";
 
-import { Checkbox, InputField } from "@knime/components";
+import { InputField } from "@knime/components";
+import { KdsCheckbox } from "@knime/kds-components";
 
 import JsonFormsDialog from "../../../../JsonFormsDialog.vue";
 import { controls, toRenderers } from "../../../../renderers";
@@ -9,7 +10,8 @@ import { controls, toRenderers } from "../../../../renderers";
 describe("hide on null", () => {
   let wrapper: VueWrapper;
 
-  const findCheckbox = (wrapper: VueWrapper) => wrapper.findComponent(Checkbox);
+  const findCheckbox = (wrapper: VueWrapper) =>
+    wrapper.findComponent(KdsCheckbox);
 
   const defaultValue = "default value";
 

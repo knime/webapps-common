@@ -1,5 +1,7 @@
 import { type Ref, computed, nextTick, unref, watch } from "vue";
 
+import type { KdsCheckboxProps } from "@knime/kds-components";
+
 import { type Control } from "../../types/Control";
 
 import useProvidedState, {
@@ -12,6 +14,8 @@ type UseHideOnNullOptions = {
 };
 
 type UseHideOnNullUiSchema = UiSchemaWithProvidedOptions<UseHideOnNullOptions>;
+
+type CheckboxValue = KdsCheckboxProps["modelValue"];
 
 export default ({
   control,
@@ -61,15 +65,11 @@ export default ({
     showControl,
     checkboxProps: computed(() => ({
       modelValue: !isNull.value,
-      "onUpdate:modelValue": onUpdate,
+      "onUpdate:modelValue": (value: CheckboxValue) =>
+        onUpdate(value as boolean),
       disabled: unref(disabled),
-      /**
-       * These styles grant that the checkbox aligns with the label when placed in a LabeledControl
-       */
-      style: {
-        marginTop: "-3px",
-        marginRight: "-15px",
-      },
+      class: "checkbox-hide-on-null",
+      label: undefined,
     })),
   };
 };
