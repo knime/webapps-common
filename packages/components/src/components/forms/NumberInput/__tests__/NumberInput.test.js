@@ -9,6 +9,7 @@ describe("NumberInput", () => {
   beforeEach(() => {
     props = {
       modelValue: 10,
+      stepSize: 1,
       min: 0,
       max: 20,
       title: "knime",
@@ -171,5 +172,125 @@ describe("NumberInput", () => {
     await input.trigger("blur");
     expect(getParsedValueSpy).toHaveNthReturnedWith(2, 1.5);
     expect(wrapper.vm.localValue).toBe(1.5);
+  });
+
+  describe("changeValue", () => {
+    it("increments value by the specified amount when valid", () => {
+      expect(wrapper.vm.getParsedValue()).toBe(10);
+      wrapper.vm.changeValue(5);
+      expect(wrapper.vm.getParsedValue()).toBe(15);
+    });
+
+    it("decrements value by the specified amount when valid", () => {
+      expect(wrapper.vm.getParsedValue()).toBe(10);
+      wrapper.vm.changeValue(-2);
+      expect(wrapper.vm.getParsedValue()).toBe(8);
+    });
+
+    it("respects step size for double precision", async () => {
+      await wrapper.setProps({ modelValue: 10.5, type: "double" });
+      wrapper.vm.changeValue(0.1);
+      expect(wrapper.vm.getParsedValue()).toBe(10.6);
+    });
+
+    it("handles large step sizes correctly (100)", async () => {
+      await wrapper.setProps({ modelValue: 0, max: 1000 });
+      wrapper.vm.changeValue(100);
+      expect(wrapper.vm.getParsedValue()).toBe(100);
+      wrapper.vm.changeValue(100);
+      expect(wrapper.vm.getParsedValue()).toBe(200);
+      wrapper.vm.changeValue(-100);
+      expect(wrapper.vm.getParsedValue()).toBe(100);
+    });
+
+    it("handles very small step sizes correctly (0.001)", async () => {
+      await wrapper.setProps({ modelValue: 1.0, type: "double" });
+      wrapper.vm.changeValue(0.001);
+      expect(wrapper.vm.getParsedValue()).toBeCloseTo(1.001, 3);
+      wrapper.vm.changeValue(0.001);
+      expect(wrapper.vm.getParsedValue()).toBeCloseTo(1.002, 3);
+      wrapper.vm.changeValue(-0.001);
+      expect(wrapper.vm.getParsedValue()).toBeCloseTo(1.001, 3);
+    });
+
+    it("snaps to nearest step (double)", async () => {
+      await wrapper.setProps({ modelValue: 1.001, type: "double" });
+      wrapper.vm.changeValue(0.01);
+      expect(wrapper.vm.getParsedValue()).toBeCloseTo(1.01, 3);
+    });
+
+    it("snaps to nearest step (integer)", async () => {
+      await wrapper.setProps({ modelValue: 123, max: 1000, type: "integer" });
+      wrapper.vm.changeValue(100);
+      expect(wrapper.vm.getParsedValue()).toBe(200);
+
+      await wrapper.setProps({ modelValue: 10, type: "integer" });
+      wrapper.vm.changeValue(-3);
+      expect(wrapper.vm.getParsedValue()).toBe(6);
+    });
+
+    it("handles multiple small increments without floating point errors", async () => {
+      await wrapper.setProps({ modelValue: 0, type: "double" });
+      // Add 0.1 ten times
+      for (let i = 0; i < 10; i++) {
+        wrapper.vm.changeValue(0.1);
+      }
+      // Should be 1.0, not 0.9999999999999999 or similar
+      expect(wrapper.vm.getParsedValue()).toBeCloseTo(1.0, 1);
+    });
+
+    it("emits update:modelValue event when value changes", () => {
+      wrapper.vm.changeValue(1);
+      expect(wrapper.emitted("update:modelValue")).toBeTruthy();
+      expect(wrapper.emitted("update:modelValue").at(-1)[0]).toBe(11);
+    });
+
+    it("rounds values to avoid floating point precision issues", () => {
+      wrapper.vm.changeValue(0.1);
+      wrapper.vm.changeValue(0.1);
+      wrapper.vm.changeValue(0.1);
+      // Should be 10.3, not 10.300000000000001
+      expect(wrapper.vm.getParsedValue()).toBeCloseTo(10.3, 1);
+    });
+
+    it("uses findNearestValidValue when current value is invalid", async () => {
+      const findNearestValidValueSpy = vi.spyOn(
+        wrapper.vm,
+        "findNearestValidValue",
+      );
+      await wrapper.setProps({ modelValue: -5 }); // Below min (0)
+      wrapper.vm.changeValue(1);
+      expect(findNearestValidValueSpy).toHaveBeenCalledWith(-5);
+    });
+
+    it("does not change value when increment would exceed max", async () => {
+      await wrapper.setProps({ modelValue: 19, max: 20 });
+      wrapper.vm.changeValue(5); // Would make it 24, which is > max
+      expect(wrapper.vm.getParsedValue()).toBe(19); // Should stay at 19
+    });
+
+    it("does not change value when decrement would go below min", async () => {
+      await wrapper.setProps({ modelValue: 1, min: 0 });
+      wrapper.vm.changeValue(-5); // Would make it -4, which is < min
+      expect(wrapper.vm.getParsedValue()).toBe(1); // Should stay at 1
+    });
+
+    it("changes to nearest valid value when currently invalid and incrementing in valid direction", async () => {
+      await wrapper.setProps({ modelValue: -5, min: 0 }); // Invalid: below min
+      wrapper.vm.changeValue(1); // Increment towards valid range
+      expect(wrapper.vm.getParsedValue()).toBe(1); // Should jump to min (0) + increment (1)
+    });
+
+    it("changes to nearest valid value when currently invalid and decrementing in valid direction", async () => {
+      await wrapper.setProps({ modelValue: 25, max: 20 }); // Invalid: above max
+      wrapper.vm.changeValue(-1); // Decrement towards valid range
+      expect(wrapper.vm.getParsedValue()).toBe(19); // Should jump to max (20) + increment (-1)
+    });
+
+    it("gracefully handles an interval of 0", () => {
+      expect(wrapper.vm.getParsedValue()).toBe(10);
+      wrapper.vm.changeValue(0);
+      expect(wrapper.vm.getParsedValue()).toBe(10);
+    });
   });
 });
