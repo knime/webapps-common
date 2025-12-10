@@ -201,10 +201,18 @@ export default {
      * can be found. It prevents users from further invalidating the value in the input
      * by moving in the wrong direction (lower than min/higher than max).
      *
-     * @param  {Number} increment - the amount by which to change the current value.
+     * It will snap to the nearest multiple of the given increment, i.e. initial
+     * value 13 incremented by 10 will yield 20.
+     *
+     * @param  {Number} increment - the amount by which to change the current
+     * value. If value is 0, no update is performed.
      * @returns {undefined}
      */
     changeValue(increment: number) {
+      if (increment === 0) {
+        return;
+      }
+
       let value = this.getParsedValue();
       if (!this.validate(value).isValid) {
         value = this.findNearestValidValue(value);
@@ -212,7 +220,7 @@ export default {
 
       /** Mimic stepping to nearest step with safe value rounding */
       let parsedVal = value + increment;
-      let scaleFactor = 1 / Math.abs(increment); // eslint-disable-line no-magic-numbers
+      let scaleFactor = 1 / Math.abs(increment);
       if (Math.abs(increment) < 1) {
         // Avoid rounding errors induced by fractional increments
         scaleFactor = Math.round(scaleFactor);
