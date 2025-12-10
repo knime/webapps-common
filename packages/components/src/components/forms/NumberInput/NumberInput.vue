@@ -91,7 +91,7 @@ export default {
       return this.type === "integer";
     },
     stepSize() {
-      if (this.step !== null) {
+      if (this.step !== null && this.step !== 0) {
         return this.step;
       }
 
@@ -212,7 +212,7 @@ export default {
 
       /** Mimic stepping to nearest step with safe value rounding */
       let parsedVal = value + increment;
-      let scaleFactor = 1 / Math.abs(increment); // eslint-disable-line no-magic-numbers
+      let scaleFactor = 1 / Math.abs(increment);
       if (Math.abs(increment) < 1) {
         // Avoid rounding errors induced by fractional increments
         scaleFactor = Math.round(scaleFactor);
