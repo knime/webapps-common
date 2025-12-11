@@ -272,11 +272,6 @@
       "count": 1
     }
   },
-  "packages/hub-features/src/useFileUpload/useFileUpload.ts": {
-    "@typescript-eslint/no-floating-promises": {
-      "count": 1
-    }
-  },
   "packages/jsonforms/src/JsonFormsDialog.vue": {
     "@typescript-eslint/no-misused-promises": {
       "count": 1

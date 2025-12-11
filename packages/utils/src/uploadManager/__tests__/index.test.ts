@@ -23,6 +23,7 @@ describe("uploadManager", () => {
   };
 
   const setup = ({ uploadPartResponse }: Options = {}) => {
+    consola.mockTypes(() => vi.fn());
     const server = newServer({
       put: ["/success", uploadPartResponse ?? defaultUploadPartResponse],
     });
@@ -125,6 +126,28 @@ describe("uploadManager", () => {
       expect(failed.length).toBe(0);
       expect(cancelled.length).toBe(0);
       expect(resolveFilePartUploadURL).toHaveBeenCalled();
+    });
+
+    it("should succeed when etag is missing from upload part response", async () => {
+      setup({
+        uploadPartResponse: (request) => {
+          request.respond(201, {});
+        },
+      });
+
+      const { uploadFiles } = createUploadManager({
+        resolveFilePartUploadURL,
+      });
+
+      const uploadId = getUploadId();
+
+      const { completed, failed, cancelled } = await uploadFiles([
+        { uploadId, file },
+      ]);
+
+      expect(completed).toEqual([uploadId]);
+      expect(failed.length).toBe(0);
+      expect(cancelled.length).toBe(0);
     });
   });
 
@@ -256,29 +279,6 @@ describe("uploadManager", () => {
       setup({
         uploadPartResponse: (request) => {
           request.respond(400, {});
-        },
-      });
-
-      const { uploadFiles } = createUploadManager({
-        resolveFilePartUploadURL,
-      });
-
-      const uploadId = getUploadId();
-
-      const { completed, failed, cancelled } = await uploadFiles([
-        { uploadId, file },
-      ]);
-
-      expect(completed.length).toBe(0);
-      expect(failed).toEqual([uploadId]);
-      expect(cancelled.length).toBe(0);
-      expect(resolveFilePartUploadURL).toHaveBeenCalled();
-    });
-
-    it("should fail when etag is missing from upload part response", async () => {
-      setup({
-        uploadPartResponse: (request) => {
-          request.respond(200, {});
         },
       });
 
