@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { toRef } from "vue";
+import { computed, toRef } from "vue";
 
 import type { VueControlPropsForLabelContent } from "../higherOrderComponents/control/withLabel";
 
@@ -9,6 +9,10 @@ import LoadingDropdown from "./loading/LoadingDropdown.vue";
 const props = defineProps<VueControlPropsForLabelContent<string | null>>();
 
 const { possibleValues } = usePossibleValues(toRef(props, "control"));
+
+const allowNewValue = computed(() => {
+  return props.control.uischema?.options?.allowNewValue;
+});
 </script>
 
 <template>
@@ -20,6 +24,7 @@ const { possibleValues } = usePossibleValues(toRef(props, "control"));
     :model-value="control.data ?? ''"
     :possible-values="possibleValues"
     :is-valid
+    :allow-new-value
     compact
     @update:model-value="changeValue"
   />

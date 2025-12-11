@@ -81,6 +81,7 @@ describe("DropdownControl", () => {
 
   it("renders", () => {
     expect(wrapper.findComponent(Dropdown).exists()).toBe(true);
+    expect(wrapper.findComponent(Dropdown).props("allowNewValue")).toBe(false);
   });
 
   it("sets labelForId", () => {
@@ -190,5 +191,17 @@ describe("DropdownControl", () => {
     expect(
       wrapper.findComponent(LoadingDropdown).props("possibleValues"),
     ).not.toBeNull();
+  });
+
+  it("passes down allowNewValue prop to Dropdown", async () => {
+    props.control.uischema.options = {
+      ...props.control.uischema.options,
+      allowNewValue: true,
+    };
+    const { wrapper } = mountJsonFormsControlLabelContent(DropdownControl, {
+      props,
+    });
+    await flushPromises();
+    expect(wrapper.findComponent(Dropdown).props("allowNewValue")).toBe(true);
   });
 });

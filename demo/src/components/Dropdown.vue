@@ -108,6 +108,7 @@ export default defineComponent({
       dropupSelected: "bar",
       withGroupSelected: "",
       slottedSmallSelected: "missing",
+      allowNewValueSelected: "Custom Value",
     };
   },
   computed: {
@@ -533,6 +534,47 @@ export default defineComponent({
           />
         </div>
         <div class="grid-item-2">selected id: {{ withGroupSelected }}</div>
+      </div>
+      <div class="grid-container">
+        <div class="grid-item-12">
+          <p>Dropdown with allow-new-value enabled</p>
+          <p>
+            When <code>allow-new-value</code> is enabled, values not in the
+            options list are not shown as missing and can be used as search
+            basis when opening the dropdown. The value is kept when clicking
+            outside.
+          </p>
+        </div>
+      </div>
+      <div class="grid-container">
+        <div class="grid-item-5">
+          <Dropdown
+            v-model="allowNewValueSelected"
+            placeholder="Enter or select a value"
+            ariaLabel="Dropdown with allow new value"
+            allow-new-value
+            :possible-values="[
+              {
+                id: 'foo',
+                text: 'Foo',
+              },
+              {
+                id: 'bar',
+                text: 'Bar',
+              },
+              /**
+               * Currently there is no special handling when inputting an id
+               * of one of the options, so myId is not treated as a new value
+               * and instead selects this corresponding option.
+               */
+              {
+                id: 'myId',
+                text: `Type 'myId' to select this option`,
+              },
+            ]"
+          />
+        </div>
+        <div class="grid-item-2">selected id: {{ allowNewValueSelected }}</div>
       </div>
     </section>
     <section>
