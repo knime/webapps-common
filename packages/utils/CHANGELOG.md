@@ -1,5 +1,11 @@
 # @knime/utils
 
+## 1.9.0
+
+### Minor Changes
+
+- c4bd90d: treat etags in upload as optional, adjust docs
+
 ## 1.8.0
 
 ### Minor Changes
