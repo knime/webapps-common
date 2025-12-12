@@ -28,6 +28,7 @@ const uploadChunkWithProgress = (params: {
   const { method, url, chunk, chunkIndex, onProgress, abortSignal } = params;
 
   const OK = 200;
+  const CREATED = 201;
 
   return new Promise<{ partId: string }>((resolve, reject) => {
     const xhr = new XMLHttpRequest();
@@ -44,17 +45,13 @@ const uploadChunkWithProgress = (params: {
     };
 
     xhr.onload = () => {
-      if (xhr.status === OK) {
+      if (xhr.status === OK || xhr.status === CREATED) {
         const etag = xhr.getResponseHeader("ETag");
 
-        if (!etag) {
-          reject(new Error("Invalid part upload response"));
-          return;
-        }
-
-        // remove possible doublequotes (") around the etag and/or weak identifier (if either is present)
+        // 1. note that some backends don't return the etag header, then we just set an empty string
+        // 2. remove possible doublequotes (") around the etag and/or weak identifier (if either is present)
         // https://datatracker.ietf.org/doc/html/rfc7232#section-2.3
-        resolve({ partId: etag.replace(/^(?:W\/)?"|"$/g, "") });
+        resolve({ partId: etag?.replace(/^(?:W\/)?"|"$/g, "") ?? "" });
       } else {
         consola.error("Failed or unexpected XHR response", {
           xhrStatus: xhr.status,

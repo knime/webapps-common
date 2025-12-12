@@ -81,7 +81,8 @@ type UseFileUploadOptions = {
  * Once the upload of a single file is complete, the upload manager will trigger the `onFileUploadComplete`
  * callback, which then will supply the ids of all the different parts that got uploaded for a given `uploadId`
  * Then we need to "complete" the upload by sending a request which provides the `uploadId` and a list of
- * the ids of all the parts
+ * the ids of all the parts. Note that some backends don't return the ids of the file parts after a successful
+ * upload of a part, in this case empty strings or null can be used instead of the part id.
  *
  * Cancellation:
  * Alternative to completion, you can also cancel an upload. For this, the composable makes a DELETE request
@@ -285,6 +286,8 @@ export const useFileUpload = (options: UseFileUploadOptions = {}) => {
           }
         });
 
+        // accept floating promise, errors are handled inside the function
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         useUploadManagerResult.start(parentId, uploadPayload);
       } catch (error) {
         throw rfcErrors.tryParse(error) ?? error;
@@ -296,7 +299,7 @@ export const useFileUpload = (options: UseFileUploadOptions = {}) => {
 
     cancel: (uploadId: string) => {
       useUploadManagerResult.cancel(uploadId);
-      cancelUpload(uploadId).catch((error) => {
+      cancelUpload(uploadId).catch((error: unknown) => {
         consola.error("There was a problem cancelling the upload", { error });
       });
     },
