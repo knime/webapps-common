@@ -1,5 +1,14 @@
 # @knime/hub-features
 
+## 1.16.1
+
+### Patch Changes
+
+- c4bd90d: treat etags in upload as optional, adjust docs
+- Updated dependencies [c4bd90d]
+  - @knime/utils@1.9.0
+  - @knime/components@1.43.1
+
 ## 1.16.0
 
 ### Minor Changes
