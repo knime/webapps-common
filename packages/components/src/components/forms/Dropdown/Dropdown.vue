@@ -149,7 +149,7 @@ export default {
       },
     );
 
-    const currentPossibleValues = useSearch(
+    const searchFilteredPossibleValues = useSearch(
       searchValue,
       caseSensitiveSearch,
       possibleValues,
@@ -159,7 +159,7 @@ export default {
     return {
       searchValue,
       useFilterValues,
-      currentPossibleValues,
+      searchFilteredPossibleValues,
       isExpanded,
     };
   },
@@ -173,6 +173,22 @@ export default {
     };
   },
   computed: {
+    currentPossibleValues() {
+      if (
+        this.allowNewValue &&
+        this.possibleValues.every((item) => item.id !== this.searchValue)
+      ) {
+        return [
+          {
+            id: this.searchValue || "",
+            text: `New value: ${this.searchValue || "<empty>"}`,
+            isSpecial: true,
+          },
+          ...this.searchFilteredPossibleValues,
+        ];
+      }
+      return this.searchFilteredPossibleValues;
+    },
     groupedValues() {
       const groups: Record<string, { label?: string; items: PossibleValue[] }> =
         {};

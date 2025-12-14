@@ -127,6 +127,7 @@ const doMount = ({
   ariaLabel = ARIA_LABEL_MOCK,
   slots = {},
   attachTo = null,
+  allowNewValue = false,
 } = {}) => {
   const propsData = {
     possibleValues,
@@ -134,6 +135,7 @@ const doMount = ({
     modelValue,
     placeholder,
     name,
+    allowNewValue,
     isValid: isUndefined(isValid) ? true : isValid,
     useGroupLabels,
   };
@@ -727,6 +729,82 @@ describe("Dropdown", () => {
       expect(emitted[emitted.length - 1][0]).toBe(customValue);
 
       wrapper.unmount();
+    });
+
+    it("prepends special 'New value' option when allowNewValue is true and search value doesn't match existing options", async () => {
+      const { wrapper } = doMount({
+        possibleValues: POSSIBLE_VALUES_MOCK,
+        allowNewValue: true,
+      });
+
+      await wrapper.find("[role=button]").trigger("click");
+      await flushPromises();
+
+      const searchInput = wrapper.find("[role=searchbox]");
+      const customSearchValue = "custom-new-value";
+      await searchInput.setValue(customSearchValue);
+      await flushPromises();
+
+      const currentValues = wrapper.vm.currentPossibleValues;
+      expect(currentValues.length).toBeGreaterThan(0);
+      expect(currentValues[0]).toEqual({
+        id: customSearchValue,
+        text: `New value: ${customSearchValue}`,
+        isSpecial: true,
+      });
+    });
+
+    it("does not prepend special option when search value matches an existing option", async () => {
+      const { wrapper } = doMount({
+        possibleValues: POSSIBLE_VALUES_MOCK,
+        allowNewValue: true,
+      });
+
+      await wrapper.find("[role=button]").trigger("click");
+      await flushPromises();
+
+      const searchInput = wrapper.find("[role=searchbox]");
+      await searchInput.setValue("test1");
+      await flushPromises();
+
+      const currentValues = wrapper.vm.currentPossibleValues;
+      const hasSpecialOption = currentValues.some((item) => item.isSpecial);
+      expect(hasSpecialOption).toBe(false);
+    });
+
+    it("does not prepend special option when allowNewValue is false", async () => {
+      const { wrapper } = doMount({
+        possibleValues: POSSIBLE_VALUES_MOCK,
+        allowNewValue: false,
+      });
+
+      await wrapper.find("[role=button]").trigger("click");
+      await flushPromises();
+
+      const searchInput = wrapper.find("[role=searchbox]");
+      await searchInput.setValue("custom-value");
+      await flushPromises();
+
+      const currentValues = wrapper.vm.currentPossibleValues;
+      const hasSpecialOption = currentValues.some((item) => item.isSpecial);
+      expect(hasSpecialOption).toBe(false);
+    });
+
+    it("handles empty search value when allowNewValue is true", async () => {
+      const { wrapper } = doMount({
+        possibleValues: POSSIBLE_VALUES_MOCK,
+        allowNewValue: true,
+      });
+
+      await wrapper.find("[role=button]").trigger("click");
+      await flushPromises();
+
+      const currentValues = wrapper.vm.currentPossibleValues;
+      expect(currentValues[0]).toEqual({
+        id: "",
+        text: "New value: <empty>",
+        isSpecial: true,
+      });
     });
   });
 });
