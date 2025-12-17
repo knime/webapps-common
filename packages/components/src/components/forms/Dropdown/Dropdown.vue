@@ -107,6 +107,10 @@ export default {
       type: Array as PropType<PossibleValue[]>,
       default: () => [],
     },
+    allowNewValue: {
+      type: Boolean,
+      default: false,
+    },
     caseSensitiveSearch: {
       type: Boolean,
       default: false,
@@ -129,14 +133,23 @@ export default {
     });
 
     const searchValue = ref(displayTextMap.value[props.modelValue]);
+    const isExpanded = ref(false);
     watch(
       () => props.modelValue,
       (newVal: Id) => {
+        if (isExpanded.value) {
+          /**
+           * With the allowNewValue option enabled, the modelValue changes to the search value
+           * while the dropdown is expanded. We do not want to update the searchValue in this
+           * case as it would override the user's input.
+           */
+          return;
+        }
         searchValue.value = displayTextMap.value[newVal];
       },
     );
 
-    const currentPossibleValues = useSearch(
+    const searchFilteredPossibleValues = useSearch(
       searchValue,
       caseSensitiveSearch,
       possibleValues,
@@ -146,14 +159,13 @@ export default {
     return {
       searchValue,
       useFilterValues,
-      currentPossibleValues,
+      searchFilteredPossibleValues,
+      isExpanded,
     };
   },
   data() {
     return {
       typingTimeout: null as null | ReturnType<typeof setTimeout>,
-      isExpanded: false,
-      searchQuery: "",
       candidate: this.modelValue,
       emptyState: "Nothing found",
       optionRefs: new Map(),
@@ -161,6 +173,22 @@ export default {
     };
   },
   computed: {
+    currentPossibleValues() {
+      if (
+        this.allowNewValue &&
+        this.possibleValues.every((item) => item.id !== this.searchValue)
+      ) {
+        return [
+          {
+            id: this.searchValue || "",
+            text: `New value: ${this.searchValue || "<empty>"}`,
+            isSpecial: true,
+          },
+          ...this.searchFilteredPossibleValues,
+        ];
+      }
+      return this.searchFilteredPossibleValues;
+    },
     groupedValues() {
       const groups: Record<string, { label?: string; items: PossibleValue[] }> =
         {};
@@ -204,10 +232,15 @@ export default {
       } else if (this.displayTextMap.hasOwnProperty(this.modelValue)) {
         return this.displayTextMap[this.modelValue];
       } else {
-        return `(MISSING) ${this.modelValue.toString()}`;
+        return this.allowNewValue
+          ? this.modelValue.toString()
+          : `(MISSING) ${this.modelValue.toString()}`;
       }
     },
     isMissing() {
+      if (this.allowNewValue) {
+        return false;
+      }
       return (
         this.modelValue && !this.displayTextMap.hasOwnProperty(this.modelValue)
       );
@@ -338,11 +371,20 @@ export default {
         this.expand();
       }
     },
+    resetSearchValue() {
+      if (this.displayTextMap.hasOwnProperty(this.modelValue)) {
+        this.searchValue = this.displayTextMap[this.modelValue];
+      } else if (this.allowNewValue) {
+        this.searchValue = this.modelValue?.toString() ?? "";
+      } else {
+        this.searchValue = "";
+      }
+    },
     async expand() {
       if (this.isDisabled) {
         return;
       }
-      this.searchValue = this.displayTextMap[this.modelValue];
+      this.resetSearchValue();
       if (this.hasOptionTemplate) {
         this.slotContainerHeight =
           (this.$refs.button as HTMLElement)?.clientHeight ?? 0;
@@ -419,12 +461,15 @@ export default {
       return `${node}-${this.id}-${cleanId}`;
     },
     closeDropdown() {
-      this.searchValue = this.displayTextMap[this.modelValue];
+      this.resetSearchValue();
       this.isExpanded = false;
     },
     handleSearch(item: string) {
       this.useFilterValues = true;
       this.searchValue = item;
+      if (this.allowNewValue) {
+        this.$emit("update:modelValue", item);
+      }
     },
     handleResetInput() {
       this.searchValue = "";
