@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.43.2
+
+### Patch Changes
+
+- 16cbb7e: Add the allowNewValue prop to Dropdown control
+
 ## 1.43.1
 
 ### Patch Changes

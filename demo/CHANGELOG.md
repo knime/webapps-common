@@ -1,5 +1,16 @@
 # demo
 
+## 1.7.2
+
+### Patch Changes
+
+- 16cbb7e: Add the allowNewValue prop to Dropdown control
+- Updated dependencies [16cbb7e]
+  - @knime/components@1.43.2
+  - @knime/hub-features@1.16.2
+  - @knime/rich-text-editor@1.8.2
+  - @knime/virtual-tree@1.7.2
+
 ## 1.7.1
 
 ### Patch Changes
