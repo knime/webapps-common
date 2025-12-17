@@ -117,20 +117,30 @@ const dispatchUpdate = (path: string, value: unknown) => {
 };
 
 const jsonFormsIsPresent = computed(() => jsonforms.value !== null);
+
+let resolveJsonFormsIsPresent: () => void;
+const jsonFormsIsPresentPromise = new Promise<void>((resolve) => {
+  resolveJsonFormsIsPresent = resolve;
+});
+
 watch(
   () => jsonFormsIsPresent.value,
-  (isPresent) =>
-    isPresent &&
-    toBeUpdatedBeforeJsonforms.forEach(({ path, value }) =>
-      dispatchUpdate(path, value),
-    ),
+  (isPresent) => {
+    if (isPresent) {
+      resolveJsonFormsIsPresent();
+      toBeUpdatedBeforeJsonforms.forEach(({ path, value }) =>
+        dispatchUpdate(path, value),
+      );
+    }
+  },
 );
 defineExpose({
-  updateData: (path: string, value: unknown) => {
+  updateData: async (path: string, value: unknown) => {
     if (jsonforms.value) {
       dispatchUpdate(path, value);
     } else {
       toBeUpdatedBeforeJsonforms.push({ path, value });
+      await jsonFormsIsPresentPromise;
     }
   },
 });
