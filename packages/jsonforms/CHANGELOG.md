@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.16.4
+
+### Patch Changes
+
+- cdc8851: Show a text input instead of a disabled dropdown when no suggestions are available for the allowNewValue mode
+
 ## 1.16.3
 
 ### Patch Changes
