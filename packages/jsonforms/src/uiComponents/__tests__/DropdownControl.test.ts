@@ -11,7 +11,7 @@ import { nextTick } from "vue";
 import type { VueWrapper } from "@vue/test-utils";
 import { flushPromises } from "@vue/test-utils";
 
-import { Dropdown } from "@knime/components";
+import { Dropdown, InputField } from "@knime/components";
 
 import {
   type VueControlTestProps,
@@ -203,5 +203,19 @@ describe("DropdownControl", () => {
     });
     await flushPromises();
     expect(wrapper.findComponent(Dropdown).props("allowNewValue")).toBe(true);
+  });
+
+  it("renders InputField if allowNewValue is true and there are no suggestions", async () => {
+    props.control.uischema.options = {
+      ...props.control.uischema.options,
+      allowNewValue: true,
+      possibleValues: [],
+    };
+    const { wrapper } = mountJsonFormsControlLabelContent(DropdownControl, {
+      props,
+    });
+    await flushPromises();
+    expect(wrapper.findComponent(Dropdown).exists()).toBe(false);
+    expect(wrapper.findComponent(InputField).exists()).toBe(true);
   });
 });
