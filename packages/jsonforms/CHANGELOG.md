@@ -1,5 +1,14 @@
 # @knime/json-forms
 
+## 1.16.3
+
+### Patch Changes
+
+- 16cbb7e: Add the allowNewValue prop to Dropdown control
+- Updated dependencies [16cbb7e]
+  - @knime/components@1.43.2
+  - @knime/rich-text-editor@1.8.2
+
 ## 1.16.2
 
 ### Patch Changes
