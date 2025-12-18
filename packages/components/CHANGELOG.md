@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.43.3
+
+### Patch Changes
+
+- 39c4177: Make step size of NumberInputWidget configurable
+
 ## 1.43.2
 
 ### Patch Changes

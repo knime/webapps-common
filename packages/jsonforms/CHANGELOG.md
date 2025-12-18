@@ -1,5 +1,14 @@
 # @knime/json-forms
 
+## 1.16.5
+
+### Patch Changes
+
+- 39c4177: Make step size of NumberInputWidget configurable
+- Updated dependencies [39c4177]
+  - @knime/components@1.43.3
+  - @knime/rich-text-editor@1.8.3
+
 ## 1.16.4
 
 ### Patch Changes

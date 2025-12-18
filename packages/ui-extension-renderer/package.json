@@ -1,6 +1,6 @@
 {
   "name": "@knime/ui-extension-renderer",
-  "version": "2.4.2",
+  "version": "2.4.3",
   "description": "Internal shared components and utilities to render UI-Extensions. Used in other consuming `@knime` packages.",
   "repository": {
     "type": "git",
