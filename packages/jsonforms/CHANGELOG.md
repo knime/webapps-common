@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.16.6
+
+### Patch Changes
+
+- 55b4f4e: Make updateData call asynchronous to enable waiting for dynamic import settlement
+
 ## 1.16.5
 
 ### Patch Changes
