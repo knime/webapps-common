@@ -28,4 +28,24 @@ describe("createAbortablePromise", () => {
     expect(catchSpy).toHaveBeenCalledWith(abortError);
     await expect(promise).resolves.toBe("aborted");
   });
+
+  it("should forward rejection", async () => {
+    // eslint-disable-next-line prefer-promise-reject-errors
+    const mockFetchCall = () => Promise.reject({ someErrorData: "foo" });
+
+    const { runAbortablePromise } = createAbortablePromise();
+
+    const catchSpy = vi.fn((e) => {
+      if (e instanceof AbortError) {
+        return "aborted";
+      }
+      throw e;
+    });
+
+    const promise = runAbortablePromise(mockFetchCall).catch(catchSpy);
+
+    await expect(promise).rejects.toEqual({ someErrorData: "foo" });
+
+    expect(catchSpy).toHaveBeenCalledWith({ someErrorData: "foo" });
+  });
 });

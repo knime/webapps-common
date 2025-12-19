@@ -45,7 +45,7 @@ export const createAbortablePromise = () => {
             return;
           }
 
-          reject(error instanceof Error ? error : new Error(error));
+          reject(error);
         });
 
       abortController.signal.addEventListener("abort", abortListener);
