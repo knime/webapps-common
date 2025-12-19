@@ -1,5 +1,11 @@
 # @knime/utils
 
+## 1.9.1
+
+### Patch Changes
+
+- dcb9fdd: Fix error rejection for createAbortablePromise util
+
 ## 1.9.0
 
 ### Minor Changes
