@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
+  type CIELabColor,
   type ColorModel,
   type UIExtensionService,
 } from "@knime/ui-extension-renderer/api";
@@ -136,6 +137,302 @@ describe("ColorService", () => {
       }));
 
       expect(() => colorService.getColumnNamesColorHandler()).toThrowError();
+    });
+  });
+
+  describe("test CIELab Color Handler", () => {
+    const createCIELabColorModel = (
+      stopValues: number[],
+      stopColors: CIELabColor[],
+    ): ColorModel => {
+      return {
+        type: "NUMERIC",
+        model: {
+          stopValues,
+          stopColorsCIELab: stopColors,
+          specialColors: {
+            MISSING: [0, 0, 0, 1], // Black
+            NAN: [100, 0, 0, 1], // White
+            NEGATIVE_INFINITY: [50, -50, 0, 1], // Cyan-ish
+            BELOW_MIN: [25, 0, 0, 1], // Dark gray
+            ABOVE_MAX: [75, 0, 0, 1], // Light gray
+            POSITIVE_INFINITY: [100, 50, 50, 1], // Yellow-ish
+          },
+        },
+      };
+    };
+
+    it("handles basic CIELab interpolation between two stop values", () => {
+      const cielabColumnName = "cielabColumn";
+      const colorModels: Record<string, ColorModel> = {
+        [cielabColumnName]: createCIELabColorModel(
+          [0, 100],
+          [
+            [0, 0, 0, 1], // Black
+            [100, 0, 0, 1], // White
+          ],
+        ),
+      };
+
+      ({ colorService } = createServices({ colorModels }));
+      const colorHandler = colorService.getColorHandler(cielabColumnName);
+
+      expect(colorHandler).not.toBeNull();
+      expect(colorHandler).toBeInstanceOf(NumericColorHandler);
+
+      const numericColorHandler = colorHandler as NumericColorHandler;
+
+      // Test interpolation at key points
+      const color0 = numericColorHandler!.getColor(0);
+      const color50 = numericColorHandler!.getColor(50);
+      const color100 = numericColorHandler!.getColor(100);
+
+      expect(color0).toBeDefined();
+      expect(color50).toBeDefined();
+      expect(color100).toBeDefined();
+      expect(color0).not.toBe(color50);
+      expect(color50).not.toBe(color100);
+    });
+
+    it("handles multiple stop values with interpolation", () => {
+      const cielabColumnName = "cielabColumn";
+      const colorModels: Record<string, ColorModel> = {
+        [cielabColumnName]: createCIELabColorModel(
+          [0, 50, 100],
+          [
+            [0, 0, 0, 1], // Black at 0
+            [50, 50, 0, 1], // Mid-tone at 50
+            [100, 0, 0, 1], // White at 100
+          ],
+        ),
+      };
+
+      ({ colorService } = createServices({ colorModels }));
+      const colorHandler = colorService.getColorHandler(
+        cielabColumnName,
+      ) as NumericColorHandler;
+
+      // Test interpolation in different ranges
+      const color25 = colorHandler!.getColor(25);
+      const color75 = colorHandler!.getColor(75);
+
+      expect(color25).toBeDefined();
+      expect(color75).toBeDefined();
+      expect(color25).not.toBe(color75);
+    });
+
+    it("handles special color for null/missing values", () => {
+      const cielabColumnName = "cielabColumn";
+      const colorModels: Record<string, ColorModel> = {
+        [cielabColumnName]: createCIELabColorModel(
+          [0, 100],
+          [
+            [0, 0, 0, 1],
+            [100, 0, 0, 1],
+          ],
+        ),
+      };
+
+      ({ colorService } = createServices({ colorModels }));
+      const colorHandler = colorService.getColorHandler(
+        cielabColumnName,
+      ) as NumericColorHandler;
+
+      const missingColor = colorHandler!.getColor(null);
+      expect(missingColor).toBeDefined();
+      // Should return black (MISSING color)
+      expect(missingColor).toMatch(/^#[0-9A-Fa-f]{8}$/);
+    });
+
+    it("handles special color for NaN", () => {
+      const cielabColumnName = "cielabColumn";
+      const colorModels: Record<string, ColorModel> = {
+        [cielabColumnName]: createCIELabColorModel(
+          [0, 100],
+          [
+            [0, 0, 0, 1],
+            [100, 0, 0, 1],
+          ],
+        ),
+      };
+
+      ({ colorService } = createServices({ colorModels }));
+      const colorHandler = colorService.getColorHandler(
+        cielabColumnName,
+      ) as NumericColorHandler;
+
+      const nanColor = colorHandler!.getColor(NaN);
+      expect(nanColor).toBeDefined();
+      expect(nanColor).toMatch(/^#[0-9A-Fa-f]{8}$/);
+    });
+
+    it("handles special color for positive infinity", () => {
+      const cielabColumnName = "cielabColumn";
+      const colorModels: Record<string, ColorModel> = {
+        [cielabColumnName]: createCIELabColorModel(
+          [0, 100],
+          [
+            [0, 0, 0, 1],
+            [100, 0, 0, 1],
+          ],
+        ),
+      };
+
+      ({ colorService } = createServices({ colorModels }));
+      const colorHandler = colorService.getColorHandler(
+        cielabColumnName,
+      ) as NumericColorHandler;
+
+      const infColor = colorHandler!.getColor(Infinity);
+      expect(infColor).toBeDefined();
+      expect(infColor).toMatch(/^#[0-9A-Fa-f]{8}$/);
+    });
+
+    it("handles special color for negative infinity", () => {
+      const cielabColumnName = "cielabColumn";
+      const colorModels: Record<string, ColorModel> = {
+        [cielabColumnName]: createCIELabColorModel(
+          [0, 100],
+          [
+            [0, 0, 0, 1],
+            [100, 0, 0, 1],
+          ],
+        ),
+      };
+
+      ({ colorService } = createServices({ colorModels }));
+      const colorHandler = colorService.getColorHandler(
+        cielabColumnName,
+      ) as NumericColorHandler;
+
+      const negInfColor = colorHandler!.getColor(-Infinity);
+      expect(negInfColor).toBeDefined();
+      expect(negInfColor).toMatch(/^#[0-9A-Fa-f]{8}$/);
+    });
+
+    it("handles values below minimum with BELOW_MIN special color", () => {
+      const cielabColumnName = "cielabColumn";
+      const colorModels: Record<string, ColorModel> = {
+        [cielabColumnName]: createCIELabColorModel(
+          [10, 100],
+          [
+            [0, 0, 0, 1],
+            [100, 0, 0, 1],
+          ],
+        ),
+      };
+
+      ({ colorService } = createServices({ colorModels }));
+      const colorHandler = colorService.getColorHandler(
+        cielabColumnName,
+      ) as NumericColorHandler;
+
+      const belowMinColor = colorHandler!.getColor(5);
+      expect(belowMinColor).toBeDefined();
+      expect(belowMinColor).toMatch(/^#[0-9A-Fa-f]{8}$/);
+    });
+
+    it("handles values above maximum with ABOVE_MAX special color", () => {
+      const cielabColumnName = "cielabColumn";
+      const colorModels: Record<string, ColorModel> = {
+        [cielabColumnName]: createCIELabColorModel(
+          [0, 90],
+          [
+            [0, 0, 0, 1],
+            [100, 0, 0, 1],
+          ],
+        ),
+      };
+
+      ({ colorService } = createServices({ colorModels }));
+      const colorHandler = colorService.getColorHandler(
+        cielabColumnName,
+      ) as NumericColorHandler;
+
+      const aboveMaxColor = colorHandler!.getColor(95);
+      expect(aboveMaxColor).toBeDefined();
+      expect(aboveMaxColor).toMatch(/^#[0-9A-Fa-f]{8}$/);
+    });
+
+    it("handles equal step values without division by zero", () => {
+      const cielabColumnName = "cielabColumn";
+      const colorModels: Record<string, ColorModel> = {
+        [cielabColumnName]: createCIELabColorModel(
+          [50, 50, 100],
+          [
+            [0, 0, 0, 1],
+            [50, 50, 0, 1],
+            [100, 0, 0, 1],
+          ],
+        ),
+      };
+
+      ({ colorService } = createServices({ colorModels }));
+      const colorHandler = colorService.getColorHandler(
+        cielabColumnName,
+      ) as NumericColorHandler;
+
+      // Should return the color at the stop value without error
+      const color50 = colorHandler!.getColor(50);
+      expect(color50).toBeDefined();
+      expect(color50).toMatch(/^#[0-9A-Fa-f]{8}$/);
+    });
+
+    it("provides custom interpolation context with stop values and boundary colors", () => {
+      const cielabColumnName = "cielabColumn";
+      const stopValues = [0, 50, 100];
+      const colorModels: Record<string, ColorModel> = {
+        [cielabColumnName]: createCIELabColorModel(stopValues, [
+          [0, 0, 0, 1],
+          [50, 50, 0, 1],
+          [100, 0, 0, 1],
+        ]),
+      };
+
+      ({ colorService } = createServices({ colorModels }));
+      const colorHandler = colorService.getColorHandler(cielabColumnName);
+
+      // Test the new getCustomInterpolationContext method
+      if ("getCustomInterpolationContext" in colorHandler!) {
+        const context = (colorHandler as any).getCustomInterpolationContext();
+
+        expect(context).toBeDefined();
+        expect(context.stopValues).toEqual(stopValues);
+        expect(context.belowMinColor).toBeDefined();
+        expect(context.aboveMaxColor).toBeDefined();
+        expect(context.belowMinColor).toMatch(/^#[0-9A-Fa-f]{8}$/);
+        expect(context.aboveMaxColor).toMatch(/^#[0-9A-Fa-f]{8}$/);
+      }
+    });
+
+    it("preserves alpha channel in CIELab interpolation", () => {
+      const cielabColumnName = "cielabColumn";
+      const colorModels: Record<string, ColorModel> = {
+        [cielabColumnName]: createCIELabColorModel(
+          [0, 100],
+          [
+            [0, 0, 0, 0.5], // Half transparent
+            [100, 0, 0, 1.0], // Fully opaque
+          ],
+        ),
+      };
+
+      ({ colorService } = createServices({ colorModels }));
+      const colorHandler = colorService.getColorHandler(
+        cielabColumnName,
+      ) as NumericColorHandler;
+
+      const color0 = colorHandler!.getColor(0);
+      const color50 = colorHandler!.getColor(50);
+      const color100 = colorHandler!.getColor(100);
+
+      // All colors should have 8-character hex codes (including alpha)
+      expect(color0).toMatch(/^#[0-9A-Fa-f]{8}$/);
+      expect(color50).toMatch(/^#[0-9A-Fa-f]{8}$/);
+      expect(color100).toMatch(/^#[0-9A-Fa-f]{8}$/);
+
+      // Alpha values should be different
+      expect(color0.slice(-2)).not.toBe(color100.slice(-2));
     });
   });
 });

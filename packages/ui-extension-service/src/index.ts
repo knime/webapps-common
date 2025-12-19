@@ -7,6 +7,8 @@ export {
   ReportingService,
   ColorService,
   NumericColorHandler,
+  CIELabColorHandler,
+  MinMaxRGBColorHandler,
   NominalColorHandler,
   type ColorHandler,
   AlertingService,

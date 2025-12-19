@@ -22,6 +22,8 @@ export { DataValueViewService } from "./DataValueViewService";
 export {
   ColorService,
   NumericColorHandler,
+  CIELabColorHandler,
+  MinMaxRGBColorHandler,
   NominalColorHandler,
   type ColorHandler,
 } from "./ColorService";
