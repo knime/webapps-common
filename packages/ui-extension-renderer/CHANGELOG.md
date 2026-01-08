@@ -1,5 +1,11 @@
 # @knime/ui-extension-renderer
 
+## 2.5.0
+
+### Minor Changes
+
+- 812a910: We now support CIELAB based color interpolation in ui extensions.
+
 ## 2.4.4
 
 ### Patch Changes

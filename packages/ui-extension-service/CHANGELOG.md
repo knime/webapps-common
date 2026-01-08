@@ -1,5 +1,11 @@
 # @knime/ui-extension-service
 
+## 2.7.0
+
+### Minor Changes
+
+- 812a910: We now support CIELAB based color interpolation in ui extensions.
+
 ## 2.6.0
 
 ### Minor Changes
