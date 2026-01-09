@@ -65,6 +65,10 @@ export interface Toast {
   deduplicationKey?: string;
   meta?: Record<string, unknown>;
   stackId?: string;
+  /**
+   * If set to false the toast cannot be dismissed by the user. The close button will be hidden. Default is true.
+   */
+  dismissible?: boolean;
 }
 
 export interface ToastWithId extends Toast {

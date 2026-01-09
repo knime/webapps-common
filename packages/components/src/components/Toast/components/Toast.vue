@@ -26,6 +26,7 @@ const props = withDefaults(defineProps<Toast>(), {
   autoRemove: true,
   active: true,
   buttons: () => [],
+  dismissible: true,
   stackId: "default",
 });
 
@@ -178,6 +179,7 @@ watch(toRef(props, "active"), (active) => {
         </div>
 
         <FunctionButton
+          v-if="dismissible"
           class="close-button"
           title="Dismiss message"
           @click="emits('remove')"
