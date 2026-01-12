@@ -345,6 +345,13 @@ const apiErrorToast = rfcErrors.toToast({
   headline: "Deployment could not be created",
   rfcError,
 });
+
+const nonDismissibleToast: Toast = {
+  type: "warning",
+  message: "This toast cannot be dismissed manually.",
+  dismissible: false,
+  autoRemove: false,
+};
 </script>
 
 <template>
@@ -459,6 +466,9 @@ const apiErrorToast = rfcErrors.toToast({
               >
               <Button with-border compact @click="show(apiErrorToast)"
                 >Toast with an api error</Button
+              >
+              <Button with-border compact @click="show(nonDismissibleToast)"
+                >Non-dismissible toast</Button
               >
             </div>
           </div>

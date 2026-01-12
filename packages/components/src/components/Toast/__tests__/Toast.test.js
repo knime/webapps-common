@@ -124,6 +124,22 @@ describe("Toast", () => {
       wrapper.find(".close-button").trigger("click");
       expect(wrapper.emitted().remove).toBeTruthy();
     });
+
+    it("only renders the close button when dismissible", () => {
+      const dismissibleWrapper = shallowMount(Toast, {
+        propsData: {
+          dismissible: true,
+        },
+      });
+      expect(dismissibleWrapper.find(".close-button").exists()).toBe(true);
+
+      const nonDismissibleWrapper = shallowMount(Toast, {
+        propsData: {
+          dismissible: false,
+        },
+      });
+      expect(nonDismissibleWrapper.find(".close-button").exists()).toBe(false);
+    });
   });
 
   describe("custom component", () => {
