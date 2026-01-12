@@ -1,5 +1,19 @@
 # demo
 
+## 1.8.0
+
+### Minor Changes
+
+- 30115f3: toast can be non-dismissible via prop
+
+### Patch Changes
+
+- Updated dependencies [30115f3]
+  - @knime/components@1.44.0
+  - @knime/hub-features@1.16.5
+  - @knime/rich-text-editor@1.8.5
+  - @knime/virtual-tree@1.7.5
+
 ## 1.7.4
 
 ### Patch Changes
