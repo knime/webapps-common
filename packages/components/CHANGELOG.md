@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.44.0
+
+### Minor Changes
+
+- 30115f3: toast can be non-dismissible via prop
+
 ## 1.43.4
 
 ### Patch Changes
