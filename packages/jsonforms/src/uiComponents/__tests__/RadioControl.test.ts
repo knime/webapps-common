@@ -104,16 +104,21 @@ describe("RadioControl", () => {
     ]);
   });
 
-  it("disables individual possible values if desired", async () => {
-    props.control.uischema.options!.disabledOptions = "LOG";
+  it("disables individual possible values from array if desired", async () => {
+    props.control.uischema.options!.possibleValues = [
+      { id: "LOG", text: "Logarithmic" },
+      { id: "VALUE", text: "Linear", disabled: true },
+      { id: "OTHER", text: "Other", disabled: false },
+    ];
     const { wrapper } = await mountJsonFormsControlLabelContent(RadioControl, {
       props,
     });
     expect(
       wrapper.findComponent(RadioButtons).props().possibleValues,
     ).toStrictEqual([
-      { id: "LOG", text: "Logarithmic", disabled: true },
-      { id: "VALUE", text: "Linear" },
+      { id: "LOG", text: "Logarithmic" },
+      { id: "VALUE", text: "Linear", disabled: true },
+      { id: "OTHER", text: "Other" },
     ]);
   });
 
