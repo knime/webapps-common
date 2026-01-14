@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.17.0
+
+### Minor Changes
+
+- 430af7f: Change how to disable possible values of radio buttons
+
 ## 1.16.8
 
 ### Patch Changes
