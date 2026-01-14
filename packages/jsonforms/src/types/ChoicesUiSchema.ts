@@ -7,6 +7,7 @@ import type { StateProviderLocation } from "./provided";
 export type IdAndText = {
   id: string;
   text: string;
+  disabled?: boolean;
 };
 
 export type DataType = {

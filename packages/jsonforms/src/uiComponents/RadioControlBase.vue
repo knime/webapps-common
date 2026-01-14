@@ -18,13 +18,11 @@ const props = defineProps<
 type PossiblyDisabledOption = IdAndText & { disabled?: true };
 
 const alignment = computed(() => props.control.uischema.options?.radioLayout);
-const disabledOptions = computed<string[]>(
-  () => props.control.uischema.options?.disabledOptions ?? [],
-);
-const disableOption = (option: IdAndText): PossiblyDisabledOption =>
-  disabledOptions.value.includes(option.id)
-    ? { ...option, disabled: true }
-    : option;
+const disableOption = (option: IdAndText): PossiblyDisabledOption => ({
+  id: option.id,
+  text: option.text,
+  ...(option.disabled ? { disabled: true as const } : {}),
+});
 
 const uiComponent = computed(() =>
   props.type === "valueSwitch" ? ValueSwitch : RadioButtons,
