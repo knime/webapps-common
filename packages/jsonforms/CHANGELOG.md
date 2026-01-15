@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- fb4708a: KDS-644: Migrate RadioButtonGroup to KDS
+- fb4708a: Migrate RadioButtonGroup to KDS
 
 ## 1.17.0
 
