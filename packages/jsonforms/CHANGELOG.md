@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.17.2
+
+### Patch Changes
+
+- c01760d: Added prop to pass a custom label to the sub settings panel
+
 ## 1.17.1
 
 ### Patch Changes
