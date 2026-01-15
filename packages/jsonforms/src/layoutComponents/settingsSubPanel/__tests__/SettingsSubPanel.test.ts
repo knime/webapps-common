@@ -70,4 +70,25 @@ describe("SettingsSubPanel", () => {
     await clickExpandButton(wrapper);
     expect(wrapper.findComponent(FunctionButton).exists()).toBeFalsy();
   });
+
+  it("shows default back button label", async () => {
+    props.settingsSubPanelConfig.showBackArrow = true;
+    const wrapper = mountTestComponent();
+    await clickExpandButton(wrapper);
+    await flushPromises();
+    expect(wrapper.findComponent(SideDrawer).text()).toContain(
+      "Back to node configuration",
+    );
+  });
+
+  it("shows custom back button label", async () => {
+    props.settingsSubPanelConfig.showBackArrow = true;
+    props.settingsSubPanelConfig.backButtonLabel = "Back to settings";
+    const wrapper = mountTestComponent();
+    await clickExpandButton(wrapper);
+    await flushPromises();
+    expect(wrapper.findComponent(SideDrawer).text()).toContain(
+      "Back to settings",
+    );
+  });
 });
