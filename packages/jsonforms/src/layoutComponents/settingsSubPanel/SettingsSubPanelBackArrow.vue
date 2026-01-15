@@ -5,19 +5,20 @@ import { FunctionButton } from "@knime/components";
 import * as $colors from "@knime/styles/colors/knimeColors";
 import ArrowLeft from "@knime/styles/img/icons/arrow-left.svg";
 
+interface Props {
+  backgroundColorOverride?: string;
+  backButtonLabel?: string;
+}
+
 const emit = defineEmits(["click"]);
 
-const props = withDefaults(
-  defineProps<{
-    backgroundColorOverride?: string;
-  }>(),
-  {
-    backgroundColorOverride: undefined,
-  },
-);
+const {
+  backgroundColorOverride = $colors.GrayUltraLight,
+  backButtonLabel = "Back to node configuration",
+} = defineProps<Props>();
 
 const styleOverrides = computed(() => ({
-  backgroundColor: props.backgroundColorOverride ?? $colors.GrayUltraLight,
+  backgroundColor: backgroundColorOverride,
 }));
 </script>
 
@@ -30,7 +31,7 @@ const styleOverrides = computed(() => ({
       ><ArrowLeft
     /></FunctionButton>
     <span class="spacer" />
-    <span class="bold">Back to node configuration</span>
+    <span class="bold">{{ backButtonLabel }}</span>
   </div>
 </template>
 

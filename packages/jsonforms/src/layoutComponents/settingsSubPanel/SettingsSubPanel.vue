@@ -32,13 +32,15 @@ export type SettingsSubPanelProps = {
   showBackArrow?: boolean;
   hideButtonsWhenExpanded?: boolean;
   backgroundColorOverride?: string;
+  backButtonLabel?: string;
 };
 
-const props = withDefaults(defineProps<SettingsSubPanelProps>(), {
-  showBackArrow: true,
-  hideButtonsWhenExpanded: false,
-  backgroundColorOverride: undefined,
-});
+const {
+  showBackArrow = true,
+  hideButtonsWhenExpanded = false,
+  backgroundColorOverride = undefined,
+  backButtonLabel = undefined,
+} = defineProps<SettingsSubPanelProps>();
 
 const isExpanded = ref(false);
 const expand = () => {
@@ -56,7 +58,7 @@ watch(
   isExpanded,
   (isExpanded) =>
     // @ts-expect-error expected 0 arguments
-    props.hideButtonsWhenExpanded && setSubPanelExpanded({ isExpanded }),
+    hideButtonsWhenExpanded && setSubPanelExpanded({ isExpanded }),
 );
 
 const subSettingsPanels = inject(subPanelDestInjectionKey)!;
@@ -64,7 +66,7 @@ const subSettingsPanels = inject(subPanelDestInjectionKey)!;
 const styleOverrides = computed(() => ({
   width: "100%",
   position: "absolute" as const,
-  backgroundColor: props.backgroundColorOverride ?? $colors.Porcelain,
+  backgroundColor: backgroundColorOverride ?? $colors.Porcelain,
 }));
 </script>
 
@@ -76,6 +78,7 @@ const styleOverrides = computed(() => ({
         <SidePanelBackArrow
           v-if="showBackArrow"
           :background-color-override
+          :back-button-label
           @click="close"
         />
         <div class="main-content">
