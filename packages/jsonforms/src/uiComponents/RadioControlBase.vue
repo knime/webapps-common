@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { type Ref, computed, onMounted, ref, toRef } from "vue";
 
-import { RadioButtons, ValueSwitch } from "@knime/components";
+import { ValueSwitch } from "@knime/components";
+import { KdsRadioButtonGroup } from "@knime/kds-components";
 
-import type { VueControlPropsForLabelContent } from "../higherOrderComponents/control/withLabel";
+import type { VueControlPropsForLabelContent } from "../higherOrderComponents";
 import { type IdAndText } from "../types/ChoicesUiSchema";
 import { optionsMapper } from "../utils";
 
@@ -24,10 +25,6 @@ const disableOption = (option: IdAndText): PossiblyDisabledOption => ({
   ...(option.disabled ? { disabled: true as const } : {}),
 });
 
-const uiComponent = computed(() =>
-  props.type === "valueSwitch" ? ValueSwitch : RadioButtons,
-);
-
 const staticOptions: Ref<PossiblyDisabledOption[] | null | undefined> =
   ref(null);
 
@@ -47,15 +44,24 @@ onMounted(() => {
 </script>
 
 <template>
-  <component
-    :is="uiComponent"
-    v-if="options"
-    :id="labelForId"
-    :possible-values="options"
-    :alignment="alignment"
-    :disabled="disabled"
-    :model-value="control.data"
-    compact
-    @update:model-value="changeValue"
-  />
+  <template v-if="options">
+    <ValueSwitch
+      v-if="props.type === 'valueSwitch'"
+      :id="labelForId"
+      :possible-values="options"
+      :disabled="disabled"
+      :model-value="control.data"
+      compact
+      @update:model-value="changeValue"
+    />
+    <KdsRadioButtonGroup
+      v-else
+      :id="labelForId"
+      :possible-values="options"
+      :alignment="alignment"
+      :disabled="disabled"
+      :model-value="control.data"
+      @update:model-value="changeValue"
+    />
+  </template>
 </template>
