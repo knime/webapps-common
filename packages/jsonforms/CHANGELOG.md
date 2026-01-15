@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.17.1
+
+### Patch Changes
+
+- fb4708a: KDS-644: Migrate RadioButtonGroup to KDS
+
 ## 1.17.0
 
 ### Minor Changes
