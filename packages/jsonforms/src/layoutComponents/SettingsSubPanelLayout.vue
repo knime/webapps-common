@@ -15,6 +15,9 @@ const props = defineProps<VueLayoutProps>();
 
 const options = computed(() => props.layout.uischema.options ?? {});
 const setText = computed(() => options.value.setText ?? "Set");
+const backButtonLabel = computed(
+  () => options.value.backButtonLabel ?? "Back to node configuration",
+);
 const hover = ref(false);
 </script>
 
@@ -22,6 +25,7 @@ const hover = ref(false);
   <div @mouseover="hover = true" @mouseleave="hover = false">
     <SettingsSubPanel
       show-back-arrow
+      :back-button-label
       background-color-override="var(--knime-gray-ultra-light)"
     >
       <template #expand-button="{ expand }">
