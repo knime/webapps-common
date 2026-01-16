@@ -256,11 +256,11 @@ const rightLabel = computed(() => includedLabel ?? props.twinlistRightLabel);
   margin-left: var(--space-4);
 }
 
-.twinlist :deep(.lists) :deep(.multiselect-list-box) :deep([role="listbox"]) {
+.twinlist :deep(.lists .multiselect-list-box [role="listbox"]) {
   font-size: 13px;
 }
 
-.twinlist :deep(.header) :deep(.title) {
+.twinlist :deep(.header .title) {
   font-size: 13px;
   font-weight: 500;
   color: var(--knime-dove-gray);

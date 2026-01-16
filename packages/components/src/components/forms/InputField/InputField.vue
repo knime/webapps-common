@@ -199,7 +199,7 @@ export default {
     }
   }
 
-  &:has(:deep(.function-button)) {
+  &:deep(:has(.function-button)) {
     padding-right: 0;
   }
 
@@ -208,7 +208,7 @@ export default {
 
     pointer-events: auto; /* otherwise, we won't be able to :hover the button */
 
-    & :deep(svg) {
+    & svg {
       width: calc(var(--icon-size) * 1px);
       height: calc(var(--icon-size) * 1px);
 
