@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { type Ref, computed, onMounted, ref, toRef } from "vue";
 
-import { ValueSwitch } from "@knime/components";
-import { KdsRadioButtonGroup } from "@knime/kds-components";
+import { KdsRadioButtonGroup, KdsValueSwitch } from "@knime/kds-components";
 
 import type { VueControlPropsForLabelContent } from "../higherOrderComponents";
 import { type IdAndText } from "../types/ChoicesUiSchema";
@@ -45,14 +44,14 @@ onMounted(() => {
 
 <template>
   <template v-if="options">
-    <ValueSwitch
+    <KdsValueSwitch
       v-if="props.type === 'valueSwitch'"
       :id="labelForId"
       :possible-values="options"
       :disabled="disabled"
       :model-value="control.data"
-      compact
-      @update:model-value="changeValue"
+      size="small"
+      @update:model-value="changeValue($event ?? '')"
     />
     <KdsRadioButtonGroup
       v-else
@@ -61,7 +60,7 @@ onMounted(() => {
       :alignment="alignment"
       :disabled="disabled"
       :model-value="control.data"
-      @update:model-value="changeValue"
+      @update:model-value="changeValue($event ?? '')"
     />
   </template>
 </template>
