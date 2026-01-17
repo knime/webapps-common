@@ -3,7 +3,7 @@ import type { VueControlPropsForLabelContent } from "../higherOrderComponents/co
 
 import RadioControlBase from "./RadioControlBase.vue";
 
-defineProps<VueControlPropsForLabelContent<string | undefined>>();
+defineProps<VueControlPropsForLabelContent<string>>();
 </script>
 
 <template>
