@@ -51,7 +51,7 @@ onMounted(() => {
       :disabled="disabled"
       :model-value="control.data"
       size="small"
-      @update:model-value="changeValue($event ?? '')"
+      @update:model-value="changeValue"
     />
     <KdsRadioButtonGroup
       v-else
@@ -60,7 +60,7 @@ onMounted(() => {
       :alignment="alignment"
       :disabled="disabled"
       :model-value="control.data"
-      @update:model-value="changeValue($event ?? '')"
+      @update:model-value="changeValue"
     />
   </template>
 </template>
