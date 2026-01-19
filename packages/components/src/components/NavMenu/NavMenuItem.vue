@@ -81,7 +81,7 @@ const isTopLevel = computed(() => depth === 1);
 const hasActiveChild = ref(false);
 
 // Provide api for possible lists that could be nested inside THIS item.
-// Those nested lists will use this injection key to report back to us if they
+// Those nested lists will use this injection key to report back to THIS component if they
 // have active children
 provide(ParentItemKey, {
   setHasActiveChild(value: boolean) {
@@ -92,7 +92,7 @@ provide(ParentItemKey, {
   },
 });
 
-// Report THIS item's active state to its parent (the list we're a direct child of)
+// Report THIS item's active state to its parent (the list THIS component is a direct child of)
 const parentList = inject(ChildItemKey, null);
 const id = Symbol("Item");
 
@@ -183,7 +183,7 @@ const withIndicator = computed(() => {
   --typography-button-medium-prominent: 600 15px/16px
     var(--typography-font-family);
 
-  --inline-padding: 8px;
+  --inline-padding: var(--space-8);
   --text-default-color: var(--knime-dove-gray);
   --text-active-color: var(--knime-cornflower-dark);
   --text-hover-color: var(--knime-masala);
@@ -196,10 +196,10 @@ const withIndicator = computed(() => {
   & .menu-item-main {
     display: flex;
     flex: 1;
-    gap: 4px;
+    gap: var(--space-4);
     align-items: center;
-    padding: 0 8px;
-    margin-bottom: 8px;
+    padding: 0 var(--space-8);
+    margin-bottom: var(--space-8);
     text-decoration: none;
 
     & .prepend :slotted(svg),
@@ -261,8 +261,8 @@ const withIndicator = computed(() => {
     top: var(--inline-padding);
     left: 0;
     display: block;
-    width: 4px;
-    height: 16px;
+    width: var(--space-4);
+    height: var(--space-16);
     content: "";
     background: var(--knime-cornflower);
     border-radius: 0 4px 4px 0;

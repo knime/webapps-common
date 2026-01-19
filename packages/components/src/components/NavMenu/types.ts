@@ -29,7 +29,7 @@ export type NavMenuItemProps<T = unknown> = {
    */
   manualNavigation?: boolean;
   /**
-   * Whether the active should be in the active state. This will have a different
+   * Whether the item should be in the active state. This will have a different
    * styling depending whether the NavMenuItem is at a root-level (active top-level item)
    * vs if it's nested inside another menu (active child item of a parent)
    */

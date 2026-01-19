@@ -30,7 +30,7 @@ watch(
   () => activeCount.value > 0,
   (hasAnyChildren) => {
     if (parentItem && depth.value > 1) {
-      parentItem.setHasActiveChild(hasAny);
+      parentItem.setHasActiveChild(hasAnyChildren);
     }
   },
   { immediate: true },
