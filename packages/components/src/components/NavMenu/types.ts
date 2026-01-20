@@ -10,7 +10,7 @@ export type NavMenuItemProps<T = unknown> = {
    */
   text: string;
   /**
-   * When set, the navigation item will acts as a router-controlled navigation item,
+   * When set, the navigation item will act as a router-controlled navigation item,
    * based on what your application's router is (Vue router / Nuxt router).
    * For external links, use the `href` prop only
    */

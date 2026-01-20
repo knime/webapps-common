@@ -21,14 +21,14 @@ provide(ListDepthKey, depth.value);
 // to the parent
 const parentItem = inject(ParentItemKey, null);
 
-// Track active *direct* NavItem children THIS list
+// Track active *direct* NavItem children of THIS list
 const activeCount = ref(0);
 
 // Only report to parentItem if this list is nested (depth > 1) and parentItem exists.
 // Otherwise, it's a top-level list and we don't have to report anything
 watch(
   () => activeCount.value > 0,
-  (hasAny) => {
+  (hasAnyChildren) => {
     if (parentItem && depth.value > 1) {
       parentItem.setHasActiveChild(hasAny);
     }
