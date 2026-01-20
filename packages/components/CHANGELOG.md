@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.45.0
+
+### Minor Changes
+
+- eaff1c5: Add NavMenu component
+
 ## 1.44.0
 
 ### Minor Changes
