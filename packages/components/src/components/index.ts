@@ -58,6 +58,7 @@ export * from "./FileExplorer";
 export * from "./UploadProgressPanel";
 export * from "./DownloadProgressPanel";
 export * from "./Progress";
+export * from "./NavMenu";
 
 export {
   AutoPlayVideo,
