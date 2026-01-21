@@ -35,16 +35,28 @@ const ALLOWED_TAGS = [
 /**
  * Sanitizes Raw HTML and only allow specific tags to be used, as per OWASP standards.
  * @param rawHTML
+ * @param options.allowStyleAttribute - Allow the style attribute on elements
+ * @param options.allowHyperlinks - Allow anchor tags with href attribute
  * @returns sanitized html
  */
 const sanitizeHTML = (
   rawHTML: string,
-  options: { allowStyleAttribute: boolean } = { allowStyleAttribute: false },
+  options: { allowStyleAttribute?: boolean; allowHyperlinks?: boolean } = {
+    allowStyleAttribute: false,
+    allowHyperlinks: false,
+  },
 ) => {
-  const { allowStyleAttribute } = options;
-  const ALLOWED_ATTR = allowStyleAttribute ? ["style"] : [];
+  const { allowStyleAttribute, allowHyperlinks } = options;
+  const ALLOWED_ATTR = [
+    ...(allowStyleAttribute ? ["style"] : []),
+    ...(allowHyperlinks ? ["href"] : []),
+  ];
+  const allowedTags = allowHyperlinks ? [...ALLOWED_TAGS, "a"] : ALLOWED_TAGS;
 
-  return DomPurify.sanitize(rawHTML, { ALLOWED_TAGS, ALLOWED_ATTR });
+  return DomPurify.sanitize(rawHTML, {
+    ALLOWED_TAGS: allowedTags,
+    ALLOWED_ATTR,
+  });
 };
 
 /**
