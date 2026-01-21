@@ -1,5 +1,11 @@
 # @knime/utils
 
+## 1.9.2
+
+### Patch Changes
+
+- 6d57731: Add option to allow hyperlinks to the sanitization util.
+
 ## 1.9.1
 
 ### Patch Changes
