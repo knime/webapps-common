@@ -9,7 +9,7 @@ import {
 } from "vitest";
 import type { VueWrapper } from "@vue/test-utils";
 
-import { ValueSwitch } from "@knime/components";
+import { KdsValueSwitch } from "@knime/kds-components";
 
 import {
   type VueControlTestProps,
@@ -65,25 +65,24 @@ describe("ValueSwitchControl", () => {
   });
 
   it("renders", () => {
-    expect(wrapper.findComponent(ValueSwitch).exists()).toBe(true);
+    expect(wrapper.findComponent(KdsValueSwitch).exists()).toBe(true);
     expect(wrapper.findComponent(RadioControlBase).exists()).toBe(true);
   });
 
   it("calls changeValue when value is switched", () => {
-    wrapper.findComponent(ValueSwitch).vm.$emit("update:modelValue", "VALUE");
+    wrapper
+      .findComponent(KdsValueSwitch)
+      .vm.$emit("update:modelValue", "VALUE");
     expect(changeValue).toHaveBeenCalledWith("VALUE");
   });
 
   it("sets labelForId", () => {
-    expect(wrapper.getComponent(ValueSwitch).props().id).toBe(labelForId);
+    expect(wrapper.getComponent(KdsValueSwitch).props().id).toBe(labelForId);
   });
 
   it("sets correct initial value", () => {
-    expect(wrapper.findComponent(ValueSwitch).props().modelValue).toBe("LOG");
-  });
-
-  it("calls changeValue when radio button is changed", () => {
-    wrapper.findComponent(ValueSwitch).vm.$emit("update:modelValue", "VALUE");
-    expect(changeValue).toHaveBeenCalledWith("VALUE");
+    expect(wrapper.findComponent(KdsValueSwitch).props().modelValue).toBe(
+      "LOG",
+    );
   });
 });
