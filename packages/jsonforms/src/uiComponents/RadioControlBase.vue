@@ -51,6 +51,7 @@ onMounted(() => {
       :disabled="disabled"
       :model-value="control.data"
       size="small"
+      variant="muted"
       @update:model-value="changeValue"
     />
     <KdsRadioButtonGroup
