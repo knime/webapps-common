@@ -66,20 +66,31 @@ Eslint Configs for TS projects export a function which takes the path to a tscon
 
 If you want to make use of typed linting it might make sense to create a separate `tsconfig.eslint.json` which only includes files that should get linted and be as small and focused as possible.
 
-Note for the Nuxt3 Config: The config uses `createConfigForNuxt` which returns a composer. This means in you project you have to await the result to get the config. A Nuxt config could look like this:
+### Linting in Nuxt projects
+
+Nuxt offers an Eslint module to build project aware configs. If you want to use Eslint in a Nuxt project add the Eslint module to Nuxt. By default, this module installs the JS, TS and Vue plugins with their recommended rules. This is already covered by the config exported in `@knime/eslint-config/nuxt3.js` so make sure to have this in the nuxt config:
 
 ```js
-import createKnimeNuxtConfig from "@knime/eslint-config/nuxt3.js"
-
-export default = [
-  ...(await createKnimeNuxtConfig()),
-  {
-    globals: {
-      consola: true,
-    }
+defineNuxtConfig({
+  modules: ["@nuxt/eslint"],
+  eslint: {
+    config: {
+      standalone: false,
+    },
   },
-  // [...]
-];
+});
+```
+
+The Eslint config file then looks something like this:
+
+```js
+import withNuxt from "./.nuxt/eslint.config.mjs";
+import knimeNuxtConfig from "@knime/eslint-config/nuxt3.js";
+
+export default withNuxt([
+  ...knimeNuxtConfig(),
+  // your other configs here
+]);
 ```
 
 ## Using Stylelint in your project
