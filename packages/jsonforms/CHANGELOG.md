@@ -1,5 +1,14 @@
 # @knime/json-forms
 
+## 1.17.5
+
+### Patch Changes
+
+- 2a0ae87: Fix invalid nested `:deep()` CSS selectors that were not being processed correctly by Vue's style compiler. This change ensures that the CSS output of `@knime/jsonforms` does not include invalid `:deep` selectors left unprocessed.
+- Updated dependencies [2a0ae87]
+  - @knime/components@1.45.2
+  - @knime/rich-text-editor@1.8.8
+
 ## 1.17.4
 
 ### Patch Changes
