@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.18.0
+
+### Minor Changes
+
+- 77b86ef: Add FieldControl to delegate to nested renderers
+
 ## 1.17.5
 
 ### Patch Changes
