@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.18.1
+
+### Patch Changes
+
+- a15c187: Migrate to KdsValueSwitch
+
 ## 1.18.0
 
 ### Minor Changes
