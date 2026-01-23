@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.45.3
+
+### Patch Changes
+
+- c73dc3e: Reduce NavMenuItem font-weight
+
 ## 1.45.2
 
 ### Patch Changes
