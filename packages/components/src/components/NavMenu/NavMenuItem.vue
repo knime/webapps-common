@@ -180,7 +180,7 @@ const withIndicator = computed(() => {
   --typography-font-family: "Roboto", sans-serif;
 
   /* weight, size/line-height, family  */
-  --typography-button-medium-prominent: 600 15px/16px
+  --typography-button-medium-prominent: 500 15px/16px
     var(--typography-font-family);
 
   --inline-padding: var(--space-8);
