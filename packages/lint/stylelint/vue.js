@@ -1,6 +1,12 @@
 export default {
   plugins: ["stylelint-value-no-unknown-custom-properties"],
   extends: ["stylelint-config-standard-vue", "stylelint-config-recess-order"],
+  ignoreFiles: [
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/test-results/**",
+    "**/coverage/**",
+  ],
   rules: {
     "rule-empty-line-before": [
       "always-multi-line",
