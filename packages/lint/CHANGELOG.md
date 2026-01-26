@@ -1,5 +1,11 @@
 # @knime/eslint-config
 
+## 9.5.3
+
+### Patch Changes
+
+- 12ff5ea: unwrap nuxt config as it needs to be wrapped with nuxt helpers in the nuxt project
+
 ## 9.5.2
 
 ### Patch Changes
