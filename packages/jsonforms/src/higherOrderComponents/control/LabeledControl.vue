@@ -47,7 +47,7 @@ const title = computed(() => (props.label === "" ? " " : props.label));
 
 <style scoped></style>
 
-<style lang="postcss" scoped>
+<style scoped>
 .dialog-label {
   /**
   * This is necessary to fixate the dialog popovers
