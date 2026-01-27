@@ -42,7 +42,7 @@ onMounted(() => {
   />
 </template>
 
-<style lang="postcss" scoped>
+<style scoped>
 .checkboxes {
   margin-bottom: -10px;
 }

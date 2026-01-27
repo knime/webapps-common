@@ -29,7 +29,7 @@ withDefaults(
   </div>
 </template>
 
-<style lang="postcss" scoped>
+<style scoped>
 .error-message-wrapper {
   display: flex;
   flex-direction: column;

@@ -102,7 +102,7 @@ const temporalTypeModel = computed({
   </div>
 </template>
 
-<style lang="postcss" scoped>
+<style scoped>
 .control-container {
   display: flex;
   flex-direction: column;
