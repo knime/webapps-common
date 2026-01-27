@@ -240,7 +240,7 @@ const rightLabel = computed(() => includedLabel ?? props.twinlistRightLabel);
   </MultiModeTwinList>
 </template>
 
-<style lang="postcss" scoped>
+<style scoped>
 .data-type-entry {
   display: flex;
   gap: var(--space-4);
