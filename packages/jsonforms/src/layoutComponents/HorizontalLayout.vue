@@ -22,7 +22,7 @@ defineProps<VueLayoutProps>();
   </div>
 </template>
 
-<style lang="postcss" scoped>
+<style scoped>
 .horizontal {
   display: inline-flex;
   gap: 5px;
