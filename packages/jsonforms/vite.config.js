@@ -1,6 +1,5 @@
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
-import postcss from "postcss";
 import dts from "vite-plugin-dts";
 import svgLoader from "vite-svg-loader";
 
@@ -15,7 +14,6 @@ export default defineConfig({
       tsconfigPath: "tsconfig.app.json",
     }),
   ],
-  css: { postcss },
   build: {
     lib: {
       entry: {

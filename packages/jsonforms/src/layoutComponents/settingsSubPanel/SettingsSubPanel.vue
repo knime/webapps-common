@@ -96,7 +96,7 @@ const styleOverrides = computed(() => ({
   </Teleport>
 </template>
 
-<style scoped lang="postcss">
+<style scoped>
 .side-drawer-content {
   display: flex;
   flex-direction: column;
@@ -116,7 +116,7 @@ const styleOverrides = computed(() => ({
 }
 </style>
 
-<style lang="postcss">
+<style>
 /* Adjust the z-index of the side drawer to fix dialogue popovers */
 * {
   --z-index-common-side-drawer: 3;

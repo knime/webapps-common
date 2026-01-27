@@ -186,7 +186,7 @@ const controlElement = ref<typeof SortList | null>(null);
   </LabeledControl>
 </template>
 
-<style scoped lang="postcss">
+<style scoped>
 .flex {
   display: flex;
   flex-direction: row;
