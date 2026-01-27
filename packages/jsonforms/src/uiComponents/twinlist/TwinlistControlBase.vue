@@ -60,7 +60,7 @@ const withTypes = computed(() => props.possibleValues?.some((v) => v.type));
   </Twinlist>
 </template>
 
-<style lang="postcss" scoped>
+<style scoped>
 .data-type-entry {
   display: flex;
   gap: var(--space-4);
