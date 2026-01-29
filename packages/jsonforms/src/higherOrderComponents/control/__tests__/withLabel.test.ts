@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { defineComponent, h } from "vue";
 import { mount } from "@vue/test-utils";
 
-import { Label } from "@knime/components";
+import { KdsLabel } from "@knime/kds-components";
 
 import {
   type ControlSlots,
@@ -63,8 +63,8 @@ describe("withLabel", () => {
 
   it("adds a label to the control", () => {
     const wrapper = mountTestControlRenderer();
-    expect(wrapper.findComponent(Label).props()).toMatchObject({
-      text: testLabel,
+    expect(wrapper.findComponent(KdsLabel).props()).toMatchObject({
+      label: testLabel,
     });
     expect(
       wrapper.findComponent(TestControlLabelContent).props(),
@@ -111,7 +111,7 @@ describe("withLabel", () => {
       hideControlHeader: true,
     };
     const wrapper = mountTestControlRenderer();
-    expect(wrapper.findComponent(Label).exists()).toBeFalsy();
+    expect(wrapper.findComponent(KdsLabel).exists()).toBeFalsy();
     expect(
       wrapper.findComponent(TestControlLabelContent).props(),
     ).toMatchObject(propsWithoutMessages(props));
