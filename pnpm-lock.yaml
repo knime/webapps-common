@@ -10,11 +10,11 @@ catalogs:
       specifier: 1.1.8
       version: 1.1.8
     '@knime/kds-components':
-      specifier: 0.5.7
-      version: 0.5.7
+      specifier: 0.5.10
+      version: 0.5.10
     '@knime/kds-styles':
-      specifier: 0.5.7
-      version: 0.5.7
+      specifier: 0.5.10
+      version: 0.5.10
     '@knime/vue-headless-virtual-scroller':
       specifier: 0.1.3
       version: 0.1.3
@@ -136,7 +136,7 @@ importers:
         version: link:packages/lint
       '@knime/kds-styles':
         specifier: 'catalog:'
-        version: 0.5.7
+        version: 0.5.10
       '@knime/licenses':
         specifier: workspace:*
         version: link:packages/licenses
@@ -205,10 +205,10 @@ importers:
         version: link:../packages/hub-features
       '@knime/kds-components':
         specifier: 'catalog:'
-        version: 0.5.7(@vueuse/core@13.8.0(vue@3.5.24(typescript@5.9.3)))(vue@3.5.24(typescript@5.9.3))
+        version: 0.5.10(@vueuse/core@13.8.0(vue@3.5.24(typescript@5.9.3)))(vue@3.5.24(typescript@5.9.3))
       '@knime/kds-styles':
         specifier: 'catalog:'
-        version: 0.5.7
+        version: 0.5.10
       '@knime/licenses':
         specifier: workspace:*
         version: link:../packages/licenses
@@ -415,7 +415,7 @@ importers:
         version: link:../components
       '@knime/kds-components':
         specifier: 'catalog:'
-        version: 0.5.7(@vueuse/core@13.8.0(vue@3.5.24(typescript@5.9.3)))(vue@3.5.24(typescript@5.9.3))
+        version: 0.5.10(@vueuse/core@13.8.0(vue@3.5.24(typescript@5.9.3)))(vue@3.5.24(typescript@5.9.3))
       '@knime/rich-text-editor':
         specifier: workspace:*
         version: link:../rich-text-editor
@@ -1510,15 +1510,15 @@ packages:
   '@keyv/serialize@1.1.1':
     resolution: {integrity: sha512-dXn3FZhPv0US+7dtJsIi2R+c7qWYiReoEh5zUntWCf4oSpMNib8FDhSoed6m3QyZdx5hK7iLFkYk3rNxwt8vTA==}
 
-  '@knime/kds-components@0.5.7':
-    resolution: {integrity: sha512-FEz5FJQWejg73G5AIM8SwjWB/cLO5oRb7lpdB6107iVwgvOHjka9vNSddJC6oLdXWKybxreyJR6LYGUoadTZjQ==}
+  '@knime/kds-components@0.5.10':
+    resolution: {integrity: sha512-OMm2h8ECilFFop3ThwgfhZXSlsL4bWg+ReQAmt2iXJK26716niVDoMbdwv2Ba8eR4mt6wnuItXybLE4MF/7g+Q==}
     engines: {node: 24.10.0, npm: please-use-pnpm}
     peerDependencies:
       '@vueuse/core': ~13.8.0
       vue: ~3.5.0
 
-  '@knime/kds-styles@0.5.7':
-    resolution: {integrity: sha512-5V3xZEzn3aLWvZ/wUcYIvH3RdpWlCMxm+LCdEuNq5pAXHeA7shtcb47acahwxtLttzNxdnEVvHEJsD0cBW3CJA==}
+  '@knime/kds-styles@0.5.10':
+    resolution: {integrity: sha512-8RCIm+OOEksmjCvJFmQjy0bBsggstHtdgzO2TDm/b+tFvwyJOSbqDDhVjC5quZAXrkN4kTdBBrlJyjY8vuKaQw==}
     engines: {node: 24.10.0, npm: please-use-pnpm}
 
   '@knime/utils@1.8.0':
@@ -6189,15 +6189,15 @@ snapshots:
 
   '@keyv/serialize@1.1.1': {}
 
-  '@knime/kds-components@0.5.7(@vueuse/core@13.8.0(vue@3.5.24(typescript@5.9.3)))(vue@3.5.24(typescript@5.9.3))':
+  '@knime/kds-components@0.5.10(@vueuse/core@13.8.0(vue@3.5.24(typescript@5.9.3)))(vue@3.5.24(typescript@5.9.3))':
     dependencies:
-      '@knime/kds-styles': 0.5.7
+      '@knime/kds-styles': 0.5.10
       '@knime/utils': 1.8.0(consola@3.4.2)
       '@vueuse/core': 13.8.0(vue@3.5.24(typescript@5.9.3))
       consola: 3.4.2
       vue: 3.5.24(typescript@5.9.3)
 
-  '@knime/kds-styles@0.5.7':
+  '@knime/kds-styles@0.5.10':
     dependencies:
       '@fontsource/roboto': 5.2.8
       '@fontsource/roboto-condensed': 5.2.8

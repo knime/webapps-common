@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { type Ref, computed, ref } from "vue";
+import { computed, ref, useId } from "vue";
 
-import { Label } from "@knime/components";
+import { KdsLabel } from "@knime/kds-components";
 
 const props = defineProps<{
   label: string;
@@ -10,7 +10,7 @@ const props = defineProps<{
   large?: boolean;
 }>();
 const hover = ref(false);
-const labelForId: Ref<null | string> = ref("");
+const labelForId = useId();
 
 // An empty string will change the layout. In order to keep the layout we add
 // a space here that will lead to the correct height of the control header.
@@ -29,11 +29,10 @@ const title = computed(() => (props.label === "" ? " " : props.label));
     <div class="control-header">
       <div class="left">
         <slot name="before-label" />
-        <Label
-          :text="title"
-          class="label"
-          :large
-          @label-for-id="labelForId = $event"
+        <KdsLabel
+          :id="'label-' + labelForId"
+          :for="labelForId"
+          :label="title"
         />
         <slot name="icon" />
       </div>
@@ -42,10 +41,6 @@ const title = computed(() => (props.label === "" ? " " : props.label));
     <slot :label-for-id="labelForId" />
   </div>
 </template>
-
-<script setup lang="ts"></script>
-
-<style scoped></style>
 
 <style lang="postcss" scoped>
 .dialog-label {
