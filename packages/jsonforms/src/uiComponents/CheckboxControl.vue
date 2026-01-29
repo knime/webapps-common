@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
-import { KdsCheckbox, type KdsCheckboxProps } from "@knime/kds-components";
+import { KdsCheckbox, type KdsCheckboxValue } from "@knime/kds-components";
 
-import type { VueControlProps } from "../higherOrderComponents/control/types";
-
-type CheckboxValue = KdsCheckboxProps["modelValue"];
+import type { VueControlProps } from "../higherOrderComponents";
 
 defineProps<VueControlProps<boolean>>();
 const hover = ref(false);
@@ -24,7 +22,7 @@ const hover = ref(false);
         :model-value="control.data"
         :label="control.label"
         @update:model-value="
-          (value: CheckboxValue) => changeValue(value as boolean)
+          (value: KdsCheckboxValue) => changeValue(value as boolean)
         "
       />
       <slot name="icon" />
