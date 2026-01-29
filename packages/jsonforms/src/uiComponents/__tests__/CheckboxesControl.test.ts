@@ -9,13 +9,13 @@ import {
 } from "vitest";
 import type { VueWrapper } from "@vue/test-utils";
 
-import { Checkboxes } from "@knime/components";
+import { KdsCheckboxGroup } from "@knime/kds-components";
 
 import {
   type VueControlTestProps,
   getControlBase,
   mountJsonFormsControlLabelContent,
-} from "../../../testUtils/component";
+} from "../../../testUtils";
 import CheckboxesControl from "../CheckboxesControl.vue";
 
 describe("CheckboxesControl", () => {
@@ -75,22 +75,24 @@ describe("CheckboxesControl", () => {
   });
 
   it("renders", () => {
-    expect(wrapper.findComponent(Checkboxes).exists()).toBe(true);
+    expect(wrapper.findComponent(KdsCheckboxGroup).exists()).toBe(true);
   });
 
   it("sets labelForId", () => {
-    expect(wrapper.getComponent(Checkboxes).attributes().id).toBe(labelForId);
+    expect(wrapper.getComponent(KdsCheckboxGroup).attributes().id).toBe(
+      labelForId,
+    );
   });
 
   it("calls changeValue when checkboxes are changed", async () => {
     await wrapper
-      .findComponent(Checkboxes)
+      .findComponent(KdsCheckboxGroup)
       .vm.$emit("update:modelValue", ["ADDED", "MODIFIED"]);
     expect(changeValue).toHaveBeenCalledWith(["ADDED", "MODIFIED"]);
   });
 
   it("sets correct initial value", () => {
-    expect(wrapper.findComponent(Checkboxes).vm.modelValue).toStrictEqual(
+    expect(wrapper.findComponent(KdsCheckboxGroup).vm.modelValue).toStrictEqual(
       props.control.data,
     );
   });
@@ -108,7 +110,7 @@ describe("CheckboxesControl", () => {
       },
     );
     expect(
-      wrapper.findComponent(Checkboxes).props().possibleValues,
+      wrapper.findComponent(KdsCheckboxGroup).props().possibleValues,
     ).toStrictEqual([
       { id: "PVal 1", text: "PVal 1" },
       { id: "PVal 2", text: "PVal 2" },
@@ -127,7 +129,7 @@ describe("CheckboxesControl", () => {
       },
     );
     expect(
-      wrapper.findComponent(Checkboxes).props().possibleValues,
+      wrapper.findComponent(KdsCheckboxGroup).props().possibleValues,
     ).toStrictEqual([
       { id: "ADDED", text: "Added" },
       { id: "UPDATED", text: "Modified" },
