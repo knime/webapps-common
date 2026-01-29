@@ -3,7 +3,7 @@ import { type Ref, computed, onMounted, ref, toRef } from "vue";
 
 import { KdsCheckboxGroup } from "@knime/kds-components";
 
-import type { VueControlPropsForLabelContent } from "../higherOrderComponents/control/withLabel";
+import type { VueControlPropsForLabelContent } from "../higherOrderComponents";
 import type { IdAndText } from "../types/ChoicesUiSchema";
 import { optionsMapper } from "../utils";
 
