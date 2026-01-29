@@ -6,8 +6,8 @@ export const DEFAULT_ANY_UNKNOWN_VALUES_ID = "<any unknown new column>";
 import { computed, onMounted, ref, watch } from "vue";
 import { indexOf } from "lodash-es"; // eslint-disable-line depend/ban-dependencies
 
-import { Button, SortList } from "@knime/components";
-import { KdsDataType } from "@knime/kds-components";
+import { SortList } from "@knime/components";
+import { KdsButton, KdsDataType } from "@knime/kds-components";
 
 import LabeledControl from "../higherOrderComponents/control/LabeledControl.vue";
 import ErrorMessages from "../higherOrderComponents/control/errorMessage/ErrorMessages.vue";
@@ -19,27 +19,29 @@ import useProvidedState, {
 
 type SortListControlOptions = {
   possibleValues?: { id: string; text: string; special?: true }[];
+  unknownElementId?: string;
+  unknownElementLabel?: string;
+  resetSortButtonLabel?: string;
 };
 
 type SortListControlUiSchema =
   UiSchemaWithProvidedOptions<SortListControlOptions>;
 
-const props = withDefaults(
-  defineProps<
-    VueControlProps<string[]> & {
-      anyUnknownValuesId?: string;
-      anyUnknownValuesText?: string;
-    }
-  >(),
-  {
-    anyUnknownValuesId: DEFAULT_ANY_UNKNOWN_VALUES_ID,
-    anyUnknownValuesText: "Any unknown column",
-  },
-);
+const props = defineProps<VueControlProps<string[]>>();
 
 const data = computed(() => props.control.data);
 const uischema = computed(
   () => props.control.uischema as SortListControlUiSchema,
+);
+const anyUnknownValuesId = computed(
+  () =>
+    uischema.value.options?.unknownElementId ?? DEFAULT_ANY_UNKNOWN_VALUES_ID,
+);
+const anyUnknownValuesText = computed(
+  () => uischema.value.options?.unknownElementLabel ?? "Any unknown column",
+);
+const resetSortButtonLabel = computed(
+  () => uischema.value.options?.resetSortButtonLabel ?? "Reset all",
 );
 
 const possibleValues = useProvidedState(
@@ -50,8 +52,8 @@ const possibleValues = useProvidedState(
 
 const possibleValuesWithUnknownValues = computed(() =>
   possibleValues.value.concat({
-    id: props.anyUnknownValuesId,
-    text: props.anyUnknownValuesText,
+    id: anyUnknownValuesId.value,
+    text: anyUnknownValuesText.value,
     special: true,
   }),
 );
@@ -64,10 +66,10 @@ const addUnknownValuesToData = (currentPossibleValues: { id: string }[]) => {
     resetAll();
     return;
   }
-  const unknownValuesIndex = indexOf(data.value, props.anyUnknownValuesId);
+  const unknownValuesIndex = indexOf(data.value, anyUnknownValuesId.value);
   if (unknownValuesIndex === -1) {
     throw new Error(
-      `SortList data have to contain the value "${props.anyUnknownValuesId}"`,
+      `SortList data have to contain the value "${anyUnknownValuesId.value}"`,
     );
   }
   const before = data.value.slice(0, unknownValuesIndex + 1);
@@ -106,10 +108,25 @@ const controlElement = ref<typeof SortList | null>(null);
 <template>
   <div :class="['flex', 'space-between']">
     <div class="flex">
-      <Button with-border compact @click="sortAToZ">A - Z</Button>
-      <Button with-border compact @click="sortZToA">Z - A</Button>
+      <KdsButton
+        variant="outlined"
+        size="small"
+        label="A - Z"
+        @click="sortAToZ"
+      />
+      <KdsButton
+        variant="outlined"
+        size="small"
+        label="Z - A"
+        @click="sortZToA"
+      />
     </div>
-    <Button with-border compact @click="resetAll">Reset all</Button>
+    <KdsButton
+      variant="outlined"
+      size="small"
+      :label="resetSortButtonLabel"
+      @click="resetAll"
+    />
   </div>
   <LabeledControl
     :label="control.label"

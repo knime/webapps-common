@@ -220,6 +220,43 @@ describe("SortListControl", () => {
     });
   });
 
+  describe("custom uischema options", () => {
+    it("uses custom unknownElementId and unknownElementLabel", async () => {
+      const customId = "my-custom-unknown-id";
+      props.control.data = ["test_1", customId, "test_2"];
+      props.control.uischema.options!.unknownElementId = customId;
+      props.control.uischema.options!.unknownElementLabel =
+        "Custom unknown label";
+      const { wrapper } = mountJsonFormsControl(SortListControl, { props });
+      await flushPromises();
+      const sortListProps = wrapper.findComponent(SortList).props();
+      expect(sortListProps.possibleValues).toStrictEqual([
+        ...possibleValues,
+        {
+          id: customId,
+          text: "Custom unknown label",
+          special: true,
+        },
+      ]);
+    });
+
+    it("uses custom resetSortButtonLabel", () => {
+      props.control.uischema.options!.resetSortButtonLabel = "Reset order";
+      const { wrapper } = mountJsonFormsControl(SortListControl, { props });
+      const resetButton = wrapper
+        .findAllComponents(Button)
+        .filter((button) => button.text() === "Reset order");
+      expect(resetButton.length).toBe(1);
+    });
+
+    it("uses default resetSortButtonLabel when not specified", () => {
+      const resetButton = wrapper
+        .findAllComponents(Button)
+        .filter((button) => button.text() === "Reset all");
+      expect(resetButton.length).toBe(1);
+    });
+  });
+
   describe("slot rendering if types are available", () => {
     beforeEach(async () => {
       props.control.data = [
