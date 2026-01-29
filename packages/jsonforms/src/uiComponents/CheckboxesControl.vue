@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type Ref, computed, onMounted, ref, toRef, watch } from "vue";
+import { type Ref, computed, onMounted, ref, toRef } from "vue";
 
 import { KdsCheckboxGroup } from "@knime/kds-components";
 
@@ -24,18 +24,8 @@ const options = computed(() => staticOptions.value ?? possibleValues.value);
 // KdsCheckboxGroup expects validation state per option via `option.error`.
 // Previously we had a single `:is-valid` prop for the full group; we emulate the same
 // behavior by marking all options as errored when the control is invalid.
-// We cache the result to avoid recreating objects when only unrelated reactive deps change.
-const optionsWithError: Ref<Array<IdAndText & { error: boolean }>> = ref([]);
-
-watch(
-  () => [options.value, props.isValid] as const,
-  ([newOptions, newIsValid]) => {
-    optionsWithError.value = (newOptions ?? []).map((option) => ({
-      ...option,
-      error: !newIsValid,
-    }));
-  },
-  { immediate: true },
+const optionsWithError = computed(() =>
+  (options.value ?? []).map((option) => ({ ...option, error: !props.isValid })),
 );
 
 onMounted(() => {
