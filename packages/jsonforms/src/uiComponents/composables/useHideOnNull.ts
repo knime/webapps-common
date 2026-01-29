@@ -45,6 +45,8 @@ export default ({
   );
   const showControl = computed(() => !(hideOnNull.value && isNull.value));
 
+  const controlDescription = unref(control).description;
+
   /**
    * In case the checkbox is checked and the control exposes a focus method, we focus it.
    */
@@ -70,6 +72,7 @@ export default ({
       disabled: unref(disabled),
       class: "checkbox-hide-on-null",
       label: undefined,
+      title: `Show ${controlDescription} field`,
     })),
   };
 };
