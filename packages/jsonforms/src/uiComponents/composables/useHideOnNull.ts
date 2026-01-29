@@ -1,6 +1,6 @@
 import { type Ref, computed, nextTick, unref, watch } from "vue";
 
-import type { KdsCheckboxProps } from "@knime/kds-components";
+import type { KdsCheckboxValue } from "@knime/kds-components";
 
 import { type Control } from "../../types/Control";
 
@@ -14,8 +14,6 @@ type UseHideOnNullOptions = {
 };
 
 type UseHideOnNullUiSchema = UiSchemaWithProvidedOptions<UseHideOnNullOptions>;
-
-type CheckboxValue = KdsCheckboxProps["modelValue"];
 
 export default ({
   control,
@@ -67,7 +65,7 @@ export default ({
     showControl,
     checkboxProps: computed(() => ({
       modelValue: !isNull.value,
-      "onUpdate:modelValue": (value: CheckboxValue) =>
+      "onUpdate:modelValue": (value: KdsCheckboxValue) =>
         onUpdate(value as boolean),
       disabled: unref(disabled),
       class: "checkbox-hide-on-null",
