@@ -10,8 +10,8 @@ import {
 import type { VueWrapper } from "@vue/test-utils";
 import { flushPromises } from "@vue/test-utils";
 
-import { Button, SortList } from "@knime/components";
-import { KdsDataType } from "@knime/kds-components";
+import { SortList } from "@knime/components";
+import { KdsButton, KdsDataType } from "@knime/kds-components";
 
 import {
   type VueControlTestProps,
@@ -81,7 +81,7 @@ describe("SortListControl", () => {
   });
 
   it("renders", () => {
-    expect(wrapper.findAllComponents(Button).length).toBe(3);
+    expect(wrapper.findAllComponents(KdsButton).length).toBe(3);
     expect(wrapper.findComponent(LabeledControl).exists()).toBe(true);
     expect(wrapper.findComponent(SortList).exists()).toBe(true);
   });
@@ -184,7 +184,7 @@ describe("SortListControl", () => {
   describe("buttons", () => {
     const clickButtonWithText = (text: string) =>
       wrapper
-        .findAllComponents(Button)
+        .findAllComponents(KdsButton)
         .filter((button) => button.text() === text)[0]
         .trigger("click");
 
@@ -217,6 +217,43 @@ describe("SortListControl", () => {
         "unknown",
         DEFAULT_ANY_UNKNOWN_VALUES_ID,
       ]);
+    });
+  });
+
+  describe("custom uischema options", () => {
+    it("uses custom unknownElementId and unknownElementLabel", async () => {
+      const customId = "my-custom-unknown-id";
+      props.control.data = ["test_1", customId, "test_2"];
+      props.control.uischema.options!.unknownElementId = customId;
+      props.control.uischema.options!.unknownElementLabel =
+        "Custom unknown label";
+      const { wrapper } = mountJsonFormsControl(SortListControl, { props });
+      await flushPromises();
+      const sortListProps = wrapper.findComponent(SortList).props();
+      expect(sortListProps.possibleValues).toStrictEqual([
+        ...possibleValues,
+        {
+          id: customId,
+          text: "Custom unknown label",
+          special: true,
+        },
+      ]);
+    });
+
+    it("uses custom resetSortButtonLabel", () => {
+      props.control.uischema.options!.resetSortButtonLabel = "Reset order";
+      const { wrapper } = mountJsonFormsControl(SortListControl, { props });
+      const resetButton = wrapper
+        .findAllComponents(KdsButton)
+        .filter((button) => button.text() === "Reset order");
+      expect(resetButton.length).toBe(1);
+    });
+
+    it("uses default resetSortButtonLabel when not specified", () => {
+      const resetButton = wrapper
+        .findAllComponents(KdsButton)
+        .filter((button) => button.text() === "Reset all");
+      expect(resetButton.length).toBe(1);
     });
   });
 
