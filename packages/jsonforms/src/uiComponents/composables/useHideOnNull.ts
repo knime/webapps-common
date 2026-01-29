@@ -70,7 +70,7 @@ export default ({
       disabled: unref(disabled),
       class: "checkbox-hide-on-null",
       label: undefined,
-      title: `Show ${controlLabel} field`,
+      title: `Show ${controlLabel ?? "this"} field`,
     })),
   };
 };
