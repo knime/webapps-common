@@ -1,5 +1,5 @@
 <script setup lang="ts" generic="SettingValue">
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 
 import { Button } from "@knime/components";
 
@@ -7,19 +7,44 @@ import type { VueControlProps } from "../higherOrderComponents/control/types";
 import inject from "../utils/inject";
 
 import DynamicIcon, { type Icon } from "./DynamicIcon.vue";
+import useProvidedState, {
+  type UiSchemaWithProvidedOptions,
+} from "./composables/useProvidedState";
 
 const props = defineProps<VueControlProps<undefined>>();
 const disabled = computed(() => !props.control.enabled);
 
-const triggerId = computed(() => props.control.uischema.options!.triggerId);
+const providedOptions = props.control.uischema.providedOptions;
 
-const icon = computed<Icon | undefined>(
-  () => props.control.uischema.options!.icon,
+const running = ref(false);
+const uischema = computed(
+  () =>
+    props.control.uischema as UiSchemaWithProvidedOptions<{
+      triggerId: string;
+      icon?: Icon;
+      runFinished?: string;
+    }>,
 );
+
+const disableOnClick =
+  providedOptions && providedOptions.includes("runFinished");
+if (disableOnClick) {
+  const runFinishedUuid = useProvidedState(uischema, "runFinished", null);
+  watch(runFinishedUuid, () => {
+    running.value = false;
+  });
+}
+const disabledOrRunning = computed(() => disabled.value || running.value);
+const triggerId = computed(() => uischema.value.options!.triggerId);
+
+const icon = computed<Icon | undefined>(() => uischema.value.options!.icon);
 
 const trigger = inject("trigger");
 
 const onClick = () => {
+  if (disableOnClick) {
+    running.value = true;
+  }
   trigger({ id: triggerId.value });
 };
 const hover = ref(false);
@@ -34,7 +59,7 @@ const hover = ref(false);
     <Button
       compact
       with-border
-      :disabled="disabled"
+      :disabled="disabledOrRunning"
       class="button-input"
       @click="onClick"
     >

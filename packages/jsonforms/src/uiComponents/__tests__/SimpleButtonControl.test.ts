@@ -7,6 +7,7 @@ import {
   it,
   vi,
 } from "vitest";
+import { nextTick } from "vue";
 import type { VueWrapper } from "@vue/test-utils";
 
 import { Button } from "@knime/components";
@@ -86,5 +87,44 @@ describe("SimpleButtonControl", () => {
     expect(
       wrapper.findComponent(Button).findComponent(ReloadIcon).exists(),
     ).toBeTruthy();
+  });
+
+  it("disables button on click if 'runFinished' provided option is used", async () => {
+    props.control.uischema.providedOptions = ["runFinished"];
+    const { wrapper } = await mountJsonFormsControl(SimpleButtonControl, {
+      props,
+      provide: { trigger },
+    });
+
+    const button = wrapper.findComponent(Button);
+    expect(button.attributes("disabled")).toBeUndefined();
+
+    await button.trigger("click");
+    expect(button.attributes("disabled")).toBe("");
+  });
+
+  it("enables button again when 'runFinished' uuid is updated", async () => {
+    props.control.uischema.providedOptions = ["runFinished"];
+
+    let provideRunFinished: (value: string) => void;
+    const addStateProviderListener = vi.fn((_id, callback) => {
+      provideRunFinished = callback;
+    });
+    const { wrapper } = await mountJsonFormsControl(SimpleButtonControl, {
+      props,
+      provide: { trigger, addStateProviderListener },
+    });
+
+    const button = wrapper.findComponent(Button);
+    expect(button.attributes("disabled")).toBeUndefined();
+
+    await button.trigger("click");
+    expect(button.attributes("disabled")).toBe("");
+
+    // Simulate update of runFinished uuid via state provider
+    provideRunFinished!("new-uuid");
+    await nextTick();
+
+    expect(button.attributes("disabled")).toBeUndefined();
   });
 });
