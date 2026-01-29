@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.18.3
+
+### Patch Changes
+
+- fe16e0d: KDS-471: Use the KdsLabel for all controls
+
 ## 1.18.2
 
 ### Patch Changes
