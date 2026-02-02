@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.18.4
+
+### Patch Changes
+
+- f6e13fb: Add wait for finished run uuid to SimpleButtonControl. Later we will replace this by using a ProgressButton component.
+
 ## 1.18.3
 
 ### Patch Changes
