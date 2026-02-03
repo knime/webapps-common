@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-import { Dropdown } from "@knime/components";
+import { KdsDropdown } from "@knime/kds-components";
 
 import type { VueControlPropsForLabelContent } from "../higherOrderComponents";
 import { optionsMapper } from "../utils";
@@ -18,12 +18,11 @@ const modelValue = computed<string>({
 
 <template>
   <!-- eslint-disable vue/attribute-hyphenation typescript complains with ':aria-label' instead of ':ariaLabel'-->
-  <Dropdown
+  <KdsDropdown
     :id="labelForId"
     v-model="modelValue"
     :possible-values
     :ariaLabel="control.label"
     :disabled="disabled"
-    compact
   />
 </template>
