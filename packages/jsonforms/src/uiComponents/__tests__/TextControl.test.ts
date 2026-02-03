@@ -10,13 +10,13 @@ import {
 import type { VueWrapper } from "@vue/test-utils";
 import { flushPromises } from "@vue/test-utils";
 
-import { InputField } from "@knime/components";
+import { KdsTextInput } from "@knime/kds-components";
 
 import {
   type VueControlTestProps,
   getControlBase,
   mountJsonFormsControlLabelContent,
-} from "../../../testUtils/component";
+} from "../../../testUtils";
 import TextControl from "../TextControl.vue";
 
 describe("TextControl", () => {
@@ -63,23 +63,23 @@ describe("TextControl", () => {
   });
 
   it("renders", () => {
-    expect(wrapper.findComponent(InputField).exists()).toBe(true);
+    expect(wrapper.findComponent(KdsTextInput).exists()).toBe(true);
   });
 
   it("sets labelForId", () => {
-    expect(wrapper.getComponent(InputField).props().id).toBe(labelForId);
+    expect(wrapper.getComponent(KdsTextInput).props().id).toBe(labelForId);
   });
 
   it("calls handleChange when text input is changed", () => {
     const changedTextInput = "Shaken not stirred";
     wrapper
-      .findComponent(InputField)
+      .findComponent(KdsTextInput)
       .vm.$emit("update:modelValue", changedTextInput);
     expect(changeValue).toHaveBeenCalledWith(changedTextInput);
   });
 
   it("sets correct initial value", () => {
-    expect(wrapper.findComponent(InputField).vm.modelValue).toBe(
+    expect(wrapper.findComponent(KdsTextInput).vm.modelValue).toBe(
       props.control.data,
     );
   });
@@ -89,7 +89,9 @@ describe("TextControl", () => {
     const { wrapper } = mountJsonFormsControlLabelContent(TextControl, {
       props,
     });
-    expect(wrapper.findComponent(InputField).props("placeholder")).toBe("Bond");
+    expect(wrapper.findComponent(KdsTextInput).props("placeholder")).toBe(
+      "Bond",
+    );
   });
 
   it("sets correct placeholder from provider", async () => {
@@ -106,7 +108,9 @@ describe("TextControl", () => {
     });
     providePlaceholder!("Bond");
     await flushPromises();
-    expect(wrapper.findComponent(InputField).props("placeholder")).toBe("Bond");
+    expect(wrapper.findComponent(KdsTextInput).props("placeholder")).toBe(
+      "Bond",
+    );
   });
 
   it("validates pattern if given", () => {

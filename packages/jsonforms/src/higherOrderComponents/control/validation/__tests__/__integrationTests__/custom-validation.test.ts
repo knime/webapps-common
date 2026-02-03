@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { nextTick } from "vue";
 import { VueWrapper, mount } from "@vue/test-utils";
 
-import { InputField } from "@knime/components";
+import { KdsTextInput } from "@knime/kds-components";
 
 import JsonFormsDialog from "../../../../../JsonFormsDialog.vue";
 import { controls, layouts, toRenderers } from "../../../../../renderers";
@@ -91,7 +91,7 @@ describe("custom validation", () => {
     await nextTick();
     await nextTick();
 
-    const inputField = wrapper.findComponent(InputField);
+    const inputField = wrapper.findComponent(KdsTextInput);
     inputField.vm.$emit("update:modelValue", "invalid");
     vi.runAllTimers();
     await nextTick();
@@ -111,7 +111,7 @@ describe("custom validation", () => {
     await nextTick();
     await nextTick();
 
-    const inputField = wrapper.findComponent(InputField);
+    const inputField = wrapper.findComponent(KdsTextInput);
     inputField.vm.$emit("update:modelValue", "invalid");
     vi.runAllTimers();
     await nextTick();
@@ -137,7 +137,7 @@ describe("custom validation", () => {
     await nextTick();
     await nextTick();
 
-    const inputField = wrapper.findComponent(InputField);
+    const inputField = wrapper.findComponent(KdsTextInput);
     inputField.vm.$emit("update:modelValue", "invalid");
     vi.runAllTimers();
     await nextTick();
@@ -164,7 +164,7 @@ describe("custom validation", () => {
     await nextTick();
     await nextTick();
 
-    const inputField = wrapper.findComponent(InputField);
+    const inputField = wrapper.findComponent(KdsTextInput);
     inputField.vm.$emit("update:modelValue", "invalid");
     vi.runAllTimers();
     await nextTick();

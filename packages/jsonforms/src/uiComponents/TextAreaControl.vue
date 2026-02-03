@@ -1,32 +1,18 @@
 <script setup lang="ts">
-import { TextArea } from "@knime/components";
+import { KdsTextarea } from "@knime/kds-components";
 
-import type { VueControlPropsForLabelContent } from "../higherOrderComponents/control/withLabel";
+import type { VueControlPropsForLabelContent } from "../higherOrderComponents";
 
 defineProps<VueControlPropsForLabelContent<string>>();
 </script>
 
 <template>
-  <TextArea
+  <KdsTextarea
     :id="labelForId"
-    class="text-area-input"
     :model-value="control.data"
     :disabled="disabled"
     :rows="control.uischema.options?.rows"
-    :is-valid
+    :error="!isValid"
     @update:model-value="changeValue"
   />
 </template>
-
-<style lang="postcss" scoped>
-.text-area-input {
-  max-width: 100%;
-
-  & :deep(textarea) {
-    width: 100%;
-    min-height: 40px;
-    padding: 10px;
-    resize: vertical;
-  }
-}
-</style>

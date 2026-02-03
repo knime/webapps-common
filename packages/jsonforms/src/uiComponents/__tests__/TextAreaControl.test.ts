@@ -9,13 +9,13 @@ import {
 } from "vitest";
 import type { VueWrapper } from "@vue/test-utils";
 
-import { TextArea } from "@knime/components";
+import { KdsTextarea } from "@knime/kds-components";
 
 import {
   type VueControlTestProps,
   getControlBase,
   mountJsonFormsControlLabelContent,
-} from "../../../testUtils/component";
+} from "../../../testUtils";
 import TextAreaControl from "../TextAreaControl.vue";
 
 describe("TextAreaControl", () => {
@@ -66,22 +66,22 @@ describe("TextAreaControl", () => {
   });
 
   it("renders", () => {
-    expect(wrapper.findComponent(TextArea).exists()).toBe(true);
+    expect(wrapper.findComponent(KdsTextarea).exists()).toBe(true);
   });
 
   it("sets labelForId", () => {
-    expect(wrapper.getComponent(TextArea).props().id).toBe(labelForId);
+    expect(wrapper.getComponent(KdsTextarea).props().id).toBe(labelForId);
   });
 
   it("calls changeValue when text area is changed", () => {
     wrapper
-      .findComponent(TextArea)
+      .findComponent(KdsTextarea)
       .vm.$emit("update:modelValue", changedTextInput);
     expect(changeValue).toHaveBeenCalledWith(changedTextInput);
   });
 
   it("sets correct initial value", () => {
-    expect(wrapper.findComponent(TextArea).vm.modelValue).toBe(
+    expect(wrapper.findComponent(KdsTextarea).vm.modelValue).toBe(
       defaultProps.control.data,
     );
   });

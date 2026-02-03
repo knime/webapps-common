@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, useTemplateRef } from "vue";
 
-import { InputField } from "@knime/components";
+import { KdsTextInput } from "@knime/kds-components";
 
 import type {
   VueControlExposed,
   VueControlPropsForLabelContent,
-} from "../higherOrderComponents/control/withLabel";
+} from "../higherOrderComponents";
 
 import { useBuiltinValidation } from "./composables/useBuiltinValidations";
 import useProvidedState, {
@@ -48,21 +48,21 @@ useBuiltinValidation<ValidationParameters, string | null>(
 const uischema = computed(() => props.control.uischema as TextControlUiSchema);
 const placeholder = useProvidedState(uischema, "placeholder", "");
 
-const inputField = ref<InstanceType<typeof InputField> | null>(null);
+const inputField = useTemplateRef("inputField");
+
 defineExpose<VueControlExposed>({
   focus: () => inputField.value?.focus(),
 });
 </script>
 
 <template>
-  <InputField
+  <KdsTextInput
     :id="labelForId"
     ref="inputField"
     :placeholder="placeholder"
     :model-value="control.data"
     :disabled="disabled"
-    :is-valid
-    compact
+    :error="!isValid"
     @update:model-value="changeValue"
   />
 </template>

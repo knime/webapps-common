@@ -11,13 +11,13 @@ import { unref } from "vue";
 import type { VueWrapper } from "@vue/test-utils";
 import { flushPromises } from "@vue/test-utils";
 
-import { NumberInput } from "@knime/components";
+import { KdsNumberInput } from "@knime/kds-components";
 
 import {
   type VueControlTestProps,
   getControlBase,
   mountJsonFormsControlLabelContent,
-} from "../../../testUtils/component";
+} from "../../../testUtils";
 import NumberControl from "../NumberControl.vue";
 
 describe("NumberControl", () => {
@@ -65,28 +65,28 @@ describe("NumberControl", () => {
   });
 
   it("renders", () => {
-    expect(wrapper.findComponent(NumberInput).exists()).toBe(true);
+    expect(wrapper.findComponent(KdsNumberInput).exists()).toBe(true);
   });
 
   it("sets labelForId", () => {
-    expect(wrapper.getComponent(NumberInput).props().id).toBe(labelForId);
+    expect(wrapper.getComponent(KdsNumberInput).props().id).toBe(labelForId);
   });
 
   it("sets initial value", () => {
-    expect(wrapper.getComponent(NumberInput).props().modelValue).toBe(0.5);
-    expect(wrapper.getComponent(NumberInput).props().disabled).toBe(false);
-    expect(wrapper.getComponent(NumberInput).props().type).toBe("double");
+    expect(wrapper.getComponent(KdsNumberInput).props().modelValue).toBe(0.5);
+    expect(wrapper.getComponent(KdsNumberInput).props().disabled).toBe(false);
+    expect(wrapper.getComponent(KdsNumberInput).props().step).toBe(0.1);
   });
 
   it("calls changeValue when value is changed", () => {
-    wrapper.getComponent(NumberInput).vm.$emit("update:modelValue", 42.0);
+    wrapper.getComponent(KdsNumberInput).vm.$emit("update:modelValue", 42.0);
     expect(changeValue).toHaveBeenCalledWith(42.0);
   });
 
   it.each([
     ["inclusive", false, 100],
     ["exclusive", true, 100.1],
-  ])("rounds to %s minimum on focusout", async (_, exclusive, result) => {
+  ])("calculates minimum to %s", (_, exclusive, result) => {
     const minimum = 100;
     props.control.uischema.options!.validation = {
       min: {
@@ -95,20 +95,16 @@ describe("NumberControl", () => {
       },
     };
     props.control.data = minimum - 1;
-    const { wrapper, changeValue } = mountJsonFormsControlLabelContent(
-      NumberControl,
-      {
-        props,
-      },
-    );
-    await wrapper.findComponent(NumberControl).trigger("focusout");
-    expect(changeValue).toHaveBeenCalledWith(result);
+    const { wrapper } = mountJsonFormsControlLabelContent(NumberControl, {
+      props,
+    });
+    expect(wrapper.getComponent(KdsNumberInput).props().min).toBe(result);
   });
 
   it.each([
     ["inclusive", false, 100],
     ["exclusive", true, 99.9],
-  ])("rounds to %s maximum on focusout", async (_, exclusive, result) => {
+  ])("calculates maximum to %s", (_, exclusive, result) => {
     const maximum = 100;
     props.control.uischema.options!.validation = {
       max: {
@@ -117,26 +113,10 @@ describe("NumberControl", () => {
       },
     };
     props.control.data = maximum + 1;
-    const { wrapper, changeValue } = mountJsonFormsControlLabelContent(
-      NumberControl,
-      {
-        props,
-      },
-    );
-    await wrapper.findComponent(NumberControl).trigger("focusout");
-    expect(changeValue).toHaveBeenCalledWith(result);
-  });
-
-  it("sets 0 if value is not a number on focusout", async () => {
-    props.control.data = NaN;
-    const { wrapper, changeValue } = mountJsonFormsControlLabelContent(
-      NumberControl,
-      {
-        props,
-      },
-    );
-    await wrapper.findComponent(NumberControl).trigger("focusout");
-    expect(changeValue).toHaveBeenCalledWith(0);
+    const { wrapper } = mountJsonFormsControlLabelContent(NumberControl, {
+      props,
+    });
+    expect(wrapper.getComponent(KdsNumberInput).props().max).toBe(result);
   });
 
   it("sets the minimum via state provider", async () => {
@@ -163,7 +143,7 @@ describe("NumberControl", () => {
       errorMessage,
     });
     await flushPromises();
-    expect(wrapper.findComponent(NumberInput).props().min).toBe(42);
+    expect(wrapper.findComponent(KdsNumberInput).props().min).toBe(42);
     expect(unref(registeredValidation)(0).errors).toStrictEqual([errorMessage]);
   });
 
@@ -191,7 +171,7 @@ describe("NumberControl", () => {
       errorMessage,
     });
     await flushPromises();
-    expect(wrapper.findComponent(NumberInput).props().max).toBe(42);
+    expect(wrapper.findComponent(KdsNumberInput).props().max).toBe(42);
     expect(unref(registeredValidation)(100).errors).toStrictEqual([
       errorMessage,
     ]);
