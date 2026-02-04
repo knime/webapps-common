@@ -76,10 +76,6 @@ const title = computed(() => (props.label === "" ? " " : props.label));
        */
       & :deep(.checkbox-hide-on-null) {
         margin-right: var(--kds-spacing-container-0-37x);
-
-        .subtext-wrapper {
-          display: none;
-        }
       }
     }
   }
