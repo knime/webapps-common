@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.18.5
+
+### Patch Changes
+
+- 3fd1eca: Emit initialized event when suspense is resolved in JsonFormsDialog
+
 ## 1.18.4
 
 ### Patch Changes
