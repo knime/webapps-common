@@ -3,7 +3,7 @@ import { computed } from "vue";
 
 import { KdsNumberInput } from "@knime/kds-components";
 
-import type { VueControlPropsForLabelContent } from "../higherOrderComponents/control/withLabel";
+import type { VueControlPropsForLabelContent } from "../higherOrderComponents";
 
 import { useBuiltinValidation } from "./composables/useBuiltinValidations";
 
@@ -53,8 +53,21 @@ const validationParams = useBuiltinValidation(
   props,
 );
 
-const minParams = computed(() => validationParams.value.min);
-const maxParams = computed(() => validationParams.value.max);
+const min = computed<number | undefined>(() => {
+  const params = computed(() => validationParams.value.min).value;
+  if (!params || params.min === null) {
+    return undefined;
+  }
+  return params.min + (params.isExclusive ? stepSize.value : 0);
+});
+
+const max = computed<number | undefined>(() => {
+  const params = computed(() => validationParams.value.max).value;
+  if (!params || params.max === null) {
+    return undefined;
+  }
+  return params.max - (params.isExclusive ? stepSize.value : 0);
+});
 </script>
 
 <template>
@@ -63,8 +76,8 @@ const maxParams = computed(() => validationParams.value.max);
     class="number-input"
     :disabled="disabled"
     :model-value="control.data"
-    :min="minParams?.min + (minParams.isExclusive ? stepSize : 0)"
-    :max="maxParams?.max - (maxParams.isExclusive ? stepSize : 0)"
+    :min="min"
+    :max="max"
     :step="stepSize"
     :error="!isValid"
     @update:model-value="changeValue"
