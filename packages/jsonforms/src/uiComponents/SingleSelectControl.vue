@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { computed, toRef } from "vue";
 
+import { KdsDropdown } from "@knime/kds-components";
+
 import type { VueControlPropsForLabelContent } from "../higherOrderComponents";
 import type { IdAndText, TypedIdAndText } from "../types/ChoicesUiSchema";
 
 import { usePossibleValues } from "./composables/usePossibleValues";
-import LoadingDropdown from "./loading/LoadingDropdown.vue";
 
 type SingleSelectValue =
   | { specialChoice: string }
@@ -132,13 +133,11 @@ const modelValue = computed<string>({
 </script>
 
 <template>
-  <!-- eslint-disable vue/attribute-hyphenation typescript complains with ':aria-label' instead of ':ariaLabel'-->
-  <LoadingDropdown
+  <KdsDropdown
     :id="labelForId"
     v-model="modelValue"
     :possible-values="allChoices"
-    :ariaLabel="control.label"
+    :aria-label="control.label"
     :disabled="disabled"
-    compact
   />
 </template>
