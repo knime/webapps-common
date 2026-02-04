@@ -60,6 +60,7 @@ const emit = defineEmits<{
     identifier: StateProviderLocation & { [key: string]: unknown },
     callback: (value: unknown) => void,
   ];
+  initialized: [];
 }>();
 
 const exposedMethodSource = "EXPOSED_METHOD";
@@ -122,6 +123,17 @@ let resolveJsonFormsIsPresent: () => void;
 const jsonFormsIsPresentPromise = new Promise<void>((resolve) => {
   resolveJsonFormsIsPresent = resolve;
 });
+
+const setIsInitialized = watch(
+  () => jsonFormsIsPresent.value,
+  (isPresent) => {
+    if (isPresent) {
+      emit("initialized");
+      setIsInitialized(); // unregister watcher
+    }
+  },
+  { immediate: true },
+);
 
 watch(
   () => jsonFormsIsPresent.value,
