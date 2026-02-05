@@ -75,8 +75,7 @@ const title = computed(() => (props.label === "" ? " " : props.label));
        * see src/uiComponents/composables/useHideOnNull.ts
        */
       & :deep(.checkbox-hide-on-null) {
-        margin-top: 2px;
-        margin-right: var(--kds-spacing-container-0-5x);
+        margin-right: var(--kds-spacing-container-0-37x);
       }
     }
   }
