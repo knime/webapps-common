@@ -44,7 +44,22 @@ type ClearNotificationEvent = {
   payload: { id: string } | { deduplicationKey: string };
 };
 
-export type GenericEvent = ShowNotificationEvent | ClearNotificationEvent;
+type HostNavigationRequestEvent = {
+  kind: "hostNavigationRequest";
+  payload:
+    | { intent: "reload" }
+    | {
+        intent: "go-to";
+        destination: "cloud-home";
+        openIn: "_blank" | "_parent";
+      }
+    | { intent: "navigate"; href: string; openIn: "_blank" | "_parent" };
+};
+
+export type GenericEvent =
+  | ShowNotificationEvent
+  | ClearNotificationEvent
+  | HostNavigationRequestEvent;
 
 export type GenericEventByKind<K extends GenericEvent["kind"]> = Extract<
   GenericEvent,
