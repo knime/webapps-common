@@ -16,4 +16,7 @@ export const messageValidators = {
     type: typeof MESSAGES.GENERIC_EVENT;
     payload: GenericEventByKind<K>;
   }> => event.data?.type === MESSAGES.GENERIC_EVENT,
+
+  isAnalyticsEvent: (event: MessageEvent) =>
+    MESSAGES.ANALYTICS_EVENT === event.data?.type,
 };

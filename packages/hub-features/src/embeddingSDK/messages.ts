@@ -33,4 +33,8 @@ export const MESSAGES = {
    * application.
    */
   GENERIC_EVENT: "KNIME_UI__GENERIC_EVENT",
+  /**
+   * Event to send tracking analytics.
+   */
+  ANALYTICS_EVENT: "KNIME_UI__ANALYTICS_EVENT",
 } as const;

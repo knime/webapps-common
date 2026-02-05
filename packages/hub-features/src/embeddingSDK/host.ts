@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import { MESSAGES } from "./messages";
 import {
+  type AnalyticsEvent,
   type EmbeddingContext,
   type GenericEvent,
   type GenericEventHandlers,
@@ -123,6 +124,29 @@ export const setupGenericEventHandlers = <K extends GenericEvent["kind"]>(
 
   window.addEventListener("message", onMessage);
   logger().info("Attaching listener for GenericEvents");
+
+  return () => window.removeEventListener("message", onMessage);
+};
+
+/**
+ * Sets up a listener to receive analytic tracking events
+ */
+export const listenToAnalyticEvents = (callbacks: {
+  onReceived: (event: AnalyticsEvent) => void;
+}) => {
+  const onMessage = (event: MessageEvent) => {
+    if (!messageValidators.isAnalyticsEvent(event)) {
+      return;
+    }
+
+    logger().info("Received analytics event", {
+      event: event.data,
+    });
+    callbacks.onReceived(event.data.payload);
+  };
+
+  window.addEventListener("message", onMessage);
+  logger().info("Attaching analytics event listener");
 
   return () => window.removeEventListener("message", onMessage);
 };

@@ -8,7 +8,9 @@ export type EmbeddingContext = {
   wsConnectionUri: string;
   /**
    * @deprecated URI of the WS used by the embedded application.
-   * Last used in AP 5.8.0
+   * Last used in AP 5.8.0. From 5.9.0 and onwards `wsConnectionUri` is preferred.
+   * Although, the AP still references the url for compatibility with older embedders
+   * that don't use the new property `wsConnectionUri`
    */
   url?: string;
   /**
@@ -58,4 +60,10 @@ export type GenericEventHandlers = {
 export type UserActivityInfo = {
   idle: boolean;
   lastActive: string;
+};
+
+export type AnalyticsEvent = {
+  category: string;
+  name: string;
+  data: unknown;
 };
