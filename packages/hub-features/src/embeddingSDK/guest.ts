@@ -53,6 +53,8 @@ const defaultvalidator: EmbeddingContextValidator = () => ({
   error: null,
 });
 
+const PARENT_ORIGIN = "*";
+
 /**
  * Wait for host application to send a message containing the embedding context
  */
@@ -98,19 +100,25 @@ export const waitForContext = (
 
   // send message to parent after postmessage listener has been set-up
   logger().info("Awaiting to receive embedding context");
-  window.parent.postMessage({ type: MESSAGES.AWAITING_EMBEDDING_CONTEXT }, "*");
+  window.parent.postMessage(
+    { type: MESSAGES.AWAITING_EMBEDDING_CONTEXT },
+    PARENT_ORIGIN,
+  );
 
   return promise;
 };
 
 export const sendEmbeddingFailureMessage = (error: unknown) => {
-  window.parent.postMessage({ type: MESSAGES.EMBEDDING_FAILED, error }, "*");
+  window.parent.postMessage(
+    { type: MESSAGES.EMBEDDING_FAILED, error },
+    PARENT_ORIGIN,
+  );
 };
 
 export const dispatchGenericEventToHost = (event: GenericEvent) => {
   window.parent.postMessage(
     { type: MESSAGES.GENERIC_EVENT, payload: event },
-    "*",
+    PARENT_ORIGIN,
   );
 };
 
@@ -119,6 +127,6 @@ export const notifyActivityChange = (userActivityInfo: UserActivityInfo) => {
 
   window.parent.postMessage(
     { type: MESSAGES.USER_ACTIVITY, payload: userActivityInfo },
-    "*",
+    PARENT_ORIGIN,
   );
 };

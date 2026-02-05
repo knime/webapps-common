@@ -8,7 +8,9 @@ export type EmbeddingContext = {
   wsConnectionUri: string;
   /**
    * @deprecated URI of the WS used by the embedded application.
-   * Last used in AP 5.8.0
+   * Last used in AP 5.8.0. From 5.9.0 and onwards `wsConnectionUri` is preferred.
+   * Although, the AP still references the url for compatibility with older embedders
+   * that don't use the new property `wsConnectionUri`
    */
   url?: string;
   /**
@@ -56,10 +58,20 @@ type HostNavigationRequestEvent = {
     | { intent: "navigate"; href: string; openIn: "_blank" | "_parent" };
 };
 
+type AnalyticsEvent = {
+  kind: "analytics";
+  payload: {
+    category: string;
+    name: string;
+    data: unknown;
+  };
+};
+
 export type GenericEvent =
   | ShowNotificationEvent
   | ClearNotificationEvent
-  | HostNavigationRequestEvent;
+  | HostNavigationRequestEvent
+  | AnalyticsEvent;
 
 export type GenericEventByKind<K extends GenericEvent["kind"]> = Extract<
   GenericEvent,
