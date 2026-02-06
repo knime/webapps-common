@@ -1,5 +1,11 @@
 # @knime/hub-features
 
+## 1.17.0
+
+### Minor Changes
+
+- f1e988c: add `hostNavigationRequest` event to embedding SDK
+
 ## 1.16.9
 
 ### Patch Changes
