@@ -115,7 +115,7 @@ const twinlistSize = computed(
   />
 </template>
 
-<style lang="postcss" scoped>
+<style scoped>
 .twinlist :deep(.lists .multiselect-list-box [role="listbox"]) {
   font-size: 13px;
 }

@@ -10,7 +10,7 @@ container
   </div>
 </template>
 
-<style scoped lang="postcss">
+<style scoped>
 .flex-wrapper {
   display: flex;
   flex-direction: column;

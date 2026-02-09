@@ -86,7 +86,7 @@ const linkToolOptions = computed<typeof defaultLinkToolOptions>(() =>
   </RichTextEditor>
 </template>
 
-<style lang="postcss" scoped>
+<style scoped>
 .editor {
   height: 100%;
 

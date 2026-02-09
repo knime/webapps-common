@@ -33,7 +33,7 @@ const hover = ref(false);
   </div>
 </template>
 
-<style lang="postcss" scoped>
+<style scoped>
 .checkbox-input {
   /**
    * This is necessary to fixate the dialog popovers

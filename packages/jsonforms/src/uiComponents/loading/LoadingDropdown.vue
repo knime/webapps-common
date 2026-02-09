@@ -93,7 +93,7 @@ const possibleValues = computed(() => {
   </Dropdown>
 </template>
 
-<style lang="postcss" scoped>
+<style scoped>
 .data-type-entry.with-type {
   display: flex;
   gap: var(--space-4);
