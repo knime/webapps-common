@@ -112,8 +112,8 @@ describe("CheckboxesControl", () => {
     expect(
       wrapper.findComponent(KdsCheckboxGroup).props().possibleValues,
     ).toStrictEqual([
-      { id: "PVal 1", text: "PVal 1", error: true },
-      { id: "PVal 2", text: "PVal 2", error: true },
+      { id: "PVal 1", text: "PVal 1" },
+      { id: "PVal 2", text: "PVal 2" },
     ]);
   });
 
@@ -131,9 +131,9 @@ describe("CheckboxesControl", () => {
     expect(
       wrapper.findComponent(KdsCheckboxGroup).props().possibleValues,
     ).toStrictEqual([
-      { id: "ADDED", text: "Added", error: true },
-      { id: "UPDATED", text: "Modified", error: true },
-      { id: "REMOVED", text: "Deleted", error: true },
+      { id: "ADDED", text: "Added" },
+      { id: "UPDATED", text: "Modified" },
+      { id: "REMOVED", text: "Deleted" },
     ]);
   });
 
@@ -149,9 +149,9 @@ describe("CheckboxesControl", () => {
     expect(
       wrapper.findComponent(KdsCheckboxGroup).props().possibleValues,
     ).toStrictEqual([
-      { id: "ADDED", text: "Added", error: true },
-      { id: "UPDATED", text: "Modified", error: true },
-      { id: "REMOVED", text: "Deleted", error: true },
+      { id: "ADDED", text: "Added" },
+      { id: "UPDATED", text: "Modified" },
+      { id: "REMOVED", text: "Deleted" },
     ]);
 
     // Update isValid to true
@@ -161,9 +161,9 @@ describe("CheckboxesControl", () => {
     expect(
       wrapper.findComponent(KdsCheckboxGroup).props().possibleValues,
     ).toStrictEqual([
-      { id: "ADDED", text: "Added", error: false },
-      { id: "UPDATED", text: "Modified", error: false },
-      { id: "REMOVED", text: "Deleted", error: false },
+      { id: "ADDED", text: "Added" },
+      { id: "UPDATED", text: "Modified" },
+      { id: "REMOVED", text: "Deleted" },
     ]);
   });
 });

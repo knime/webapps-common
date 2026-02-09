@@ -60,6 +60,14 @@ export default ({
   const onUpdate = (checked: boolean) =>
     changeValue(checked ? defaultValue.value : null);
 
+  const title = computed(() => {
+    if (isNull.value) {
+      return `Show ${controlLabel ?? "this"} field`;
+    } else {
+      return `Hide ${controlLabel ?? "this"} field`;
+    }
+  });
+
   return {
     showCheckbox: hideOnNull,
     showControl,
@@ -70,7 +78,7 @@ export default ({
       disabled: unref(disabled),
       class: "checkbox-hide-on-null",
       label: undefined,
-      title: `Show ${controlLabel ?? "this"} field`,
+      title: title.value,
     })),
   };
 };
