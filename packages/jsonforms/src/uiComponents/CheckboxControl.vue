@@ -22,7 +22,7 @@ const hover = ref(false);
         :model-value="control.data"
         :label="control.label"
         @update:model-value="
-          (value: KdsCheckboxValue) => changeValue(value as boolean)
+          (value: KdsCheckboxValue) => changeValue(value === true)
         "
       />
       <slot name="icon" />
