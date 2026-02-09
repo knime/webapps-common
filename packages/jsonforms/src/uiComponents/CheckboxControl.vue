@@ -42,7 +42,7 @@ const hover = ref(false);
   display: flex;
   margin-bottom: -10px;
 
-  .checkbox-container {
+  & .checkbox-container {
     display: flex;
     flex: 1;
     min-width: 0;
