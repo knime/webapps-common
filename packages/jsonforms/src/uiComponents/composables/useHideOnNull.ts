@@ -66,7 +66,7 @@ export default ({
     checkboxProps: computed(() => ({
       modelValue: !isNull.value,
       "onUpdate:modelValue": (value: KdsCheckboxValue) =>
-        onUpdate(value as boolean),
+        onUpdate(value === true),
       disabled: unref(disabled),
       class: "checkbox-hide-on-null",
       label: undefined,
