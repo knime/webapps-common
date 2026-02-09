@@ -136,34 +136,4 @@ describe("CheckboxesControl", () => {
       { id: "REMOVED", text: "Deleted" },
     ]);
   });
-
-  it("updates error state when isValid changes", async () => {
-    const { wrapper } = await mountJsonFormsControlLabelContent(
-      CheckboxesControl,
-      {
-        props,
-      },
-    );
-
-    // Initially isValid is false, so error should be true
-    expect(
-      wrapper.findComponent(KdsCheckboxGroup).props().possibleValues,
-    ).toStrictEqual([
-      { id: "ADDED", text: "Added" },
-      { id: "UPDATED", text: "Modified" },
-      { id: "REMOVED", text: "Deleted" },
-    ]);
-
-    // Update isValid to true
-    await wrapper.setProps({ isValid: true });
-
-    // Now error should be false
-    expect(
-      wrapper.findComponent(KdsCheckboxGroup).props().possibleValues,
-    ).toStrictEqual([
-      { id: "ADDED", text: "Added" },
-      { id: "UPDATED", text: "Modified" },
-      { id: "REMOVED", text: "Deleted" },
-    ]);
-  });
 });
