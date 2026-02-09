@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { type Ref, computed, onMounted, ref, toRef } from "vue";
 
-import { Checkboxes } from "@knime/components";
+import { KdsCheckboxGroup } from "@knime/kds-components";
 
-import type { VueControlPropsForLabelContent } from "../higherOrderComponents/control/withLabel";
+import type { VueControlPropsForLabelContent } from "../higherOrderComponents";
 import type { IdAndText } from "../types/ChoicesUiSchema";
 import { optionsMapper } from "../utils";
 
@@ -29,7 +29,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <Checkboxes
+  <KdsCheckboxGroup
     v-if="options"
     :id="labelForId"
     class="checkboxes"
@@ -37,7 +37,7 @@ onMounted(() => {
     :alignment="alignment"
     :disabled="disabled"
     :model-value="control.data"
-    :is-valid
+    :error="!isValid"
     @update:model-value="changeValue"
   />
 </template>
