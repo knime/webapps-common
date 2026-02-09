@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.18.6
+
+### Patch Changes
+
+- d509953: KDS-626: Migrate to KdsCheckboxGroup
+
 ## 1.18.5
 
 ### Patch Changes
