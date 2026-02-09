@@ -44,6 +44,7 @@ onMounted(() => {
     :alignment="alignment"
     :disabled="disabled"
     :model-value="control.data"
+    :error="!isValid"
     @update:model-value="changeValue"
   />
 </template>
