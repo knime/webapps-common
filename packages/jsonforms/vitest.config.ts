@@ -41,6 +41,10 @@ const getReportDirectory = (mode: "integration" | "unit") => {
   }
 };
 
+const warningPrefixesToSuppress = ["[Vue warn]", "<Suspense>"];
+const suppressWarnings =
+  process.env.CI === "true" || process.env.SUPPRESS_WARNINGS === "true";
+
 export default defineConfig(({ mode }) => {
   const testMode = mode === "integration" ? "integration" : "unit";
 
@@ -88,6 +92,15 @@ export default defineConfig(({ mode }) => {
           },
         },
       ],
+      // Suppress noisy warnings in CI/pipeline environments
+      //   Automatically enabled when CI=true (set by most CI systems)
+      //   Can also be manually enabled with: SUPPRESS_WARNINGS=true pnpm run test:integration
+      onConsoleLog: (l) => {
+        return !(
+          suppressWarnings &&
+          warningPrefixesToSuppress.some((p) => l.startsWith(p))
+        );
+      },
     },
   };
 });
