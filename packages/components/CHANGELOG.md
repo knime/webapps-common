@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.45.4
+
+### Patch Changes
+
+- b72f811: FileExplorer - Only reset selection on outside click if something was selected.
+
 ## 1.45.3
 
 ### Patch Changes
