@@ -587,9 +587,17 @@ const handleEnterKey = (event: KeyboardEvent, item: FileExplorerItemType) => {
   openFileOrEnterFolder(item);
 };
 
-onClickOutside(table, () => resetSelection(focusedIndex.value), {
-  ignore: [...props.clickOutsideExceptions, "#file-explorer-context-menu"],
-});
+onClickOutside(
+  table,
+  () => {
+    if (focusedIndex.value >= 0) {
+      resetSelection(focusedIndex.value);
+    }
+  },
+  {
+    ignore: [...props.clickOutsideExceptions, "#file-explorer-context-menu"],
+  },
+);
 
 // Force update the virtual scroll position at the end of setup
 // needed for the initial set of virtual items to be correct
