@@ -1,5 +1,11 @@
 # @knime/hub-features
 
+## 1.18.1
+
+### Patch Changes
+
+- d9aeb5f: add property to embedding context to determine if analytics can be used
+
 ## 1.18.0
 
 ### Minor Changes
