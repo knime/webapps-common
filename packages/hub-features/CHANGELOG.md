@@ -1,5 +1,11 @@
 # @knime/hub-features
 
+## 1.18.0
+
+### Minor Changes
+
+- 22473f0: Add analytics generic event to embedding SDK
+
 ## 1.17.1
 
 ### Patch Changes
