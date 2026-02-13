@@ -34,6 +34,10 @@ export type EmbeddingContext = {
    * are being made on the page
    */
   userIdleTimeout?: number;
+  /**
+   * Whether the embedded application can send analytic and tracking events
+   */
+  enableAnalytics?: boolean;
 };
 
 type ShowNotificationEvent = {
