@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { computed, toRef } from "vue";
 
-import { InputField } from "@knime/components";
+import { KdsDropdown, KdsTextInput } from "@knime/kds-components";
 
-import type { VueControlPropsForLabelContent } from "../higherOrderComponents/control/withLabel";
+import type { VueControlPropsForLabelContent } from "../higherOrderComponents";
 
 import { usePossibleValues } from "./composables/usePossibleValues";
-import LoadingDropdown from "./loading/LoadingDropdown.vue";
 
 const props = defineProps<VueControlPropsForLabelContent<string | null>>();
 
@@ -24,26 +23,21 @@ const hasNoSuggestions = computed(
 </script>
 
 <template>
-  <InputField
+  <KdsTextInput
     v-if="hasNoSuggestions"
     :id="labelForId"
     :disabled="disabled"
     :model-value="control.data"
-    :is-valid
-    compact
+    :error="!isValid"
     @update:model-value="changeValue"
   />
-  <!-- eslint-disable vue/attribute-hyphenation typescript complains with ':aria-label' instead of ':ariaLabel'-->
-  <LoadingDropdown
+  <KdsDropdown
     v-else
-    :id="labelForId ?? ''"
-    :ariaLabel="control.label"
+    :id="labelForId"
     :disabled="disabled"
-    :model-value="control.data ?? ''"
+    :model-value="control.data"
     :possible-values="possibleValues"
-    :is-valid
-    :allow-new-value
-    compact
+    :error="!isValid"
     @update:model-value="changeValue"
   />
 </template>
