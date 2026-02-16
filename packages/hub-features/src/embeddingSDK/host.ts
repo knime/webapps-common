@@ -62,12 +62,8 @@ export const sendEmbeddingContext = (
         // AP uses `url` instead of `wsConnectionUri` in older versions, so it needs
         // to be present to preserve backwards compatibility
         url: context.wsConnectionUri,
-        wsConnectionUri: context.wsConnectionUri,
 
-        restApiBaseUrl: context.restApiBaseUrl,
-        userIdleTimeout: context.userIdleTimeout,
-        sessionId: context.sessionId,
-        jobId: context.jobId,
+        ...context,
       } satisfies EmbeddingContext,
     },
     targetOrigin,
