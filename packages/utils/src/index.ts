@@ -5,6 +5,7 @@ import { filters } from "./filters";
 import {
   formatDateString,
   formatDateTimeString,
+  formatFileSize,
   formatLocalDateTimeString,
   formatTimeString,
 } from "./format";
@@ -55,6 +56,7 @@ export {
   filters,
   formatDateString,
   formatDateTimeString,
+  formatFileSize,
   getDeepActiveElement,
   formatLocalDateTimeString,
   formatTimeString,

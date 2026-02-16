@@ -12,6 +12,7 @@ import { flushPromises } from "@vue/test-utils";
 import type { useUploadManager } from "@knime/components";
 import { knimeFileFormats, promise } from "@knime/utils";
 
+import { RFCError } from "../../rfcErrors/types";
 import { useFileUpload } from "../useFileUpload";
 
 type UseUploadManagerOptions = Parameters<typeof useUploadManager>[0];
@@ -134,6 +135,30 @@ describe("useFileUpload", () => {
       "/uploads/upload2/parts/?partNumber=1",
       { method: "POST" },
     );
+  });
+
+  it("should reject uploads that exceed size limit", async () => {
+    const { start, uploadItems } = useFileUpload();
+
+    const oversizedFile = {
+      name: "oversized.bin",
+      size: Number.MAX_SAFE_INTEGER,
+    } as File;
+
+    $ofetchMock.mockClear();
+
+    let error: unknown;
+
+    try {
+      await start(parentId, [file1, oversizedFile]);
+    } catch (caught) {
+      error = caught;
+    }
+
+    expect(error).toBeInstanceOf(RFCError);
+    expect((error as RFCError).data.details?.[0]).toContain("oversized.bin");
+    expect($ofetchMock).not.toHaveBeenCalled();
+    expect(uploadItems.value).toEqual([]);
   });
 
   describe("prepare upload", () => {

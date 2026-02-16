@@ -2,14 +2,25 @@ import { computed, reactive, readonly, ref } from "vue";
 import { FetchError, type FetchOptions } from "ofetch";
 
 import { useUploadManager } from "@knime/components";
-import { getFileMimeType, knimeFileFormats, promise } from "@knime/utils";
+import {
+  formatFileSize,
+  getFileMimeType,
+  knimeFileFormats,
+  promise,
+} from "@knime/utils";
 
 import { getFetchClient } from "../common/ofetchClient";
 import { rfcErrors } from "../rfcErrors";
 
 const DEFAULT_MAX_UPLOAD_QUEUE_SIZE = 10;
+const DEFAULT_UPLOAD_SIZE_LIMIT_BYTES = 5 * 1024 * 1024 * 1024;
 
 const DEFAULT_RETRY_DELAY_MS = 50;
+
+// Catalog & artifacts services currently have a limit for 5 GiB for
+// upload and copy/move operations but it is not communicated to clients.
+// Repeat the constant here to be able to still make a pre-check. See NXT-4510.
+const getUploadSizeLimitBytes = () => DEFAULT_UPLOAD_SIZE_LIMIT_BYTES;
 
 type UseFileUploadOptions = {
   /**
@@ -264,6 +275,22 @@ export const useFileUpload = (options: UseFileUploadOptions = {}) => {
     totalFilesBeingPrepared: computed(() => prepareQueueSize.value),
 
     start: async (parentId: string, files: File[]) => {
+      const uploadSizeLimitBytes = getUploadSizeLimitBytes();
+      const oversizedFiles = files.filter(
+        (file) => file.size > uploadSizeLimitBytes,
+      );
+
+      if (oversizedFiles.length > 0) {
+        throw new rfcErrors.RFCError({
+          title: "Upload size limit exceeded",
+          status: 413,
+          details: oversizedFiles.map(
+            (file) =>
+              `${file.name} (${formatFileSize(file.size)}) exceeds the upload limit of ${formatFileSize(uploadSizeLimitBytes)}.`,
+          ),
+        });
+      }
+
       const enqueableFiles = getEnqueueableFiles(files);
       try {
         if (enqueableFiles.length === 0) {
