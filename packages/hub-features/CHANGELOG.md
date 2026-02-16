@@ -1,5 +1,11 @@
 # @knime/hub-features
 
+## 1.18.2
+
+### Patch Changes
+
+- 628f341: Fix sending entire embedding context to avoid missing properties
+
 ## 1.18.1
 
 ### Patch Changes
