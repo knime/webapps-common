@@ -6,7 +6,7 @@ import type { UploadItem } from "./types";
 
 type OnCompletePayload = Parameters<
   NonNullable<UploaderConfig["onFileUploadComplete"]>
->[0] & { parentId: string };
+>[0] & { parentId: string; name: string };
 
 type OnFailedPayload = Parameters<
   NonNullable<UploaderConfig["onFileUploadFailed"]>
@@ -37,9 +37,9 @@ export const useUploadManager = (options: UseUploadManagerOptions) => {
     ...options,
 
     onFileUploadComplete: (params) => {
-      const { parentId } = uploadState.value[params.uploadId];
+      const { parentId, name } = uploadState.value[params.uploadId];
       uploadState.value[params.uploadId].status = "complete";
-      options.onFileUploadComplete?.({ ...params, parentId });
+      options.onFileUploadComplete?.({ ...params, parentId, name });
     },
 
     onFileUploadFailed: ({ uploadId, error }) => {
