@@ -98,12 +98,16 @@ export const formatDateTimeString = (
 export const formatLocalDateTimeString = (date: string, showTime: boolean) =>
   showTime ? formatDateTimeString(date, true) : formatDateString(date, true);
 
-export const formatFileSize = (bytes: number, decimals = 1) => {
-  return filesize(bytes, {
+export const formatFileSize = (bytes: number, decimals = 1): string => {
+  const safeBytes = Number.isFinite(bytes) && bytes >= 0 ? bytes : 0;
+  const safeDecimals =
+    Number.isFinite(decimals) && decimals >= 0 ? Math.floor(decimals) : 0;
+
+  return filesize(safeBytes, {
     output: "string",
     base: 2,
     standard: "iec",
-    round: decimals,
+    round: safeDecimals,
     pad: true,
-  });
+  }) as string;
 };

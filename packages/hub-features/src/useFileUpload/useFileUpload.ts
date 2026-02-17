@@ -275,8 +275,9 @@ export const useFileUpload = (options: UseFileUploadOptions = {}) => {
     totalFilesBeingPrepared: computed(() => prepareQueueSize.value),
 
     start: async (parentId: string, files: File[]) => {
+      const enqueableFiles = getEnqueueableFiles(files);
       const uploadSizeLimitBytes = getUploadSizeLimitBytes();
-      const oversizedFiles = files.filter(
+      const oversizedFiles = enqueableFiles.filter(
         (file) => file.size > uploadSizeLimitBytes,
       );
 
@@ -291,7 +292,6 @@ export const useFileUpload = (options: UseFileUploadOptions = {}) => {
         });
       }
 
-      const enqueableFiles = getEnqueueableFiles(files);
       try {
         if (enqueableFiles.length === 0) {
           return;
