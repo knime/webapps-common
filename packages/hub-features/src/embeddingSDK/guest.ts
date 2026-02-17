@@ -116,6 +116,8 @@ export const sendEmbeddingFailureMessage = (error: unknown) => {
 };
 
 export const dispatchGenericEventToHost = (event: GenericEvent) => {
+  logger().info("Sending GenericEvent", { event });
+
   window.parent.postMessage(
     { type: MESSAGES.GENERIC_EVENT, payload: event },
     PARENT_ORIGIN,
