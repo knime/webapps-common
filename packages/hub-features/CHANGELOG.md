@@ -1,5 +1,18 @@
 # @knime/hub-features
 
+## 1.19.0
+
+### Minor Changes
+
+- ea3b7e1: - Introduce file upload limit
+  - Fix date-time format for RFC toasts
+
+### Patch Changes
+
+- Updated dependencies [ea3b7e1]
+  - @knime/utils@1.10.0
+  - @knime/components@1.45.5
+
 ## 1.18.2
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @knime/utils
 
+## 1.10.0
+
+### Minor Changes
+
+- ea3b7e1: Add util to format file-sizes
+
 ## 1.9.2
 
 ### Patch Changes
