@@ -781,6 +781,9 @@ importers:
       dompurify:
         specifier: ^3.2.7
         version: 3.3.0
+      filesize:
+        specifier: 10.0.6
+        version: 10.0.6
     devDependencies:
       consola:
         specifier: 'catalog:'
