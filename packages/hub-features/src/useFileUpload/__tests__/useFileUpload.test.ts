@@ -161,6 +161,78 @@ describe("useFileUpload", () => {
     expect(uploadItems.value).toEqual([]);
   });
 
+  it("should include all oversized files in error details", async () => {
+    const { start, uploadItems } = useFileUpload();
+
+    const oversizedFile1 = {
+      name: "oversized-1.bin",
+      size: Number.MAX_SAFE_INTEGER,
+    } as File;
+    const oversizedFile2 = {
+      name: "oversized-2.bin",
+      size: Number.MAX_SAFE_INTEGER,
+    } as File;
+
+    $ofetchMock.mockClear();
+
+    let error: unknown;
+
+    try {
+      await start(parentId, [file1, oversizedFile1, oversizedFile2]);
+    } catch (caught) {
+      error = caught;
+    }
+
+    const details = (error as RFCError).data.details ?? [];
+
+    expect(error).toBeInstanceOf(RFCError);
+    expect(details.length).toBe(2);
+    expect(details.some((detail) => detail.includes("oversized-1.bin"))).toBe(
+      true,
+    );
+    expect(details.some((detail) => detail.includes("oversized-2.bin"))).toBe(
+      true,
+    );
+    expect($ofetchMock).not.toHaveBeenCalled();
+    expect(uploadItems.value).toEqual([]);
+  });
+
+  it("should reject uploads when all files exceed size limit", async () => {
+    const { start, uploadItems } = useFileUpload();
+
+    const oversizedFile1 = {
+      name: "oversized-1.bin",
+      size: Number.MAX_SAFE_INTEGER,
+    } as File;
+    const oversizedFile2 = {
+      name: "oversized-2.bin",
+      size: Number.MAX_SAFE_INTEGER,
+    } as File;
+
+    $ofetchMock.mockClear();
+
+    let error: unknown;
+
+    try {
+      await start(parentId, [oversizedFile1, oversizedFile2]);
+    } catch (caught) {
+      error = caught;
+    }
+
+    const details = (error as RFCError).data.details ?? [];
+
+    expect(error).toBeInstanceOf(RFCError);
+    expect(details.length).toBe(2);
+    expect(details.some((detail) => detail.includes("oversized-1.bin"))).toBe(
+      true,
+    );
+    expect(details.some((detail) => detail.includes("oversized-2.bin"))).toBe(
+      true,
+    );
+    expect($ofetchMock).not.toHaveBeenCalled();
+    expect(uploadItems.value).toEqual([]);
+  });
+
   describe("prepare upload", () => {
     it("should handle prepare state", async () => {
       $ofetchMock
