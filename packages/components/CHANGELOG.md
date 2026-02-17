@@ -1,5 +1,12 @@
 # @knime/components
 
+## 1.45.5
+
+### Patch Changes
+
+- Updated dependencies [ea3b7e1]
+  - @knime/utils@1.10.0
+
 ## 1.45.4
 
 ### Patch Changes
