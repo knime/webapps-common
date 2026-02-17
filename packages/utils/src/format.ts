@@ -1,3 +1,5 @@
+import { filesize } from "filesize";
+
 import getLocalTimeZone from "./localTimezone";
 /**
  * Converts the specified date String to human readable text containing the day, month, and year.
@@ -95,3 +97,17 @@ export const formatDateTimeString = (
  */
 export const formatLocalDateTimeString = (date: string, showTime: boolean) =>
   showTime ? formatDateTimeString(date, true) : formatDateString(date, true);
+
+export const formatFileSize = (bytes: number, decimals = 1): string => {
+  const safeBytes = Number.isFinite(bytes) && bytes >= 0 ? bytes : 0;
+  const safeDecimals =
+    Number.isFinite(decimals) && decimals >= 0 ? Math.floor(decimals) : 0;
+
+  return filesize(safeBytes, {
+    output: "string",
+    base: 2,
+    standard: "iec",
+    round: safeDecimals,
+    pad: true,
+  }) as string;
+};

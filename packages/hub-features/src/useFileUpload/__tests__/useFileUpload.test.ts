@@ -12,6 +12,7 @@ import { flushPromises } from "@vue/test-utils";
 import type { useUploadManager } from "@knime/components";
 import { knimeFileFormats, promise } from "@knime/utils";
 
+import { RFCError } from "../../rfcErrors/types";
 import { useFileUpload } from "../useFileUpload";
 
 type UseUploadManagerOptions = Parameters<typeof useUploadManager>[0];
@@ -134,6 +135,102 @@ describe("useFileUpload", () => {
       "/uploads/upload2/parts/?partNumber=1",
       { method: "POST" },
     );
+  });
+
+  it("should reject uploads that exceed size limit", async () => {
+    const { start, uploadItems } = useFileUpload();
+
+    const oversizedFile = {
+      name: "oversized.bin",
+      size: Number.MAX_SAFE_INTEGER,
+    } as File;
+
+    $ofetchMock.mockClear();
+
+    let error: unknown;
+
+    try {
+      await start(parentId, [file1, oversizedFile]);
+    } catch (caught) {
+      error = caught;
+    }
+
+    expect(error).toBeInstanceOf(RFCError);
+    expect((error as RFCError).data.details?.[0]).toContain("oversized.bin");
+    expect($ofetchMock).not.toHaveBeenCalled();
+    expect(uploadItems.value).toEqual([]);
+  });
+
+  it("should include all oversized files in error details", async () => {
+    const { start, uploadItems } = useFileUpload();
+
+    const oversizedFile1 = {
+      name: "oversized-1.bin",
+      size: Number.MAX_SAFE_INTEGER,
+    } as File;
+    const oversizedFile2 = {
+      name: "oversized-2.bin",
+      size: Number.MAX_SAFE_INTEGER,
+    } as File;
+
+    $ofetchMock.mockClear();
+
+    let error: unknown;
+
+    try {
+      await start(parentId, [file1, oversizedFile1, oversizedFile2]);
+    } catch (caught) {
+      error = caught;
+    }
+
+    const details = (error as RFCError).data.details ?? [];
+
+    expect(error).toBeInstanceOf(RFCError);
+    expect(details.length).toBe(2);
+    expect(details.some((detail) => detail.includes("oversized-1.bin"))).toBe(
+      true,
+    );
+    expect(details.some((detail) => detail.includes("oversized-2.bin"))).toBe(
+      true,
+    );
+    expect($ofetchMock).not.toHaveBeenCalled();
+    expect(uploadItems.value).toEqual([]);
+  });
+
+  it("should reject uploads when all files exceed size limit", async () => {
+    const { start, uploadItems } = useFileUpload();
+
+    const oversizedFile1 = {
+      name: "oversized-1.bin",
+      size: Number.MAX_SAFE_INTEGER,
+    } as File;
+    const oversizedFile2 = {
+      name: "oversized-2.bin",
+      size: Number.MAX_SAFE_INTEGER,
+    } as File;
+
+    $ofetchMock.mockClear();
+
+    let error: unknown;
+
+    try {
+      await start(parentId, [oversizedFile1, oversizedFile2]);
+    } catch (caught) {
+      error = caught;
+    }
+
+    const details = (error as RFCError).data.details ?? [];
+
+    expect(error).toBeInstanceOf(RFCError);
+    expect(details.length).toBe(2);
+    expect(details.some((detail) => detail.includes("oversized-1.bin"))).toBe(
+      true,
+    );
+    expect(details.some((detail) => detail.includes("oversized-2.bin"))).toBe(
+      true,
+    );
+    expect($ofetchMock).not.toHaveBeenCalled();
+    expect(uploadItems.value).toEqual([]);
   });
 
   describe("prepare upload", () => {

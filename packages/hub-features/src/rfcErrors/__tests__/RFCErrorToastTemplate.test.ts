@@ -2,6 +2,8 @@ import { describe, expect, it, vi } from "vitest";
 import { ref } from "vue";
 import { mount } from "@vue/test-utils";
 
+import { formatDateTimeString } from "@knime/utils";
+
 import RFCErrorToastTemplate from "../RFCErrorToastTemplate.vue";
 
 const { useClipboardMock } = vi.hoisted(() => ({
@@ -21,6 +23,7 @@ describe("RFCErrorToastTemplate", () => {
     date: new Date(2012, 11, 12),
     requestId: "123456789",
   };
+  const formattedDate = formatDateTimeString(defaultProps.date.getTime());
   const doMount = (props = defaultProps) => {
     const copiedMock = ref(false);
     const copyMock = vi.fn(() => {
@@ -45,7 +48,7 @@ describe("RFCErrorToastTemplate", () => {
     expect(wrapper.find(".title").text()).toBe(defaultProps.title);
     expect(wrapper.text()).toContain("Show details");
     expect(wrapper.text()).not.toContain("Status: 500");
-    expect(wrapper.text()).not.toContain("Date: Dec 12, 2012, 12:00:00 AM");
+    expect(wrapper.text()).not.toContain(`Date: ${formattedDate}`);
     expect(wrapper.text()).not.toContain(
       `Request id: ${defaultProps.requestId}`,
     );
@@ -60,7 +63,7 @@ describe("RFCErrorToastTemplate", () => {
       expect(details).toContain(item);
     });
     expect(wrapper.text()).toContain("Status: 500");
-    expect(wrapper.text()).toContain("Date: Dec 12, 2012, 12:00:00 AM");
+    expect(wrapper.text()).toContain(`Date: ${formattedDate}`);
     expect(wrapper.text()).toContain(`Request id: ${defaultProps.requestId}`);
   });
 
@@ -111,7 +114,7 @@ describe("RFCErrorToastTemplate", () => {
       expect(copiedText).toContain(item);
     });
     expect(copiedText).toContain("Status: 500");
-    expect(copiedText).toContain("Date: Dec 12, 2012, 12:00:00 AM");
+    expect(copiedText).toContain(`Date: ${formattedDate}`);
     expect(copiedText).toContain(`Request Id: ${defaultProps.requestId}`);
     expect(copiedText).toContain("Error Id: extremely-fatal-error");
   });

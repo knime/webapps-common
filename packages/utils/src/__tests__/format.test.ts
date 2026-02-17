@@ -3,6 +3,7 @@ import { type Mock, describe, expect, it, vi } from "vitest";
 import {
   formatDateString,
   formatDateTimeString,
+  formatFileSize,
   formatLocalDateTimeString,
   formatTimeString,
 } from "../format";
@@ -114,5 +115,26 @@ describe("formatDate", () => {
       );
       (getLocalTimeZone as Mock).mockRestore();
     });
+  });
+});
+
+describe("formatFileSize", () => {
+  it("formats bytes using IEC units", () => {
+    expect(formatFileSize(0)).toBe("0 B");
+    expect(formatFileSize(512)).toBe("512 B");
+    expect(formatFileSize(1024)).toBe("1 KiB");
+    expect(formatFileSize(5 * 1024 * 1024 * 1024)).toBe("5 GiB");
+  });
+
+  it("respects rounding precision", () => {
+    expect(formatFileSize(1536)).toBe("1.5 KiB");
+    expect(formatFileSize(1536, 2)).toBe("1.50 KiB");
+    expect(formatFileSize(1536, 0)).toBe("2 KiB");
+  });
+
+  it("guards against invalid inputs", () => {
+    expect(formatFileSize(-1)).toBe("0 B");
+    expect(formatFileSize(Number.NaN)).toBe("0 B");
+    expect(formatFileSize(1536, -1)).toBe("2 KiB");
   });
 });

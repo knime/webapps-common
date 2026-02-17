@@ -5,6 +5,7 @@ import { useClipboard } from "@vueuse/core";
 import { Button } from "@knime/components";
 import CheckIcon from "@knime/styles/img/icons/check.svg";
 import CopyIcon from "@knime/styles/img/icons/copy.svg";
+import { formatDateTimeString } from "@knime/utils";
 
 import type { RFCErrorData } from "./types";
 
@@ -29,19 +30,8 @@ const { copy, copied } = useClipboard({
 
 const showDetails = ref(false);
 
-const dateFormatOptions = {
-  year: "numeric",
-  month: "short",
-  day: "numeric",
-  hour: "numeric",
-  minute: "numeric",
-  second: "numeric",
-  hour12: true,
-} as const;
-
 const formattedDate = computed(() => {
-  const formatter = new Intl.DateTimeFormat(undefined, dateFormatOptions); // use default locale
-  return formatter.format(props.date);
+  return props.date ? formatDateTimeString(props.date.getTime()) : "";
 });
 
 const errorForClipboard = computed(() => {
