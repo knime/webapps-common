@@ -194,8 +194,7 @@ export const useFileUpload = (options: UseFileUploadOptions = {}) => {
 
   // contains upload ids for files that have a processing step which was not finished yet
   const unprocessedUploads = reactive<Set<string>>(new Set());
-  const isFileWithProcessing = (file: File) =>
-    knimeFileFormats.KNWF.matches(file);
+  const isKNWFFile = (file: File) => knimeFileFormats.KNWF.matches(file);
 
   let useUploadManagerResult: ReturnType<typeof useUploadManager> | null = null;
 
@@ -280,7 +279,11 @@ export const useFileUpload = (options: UseFileUploadOptions = {}) => {
     isPreparingUpload: computed(() => prepareQueueSize.value > 0),
     totalFilesBeingPrepared: computed(() => prepareQueueSize.value),
 
-    start: async (parentId: string, files: File[]) => {
+    start: async (
+      parentId: string,
+      files: File[],
+      isFileWithProcessing = isKNWFFile,
+    ) => {
       const enqueableFiles = getEnqueueableFiles(files);
       const uploadSizeLimitBytes = getUploadSizeLimitBytes();
       const oversizedFiles = enqueableFiles.filter(
