@@ -282,8 +282,9 @@ export const useFileUpload = (options: UseFileUploadOptions = {}) => {
     start: async (
       parentId: string,
       files: File[],
-      isFileWithProcessing = isKNWFFile,
+      options: { isFileWithProcessing?: typeof isKNWFFile } = {},
     ) => {
+      const { isFileWithProcessing = isKNWFFile } = options;
       const enqueableFiles = getEnqueueableFiles(files);
       const uploadSizeLimitBytes = getUploadSizeLimitBytes();
       const oversizedFiles = enqueableFiles.filter(
