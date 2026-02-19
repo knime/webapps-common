@@ -173,6 +173,7 @@ describe("useUploadManager", () => {
     });
 
     expect(onComplete).toHaveBeenCalledWith({
+      name: "mock-file1.txt",
       parentId,
       uploadId: "1",
       filePartIds: ["part1", "part2"],
