@@ -22,7 +22,7 @@ type Callbacks = Required<
 >;
 
 const mockUseUploadManagerCallbacks: Callbacks = {
-  onFileUploadComplete: () => Promise.resolve(),
+  onFileUploadComplete: () => {},
   onFileUploadFailed: () => {},
 };
 
@@ -394,6 +394,7 @@ describe("useFileUpload", () => {
         uploadId: "upload1",
         filePartIds: { 1: "part1" },
         parentId,
+        name: "file1",
       });
 
       await flushPromises();
@@ -417,6 +418,7 @@ describe("useFileUpload", () => {
         uploadId: "upload1",
         filePartIds: { 1: "part1" },
         parentId,
+        name: "file1",
       });
 
       await flushPromises();
@@ -440,6 +442,7 @@ describe("useFileUpload", () => {
         uploadId: "upload1",
         filePartIds: { 1: "part1" },
         parentId,
+        name: "file1",
       });
 
       await flushPromises();
@@ -450,6 +453,7 @@ describe("useFileUpload", () => {
           1: "part1",
         },
         parentId,
+        name: "file1",
       });
       expect($ofetchMock).toHaveBeenCalledWith("/uploads/upload1", {
         method: "POST",
@@ -483,6 +487,7 @@ describe("useFileUpload", () => {
         uploadId: "upload1",
         filePartIds: { 1: "part1" },
         parentId,
+        name: "file1",
       });
 
       expect($ofetchMock).toHaveBeenLastCalledWith("/uploads/upload1", {
