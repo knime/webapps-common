@@ -65,8 +65,7 @@ type HostNavigationRequestEvent = {
 type AnalyticsEvent = {
   kind: "analytics";
   payload: {
-    category: string;
-    name: string;
+    id: string;
     data: unknown;
   };
 };
