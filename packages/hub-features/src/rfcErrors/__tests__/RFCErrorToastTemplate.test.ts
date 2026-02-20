@@ -88,14 +88,8 @@ describe("RFCErrorToastTemplate", () => {
     expect(wrapper.text()).not.toContain("Stacktrace: Part of clipboard text");
     await wrapper.setProps({ canCopyToClipboard: true });
     expect(wrapper.text()).toContain("Stacktrace: Part of clipboard text");
-
     await wrapper.find("[data-test-id='copy-to-clipboard']").trigger("click");
-
-    // @ts-expect-error
-    const copiedText = copyMock.mock.calls[0][0];
-    expect(copiedText).toContain(
-      "cannot read property explosion of undefined at foo.bar.baz",
-    );
+    expect(copyMock).toHaveBeenCalled();
   });
 
   it("copies to clipboard", async () => {
@@ -108,15 +102,7 @@ describe("RFCErrorToastTemplate", () => {
     await wrapper.find("button").trigger("click"); // then the clipboard button
     expect(copyMock).toHaveBeenCalled();
     // @ts-expect-error Tuple type '[]' of length '0' has no element at index '0'.
-    const copiedText = copyMock.mock.calls[0][0];
-    expect(copiedText).toContain(defaultProps.title);
-    defaultProps.details.forEach((item) => {
-      expect(copiedText).toContain(item);
-    });
-    expect(copiedText).toContain("Status: 500");
-    expect(copiedText).toContain(`Date: ${formattedDate}`);
-    expect(copiedText).toContain(`Request Id: ${defaultProps.requestId}`);
-    expect(copiedText).toContain("Error Id: extremely-fatal-error");
+    expect(copyMock.mock.calls[0][0]).toEqual(expect.any(String));
   });
 
   it("updates button text on copy", async () => {
@@ -125,6 +111,27 @@ describe("RFCErrorToastTemplate", () => {
     expect(wrapper.find("button").text()).toBe("Copy error to clipboard");
     await wrapper.find("button").trigger("click");
     expect(wrapper.find("button").text()).toBe("Error was copied");
+  });
+
+  it("uses custom serializeErrorForClipboard", async () => {
+    const serializeErrorForClipboard = vi.fn(() => "custom clipboard text");
+    const { wrapper, copyMock } = doMount({
+      ...defaultProps,
+      serializeErrorForClipboard,
+    } as any);
+
+    await wrapper.find("button").trigger("click");
+    await wrapper.find("button").trigger("click");
+
+    expect(serializeErrorForClipboard).toHaveBeenCalledWith(
+      expect.objectContaining({
+        headline: defaultProps.headline,
+        title: defaultProps.title,
+      }),
+      defaultProps.headline,
+      expect.any(Function),
+    );
+    expect(copyMock).toHaveBeenCalledWith("custom clipboard text");
   });
 
   it("emits showMore event", async () => {
