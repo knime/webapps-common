@@ -1,5 +1,11 @@
 # @knime/hub-features
 
+## 1.20.0
+
+### Minor Changes
+
+- 63ed737: adjust analytics event structure
+
 ## 1.19.0
 
 ### Minor Changes
