@@ -13,10 +13,16 @@ const toToast = ({
   headline,
   rfcError,
   canCopyToClipboard = true,
+  serializeErrorForClipboard = undefined,
 }: {
   headline: string;
   rfcError: RFCError;
   canCopyToClipboard?: boolean;
+  serializeErrorForClipboard?: (
+    error: RFCErrorData,
+    headline: string,
+    formatDate: (date: Date) => string,
+  ) => string;
 }): Toast => {
   const { data } = rfcError;
 
@@ -24,6 +30,7 @@ const toToast = ({
     headline,
     ...data,
     canCopyToClipboard,
+    serializeErrorForClipboard,
   });
 
   return {
