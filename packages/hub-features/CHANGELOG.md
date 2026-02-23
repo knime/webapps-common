@@ -1,5 +1,13 @@
 # @knime/hub-features
 
+## 1.20.1
+
+### Patch Changes
+
+- c877d5a: NXT-4373: improve upload api
+- Updated dependencies [c877d5a]
+  - @knime/components@1.45.6
+
 ## 1.20.0
 
 ### Minor Changes
