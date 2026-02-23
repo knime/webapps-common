@@ -34,6 +34,7 @@ type UseFileUploadOptions = {
     uploadId: string;
     filePartIds: Record<number, string>;
     parentId: string;
+    name: string;
   }) => void;
   onFileUploadFailed?: (payload: {
     uploadId: string;
@@ -193,8 +194,7 @@ export const useFileUpload = (options: UseFileUploadOptions = {}) => {
 
   // contains upload ids for files that have a processing step which was not finished yet
   const unprocessedUploads = reactive<Set<string>>(new Set());
-  const isFileWithProcessing = (file: File) =>
-    knimeFileFormats.KNWF.matches(file);
+  const isKNWFFile = (file: File) => knimeFileFormats.KNWF.matches(file);
 
   let useUploadManagerResult: ReturnType<typeof useUploadManager> | null = null;
 
@@ -219,11 +219,16 @@ export const useFileUpload = (options: UseFileUploadOptions = {}) => {
   useUploadManagerResult = useUploadManager({
     resolveFilePartUploadURL,
 
-    onFileUploadComplete: ({ uploadId, filePartIds, parentId }) => {
+    onFileUploadComplete: ({ uploadId, filePartIds, parentId, name }) => {
       promise
         .retryPromise({ fn: () => completeUpload(uploadId, filePartIds) })
         .then(() => {
-          options.onFileUploadComplete?.({ uploadId, filePartIds, parentId });
+          options.onFileUploadComplete?.({
+            uploadId,
+            filePartIds,
+            parentId,
+            name,
+          });
         })
         .catch((error) => {
           consola.error("Error attempting to complete upload", { error });
@@ -274,7 +279,12 @@ export const useFileUpload = (options: UseFileUploadOptions = {}) => {
     isPreparingUpload: computed(() => prepareQueueSize.value > 0),
     totalFilesBeingPrepared: computed(() => prepareQueueSize.value),
 
-    start: async (parentId: string, files: File[]) => {
+    start: async (
+      parentId: string,
+      files: File[],
+      options: { isFileWithProcessing?: typeof isKNWFFile } = {},
+    ) => {
+      const { isFileWithProcessing = isKNWFFile } = options;
       const enqueableFiles = getEnqueueableFiles(files);
       const uploadSizeLimitBytes = getUploadSizeLimitBytes();
       const oversizedFiles = enqueableFiles.filter(
@@ -294,7 +304,7 @@ export const useFileUpload = (options: UseFileUploadOptions = {}) => {
 
       try {
         if (enqueableFiles.length === 0) {
-          return;
+          return [];
         }
 
         prepareQueueSize.value += enqueableFiles.length;
@@ -313,9 +323,13 @@ export const useFileUpload = (options: UseFileUploadOptions = {}) => {
           }
         });
 
+        const uploadIds = uploadPayload.map((upload) => upload.uploadId);
+
         // accept floating promise, errors are handled inside the function
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         useUploadManagerResult.start(parentId, uploadPayload);
+
+        return uploadIds;
       } catch (error) {
         throw rfcErrors.tryParse(error) ?? error;
       } finally {
