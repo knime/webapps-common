@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.45.6
+
+### Patch Changes
+
+- c877d5a: NXT-4373: improve upload api
+
 ## 1.45.5
 
 ### Patch Changes
