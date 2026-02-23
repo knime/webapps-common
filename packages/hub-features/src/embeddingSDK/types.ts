@@ -85,7 +85,19 @@ export type GenericEventHandlers = {
   [K in GenericEvent["kind"]]?: (event: GenericEventByKind<K>) => void;
 };
 
-export type UserActivityInfo = {
-  idle: boolean;
-  lastActive: string;
-};
+export type UserActivityInfo =
+  | {
+      idle: boolean;
+      lastActive: string;
+      version?: "v0";
+    }
+  | {
+      /**
+       * active:          *default* state, user is interacting with app but NO background task is running
+       * idle:            user is NOT interacting and NO task is running
+       * background-task: whenever a background task is running, whether the user is interacting with app or not
+       */
+      state: "active" | "idle" | "background-task";
+      lastActive: string;
+      version: "v1";
+    };

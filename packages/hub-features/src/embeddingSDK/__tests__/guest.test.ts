@@ -4,6 +4,7 @@ import { flushPromises } from "@vue/test-utils";
 
 import * as guest from "../guest";
 import { MESSAGES } from "../messages";
+import type { UserActivityInfo } from "../types";
 
 vi.mock("consola");
 
@@ -95,14 +96,34 @@ describe("Embedding SDK::GUEST", () => {
     });
   });
 
-  it("notifies user activity", () => {
-    const payload = { idle: true, lastActive: new Date().toISOString() };
+  describe("user activity", () => {
+    describe("v0", () => {
+      it("notifies user activity", () => {
+        const payload = { idle: true, lastActive: new Date().toISOString() };
 
-    guest.notifyActivityChange(payload);
-    expect(postMessage).toHaveBeenCalledExactlyOnceWith(
-      { type: MESSAGES.USER_ACTIVITY, payload },
-      "*",
-    );
+        guest.notifyActivityChange(payload);
+        expect(postMessage).toHaveBeenCalledExactlyOnceWith(
+          { type: MESSAGES.USER_ACTIVITY, payload },
+          "*",
+        );
+      });
+    });
+
+    describe("v1", () => {
+      it("notifies user activity", () => {
+        const payload: UserActivityInfo = {
+          version: "v1",
+          state: "active",
+          lastActive: new Date().toISOString(),
+        };
+
+        guest.notifyActivityChange(payload);
+        expect(postMessage).toHaveBeenCalledExactlyOnceWith(
+          { type: MESSAGES.USER_ACTIVITY, payload },
+          "*",
+        );
+      });
+    });
   });
 
   it("sends embedding failure message", () => {
