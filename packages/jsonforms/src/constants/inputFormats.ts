@@ -27,6 +27,8 @@ export const inputFormats = {
   dateTimeFormat: "dateTimeFormat",
   multiSelectListBox: "multiSelectListBox",
   singleSelectListBox: "singleSelectListBox",
+  // custom hub formats
+  executionContextDropdown: "executionContextDropdown",
 } as const;
 
 // union type of the values of the inputFormats object:

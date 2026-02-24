@@ -1,3 +1,4 @@
+import { executionContextDropdownRenderer } from "../customHubRenderer/executionContextDropdown/executionContextDropdownRenderer";
 import { controlToRenderer } from "../higherOrderComponents/control/controlToRenderer";
 import type { VueControlRenderer } from "../higherOrderComponents/control/types";
 import type { PerformExternalValidation } from "../higherOrderComponents/control/validation/types";
@@ -77,6 +78,8 @@ export const controls = {
    * Containing an optional checkbox. Keep Label in control until we have a framework for that.
    */
   dropdownRenderer,
+  // custom hub renderers
+  executionContextDropdownRenderer,
   ...fallbackControlRenderers,
 } satisfies Record<string, VueControlRenderer>;
 
