@@ -155,14 +155,14 @@ const getIcon = ({ sharedStatus }: { sharedStatus: string[] }) => {
 .dropdown-item-wrapper {
   display: flex;
   flex-direction: row;
-  gap: 10px;
+  gap: var(--kds-spacing-container-0-75x);
   width: 100%;
-  padding: 10px 0;
+  padding: var(--kds-spacing-container-0-75x) 0;
   font-family: Roboto, sans-serif;
 
   & > svg {
-    flex: 0 0 16px;
-    height: 16px;
+    flex: 0 0 var(--kds-dimension-component-height-1x);
+    height: var(--kds-dimension-component-height-1x);
     stroke-width: 1.3px;
   }
 }
@@ -177,16 +177,14 @@ const getIcon = ({ sharedStatus }: { sharedStatus: string[] }) => {
 .run-status {
   display: flex;
   flex-direction: row;
-  gap: 5px;
+  gap: var(--kds-spacing-container-0-37x);
   align-items: center;
   justify-content: left;
-  font-size: 11px;
-  font-weight: 300;
-  line-height: 16.5px;
+  font: var(--kds-font-base-body-small);
 
   & .dot {
-    width: 4px;
-    height: 4px;
+    width: var(--kds-dimension-component-width-0-25x);
+    height: var(--kds-dimension-component-height-0-25x);
     content: "";
     border-radius: 50%;
 
@@ -215,7 +213,7 @@ const getIcon = ({ sharedStatus }: { sharedStatus: string[] }) => {
 .title {
   display: flex;
   align-items: baseline;
-  margin-bottom: var(--space-4);
+  margin-bottom: var(--kds-spacing-container-0-25x);
 }
 
 .title span:nth-child(1) {
@@ -227,16 +225,12 @@ const getIcon = ({ sharedStatus }: { sharedStatus: string[] }) => {
 
 .title span:nth-child(2) {
   flex: 0 0 auto;
-  padding-left: var(--space-8);
-  font-size: 11px;
-  font-weight: 300;
-  line-height: 14.3px;
+  padding-left: var(--kds-spacing-container-0-5x);
+  font: var(--kds-font-base-body-small);
 }
 
 .title span:first-child,
 .shared-status {
-  font-size: 13px;
-  font-weight: 500;
-  line-height: 16.9px;
+  font: var(--kds-font-base-title-medium);
 }
 </style>
