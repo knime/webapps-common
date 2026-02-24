@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { determineRenderer } from "packages/jsonforms/testUtils";
+
+import { determineRenderer } from "../../../../testUtils";
 
 describe("ExecutionContextDropdown", () => {
   const schema = {
@@ -29,7 +30,7 @@ describe("ExecutionContextDropdown", () => {
       },
     };
 
-    expect(determineRenderer(schema, uiSchema)).toBe(
+    expect(determineRenderer(uiSchema, schema)).toBe(
       "ExecutionContextDropdownRenderer",
     );
   });

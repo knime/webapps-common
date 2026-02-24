@@ -6,15 +6,14 @@ import ExecutionContextSharedIcon from "@knime/styles/img/icons/execution-contex
 import ServerRackWorkflowIcon from "@knime/styles/img/icons/server-rack-workflow.svg";
 import SignWarningIcon from "@knime/styles/img/icons/sign-warning.svg";
 
-import type { VueControlProps } from "../../higherOrderComponents";
-import LabeledControl from "../../higherOrderComponents/control/LabeledControl.vue";
+import type { VueControlPropsForLabelContent } from "../higherOrderComponents";
 
 import {
   type ECStatusToClassKeyType,
   EXECUTION_CONTEXT_SHARED_STATUS,
   EXECUTION_CONTEXT_STATUS,
   EXECUTION_CONTEXT_STATUS_TO_CLASS,
-} from "./executionContexts";
+} from "./configs/executionContexts.config";
 
 interface ExecutionContextSlotData {
   name: string;
@@ -31,7 +30,7 @@ interface ExecutionContextOption {
   slotData?: ExecutionContextSlotData;
 }
 
-const props = defineProps<VueControlProps<string>>();
+const props = defineProps<VueControlPropsForLabelContent<string>>();
 
 const possibleValues = computed(() => {
   const oneOf = props.control.schema.oneOf as
@@ -88,68 +87,63 @@ const getIcon = ({ sharedStatus }: { sharedStatus: string[] }) => {
 </script>
 
 <template>
-  <LabeledControl :label="control.label">
-    <!-- eslint-disable vue/attribute-hyphenation typescript complains with ':aria-label' instead of ':ariaLabel'-->
-    <Dropdown
-      v-model="modelValue"
-      v-bind="$attrs"
-      class="dropdown-input"
-      :possible-values="possibleValues"
-      :ariaLabel="control.label"
-    >
-      <template #option="{ slotData, isMissing, selectedValue }">
-        <div v-if="isMissing" class="dropdown-item-wrapper">
-          <SignWarningIcon class="missing" />
-          <div class="main-content">
-            <div class="title">(MISSING) {{ selectedValue }}</div>
-            <div class="run-status">Execution context not found.</div>
+  <!-- eslint-disable vue/attribute-hyphenation typescript complains with ':aria-label' instead of ':ariaLabel'-->
+  <Dropdown
+    :id="labelForId"
+    v-model="modelValue"
+    v-bind="$attrs"
+    class="dropdown-input"
+    :disabled="disabled"
+    :possible-values="possibleValues"
+    :ariaLabel="control.label"
+  >
+    <template #option="{ slotData, isMissing, selectedValue }">
+      <div v-if="isMissing" class="dropdown-item-wrapper">
+        <SignWarningIcon class="missing" />
+        <div class="main-content">
+          <div class="title">(MISSING) {{ selectedValue }}</div>
+          <div class="run-status">Execution context not found.</div>
+        </div>
+      </div>
+      <div v-else class="dropdown-item-wrapper slot-option">
+        <Component :is="getIcon({ sharedStatus: slotData.sharedStatus })" />
+        <div class="main-content">
+          <div class="title">
+            <span :title="slotData.name">{{ slotData.name }}</span>
+            <span :title="slotData.executorApVersion">{{
+              slotData.shortExecutorApVersion
+            }}</span>
+          </div>
+          <div class="run-status">
+            <div
+              class="dot"
+              :class="{
+                [getExecutionStatusClass({
+                  executionStatus: slotData.executionStatus,
+                })]: true,
+              }"
+            />
+            <div>
+              {{
+                formatExecutionStatus({
+                  executionStatus: slotData.executionStatus,
+                  autoStartEnabled: slotData.autoStartEnabled,
+                })
+              }}
+            </div>
           </div>
         </div>
-        <div v-else class="dropdown-item-wrapper slot-option">
-          <Component :is="getIcon({ sharedStatus: slotData.sharedStatus })" />
-          <div class="main-content">
-            <div class="title">
-              <span :title="slotData.name">{{ slotData.name }}</span>
-              <span :title="slotData.executorApVersion">{{
-                slotData.shortExecutorApVersion
-              }}</span>
-            </div>
-            <div class="run-status">
-              <div
-                class="dot"
-                :class="{
-                  [getExecutionStatusClass({
-                    executionStatus: slotData.executionStatus,
-                  })]: true,
-                }"
-              />
-              <div>
-                {{
-                  formatExecutionStatus({
-                    executionStatus: slotData.executionStatus,
-                    autoStartEnabled: slotData.autoStartEnabled,
-                  })
-                }}
-              </div>
-            </div>
-          </div>
-          <div class="shared-status">
-            {{ slotData.sharedStatus.join(", ") }}
-          </div>
+        <div class="shared-status">
+          {{ slotData.sharedStatus.join(", ") }}
         </div>
-      </template>
-    </Dropdown>
-  </LabeledControl>
+      </div>
+    </template>
+  </Dropdown>
 </template>
 
 <style scoped>
 .dropdown-input {
   --dropdown-max-height: calc(58px * 5); /* show 5 items per default */
-
-  & :deep([role="button"]) {
-    border: var(--kds-border-action-input);
-    border-radius: var(--kds-border-radius-container-0-37x);
-  }
 }
 
 .dropdown-item-wrapper {
