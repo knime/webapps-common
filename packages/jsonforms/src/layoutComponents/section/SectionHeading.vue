@@ -15,7 +15,7 @@ defineProps<{
   </div>
 </template>
 
-<style scoped>
+<style lang="postcss" scoped>
 .section-header {
   position: sticky;
   top: 0;
