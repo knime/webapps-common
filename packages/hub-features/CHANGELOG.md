@@ -1,5 +1,11 @@
 # @knime/hub-features
 
+## 1.21.0
+
+### Minor Changes
+
+- 068203b: introduce new version for user activity events
+
 ## 1.20.1
 
 ### Patch Changes
