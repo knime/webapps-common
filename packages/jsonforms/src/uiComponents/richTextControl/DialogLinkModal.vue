@@ -69,7 +69,7 @@ watch(() => props.linkTool.props.isActive.value, onIsActiveChange);
   </dialog>
 </template>
 
-<style scoped>
+<style lang="postcss" scoped>
 dialog {
   padding: 0;
   border: none;

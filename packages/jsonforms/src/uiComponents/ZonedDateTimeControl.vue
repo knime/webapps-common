@@ -68,7 +68,7 @@ const choices = computed(() => options.value?.possibleValues ?? []);
   </div>
 </template>
 
-<style scoped>
+<style lang="postcss" scoped>
 .layout-container {
   display: flex;
   flex-direction: column;

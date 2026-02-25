@@ -12,7 +12,7 @@ defineProps<{ elements: UISchemaElement[] }>();
   </div>
 </template>
 
-<style scoped>
+<style scoped lang="postcss">
 .vertical-layout {
   display: flex;
   flex-direction: column;

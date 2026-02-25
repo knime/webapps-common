@@ -36,7 +36,7 @@ const hover = ref(false);
   </div>
 </template>
 
-<style scoped>
+<style lang="postcss" scoped>
 .section {
   &:not(:first-child) {
     padding-top: var(--space-16);

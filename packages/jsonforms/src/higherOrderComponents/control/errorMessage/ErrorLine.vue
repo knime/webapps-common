@@ -13,7 +13,7 @@ defineProps<{
   </div>
 </template>
 
-<style scoped>
+<style lang="postcss" scoped>
 .error {
   position: relative;
 
