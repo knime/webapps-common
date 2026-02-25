@@ -60,7 +60,7 @@ const hover = ref(false);
   </div>
 </template>
 
-<style scoped>
+<style lang="postcss" scoped>
 .set-button {
   & span {
     margin: 0 var(--space-4);

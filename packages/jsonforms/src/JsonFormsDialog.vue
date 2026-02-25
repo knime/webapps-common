@@ -189,7 +189,7 @@ const jsonFormsDialogBindings = computed(() => ({
   </div>
 </template>
 
-<style scoped>
+<style lang="postcss" scoped>
 .dialog {
   position: relative;
   display: flex;

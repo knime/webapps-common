@@ -9,7 +9,7 @@ import { LoadingIcon } from "@knime/components";
   </div>
 </template>
 
-<style scoped>
+<style scoped lang="postcss">
 .info {
   display: flex;
   flex-direction: column;

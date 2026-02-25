@@ -35,6 +35,6 @@ export default LayoutComponentWrapper;
   </div>
 </template>
 
-<style scoped>
+<style lang="postcss" scoped>
 @import url("../utils/animation.css");
 </style>

@@ -10,7 +10,7 @@ defineProps<VueControlPropsForLabelContent<string>>();
   <RadioControlBase v-bind="$props" type="radio" class="radio" />
 </template>
 
-<style scoped>
+<style scoped lang="postcss">
 .radio {
   margin-bottom: -10px;
 }

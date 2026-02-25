@@ -20,7 +20,7 @@ onMounted(() => {
   </div>
 </template>
 
-<style scoped>
+<style lang="postcss" scoped>
 /* TODO UIEXT-2167: Move skeleton to common repo */
 @import url("./skeleton.css");
 

@@ -18,7 +18,7 @@ defineProps<VueControlPropsForLabelContent<string>>();
   />
 </template>
 
-<style scoped>
+<style lang="postcss" scoped>
 .text-area-input {
   max-width: 100%;
 

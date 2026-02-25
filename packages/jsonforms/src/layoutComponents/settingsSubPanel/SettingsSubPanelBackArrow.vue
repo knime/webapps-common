@@ -35,7 +35,7 @@ const styleOverrides = computed(() => ({
   </div>
 </template>
 
-<style scoped>
+<style scoped lang="postcss">
 .flex-horizontal {
   display: flex;
   align-items: center;
