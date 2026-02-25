@@ -22,7 +22,7 @@ catalog:
   postcss: 8.5.6
   prettier: 3.3.2
   stylelint: 16.23.0
-  typescript: ^5.8.3
+  typescript: ^5.9.3
   vite: ^7.2.2
   vite-plugin-css-injected-by-js: ^3.5.2
   vite-plugin-dts: 4.5.4
