@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "color-convert": "2.0.1",
-    "uuid": "9.0.1"
+    "uuid": "13.0.0"
   },
   "devDependencies": {
     "@knime/ui-extension-renderer": "workspace:*",

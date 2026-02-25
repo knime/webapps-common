@@ -312,8 +312,8 @@ importers:
         specifier: 'catalog:'
         version: 5.9.3
       uuid:
-        specifier: 11.1.0
-        version: 11.1.0
+        specifier: 13.0.0
+        version: 13.0.0
       v-calendar:
         specifier: catalog:patch
         version: https://codeload.github.com/knime/v-calendar/tar.gz/048477f(@popperjs/core@2.11.8)(vue@3.5.24(typescript@5.9.3))
@@ -443,8 +443,8 @@ importers:
         specifier: 6.2.0
         version: 6.2.0
       uuid:
-        specifier: 10.0.0
-        version: 10.0.0
+        specifier: 13.0.0
+        version: 13.0.0
     devDependencies:
       '@types/uuid':
         specifier: 10.0.0
@@ -736,8 +736,8 @@ importers:
         specifier: 2.0.1
         version: 2.0.1
       uuid:
-        specifier: 9.0.1
-        version: 9.0.1
+        specifier: 13.0.0
+        version: 13.0.0
     devDependencies:
       '@knime/ui-extension-renderer':
         specifier: workspace:*
@@ -5178,16 +5178,8 @@ packages:
   util-extend@1.0.3:
     resolution: {integrity: sha512-mLs5zAK+ctllYBj+iAQvlDCwoxU/WDOUaJkcFudeiAX6OajC6BKXJUa9a+tbtkC11dz2Ufb7h0lyvIOVn4LADA==}
 
-  uuid@10.0.0:
-    resolution: {integrity: sha512-8XkAphELsDnEGrDxUOHB3RGvXz6TeuYSGEZBOjtTtPm2lwhGBjLgOzLHB63IUWfBpNucQjND6d3AOudO+H3RWQ==}
-    hasBin: true
-
-  uuid@11.1.0:
-    resolution: {integrity: sha512-0/A9rDy9P7cJ+8w1c9WD9V//9Wj15Ce2MPz8Ri6032usz+NfePxx5AcN3bN+r6ZL6jEo066/yNYB3tn4pQEx+A==}
-    hasBin: true
-
-  uuid@9.0.1:
-    resolution: {integrity: sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA==}
+  uuid@13.0.0:
+    resolution: {integrity: sha512-XQegIaBTVUjSHliKqcnFqYypAd4S+WCYt5NIeRs6w/UAry7z8Y9j5ZwRRL4kzq9U3sD6v+85er9FvkEaBpji2w==}
     hasBin: true
 
   v-calendar@https://codeload.github.com/knime/v-calendar/tar.gz/048477f:
@@ -10237,11 +10229,7 @@ snapshots:
 
   util-extend@1.0.3: {}
 
-  uuid@10.0.0: {}
-
-  uuid@11.1.0: {}
-
-  uuid@9.0.1: {}
+  uuid@13.0.0: {}
 
   v-calendar@https://codeload.github.com/knime/v-calendar/tar.gz/048477f(@popperjs/core@2.11.8)(vue@3.5.24(typescript@5.9.3)):
     dependencies:
