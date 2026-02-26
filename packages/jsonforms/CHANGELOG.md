@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.18.10
+
+### Patch Changes
+
+- 76c8c70: Revert PostCSS removal
+
 ## 1.18.9
 
 ### Patch Changes
