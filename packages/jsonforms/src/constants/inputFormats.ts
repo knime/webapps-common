@@ -27,6 +27,7 @@ export const inputFormats = {
   dateTimeFormat: "dateTimeFormat",
   multiSelectListBox: "multiSelectListBox",
   singleSelectListBox: "singleSelectListBox",
+  dockerImageDropdown: "dockerImageDropdown",
 } as const;
 
 // union type of the values of the inputFormats object:
