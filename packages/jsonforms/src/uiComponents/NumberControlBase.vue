@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-import { NumberInput } from "@knime/components";
+import { KdsNumberInput } from "@knime/kds-components";
 
-import type { VueControlPropsForLabelContent } from "../higherOrderComponents/control/withLabel";
+import type { VueControlPropsForLabelContent } from "../higherOrderComponents";
 
 import { useBuiltinValidation } from "./composables/useBuiltinValidations";
 
@@ -16,7 +16,7 @@ const props = defineProps<
 const DEFAULT_STEP_SIZE_INTEGER = 1;
 const DEFAULT_STEP_SIZE_DOUBLE = 0.1;
 
-const stepSize = computed(
+const stepSize = computed<number>(
   () =>
     props.control.uischema.options?.stepSize ??
     (props.type === "integer"
@@ -28,18 +28,15 @@ type BoundValidationParameters = {
   isExclusive: boolean;
 };
 
-type MinValidationParameters = BoundValidationParameters & {
-  min: number;
-};
+type MinValidationParameters = BoundValidationParameters & { min: number };
 
-type MaxValidationParameters = BoundValidationParameters & {
-  max: number;
-};
+type MaxValidationParameters = BoundValidationParameters & { max: number };
 
 const respectsMin =
   ({ min, isExclusive }: MinValidationParameters) =>
   (value: number) =>
     isNaN(value) || (isExclusive ? value > min : value >= min);
+
 const respectsMax =
   ({ max, isExclusive }: MaxValidationParameters) =>
   (value: number) =>
@@ -53,52 +50,33 @@ const validationParams = useBuiltinValidation(
   props,
 );
 
-const minParams = computed(() => validationParams.value.min);
-const maxParams = computed(() => validationParams.value.max);
+const min = computed<number | undefined>(() => {
+  const params = validationParams.value.min;
+  if (!params || params.min === null) {
+    return undefined;
+  }
+  return params.min + (params.isExclusive ? stepSize.value : 0);
+});
 
-const onFocusOut = () => {
-  const currentDataValue = props.control.data;
-  const isNotANumber =
-    typeof currentDataValue !== "number" || isNaN(currentDataValue);
-  let updatedValue = isNotANumber ? 0 : null;
-  const comparisonValue = isNotANumber ? 0 : currentDataValue;
-  if (minParams.value && !respectsMin(minParams.value)(comparisonValue)) {
-    const { min, isExclusive } = minParams.value;
-    if (isExclusive) {
-      updatedValue = min + stepSize.value;
-    } else {
-      updatedValue = min;
-    }
-  } else if (
-    maxParams.value &&
-    !respectsMax(maxParams.value)(comparisonValue)
-  ) {
-    const { max, isExclusive } = maxParams.value;
-    if (isExclusive) {
-      updatedValue = max - stepSize.value;
-    } else {
-      updatedValue = max;
-    }
+const max = computed<number | undefined>(() => {
+  const params = validationParams.value.max;
+  if (!params || params.max === null) {
+    return undefined;
   }
-  if (updatedValue !== null) {
-    props.changeValue(updatedValue);
-  }
-};
+  return params.max - (params.isExclusive ? stepSize.value : 0);
+});
 </script>
 
 <template>
-  <NumberInput
+  <KdsNumberInput
     :id="labelForId"
     class="number-input"
     :disabled="disabled"
     :model-value="control.data"
-    :type="type"
-    :min="minParams?.min"
-    :max="maxParams?.max"
+    :min="min"
+    :max="max"
     :step="stepSize"
-    :is-valid
-    compact
+    :error="!isValid"
     @update:model-value="changeValue"
-    @focusout="onFocusOut"
   />
 </template>

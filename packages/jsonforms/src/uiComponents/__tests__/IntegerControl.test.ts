@@ -9,13 +9,13 @@ import {
 } from "vitest";
 import type { VueWrapper } from "@vue/test-utils";
 
-import { NumberInput } from "@knime/components";
+import { KdsNumberInput } from "@knime/kds-components";
 
 import {
   type VueControlTestProps,
   getControlBase,
   mountJsonFormsControlLabelContent,
-} from "../../../testUtils/component";
+} from "../../../testUtils";
 import IntegerControl from "../IntegerControl.vue";
 
 describe("IntegerControl", () => {
@@ -62,21 +62,21 @@ describe("IntegerControl", () => {
   });
 
   it("renders", () => {
-    expect(wrapper.findComponent(NumberInput).exists()).toBe(true);
+    expect(wrapper.findComponent(KdsNumberInput).exists()).toBe(true);
   });
 
   it("sets labelForId", () => {
-    expect(wrapper.getComponent(NumberInput).props().id).toBe(labelForId);
+    expect(wrapper.getComponent(KdsNumberInput).props().id).toBe(labelForId);
   });
 
   it("sets initial value", () => {
-    expect(wrapper.getComponent(NumberInput).props().modelValue).toBe(5);
-    expect(wrapper.getComponent(NumberInput).props().disabled).toBe(false);
-    expect(wrapper.getComponent(NumberInput).props().type).toBe("integer");
+    expect(wrapper.getComponent(KdsNumberInput).props().modelValue).toBe(5);
+    expect(wrapper.getComponent(KdsNumberInput).props().disabled).toBe(false);
+    expect(wrapper.getComponent(KdsNumberInput).props().step).toBe(1);
   });
 
   it("calls changeValue when value is changed", () => {
-    wrapper.getComponent(NumberInput).vm.$emit("update:modelValue", 10);
+    wrapper.getComponent(KdsNumberInput).vm.$emit("update:modelValue", 10);
     expect(changeValue).toHaveBeenCalledWith(10);
   });
 });

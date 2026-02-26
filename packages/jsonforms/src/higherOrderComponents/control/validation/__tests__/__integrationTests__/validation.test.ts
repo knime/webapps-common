@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { nextTick } from "vue";
 import { VueWrapper, mount } from "@vue/test-utils";
 
-import { InputField } from "@knime/components";
+import { KdsTextInput } from "@knime/kds-components";
 
 import JsonFormsDialog from "../../../../../JsonFormsDialog.vue";
 import { controls, layouts, toRenderers } from "../../../../../renderers";
@@ -97,7 +97,7 @@ describe("validation", () => {
     const wrapper = await mountJsonFormsDialog({
       stringWithExternalValidation: "abc",
     });
-    const inputField = wrapper.findAllComponents(InputField).at(1);
+    const inputField = wrapper.findAllComponents(KdsTextInput).at(1);
     inputField?.vm.$emit("update:modelValue", "abcd");
     vi.runAllTimers(); // skip debounce behavior
     await nextTick(); // wait for combined messages to be updated

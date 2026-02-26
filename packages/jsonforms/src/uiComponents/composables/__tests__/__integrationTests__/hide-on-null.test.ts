@@ -1,8 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { VueWrapper, flushPromises, mount } from "@vue/test-utils";
 
-import { InputField } from "@knime/components";
-import { KdsCheckbox } from "@knime/kds-components";
+import { KdsCheckbox, KdsTextInput } from "@knime/kds-components";
 
 import JsonFormsDialog from "../../../../JsonFormsDialog.vue";
 import { controls, toRenderers } from "../../../../renderers";
@@ -81,11 +80,11 @@ describe("hide on null", () => {
     // @ts-expect-error Object is of type 'unknown'
     expect(wrapper.emitted("change")[1][0].data.setting).not.toBeNull();
     await flushPromises();
-    expect(wrapper.findComponent(InputField).props()).toMatchObject({
+    expect(wrapper.findComponent(KdsTextInput).props()).toMatchObject({
       modelValue: defaultValue,
     });
     expect(document.activeElement).toBe(
-      wrapper.findComponent(InputField).find("input").element,
+      wrapper.findComponent(KdsTextInput).find("input").element,
     );
   });
 
