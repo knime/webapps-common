@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.18.11
+
+### Patch Changes
+
+- 4b43ad3: Migrate TextControl, NumberControl and TextAreaControl to KDS
+
 ## 1.18.10
 
 ### Patch Changes
