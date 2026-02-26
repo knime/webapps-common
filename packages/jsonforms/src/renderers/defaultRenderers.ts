@@ -13,6 +13,7 @@ import {
 } from "./dateTimeFormatPickerRenderer";
 import { dateTimeRenderer } from "./dateTimeRenderer";
 import { dropdownRenderer } from "./dropdownRenderer";
+import { executionContextDropdownRenderer } from "./executionContextDropdownRenderer";
 import {
   fallbackControlRenderers,
   fallbackLayoutRenderers,
@@ -77,6 +78,8 @@ export const controls = {
    * Containing an optional checkbox. Keep Label in control until we have a framework for that.
    */
   dropdownRenderer,
+  // custom hub renderers
+  executionContextDropdownRenderer,
   ...fallbackControlRenderers,
 } satisfies Record<string, VueControlRenderer>;
 
