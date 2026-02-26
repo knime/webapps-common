@@ -350,14 +350,14 @@ describe("ColorService", () => {
       const colorHandler = colorService.getColorHandler(cielabColumnName);
 
       // Test the new getCustomInterpolationContext method
-      if ("getCustomInterpolationContext" in colorHandler!) {
-        const context = (colorHandler as any).getCustomInterpolationContext();
+      expect(colorHandler).toBeDefined();
+      expect("getCustomInterpolationContext" in colorHandler!).toBe(true);
 
-        expect(context).toBeDefined();
-        expect(context.stopValues).toEqual(stopValues);
-        expect(context.belowMinColor).toBe("#3B3B3BFF");
-        expect(context.aboveMaxColor).toBe("#B9B9B9FF");
-      }
+      const context = (colorHandler as any).getCustomInterpolationContext();
+      expect(context).toBeDefined();
+      expect(context.stopValues).toEqual(stopValues);
+      expect(context.belowMinColor).toBe("#3B3B3BFF");
+      expect(context.aboveMaxColor).toBe("#B9B9B9FF");
     });
 
     it("preserves alpha channel in CIELab interpolation", () => {

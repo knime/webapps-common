@@ -44,14 +44,19 @@ describe("LinkList", () => {
         links,
       },
     });
-    links.forEach((link) => {
+    const linksWithUrl = links.filter((link) => link.url);
+    const linksWithoutUrl = links.filter((link) => !link.url);
+
+    linksWithUrl.forEach((link) => {
       const el = wrapper.find(`a[href="${link.url}"]`);
-      if (link.url) {
-        expect(el.text()).toEqual(link.url);
-      } else {
-        expect(el.exists()).toBeFalsy();
-      }
+      expect(el.text()).toEqual(link.url);
     });
+
+    linksWithoutUrl.forEach((link) => {
+      const el = wrapper.find(`a[href="${link.url}"]`);
+      expect(el.exists()).toBeFalsy();
+    });
+
     expect(wrapper.findAll("a").length).toBe(1);
   });
 

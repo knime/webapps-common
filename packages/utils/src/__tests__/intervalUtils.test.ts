@@ -271,9 +271,9 @@ describe("intervalUtils", () => {
         "DATE_OR_TIME",
       );
       expect(validationResult.valid).toBe(true);
-      if (validationResult.valid) {
-        expect(validationResult.type).toBe("DATE");
-      }
+      expect((validationResult as { valid: true; type: string }).type).toBe(
+        "DATE",
+      );
 
       const validationResult2 = intervalUtils.isValidISOIntervalString(
         str,
@@ -297,9 +297,9 @@ describe("intervalUtils", () => {
         "DATE_OR_TIME",
       );
       expect(validationResult.valid).toBeTruthy();
-      if (validationResult.valid) {
-        expect(validationResult.type).toBe("DATE");
-      }
+      expect((validationResult as { valid: true; type: string }).type).toBe(
+        "DATE",
+      );
 
       const validationResult2 =
         intervalUtils.isValidHumanReadableIntervalString(str, "DATE");
@@ -319,9 +319,9 @@ describe("intervalUtils", () => {
         "DATE_OR_TIME",
       );
       expect(validationResult.valid).toBe(true);
-      if (validationResult.valid) {
-        expect(validationResult.type).toBe("TIME");
-      }
+      expect((validationResult as { valid: true; type: string }).type).toBe(
+        "TIME",
+      );
 
       const validationResult2 = intervalUtils.isValidISOIntervalString(
         str,
@@ -345,9 +345,9 @@ describe("intervalUtils", () => {
         "DATE_OR_TIME",
       );
       expect(validationResult.valid).toBeTruthy();
-      if (validationResult.valid) {
-        expect(validationResult.type).toBe("TIME");
-      }
+      expect((validationResult as { valid: true; type: string }).type).toBe(
+        "TIME",
+      );
 
       const validationResult2 =
         intervalUtils.isValidHumanReadableIntervalString(str, "TIME");
@@ -367,10 +367,9 @@ describe("intervalUtils", () => {
         "DATE_OR_TIME",
       );
       expect(validationResult.valid).toBeTruthy();
-
-      if (validationResult.valid) {
-        expect(validationResult.type).toBe("DATE");
-      }
+      expect((validationResult as { valid: true; type: string }).type).toBe(
+        "DATE",
+      );
 
       const validationResult2 = intervalUtils.isValidIntervalString(
         str,
@@ -394,10 +393,9 @@ describe("intervalUtils", () => {
         "DATE_OR_TIME",
       );
       expect(validationResult.valid).toBeTruthy();
-
-      if (validationResult.valid) {
-        expect(validationResult.type).toBe("TIME");
-      }
+      expect((validationResult as { valid: true; type: string }).type).toBe(
+        "TIME",
+      );
 
       const validationResult2 = intervalUtils.isValidIntervalString(
         str,
