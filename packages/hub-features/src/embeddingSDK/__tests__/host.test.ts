@@ -47,37 +47,42 @@ describe("Embedding SDK::HOST", () => {
       expect(onReady).toHaveBeenCalledOnce();
     });
 
-    it.each([
-      ["ready" as const, { type: MESSAGES.AWAITING_EMBEDDING_CONTEXT }],
-      [
-        "error" as const,
-        {
-          type: MESSAGES.EMBEDDING_FAILED,
-          error: new Error("something wrong"),
-        },
-      ],
-    ])("listens to %s messages only once", (type, messageData) => {
+    it("listens to ready messages only once", () => {
       const onReady = vi.fn();
       const onError = vi.fn();
+      const messageData = { type: MESSAGES.AWAITING_EMBEDDING_CONTEXT };
 
-      const assertEventCalls = () => {
-        if (type === "ready") {
-          expect(onReady).toHaveBeenCalledOnce();
-          expect(onError).not.toHaveBeenCalledOnce();
-        } else {
-          expect(onReady).not.toHaveBeenCalledOnce();
-          expect(onError).toHaveBeenCalledOnce();
-          expect(onError).toHaveBeenCalledExactlyOnceWith(messageData.error);
-        }
+      host.init({ onReady, onError });
+
+      window.dispatchEvent(createWindowMessage(messageData));
+      expect(onReady).toHaveBeenCalledTimes(1);
+      expect(onError).toHaveBeenCalledTimes(0);
+
+      window.dispatchEvent(createWindowMessage(messageData));
+      expect(onReady).toHaveBeenCalledTimes(1);
+      expect(onError).toHaveBeenCalledTimes(0);
+    });
+
+    it("listens to error messages only once", () => {
+      const onReady = vi.fn();
+      const onError = vi.fn();
+      const error = new Error("something wrong");
+      const messageData = {
+        type: MESSAGES.EMBEDDING_FAILED,
+        error,
       };
 
       host.init({ onReady, onError });
 
       window.dispatchEvent(createWindowMessage(messageData));
-      assertEventCalls();
+      expect(onReady).toHaveBeenCalledTimes(0);
+      expect(onError).toHaveBeenCalledTimes(1);
+      expect(onError).toHaveBeenCalledExactlyOnceWith(error);
 
       window.dispatchEvent(createWindowMessage(messageData));
-      assertEventCalls();
+      expect(onReady).toHaveBeenCalledTimes(0);
+      expect(onError).toHaveBeenCalledTimes(1);
+      expect(onError).toHaveBeenCalledExactlyOnceWith(error);
     });
   });
 

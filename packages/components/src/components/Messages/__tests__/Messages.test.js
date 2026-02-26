@@ -74,19 +74,38 @@ describe("Messages", () => {
     messages.forEach((message, i) => {
       const messageComponent = messageComponents[i];
       expect(messageComponent.props("type")).toEqual(message.type);
-      if (message.button) {
-        expect(messageComponent.props("button")).toEqual(message.button);
-      }
-      if (message.icon) {
-        expect(messageComponent.findComponent(message.icon).exists()).toBe(
-          true,
-        );
-      }
-      if (message.details) {
-        expect(messageComponent.props("details")).toEqual(message.details);
-      }
       expect(messageComponent.text()).toContain(message.message);
     });
+
+    messages
+      .filter((message) => message.button)
+      .forEach((message, i) => {
+        const messagesWithButton = messages.filter((m) => m.button);
+        const messageIndex = messages.indexOf(messagesWithButton[i]);
+        expect(messageComponents[messageIndex].props("button")).toEqual(
+          message.button,
+        );
+      });
+
+    messages
+      .filter((message) => message.icon)
+      .forEach((message, i) => {
+        const messagesWithIcon = messages.filter((m) => m.icon);
+        const messageIndex = messages.indexOf(messagesWithIcon[i]);
+        expect(
+          messageComponents[messageIndex].findComponent(message.icon).exists(),
+        ).toBe(true);
+      });
+
+    messages
+      .filter((message) => message.details)
+      .forEach((message, i) => {
+        const messagesWithDetails = messages.filter((m) => m.details);
+        const messageIndex = messages.indexOf(messagesWithDetails[i]);
+        expect(messageComponents[messageIndex].props("details")).toEqual(
+          message.details,
+        );
+      });
 
     expect(wrapper.find("a").exists()).toBe(false);
     expect(wrapper.findComponent(MessageLink).exists()).toBe(false);
