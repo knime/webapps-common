@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.45.7
+
+### Patch Changes
+
+- e048c89: Wrap SkeletonItem in a div element to fix SSR style bug
+
 ## 1.45.6
 
 ### Patch Changes
