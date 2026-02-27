@@ -84,7 +84,7 @@ const styles = computed(() => {
 </script>
 
 <template>
-  <template v-if="loading">
+  <div v-if="loading" class="wrapper">
     <div
       v-for="index in repeat"
       :key="index"
@@ -92,7 +92,7 @@ const styles = computed(() => {
       v-bind="$attrs"
       :style="styles"
     />
-  </template>
+  </div>
   <slot v-else v-bind="$attrs" />
 </template>
 
@@ -101,6 +101,10 @@ const styles = computed(() => {
   to {
     background-position-x: -200%;
   }
+}
+
+.wrapper {
+  display: contents;
 }
 
 .skeleton-item {
