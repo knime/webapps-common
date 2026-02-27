@@ -1,5 +1,11 @@
 # @knime/eslint-config
 
+## 9.5.4
+
+### Patch Changes
+
+- 471b5e1: Fix minimatch audit issue
+
 ## 9.5.3
 
 ### Patch Changes

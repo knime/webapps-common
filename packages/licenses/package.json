@@ -1,6 +1,6 @@
 {
   "name": "@knime/licenses",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "License checker and open source attribution collector",
   "repository": {
     "type": "git",

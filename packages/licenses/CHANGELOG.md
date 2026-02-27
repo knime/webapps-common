@@ -1,5 +1,11 @@
 # @knime/licenses
 
+## 1.4.1
+
+### Patch Changes
+
+- 471b5e1: Fix minimatch audit issue
+
 ## 1.4.0
 
 ### Minor Changes

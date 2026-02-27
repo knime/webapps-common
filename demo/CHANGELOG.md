@@ -1,5 +1,12 @@
 # demo
 
+## 1.8.15
+
+### Patch Changes
+
+- Updated dependencies [471b5e1]
+  - @knime/licenses@1.4.1
+
 ## 1.8.14
 
 ### Patch Changes
