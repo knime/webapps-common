@@ -20,6 +20,7 @@ import {
 import { horizontalLayoutRenderer } from "./horizontalLayoutRenderer";
 import { integerRenderer } from "./integerRenderer";
 import { intervalRenderer } from "./intervalRenderer";
+import { linkRenderer } from "./linkRenderer";
 import { localDateRenderer } from "./localDateRenderer";
 import { localTimeRenderer } from "./localTimeRenderer";
 import { multiSelectListBoxRenderer } from "./multiSelectListBoxRenderer";
@@ -77,6 +78,7 @@ export const controls = {
    * Containing an optional checkbox. Keep Label in control until we have a framework for that.
    */
   dropdownRenderer,
+  linkRenderer,
   ...fallbackControlRenderers,
 } satisfies Record<string, VueControlRenderer>;
 
