@@ -33,6 +33,7 @@ describe("rfcErrors", () => {
         headline: "Toast headline",
         ...rfcError.data,
         canCopyToClipboard: true,
+        serializeErrorForClipboard: undefined,
       });
     });
   });

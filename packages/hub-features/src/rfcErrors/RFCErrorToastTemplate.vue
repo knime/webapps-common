@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { ref } from "vue";
 import { useClipboard } from "@vueuse/core";
 
 import { Button } from "@knime/components";
@@ -7,11 +7,17 @@ import CheckIcon from "@knime/styles/img/icons/check.svg";
 import CopyIcon from "@knime/styles/img/icons/copy.svg";
 import { formatDateTimeString } from "@knime/utils";
 
+import { serializeErrorForClipboard as defaultSerializeRFCErrorData } from "./serializeRFCErrorData";
 import type { RFCErrorData } from "./types";
 
 type Props = {
   headline: string; // toast headline, will not be displayed here but needed when copying to clipboard
   canCopyToClipboard?: boolean;
+  serializeErrorForClipboard?: (
+    error: RFCErrorData,
+    headline: string,
+    formatDate: (date: Date) => string,
+  ) => string;
 } & RFCErrorData;
 
 const props = withDefaults(defineProps<Props>(), {
@@ -21,6 +27,7 @@ const props = withDefaults(defineProps<Props>(), {
   requestId: undefined,
   errorId: undefined,
   canCopyToClipboard: true,
+  serializeErrorForClipboard: defaultSerializeRFCErrorData,
 });
 const emits = defineEmits(["showMore"]);
 
@@ -30,53 +37,13 @@ const { copy, copied } = useClipboard({
 
 const showDetails = ref(false);
 
-const formattedDate = computed(() => {
-  return props.date ? formatDateTimeString(props.date.getTime()) : "";
-});
-
-const errorForClipboard = computed(() => {
-  let details = "";
-  if (props.details?.length) {
-    if (props.details.length > 1) {
-      const detailLines = props.details
-        .map((item) => `\u2022 ${item}`)
-        .join("\n");
-      details = `\n${detailLines}`;
-    } else {
-      details = props.details[0];
-    }
-  }
-
-  let errorText = `${props.headline}\n\n`;
-  errorText += `${props.title}\n\n`;
-  errorText += details ? `Details: ${details}\n\n` : "";
-
-  if (props.status !== undefined) {
-    errorText += `Status: ${props.status}\n`;
-  }
-
-  if (props.date) {
-    errorText += `Date: ${formattedDate.value}\n`;
-  }
-
-  if (props.requestId) {
-    errorText += `Request Id: ${props.requestId}\n`;
-  }
-
-  if (props.errorId) {
-    errorText += `Error Id: ${props.errorId}\n`;
-  }
-
-  if (props.stacktrace) {
-    errorText += "------\n"; // separator
-    errorText += `Stacktrace:\n\n${props.stacktrace}\n`;
-  }
-
-  return errorText;
-});
+const formatDate = (date: Date): string =>
+  date ? formatDateTimeString(date.getTime()) : "";
 
 const copyToClipboard = () => {
-  copy(errorForClipboard.value).catch((error) => {
+  copy(
+    props.serializeErrorForClipboard(props, props.headline, formatDate),
+  ).catch((error) => {
     consola.error("Failed to copy to clipboard", { error });
   });
 };
@@ -116,7 +83,7 @@ const onShowDetailsClicked = () => {
       <div v-if="status !== undefined">
         <strong>Status: </strong>{{ status }}
       </div>
-      <div v-if="date"><strong>Date: </strong>{{ formattedDate }}</div>
+      <div v-if="date"><strong>Date: </strong>{{ formatDate(date) }}</div>
       <div v-if="requestId"><strong>Request id: </strong>{{ requestId }}</div>
       <div v-if="errorId"><strong>Error id: </strong>{{ errorId }}</div>
       <div v-if="stacktrace && canCopyToClipboard">
