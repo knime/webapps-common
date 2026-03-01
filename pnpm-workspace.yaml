@@ -11,9 +11,9 @@ catalog:
   "@vitejs/plugin-vue": ^6.0.1
   "@vitest/coverage-v8": 4.0.18
   "@vue/test-utils": 2.4.6
-  "@vueuse/components": ~13.8.0
-  "@vueuse/core": ~13.8.0
-  "@vueuse/shared": ~13.8.0
+  "@vueuse/components": ~14.2.1
+  "@vueuse/core": ~14.2.1
+  "@vueuse/shared": ~14.2.1
   consola: 3.4.2
   eslint: 9.38.0
   globals: ^16.3.0
