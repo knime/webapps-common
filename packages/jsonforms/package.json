@@ -21,9 +21,9 @@
   },
   "dependencies": {
     "@floating-ui/vue": "catalog:",
-    "@jsonforms/core": "3.4.0",
-    "@jsonforms/vue": "3.4.0",
-    "@jsonforms/vue-vanilla": "3.4.0",
+    "@jsonforms/core": "3.7.0",
+    "@jsonforms/vue": "3.7.0",
+    "@jsonforms/vue-vanilla": "3.7.0",
     "@knime/components": "workspace:*",
     "@knime/kds-components": "catalog:",
     "@knime/rich-text-editor": "workspace:*",
