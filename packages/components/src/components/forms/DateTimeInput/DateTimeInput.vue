@@ -1,6 +1,7 @@
-<script>
+<script setup lang="ts">
+import { computed, ref, watch } from "vue";
 import {
-  isValid,
+  isValid as isValidDate,
   parse,
   setHours,
   setMilliseconds,
@@ -29,343 +30,310 @@ import "../variables.css";
  * with multiple TimePartInputs for hour, minute etc.
  * Uses DatePicker from v-calendar. See: https://vcalendar.io/
  */
-export default {
-  name: "DateTimeInput",
-  components: {
-    Dropdown,
-    CalendarIcon,
-    TimePartInput,
-    DatePicker,
-  },
-  props: {
-    /**
-     * @type Date - date time in UTC.
-     */
-    modelValue: {
-      type: Date,
-      required: true,
-    },
-    /**
-     * @type String - id of the <input> element; can be used with Label component.
-     */
-    id: {
-      type: String,
-      default: null,
-    },
-    /**
-     * Date format in unicode, only date not time!
-     * @see https://github.com/date-fns/date-fns/blob/master/docs/unicodeTokens.md
-     */
-    dateFormat: {
-      type: String,
-      default: "yyyy-MM-dd",
-    },
-    /**
-     * Date time format in unicode, only time not date!
-     * @see https://www.unicode.org/reports/tr35/tr35-dates.html#dfst-hour
-     */
-    timeFormat: {
-      type: String,
-      default: "HH:mm:ss",
-    },
-    min: {
-      default: null,
-      type: Date,
-    },
-    max: {
-      default: null,
-      type: Date,
-    },
-    /**
-     * Validity controlled by the parent component to be flexible.
-     */
-    isValid: {
-      default: true,
-      type: Boolean,
-    },
-    showSeconds: {
-      default: true,
-      type: Boolean,
-    },
-    showMilliseconds: {
-      default: false,
-      type: Boolean,
-    },
-    showTime: {
-      default: true,
-      type: Boolean,
-    },
-    showDate: {
-      default: true,
-      type: Boolean,
-    },
-    showTimezone: {
-      default: false,
-      type: Boolean,
-    },
-    /**
-     * If true, the time input fields (if present) are displayed in a separate row
-     */
-    twoLines: {
-      default: false,
-      type: Boolean,
-    },
-    required: {
-      default: false,
-      type: Boolean,
-    },
-    /**
-     * @type String - tz db timezone name.
-     * @see https://www.iana.org/time-zones / https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-     */
-    timezone: {
-      type: String,
-      default: getLocalTimeZone(),
-    },
-    disabled: {
-      default: false,
-      type: Boolean,
-    },
-    compact: {
-      default: false,
-      type: Boolean,
-    },
-  },
-  emits: ["update:modelValue"],
-  data() {
-    return {
-      popoverIsVisible: false,
-      isInvalid: false,
-      isAfterMax: false,
-      isBeforeMin: false,
-      // last invalid entered value (for error message)
-      invalidValue: null,
-      // internal value guarded by watcher to prevent invalid values (min/max, null etc.)
-      // time in the given timezone (default: browser local) for correct display
-      localValue: new Date(""),
-      selectedTimezone: this.timezone,
-      timezones: map(Intl.supportedValuesOf("timeZone"), (timezone) => ({
-        id: timezone,
-        text: timezone,
-      })),
-    };
-  },
-  computed: {
-    clientOnlyComponent() {
-      return resolveClientOnlyComponent();
-    },
-    legacyDateFormat() {
-      // see: https://github.com/date-fns/date-fns/blob/master/docs/unicodeTokens.md
-      // this only works for simple patterns and turn the unicode format into the moment.js de-facto standard
-      return this.dateFormat.toUpperCase();
-    },
-    dateTimeHours() {
-      return this.localValue.getHours();
-    },
-    dateTimeMinutes() {
-      return this.localValue.getMinutes();
-    },
-    dateTimeSeconds() {
-      return this.localValue.getSeconds();
-    },
-    dateTimeMilliseconds() {
-      return this.localValue.getMilliseconds();
-    },
-  },
-  watch: {
-    modelValue: {
-      // validates against min/max and sets appropriate state
-      handler(newValue) {
-        // update internal value if min/max bounds are kept and value is valid
-        this.checkMinMax(newValue);
-        if (this.checkIsValid(newValue)) {
-          // convert to zoned time
-          this.localValue = utcToZonedTime(newValue, this.selectedTimezone);
-        }
-      },
-      immediate: true,
-    },
-    timezone: {
-      handler(newValue) {
-        this.selectedTimezone = newValue;
-        this.localValue = utcToZonedTime(this.modelValue, newValue);
-      },
-    },
-  },
-  methods: {
-    formatDate(date) {
-      // time and date
-      if (this.showTime && this.showDate) {
-        return format(date, `${this.dateFormat} ${this.timeFormat}`);
-      }
-      // only time
-      if (this.showTime) {
-        return format(date, this.timeFormat);
-      }
-      // only date
-      return format(date, this.dateFormat);
-    },
-    emitInput(value) {
-      // check min/max
-      const utcValue = zonedTimeToUtc(value, this.selectedTimezone);
-      this.checkMinMax(utcValue);
-      this.$emit("update:modelValue", utcValue);
-    },
-    onDatePickerInput(date) {
-      this.emitInput(updateDate(this.localValue, date));
-    },
-    onTextInputChange($event, hidePopoverFunction) {
-      // parse the input
-      let date = parse($event.target.value, this.dateFormat, new Date());
 
-      // ignore invalid or unparseable input
-      if (!this.checkIsValid(date)) {
-        date = this.localValue;
-      }
+interface Props {
+  /** Date time in UTC */
+  modelValue: Date;
+  /** id of the <input> element; can be used with Label component */
+  id?: string;
+  /**
+   * Date format in unicode, only date not time!
+   * @see https://github.com/date-fns/date-fns/blob/master/docs/unicodeTokens.md
+   */
+  dateFormat?: string;
+  /**
+   * Date time format in unicode, only time not date!
+   * @see https://www.unicode.org/reports/tr35/tr35-dates.html#dfst-hour
+   */
+  timeFormat?: string;
+  min?: Date | null;
+  max?: Date | null;
+  /** Validity controlled by the parent component to be flexible */
+  isValid?: boolean;
+  showSeconds?: boolean;
+  showMilliseconds?: boolean;
+  showTime?: boolean;
+  showDate?: boolean;
+  showTimezone?: boolean;
+  /** If true, the time input fields (if present) are displayed in a separate row */
+  twoLines?: boolean;
+  required?: boolean;
+  /**
+   * tz db timezone name
+   * @see https://www.iana.org/time-zones / https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+   */
+  timezone?: string;
+  disabled?: boolean;
+  compact?: boolean;
+}
 
-      // use time set in value
-      const value = updateDate(this.localValue, date);
+const {
+  modelValue,
+  id = undefined,
+  dateFormat = "yyyy-MM-dd",
+  timeFormat = "HH:mm:ss",
+  min = null,
+  max = null,
+  isValid = true,
+  showSeconds = true,
+  showMilliseconds = false,
+  showTime = true,
+  showDate = true,
+  showTimezone = false,
+  twoLines = false,
+  required = false,
+  timezone = getLocalTimeZone(),
+  disabled = false,
+  compact = false,
+} = defineProps<Props>();
 
-      // hide popover (if open)
-      hidePopoverFunction();
+const emit = defineEmits(["update:modelValue"]);
 
-      // trigger input event which will set value again and update picker
-      // and trigger validation even if the value did not change
-      this.onDatePickerInput(value);
-    },
-    checkIsValid(date) {
-      if (isValid(date)) {
-        return true;
-      }
-      this.isInvalid = true;
-      this.invalidValue = date;
-      return false;
-    },
-    checkMinMax(date) {
-      // skip check if no min and max is set
-      if (!this.min && !this.max) {
-        return true;
-      }
+// Refs (formerly data properties)
+const popoverIsVisible = ref(false);
+const isInvalid = ref(false);
+const isAfterMax = ref(false);
+const isBeforeMin = ref(false);
+// last invalid entered value (for error message)
+const invalidValue = ref<Date | null>(null);
+// internal value guarded by watcher to prevent invalid values (min/max, null etc.)
+// time in the given timezone (default: browser local) for correct display
+const localValue = ref(new Date(""));
+const selectedTimezone = ref(timezone);
+const timezones = map(Intl.supportedValuesOf("timeZone"), (timezone) => ({
+  id: timezone,
+  text: timezone,
+}));
 
-      this.isBeforeMin = isBeforeMinDate(
-        date,
-        this.min,
-        this.showDate,
-        this.showTime,
-      );
-      this.isAfterMax = isAfterMaxDate(
-        date,
-        this.max,
-        this.showDate,
-        this.showTime,
-      );
+// Template refs
+const datePicker = ref(null);
+const hours = ref(null);
+const minutes = ref(null);
+const seconds = ref(null);
+const milliseconds = ref(null);
 
-      if (this.isBeforeMin || this.isAfterMax) {
-        this.invalidValue = date;
-        return false;
-      }
-      return true;
-    },
-    onTimeHoursBounds(bounds) {
-      // skip this handler if date is not shown
-      if (!this.showDate) {
-        return;
-      }
-      if (["min", "max"].includes(bounds.type)) {
-        this.emitInput(setHours(new Date(this.localValue), bounds.value));
-      } else {
-        this.emitInput(this.localValue);
-      }
-    },
-    onTimeMinutesBounds(bounds) {
-      if (["min", "max"].includes(bounds.type)) {
-        this.emitInput(setMinutes(new Date(this.localValue), bounds.value));
-      } else {
-        this.emitInput(this.localValue);
-      }
-    },
-    onTimeSecondsBounds(bounds) {
-      if (["min", "max"].includes(bounds.type)) {
-        this.emitInput(setSeconds(new Date(this.localValue), bounds.value));
-      } else {
-        this.emitInput(this.localValue);
-      }
-    },
-    onTimeMillisecondsBounds(bounds) {
-      if (["min", "max"].includes(bounds.type)) {
-        this.emitInput(
-          setMilliseconds(new Date(this.localValue), bounds.value),
-        );
-      } else {
-        this.emitInput(this.localValue);
-      }
-    },
-    onTimeHoursChange(hours) {
-      let date = new Date(this.localValue);
-      if (Number.isSafeInteger(hours)) {
-        date = setHours(date, hours);
-      }
-      this.emitInput(date);
-    },
-    onTimeMinutesChange(minutes) {
-      let date = new Date(this.localValue);
-      if (Number.isSafeInteger(minutes)) {
-        date = setMinutes(date, minutes);
-      }
-      this.emitInput(date);
-    },
-    onTimeSecondsChange(seconds) {
-      let date = new Date(this.localValue);
-      if (Number.isSafeInteger(seconds)) {
-        date = setSeconds(date, seconds);
-      }
-      this.emitInput(date);
-    },
-    onTimeMillisecondsChange(milliseconds) {
-      let date = new Date(this.localValue);
-      if (Number.isSafeInteger(milliseconds)) {
-        date = setMilliseconds(date, milliseconds);
-      }
-      this.emitInput(date);
-    },
-    onTimeZoneChange(timezone) {
-      this.selectedTimezone = timezone;
-      this.emitInput(this.localValue);
-    },
-    validate() {
-      let isValid = true;
-      let errorMessage;
-      if (this.required && this.isInvalid) {
-        isValid = false;
-        errorMessage = "Please input a valid date";
-      }
-      if (this.isAfterMax) {
-        isValid = false;
+// Computed properties
+const clientOnlyComponent = computed(() => resolveClientOnlyComponent());
 
-        errorMessage = `${this.formatDate(
-          this.invalidValue,
-        )} is after maximum ${this.formatDate(this.max)}`;
-      }
-      if (this.isBeforeMin) {
-        isValid = false;
+const legacyDateFormat = computed(() => {
+  // see: https://github.com/date-fns/date-fns/blob/master/docs/unicodeTokens.md
+  // this only works for simple patterns and turn the unicode format into the moment.js de-facto standard
+  return dateFormat.toUpperCase();
+});
 
-        errorMessage = `${this.formatDate(
-          this.invalidValue,
-        )} is before minimum ${this.formatDate(this.min)}`;
-      }
-      return {
-        isValid,
-        errorMessage,
-      };
-    },
-    onKeydownEscape(e, hidePopover) {
-      if (this.popoverIsVisible) {
-        e.preventDefault();
-        hidePopover();
-      }
-    },
-  },
+const dateTimeHours = computed(() => localValue.value.getHours());
+const dateTimeMinutes = computed(() => localValue.value.getMinutes());
+const dateTimeSeconds = computed(() => localValue.value.getSeconds());
+const dateTimeMilliseconds = computed(() => localValue.value.getMilliseconds());
+
+// Helper functions (defined before watchers to avoid use-before-define errors)
+const checkIsValid = (date: Date) => {
+  if (isValidDate(date)) {
+    return true;
+  }
+  isInvalid.value = true;
+  invalidValue.value = date;
+  return false;
 };
+
+const checkMinMax = (date: Date) => {
+  // skip check if no min and max is set
+  if (!min && !max) {
+    return true;
+  }
+
+  isBeforeMin.value = isBeforeMinDate(date, min, showDate, showTime);
+  isAfterMax.value = isAfterMaxDate(date, max, showDate, showTime);
+
+  if (isBeforeMin.value || isAfterMax.value) {
+    invalidValue.value = date;
+    return false;
+  }
+  return true;
+};
+
+const formatDate = (date: Date) => {
+  // time and date
+  if (showTime && showDate) {
+    return format(date, `${dateFormat} ${timeFormat}`);
+  }
+  // only time
+  if (showTime) {
+    return format(date, timeFormat);
+  }
+  // only date
+  return format(date, dateFormat);
+};
+
+const emitInput = (value: string | number | Date) => {
+  // check min/max
+  const utcValue = zonedTimeToUtc(value, selectedTimezone.value);
+  checkMinMax(utcValue);
+  emit("update:modelValue", utcValue);
+};
+
+const onDatePickerInput = (date: Date) => {
+  emitInput(updateDate(localValue.value, date));
+};
+
+const onTextInputChange = ($event: Event, hidePopoverFunction: () => void) => {
+  // parse the input
+  let date = parse(
+    ($event.target as HTMLInputElement)?.value,
+    dateFormat,
+    new Date(),
+  );
+
+  // ignore invalid or unparseable input
+  if (!checkIsValid(date)) {
+    date = localValue.value;
+  }
+
+  // use time set in value
+  const value = updateDate(localValue.value, date);
+
+  // hide popover (if open)
+  hidePopoverFunction();
+
+  // trigger input event which will set value again and update picker
+  // and trigger validation even if the value did not change
+  onDatePickerInput(value);
+};
+
+// Watchers
+watch(
+  () => modelValue,
+  (newValue) => {
+    // validates against min/max and sets appropriate state
+    // update internal value if min/max bounds are kept and value is valid
+    checkMinMax(newValue);
+    if (checkIsValid(newValue)) {
+      // convert to zoned time
+      localValue.value = utcToZonedTime(newValue, selectedTimezone.value);
+    }
+  },
+  { immediate: true },
+);
+
+watch(
+  () => timezone,
+  (newValue) => {
+    selectedTimezone.value = newValue;
+    localValue.value = utcToZonedTime(modelValue, newValue);
+  },
+);
+
+// Event handlers
+
+const onTimeHoursBounds = (bounds: { type: string; value: number }) => {
+  // skip this handler if date is not shown
+  if (!showDate) {
+    return;
+  }
+  if (["min", "max"].includes(bounds.type)) {
+    emitInput(setHours(new Date(localValue.value), bounds.value));
+  } else {
+    emitInput(localValue.value);
+  }
+};
+
+const onTimeMinutesBounds = (bounds: { type: string; value: number }) => {
+  if (["min", "max"].includes(bounds.type)) {
+    emitInput(setMinutes(new Date(localValue.value), bounds.value));
+  } else {
+    emitInput(localValue.value);
+  }
+};
+
+const onTimeSecondsBounds = (bounds: { type: string; value: number }) => {
+  if (["min", "max"].includes(bounds.type)) {
+    emitInput(setSeconds(new Date(localValue.value), bounds.value));
+  } else {
+    emitInput(localValue.value);
+  }
+};
+
+const onTimeMillisecondsBounds = (bounds: { type: string; value: number }) => {
+  if (["min", "max"].includes(bounds.type)) {
+    emitInput(setMilliseconds(new Date(localValue.value), bounds.value));
+  } else {
+    emitInput(localValue.value);
+  }
+};
+
+const onTimeHoursChange = (hours: number) => {
+  let date = new Date(localValue.value);
+  if (Number.isSafeInteger(hours)) {
+    date = setHours(date, hours);
+  }
+  emitInput(date);
+};
+
+const onTimeMinutesChange = (minutes: number) => {
+  let date = new Date(localValue.value);
+  if (Number.isSafeInteger(minutes)) {
+    date = setMinutes(date, minutes);
+  }
+  emitInput(date);
+};
+
+const onTimeSecondsChange = (seconds: number) => {
+  let date = new Date(localValue.value);
+  if (Number.isSafeInteger(seconds)) {
+    date = setSeconds(date, seconds);
+  }
+  emitInput(date);
+};
+
+const onTimeMillisecondsChange = (milliseconds: number) => {
+  let date = new Date(localValue.value);
+  if (Number.isSafeInteger(milliseconds)) {
+    date = setMilliseconds(date, milliseconds);
+  }
+  emitInput(date);
+};
+
+const onTimeZoneChange = (timezone: string) => {
+  selectedTimezone.value = timezone;
+  emitInput(localValue.value);
+};
+
+const validate = () => {
+  let isValidResult = true;
+  let errorMessage;
+  if (required && isInvalid.value) {
+    isValidResult = false;
+    errorMessage = "Please input a valid date";
+  }
+  if (isAfterMax.value && invalidValue.value) {
+    isValidResult = false;
+
+    // isAfterMax can only be true if max is not null
+    errorMessage = `${formatDate(invalidValue.value)} is after maximum ${formatDate(max!)}`;
+  }
+  if (isBeforeMin.value && invalidValue.value) {
+    isValidResult = false;
+
+    // isBeforeMin can only be true if min is not null
+    errorMessage = `${formatDate(invalidValue.value)} is before minimum ${formatDate(min!)}`;
+  }
+  return {
+    isValid: isValidResult,
+    errorMessage,
+  };
+};
+
+const onKeydownEscape = (e: KeyboardEvent, hidePopover: () => void) => {
+  if (popoverIsVisible.value) {
+    e.preventDefault();
+    hidePopover();
+  }
+};
+
+// Expose methods that can be called from parent
+defineExpose({
+  validate,
+});
 </script>
 
 <template>
@@ -481,11 +449,12 @@ export default {
         @update:model-value="onTimeMillisecondsChange"
       />
       <span v-if="showTimezone" class="time-colon" />
+      <!--  eslint-disable vue/attribute-hyphenation ariaLabel needs to be given like this for typescript to not complain -->
       <Dropdown
         v-if="showTimezone"
         class="timezone"
         :model-value="selectedTimezone"
-        aria-label="Timezone"
+        ariaLabel="Timezone"
         :disabled="disabled"
         :possible-values="timezones"
         :compact="compact"
