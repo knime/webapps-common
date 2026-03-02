@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-use-before-define */
 import { MESSAGES } from "./messages";
 import {
   type EmbeddingContext,
@@ -20,9 +19,7 @@ export const init = (callbacks: {
   onReady: () => void;
   onError: (error: Error) => void;
 }) => {
-  function teardown() {
-    window.removeEventListener("message", onMessage);
-  }
+  let _initDone = false;
 
   function onMessage(event: MessageEvent) {
     if (!messageValidators.isInitializationMessage(event)) {
@@ -30,9 +27,13 @@ export const init = (callbacks: {
     }
 
     if (event.data?.type === MESSAGES.AWAITING_EMBEDDING_CONTEXT) {
+      if (_initDone) {
+        return;
+      }
+
       logger().info("Got confirmation to send embedding context");
       callbacks.onReady();
-      teardown();
+      _initDone = true;
     }
 
     if (event.data?.type === MESSAGES.EMBEDDING_FAILED) {
@@ -40,7 +41,6 @@ export const init = (callbacks: {
         event: event.data,
       });
       callbacks.onError(event.data.error);
-      teardown();
     }
   }
 
