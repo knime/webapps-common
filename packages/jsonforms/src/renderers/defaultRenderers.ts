@@ -17,6 +17,7 @@ import {
   fallbackControlRenderers,
   fallbackLayoutRenderers,
 } from "./fallbackRenderers";
+import { gridSelectionRenderer } from "./gridSelectionRenderer";
 import { horizontalLayoutRenderer } from "./horizontalLayoutRenderer";
 import { integerRenderer } from "./integerRenderer";
 import { intervalRenderer } from "./intervalRenderer";
@@ -35,6 +36,7 @@ import { singleSelectRenderer } from "./singleSelectRenderer";
 import { sortListRenderer } from "./sortListRenderer";
 import { textAreaRenderer } from "./textAreaRenderer";
 import { textMessageRenderer } from "./textMessageRenderer";
+import { timeframesRenderer } from "./timeframesRenderer";
 import {
   manualTwinlistRenderer,
   simpleTwinlistRenderer,
@@ -44,8 +46,6 @@ import { typedStringFilterRenderer } from "./typedStringFilterRenderer";
 import { valueSwitchRenderer } from "./valueSwitchRenderer";
 import { verticalLayoutRenderer } from "./verticalLayoutRenderer";
 import { zonedDateTimeRenderer } from "./zonedDateTimeRenderer";
-import { gridSelectionRenderer } from "./gridSelectionRenderer";
-import { timeframesRenderer } from "./timeframesRenderer";
 
 export const controls = {
   checkboxesRenderer,

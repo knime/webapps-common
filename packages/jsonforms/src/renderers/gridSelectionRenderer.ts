@@ -1,9 +1,9 @@
+import { defineAsyncComponent } from "vue";
 import { and, isControl, rankWith } from "@jsonforms/core";
 
-import { priorityRanks, inputFormats } from "../constants";
-import { withLabel } from "../higherOrderComponents/control/withLabel";
-import { defineAsyncComponent } from "vue";
+import { inputFormats, priorityRanks } from "../constants";
 import { hasFormat } from "../constants/inputFormats";
+import { withLabel } from "../higherOrderComponents/control/withLabel";
 
 const GridSelectionControl = defineAsyncComponent(
   () => import("../uiComponents/GridSelectionControl.vue"),
