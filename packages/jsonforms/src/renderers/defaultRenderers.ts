@@ -44,6 +44,8 @@ import { typedStringFilterRenderer } from "./typedStringFilterRenderer";
 import { valueSwitchRenderer } from "./valueSwitchRenderer";
 import { verticalLayoutRenderer } from "./verticalLayoutRenderer";
 import { zonedDateTimeRenderer } from "./zonedDateTimeRenderer";
+import { gridSelectionRenderer } from "./gridSelectionRenderer";
+import { timeframesRenderer } from "./timeframesRenderer";
 
 export const controls = {
   checkboxesRenderer,
@@ -70,6 +72,8 @@ export const controls = {
   valueSwitchRenderer,
   zonedDateTimeRenderer,
   singleSelectRenderer,
+  gridSelectionRenderer,
+  timeframesRenderer,
   // without label:
   simpleButtonRenderer,
   textMessageRenderer,
