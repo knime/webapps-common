@@ -1,5 +1,11 @@
 # @knime/hub-features
 
+## 1.21.2
+
+### Patch Changes
+
+- bfe6ec3: NXT-4509: add custom clipboard serialization to RFCError toast
+
 ## 1.21.1
 
 ### Patch Changes
