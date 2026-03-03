@@ -12,6 +12,7 @@ import {
   dateTimeFormatPickerWithTypeRenderer,
 } from "./dateTimeFormatPickerRenderer";
 import { dateTimeRenderer } from "./dateTimeRenderer";
+import { dockerImageDropdownRenderer } from "./dockerImageDropdownRenderer";
 import { dropdownRenderer } from "./dropdownRenderer";
 import { executionContextDropdownRenderer } from "./executionContextDropdownRenderer";
 import {
@@ -84,6 +85,7 @@ export const controls = {
   dropdownRenderer,
   // custom hub renderers
   executionContextDropdownRenderer,
+  dockerImageDropdownRenderer,
   ...fallbackControlRenderers,
 } satisfies Record<string, VueControlRenderer>;
 
