@@ -1,5 +1,11 @@
 # @knime/hub-features
 
+## 1.22.0
+
+### Minor Changes
+
+- 395300b: allow embedding failure to be sent after initialization step
+
 ## 1.21.2
 
 ### Patch Changes
