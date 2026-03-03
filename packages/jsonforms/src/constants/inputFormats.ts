@@ -31,6 +31,7 @@ export const inputFormats = {
   singleSelectListBox: "singleSelectListBox",
   gridSelection: "gridSelection",
   timeframes: "timeframes",
+  link: "linkButton",
   // custom hub formats
   executionContextDropdown: "executionContextDropdown",
   dockerImageDropdown: "dockerImageDropdown",
