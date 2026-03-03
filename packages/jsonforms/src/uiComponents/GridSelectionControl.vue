@@ -167,8 +167,7 @@ watch(
 
   & .grid-list-container {
     display: grid;
-    align-items: stretch;
-    justify-items: stretch;
+    place-items: stretch stretch;
   }
 
   & .button {
@@ -179,30 +178,33 @@ watch(
       border-radius: 6px;
 
       &.toggled {
+        color: light-dark(hsl(0deg 0% 16%), hsl(0deg 0% 94%));
+        background-color: light-dark(
+          hsl(166deg 68% 93%),
+          hsl(176deg 67% 22% / 32%)
+        );
+        border: 1px solid light-dark(hsl(172deg 27% 48%), hsl(168deg 47% 85%));
         border-radius: 6px;
-        color: light-dark(hsl(0 0% 16%), hsl(0 0% 94%));
-        background-color: light-dark(hsl(166 68% 93%), hsl(176 67% 22% / 0.32));
-        border: 1px solid light-dark(hsl(172 27% 48%), hsl(168 47% 85%));
 
         &:hover {
           background-color: light-dark(
-            hsl(168 47% 85%),
-            hsl(174 48% 31% / 0.56)
+            hsl(168deg 47% 85%),
+            hsl(174deg 48% 31% / 56%)
           );
         }
 
         &:active {
           background-color: light-dark(
-            hsl(169 34% 76%),
-            hsl(172 27% 48% / 0.72)
+            hsl(169deg 34% 76%),
+            hsl(172deg 27% 48% / 72%)
           );
         }
       }
     }
 
     &.invert {
-      margin-left: 0;
       margin-top: var(--space-12);
+      margin-left: 0;
     }
   }
 

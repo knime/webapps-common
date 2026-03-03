@@ -172,34 +172,35 @@ const onUpdate = (
       display: flex;
       flex-direction: row;
       gap: 5px;
-      align-items: center;
-      justify-items: center;
+      place-items: center center;
 
       & .wrapper {
-        border-radius: 6px;
         background-color: var(--theme-time-part-input-background-color);
+        border-radius: 6px;
 
-        :deep(input[type="number"]) {
-          height: 28px;
-          border-radius: 6px;
+        & :deep(input[type="number"]) {
           width: 100%;
-          padding-left: 6px;
+          height: 28px;
           padding-right: 53px;
+          padding-left: 6px;
+          border-radius: 6px;
         }
 
-        :deep(.increase),
-        :deep(.decrease) {
+        & :deep(.increase),
+        & :deep(.decrease) {
           width: 20px;
           height: 20px;
-          border-radius: 4px;
-          border: var(--form-border-width) solid var(--knime-stone-gray);
           padding: 0 4px;
+          border: var(--form-border-width) solid var(--knime-stone-gray);
+          border-radius: 4px;
         }
-        :deep(.increase) {
+
+        & :deep(.increase) {
           top: 4px;
           right: 4px;
         }
-        :deep(.decrease) {
+
+        & :deep(.decrease) {
           top: 4px;
           right: 28px;
         }
