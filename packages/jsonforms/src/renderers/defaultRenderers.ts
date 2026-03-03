@@ -17,6 +17,7 @@ import {
   fallbackControlRenderers,
   fallbackLayoutRenderers,
 } from "./fallbackRenderers";
+import { gridSelectionRenderer } from "./gridSelectionRenderer";
 import { horizontalLayoutRenderer } from "./horizontalLayoutRenderer";
 import { integerRenderer } from "./integerRenderer";
 import { intervalRenderer } from "./intervalRenderer";
@@ -35,6 +36,7 @@ import { singleSelectRenderer } from "./singleSelectRenderer";
 import { sortListRenderer } from "./sortListRenderer";
 import { textAreaRenderer } from "./textAreaRenderer";
 import { textMessageRenderer } from "./textMessageRenderer";
+import { timeframesRenderer } from "./timeframesRenderer";
 import {
   manualTwinlistRenderer,
   simpleTwinlistRenderer,
@@ -70,6 +72,8 @@ export const controls = {
   valueSwitchRenderer,
   zonedDateTimeRenderer,
   singleSelectRenderer,
+  gridSelectionRenderer,
+  timeframesRenderer,
   // without label:
   simpleButtonRenderer,
   textMessageRenderer,
