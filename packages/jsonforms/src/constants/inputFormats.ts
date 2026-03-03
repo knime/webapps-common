@@ -33,6 +33,7 @@ export const inputFormats = {
   timeframes: "timeframes",
   // custom hub formats
   executionContextDropdown: "executionContextDropdown",
+  dockerImageDropdown: "dockerImageDropdown",
 } as const;
 
 // union type of the values of the inputFormats object:
