@@ -31,7 +31,7 @@ import "../variables.css";
  * Uses DatePicker from v-calendar. See: https://vcalendar.io/
  */
 
-interface Props {
+export interface DateTimeInputProps {
   /** Date time in UTC */
   modelValue: Date;
   /** id of the <input> element; can be used with Label component */
@@ -85,7 +85,7 @@ const {
   timezone = getLocalTimeZone(),
   disabled = false,
   compact = false,
-} = defineProps<Props>();
+} = defineProps<DateTimeInputProps>();
 
 const emit = defineEmits(["update:modelValue"]);
 
