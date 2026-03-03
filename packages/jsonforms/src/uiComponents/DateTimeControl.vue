@@ -15,6 +15,7 @@ const minimum = computed(() =>
 const maximum = computed(() =>
   options.value?.maximum ? toUTCTime(options.value.maximum) : null,
 );
+const twoLines = computed(() => options.value?.twoLines ?? true);
 
 const modelValue = computed<Date>({
   get: () => toUTCTime(props.control.data),
@@ -26,7 +27,7 @@ const modelValue = computed<Date>({
   <DateTimeInput
     :id="labelForId"
     v-model="modelValue"
-    two-lines
+    :two-lines="twoLines"
     :required="true"
     :show-time="options?.showTime"
     :show-seconds="options?.showSeconds"
