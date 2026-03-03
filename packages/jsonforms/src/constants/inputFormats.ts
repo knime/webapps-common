@@ -30,6 +30,8 @@ export const inputFormats = {
   singleSelectListBox: "singleSelectListBox",
   gridSelection: "gridSelection",
   timeframes: "timeframes",
+  // custom hub formats
+  executionContextDropdown: "executionContextDropdown",
 } as const;
 
 // union type of the values of the inputFormats object:
