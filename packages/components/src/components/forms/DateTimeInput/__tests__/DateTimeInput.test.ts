@@ -212,7 +212,7 @@ describe("DateTimeInput", () => {
       const year = 2019;
       const input = `${year}-${month}-${dayOfMonth}`;
 
-      // <input> is inside of the slot
+      // @ts-expect-error <input> is inside of the slot
       wrapper.vm.onTextInputChange({ target: { value: input } }, () => "");
 
       expect(wrapper.emitted("update:modelValue")).toBeTruthy();
@@ -230,7 +230,7 @@ describe("DateTimeInput", () => {
         ...context,
         props,
       });
-      // <input> is inside of the slot
+      // @ts-expect-error <input> is inside of the slot
       wrapper.vm.onTextInputChange({ target: { value: "asdf" } }, () => "");
 
       expect(wrapper.emitted("update:modelValue")).toBeTruthy();
