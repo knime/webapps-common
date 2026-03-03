@@ -29,6 +29,8 @@ export const inputFormats = {
   colorPreview: "colorPreview",
   multiSelectListBox: "multiSelectListBox",
   singleSelectListBox: "singleSelectListBox",
+  gridSelection: "gridSelection",
+  timeframes: "timeframes",
 } as const;
 
 // union type of the values of the inputFormats object:
