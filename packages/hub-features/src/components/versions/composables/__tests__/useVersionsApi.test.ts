@@ -64,6 +64,7 @@ describe("useVersionsApi", () => {
       headers: new Headers({ date: new Date("2025-03-10").toISOString() }),
       status: 404,
     };
+    mockFetchError.statusCode = 500;
     mockFetchError.data = {
       title: "",
       details: [],

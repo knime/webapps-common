@@ -41,12 +41,22 @@ const toToast = ({
   };
 };
 
+const isFetchError = (error: unknown): error is FetchError => {
+  return (
+    error !== null &&
+    typeof error === "object" &&
+    "response" in error &&
+    "statusCode" in error &&
+    "data" in error
+  );
+};
+
 /**
  * Parse an ofetch's `FetchError` to an `RFCError`.
  * When parsing is not possible it returns undefined.
  */
 const tryParse = (error: unknown): RFCError | undefined => {
-  if (!(error instanceof FetchError)) {
+  if (!isFetchError(error)) {
     return undefined;
   }
 
