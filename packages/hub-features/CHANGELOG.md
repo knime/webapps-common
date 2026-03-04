@@ -1,5 +1,11 @@
 # @knime/hub-features
 
+## 1.22.1
+
+### Patch Changes
+
+- d0c7524: KDS-659: avoid instanceof; it fails with mulitple ofetch versions
+
 ## 1.22.0
 
 ### Minor Changes
