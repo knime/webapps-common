@@ -109,4 +109,22 @@ describe("CachingSelectionService", () => {
     ).toStrictEqual(newSelection);
     expect(parentReplaceSpy).toHaveBeenCalledWith(newSelection);
   });
+
+  it("updates the selection cache directly when publishing a selection", () => {
+    cachingSelectionService.publishOnSelectionChange("ADD", [
+      "added",
+      "another",
+    ]);
+    expect(
+      Array.from(cachingSelectionService.getCachedSelection()).sort(),
+    ).toStrictEqual(["added", "another"]);
+
+    cachingSelectionService.publishOnSelectionChange("REMOVE", ["added"]);
+    expect(cachingSelectionService.getCachedSelection().size).toBe(1);
+
+    cachingSelectionService.publishOnSelectionChange("REPLACE", ["replaced"]);
+    expect(
+      Array.from(cachingSelectionService.getCachedSelection()).sort(),
+    ).toStrictEqual(["replaced"]);
+  });
 });
