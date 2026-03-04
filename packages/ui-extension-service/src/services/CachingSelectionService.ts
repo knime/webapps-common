@@ -1,4 +1,5 @@
 import type {
+  SelectionMode,
   SelectionParams,
   UIExtensionService,
 } from "@knime/ui-extension-renderer/api";
@@ -72,5 +73,19 @@ export class CachingSelectionService extends SelectionService {
 
   getCachedSelection() {
     return this.cachedSelection;
+  }
+
+  publishOnSelectionChange(selectionMode: SelectionMode, rowKeys: string[]) {
+    switch (selectionMode) {
+      case "ADD":
+        this.addToChache(rowKeys);
+        break;
+      case "REPLACE":
+        this.replaceCache(rowKeys);
+        break;
+      case "REMOVE":
+        this.removeFromCache(rowKeys);
+    }
+    return super.publishOnSelectionChange(selectionMode, rowKeys);
   }
 }

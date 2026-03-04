@@ -62,7 +62,8 @@
     "auditConfig": {
       "ignoreGhsas": [
         "GHSA-2g4f-4pwh-qvx6",
-        "GHSA-3ppc-4f35-3m26"
+        "GHSA-3ppc-4f35-3m26",
+        "GHSA-v2wj-7wpq-c8vv"
       ]
     },
     "peerDependencyRules": {

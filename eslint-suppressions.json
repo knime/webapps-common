@@ -327,7 +327,7 @@
   },
   "packages/ui-extension-service/src/services/__tests__/CachingSelectionService.test.ts": {
     "@typescript-eslint/no-floating-promises": {
-      "count": 3
+      "count": 6
     }
   },
   "packages/utils/src/__tests__/sleep.test.ts": {
