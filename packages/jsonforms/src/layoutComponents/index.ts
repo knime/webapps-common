@@ -2,5 +2,12 @@ import Form from "./Form.vue";
 import VerticalLayoutBase from "./VerticalLayoutBase.vue";
 import SectionHeading from "./section/SectionHeading.vue";
 import SettingsSubPanel from "./settingsSubPanel/SettingsSubPanel.vue";
+import SimpleArrayLayout from "./simpleArrayLayout/SimpleArrayLayout.vue";
 
-export { Form, VerticalLayoutBase, SettingsSubPanel, SectionHeading };
+export {
+  Form,
+  VerticalLayoutBase,
+  SettingsSubPanel,
+  SectionHeading,
+  SimpleArrayLayout,
+};
