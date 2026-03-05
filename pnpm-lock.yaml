@@ -407,14 +407,14 @@ importers:
         specifier: 'catalog:'
         version: 1.1.8(vue@3.5.24(typescript@5.9.3))
       '@jsonforms/core':
-        specifier: 3.4.0
-        version: 3.4.0
+        specifier: 3.7.0
+        version: 3.7.0
       '@jsonforms/vue':
-        specifier: 3.4.0
-        version: 3.4.0(@jsonforms/core@3.4.0)(vue@3.5.24(typescript@5.9.3))
+        specifier: 3.7.0
+        version: 3.7.0(@jsonforms/core@3.7.0)(vue@3.5.24(typescript@5.9.3))
       '@jsonforms/vue-vanilla':
-        specifier: 3.4.0
-        version: 3.4.0(@jsonforms/core@3.4.0)(@jsonforms/vue@3.4.0(@jsonforms/core@3.4.0)(vue@3.5.24(typescript@5.9.3)))(vue@3.5.24(typescript@5.9.3))
+        specifier: 3.7.0
+        version: 3.7.0(@jsonforms/core@3.7.0)(@jsonforms/vue@3.7.0(@jsonforms/core@3.7.0)(vue@3.5.24(typescript@5.9.3)))(vue@3.5.24(typescript@5.9.3))
       '@knime/components':
         specifier: workspace:*
         version: link:../components
@@ -1650,21 +1650,21 @@ packages:
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
 
-  '@jsonforms/core@3.4.0':
-    resolution: {integrity: sha512-jeU98XLru6G2WVGmJqG19W2rmSLX4im/gOWbptTzQJYj8tS38cqDoYcIRuBmAQYASj2ogJDHQnDgIXARSL8vJA==}
+  '@jsonforms/core@3.7.0':
+    resolution: {integrity: sha512-CE9viWtwi9QWLqlWLeOul1/R1GRAyOA9y6OoUpsCc0FhyR+g5p29F3k0fUExHWxL0Sf4KHcXYkfhtqfRBPS8ww==}
 
-  '@jsonforms/vue-vanilla@3.4.0':
-    resolution: {integrity: sha512-dP/LFOmFWZ7WS0X9N5rT7MsVfIT7BaqEIPaM2+vvD9jBvxdCHvEgdV7V7XruhpZ8pxQ6IsxzQILD2JyYhpgGTA==}
+  '@jsonforms/vue-vanilla@3.7.0':
+    resolution: {integrity: sha512-+wCnot4j0dXHx4cZg1bC7GunVhNCn0bYYCzsy+zJGJwQmdjQ/pdaDcF6CaS7crL/rO1lrEfW+03oJNBi50YDyw==}
     peerDependencies:
-      '@jsonforms/core': 3.4.0
-      '@jsonforms/vue': 3.4.0
-      vue: ^3.2.26
+      '@jsonforms/core': 3.7.0
+      '@jsonforms/vue': 3.7.0
+      vue: ^3.5.0
 
-  '@jsonforms/vue@3.4.0':
-    resolution: {integrity: sha512-pSfxvlXLSZafkbVbHRTlBdh9/9L/bAJx5pj8TiJkPREWAOOE0dc8Cp+xPTKYNGv87F0apzUEJmY1fHtsG42Uig==}
+  '@jsonforms/vue@3.7.0':
+    resolution: {integrity: sha512-S5NXYeu6lTh2yfNmPz17TRo32dSYqAhOe8Co2mp0lmeq1ODJNBQs8SesXqBRdVMEmMK20ZW/1i7i/38J0TGjdw==}
     peerDependencies:
-      '@jsonforms/core': 3.4.0
-      vue: ^3.2.26
+      '@jsonforms/core': 3.7.0
+      vue: ^3.5.0
 
   '@keyv/bigmap@1.3.0':
     resolution: {integrity: sha512-KT01GjzV6AQD5+IYrcpoYLkCu1Jod3nau1Z7EsEuViO3TZGRacSbO9MfHmbJ1WaOXFtWLxPVj169cn2WNKPkIg==}
@@ -6440,23 +6440,23 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  '@jsonforms/core@3.4.0':
+  '@jsonforms/core@3.7.0':
     dependencies:
       '@types/json-schema': 7.0.15
       ajv: 8.18.0
       ajv-formats: 2.1.1(ajv@8.18.0)
       lodash: 4.17.23
 
-  '@jsonforms/vue-vanilla@3.4.0(@jsonforms/core@3.4.0)(@jsonforms/vue@3.4.0(@jsonforms/core@3.4.0)(vue@3.5.24(typescript@5.9.3)))(vue@3.5.24(typescript@5.9.3))':
+  '@jsonforms/vue-vanilla@3.7.0(@jsonforms/core@3.7.0)(@jsonforms/vue@3.7.0(@jsonforms/core@3.7.0)(vue@3.5.24(typescript@5.9.3)))(vue@3.5.24(typescript@5.9.3))':
     dependencies:
-      '@jsonforms/core': 3.4.0
-      '@jsonforms/vue': 3.4.0(@jsonforms/core@3.4.0)(vue@3.5.24(typescript@5.9.3))
+      '@jsonforms/core': 3.7.0
+      '@jsonforms/vue': 3.7.0(@jsonforms/core@3.7.0)(vue@3.5.24(typescript@5.9.3))
       lodash: 4.17.23
       vue: 3.5.24(typescript@5.9.3)
 
-  '@jsonforms/vue@3.4.0(@jsonforms/core@3.4.0)(vue@3.5.24(typescript@5.9.3))':
+  '@jsonforms/vue@3.7.0(@jsonforms/core@3.7.0)(vue@3.5.24(typescript@5.9.3))':
     dependencies:
-      '@jsonforms/core': 3.4.0
+      '@jsonforms/core': 3.7.0
       lodash: 4.17.23
       vue: 3.5.24(typescript@5.9.3)
 
