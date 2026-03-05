@@ -19,6 +19,7 @@ import {
   fallbackControlRenderers,
   fallbackLayoutRenderers,
 } from "./fallbackRenderers";
+import { fileChooserRenderer } from "./fileChooserRenderer";
 import { gridSelectionRenderer } from "./gridSelectionRenderer";
 import { horizontalLayoutRenderer } from "./horizontalLayoutRenderer";
 import { integerRenderer } from "./integerRenderer";
@@ -93,6 +94,7 @@ export const controls = {
   executionContextDropdownRenderer,
   dockerImageDropdownRenderer,
   radioWithDescriptionRenderer,
+  fileChooserRenderer,
   ...fallbackControlRenderers,
 } satisfies Record<string, VueControlRenderer>;
 
