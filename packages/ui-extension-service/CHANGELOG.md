@@ -1,5 +1,11 @@
 # @knime/ui-extension-service
 
+## 2.7.1
+
+### Patch Changes
+
+- 36fbecf: Update cache of CachingSelectionService on publish
+
 ## 2.7.0
 
 ### Minor Changes
