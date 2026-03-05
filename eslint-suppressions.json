@@ -277,7 +277,7 @@
       "count": 1
     }
   },
-  "packages/jsonforms/src/uiComponents/FileChooserControl.vue": {
+  "packages/jsonforms/src/uiComponents/FileUploadControl.vue": {
     "depend/ban-dependencies": {
       "count": 1
     }

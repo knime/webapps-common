@@ -5,15 +5,15 @@ import { priorityRanks } from "../constants";
 import { hasFormat, inputFormats } from "../constants/inputFormats";
 import { withLabel } from "../higherOrderComponents";
 
-const FileChooserControl = defineAsyncComponent(
-  () => import("../uiComponents/FileChooserControl.vue"),
+const FileUploadControl = defineAsyncComponent(
+  () => import("../uiComponents/FileUploadControl.vue"),
 );
 
-export const fileChooserRenderer = withLabel()({
-  name: "FileChooserRenderer",
-  control: FileChooserControl,
+export const fileUploadRenderer = withLabel()({
+  name: "FileUploadRenderer",
+  control: FileUploadControl,
   tester: rankWith(
     priorityRanks.default,
-    and(isControl, hasFormat(inputFormats.fileChooser)),
+    and(isControl, hasFormat(inputFormats.fileUpload)),
   ),
 });
