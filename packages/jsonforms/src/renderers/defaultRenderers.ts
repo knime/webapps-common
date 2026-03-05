@@ -31,6 +31,7 @@ import { localTimeRenderer } from "./localTimeRenderer";
 import { multiSelectListBoxRenderer } from "./multiSelectListBoxRenderer";
 import { nameFilterRenderer } from "./nameFilterRenderer";
 import { numberRenderer } from "./numberRenderer";
+import { quantityRenderer } from "./quantityRenderer";
 import { radioRenderer } from "./radioRenderer";
 import { richTextRenderer } from "./richTextRenderer";
 import { sectionLayoutRenderer } from "./sectionLayoutRenderer";
@@ -81,6 +82,7 @@ export const controls = {
   singleSelectRenderer,
   gridSelectionRenderer,
   timeframesRenderer,
+  quantityRenderer,
   // without label:
   simpleButtonRenderer,
   textMessageRenderer,
