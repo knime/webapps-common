@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.18.13
+
+### Patch Changes
+
+- df172ab: Fix checkbox and radio button label alignment
+
 ## 1.18.12
 
 ### Patch Changes
