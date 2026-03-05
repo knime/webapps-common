@@ -36,6 +36,7 @@ import { radioRenderer } from "./radioRenderer";
 import { richTextRenderer } from "./richTextRenderer";
 import { sectionLayoutRenderer } from "./sectionLayoutRenderer";
 import { settingsSubPanelLayoutRenderer } from "./sectionSubPanelLayoutRenderer";
+import { simpleArrayLayoutRenderer } from "./simpleArrayLayoutRenderer";
 import { simpleButtonRenderer } from "./simpleButtonRenderer";
 import { singleSelectListBoxRenderer } from "./singleSelectListBoxRenderer";
 import { singleSelectRenderer } from "./singleSelectRenderer";
@@ -137,7 +138,7 @@ export const toRenderers = ({
   ]);
 
 export const defaultRenderers: readonly NamedRenderer[] = toRenderers({
-  renderers: [],
+  renderers: [simpleArrayLayoutRenderer],
   controls: Object.values(controls),
   layouts: Object.values(layouts),
 });
