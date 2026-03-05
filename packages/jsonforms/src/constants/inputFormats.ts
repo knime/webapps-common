@@ -8,6 +8,7 @@ export const inputFormats = {
   checkboxes: "checkboxes",
   integer: "integer",
   number: "number",
+  quantity: "quantity",
   typedStringFilter: "typedStringFilter",
   nameFilter: "nameFilter",
   richTextInput: "richTextInput",
