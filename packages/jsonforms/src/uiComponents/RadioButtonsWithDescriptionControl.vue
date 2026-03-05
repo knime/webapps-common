@@ -1,7 +1,3 @@
-<!-- <script>
-let globalCount = 0; // Shared counter across all instances
-</script> -->
-
 <script setup lang="ts">
 import { computed } from "vue";
 
@@ -13,9 +9,6 @@ interface Option {
   description: string;
   price: string;
 }
-
-let globalCount = 0; // Shared counter across all instances
-const instanceCount = ++globalCount; // Each instance gets unique number
 
 const props = defineProps<VueControlProps<string>>();
 
@@ -29,11 +22,6 @@ const options = computed(() => {
       description,
     })) || []
   );
-});
-
-const inputName = computed(() => {
-  const name = props.control.uischema.options?.name;
-  return name ?? `jsonforms-radio-${instanceCount}`;
 });
 
 const disabled = computed(() => !props.control.enabled);
@@ -59,7 +47,7 @@ const onChange = (event: InputEvent) => {
       <input
         :checked="control.data === item.id"
         :value="item.id"
-        :name="inputName"
+        :name="`jsonforms-radio-${item.id}`"
         :disabled="disabled"
         type="radio"
         @input="onChange"
