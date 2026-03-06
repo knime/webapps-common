@@ -1,58 +1,54 @@
-<script>
-import { getCurrentInstance } from "vue";
+<script setup lang="ts">
+import { computed, getCurrentInstance, ref } from "vue";
 
 import LensIcon from "@knime/styles/img/icons/lens.svg";
 
 import Button from "../Buttons/Button.vue";
 
-export default {
-  name: "FileSelector",
-  components: {
-    Button,
-    LensIcon,
-  },
-  props: {
-    modelValue: {
-      type: Array,
-      default: null,
-    },
-    label: {
-      type: String,
-      default: "",
-    },
-    acceptedFileTypes: {
-      type: String,
-      default: "*",
-    },
-    multiple: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  emits: ["update:modelValue"],
-  computed: {
-    displayedFilename() {
-      return (
-        this.modelValue?.map?.(({ name }) => name).join(", ") ||
-        "No file selected"
-      );
-    },
-    fileSelectorId() {
-      const uid = getCurrentInstance().uid;
-      return `file-selector-${uid}`;
-    },
-    selectFileText() {
-      return `Select file${this.multiple ? "s" : ""}`;
-    },
-  },
-  methods: {
-    openFileSelector() {
-      this.$refs.fileSelector.click();
-    },
-    onSelect(event) {
-      this.$emit("update:modelValue", Array.from(event.target.files));
-    },
-  },
+export interface FileSelectorProps {
+  modelValue?: File[] | null;
+  label?: string;
+  acceptedFileTypes?: string;
+  multiple?: boolean;
+}
+
+const props = withDefaults(defineProps<FileSelectorProps>(), {
+  modelValue: null,
+  label: "",
+  acceptedFileTypes: "*",
+  multiple: false,
+});
+
+const emit = defineEmits<{
+  "update:modelValue": [files: File[]];
+}>();
+
+const fileSelector = ref<HTMLInputElement | null>(null);
+
+const displayedFilename = computed(() => {
+  return (
+    props.modelValue?.map?.(({ name }) => name).join(", ") || "No file selected"
+  );
+});
+
+const fileSelectorId = computed(() => {
+  const uid = getCurrentInstance()?.uid;
+  return `file-selector-${uid}`;
+});
+
+const selectFileText = computed(() => {
+  return `Select file${props.multiple ? "s" : ""}`;
+});
+
+const openFileSelector = () => {
+  fileSelector.value?.click();
+};
+
+const onSelect = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  if (target.files) {
+    emit("update:modelValue", Array.from(target.files));
+  }
 };
 </script>
 
@@ -80,9 +76,7 @@ export default {
 <style lang="postcss" scoped>
 .filename {
   margin-left: 10px;
-  font-size: 13px;
-  font-weight: 500;
-  line-height: 18px;
-  color: var(--knime-dove-gray);
+  font: var(--kds-font-base-title-small);
+  color: var(--kds-color-text-and-icon-subtle);
 }
 </style>

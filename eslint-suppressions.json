@@ -44,11 +44,6 @@
       "count": 1
     }
   },
-  "packages/components/src/components/FileSelector/FileSelector.vue": {
-    "vue/block-lang": {
-      "count": 1
-    }
-  },
   "packages/components/src/components/IdleReadyButton/IdleReadyButton.vue": {
     "vue/block-lang": {
       "count": 1
@@ -279,6 +274,11 @@
   },
   "packages/jsonforms/src/layoutComponents/LayoutComponentWrapper.vue": {
     "vue/block-lang": {
+      "count": 1
+    }
+  },
+  "packages/jsonforms/src/uiComponents/FileUploadControl.vue": {
+    "depend/ban-dependencies": {
       "count": 1
     }
   },
