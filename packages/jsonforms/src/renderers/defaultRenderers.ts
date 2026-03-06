@@ -32,6 +32,7 @@ import { nameFilterRenderer } from "./nameFilterRenderer";
 import { numberRenderer } from "./numberRenderer";
 import { quantityRenderer } from "./quantityRenderer";
 import { radioRenderer } from "./radioRenderer";
+import { radioWithDescriptionRenderer } from "./radioWithDescriptionRenderer";
 import { richTextRenderer } from "./richTextRenderer";
 import { sectionLayoutRenderer } from "./sectionLayoutRenderer";
 import { settingsSubPanelLayoutRenderer } from "./sectionSubPanelLayoutRenderer";
@@ -93,6 +94,7 @@ export const controls = {
   // custom hub renderers
   executionContextDropdownRenderer,
   dockerImageDropdownRenderer,
+  radioWithDescriptionRenderer,
   ...fallbackControlRenderers,
 } satisfies Record<string, VueControlRenderer>;
 
