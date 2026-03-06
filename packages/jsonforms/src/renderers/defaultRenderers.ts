@@ -12,29 +12,41 @@ import {
   dateTimeFormatPickerWithTypeRenderer,
 } from "./dateTimeFormatPickerRenderer";
 import { dateTimeRenderer } from "./dateTimeRenderer";
+import { dockerImageDropdownRenderer } from "./dockerImageDropdownRenderer";
 import { dropdownRenderer } from "./dropdownRenderer";
+import { executionContextDropdownRenderer } from "./executionContextDropdownRenderer";
+import { executorCoresResourceRenderer } from "./executorCoresResourceRenderer";
+import { executorMemoryResourceRenderer } from "./executorMemoryResourceRenderer";
 import {
   fallbackControlRenderers,
   fallbackLayoutRenderers,
 } from "./fallbackRenderers";
+import { fileUploadRenderer } from "./fileUploadRenderer";
+import { gridSelectionRenderer } from "./gridSelectionRenderer";
 import { horizontalLayoutRenderer } from "./horizontalLayoutRenderer";
 import { integerRenderer } from "./integerRenderer";
 import { intervalRenderer } from "./intervalRenderer";
+import { linkRenderer } from "./linkRenderer";
 import { localDateRenderer } from "./localDateRenderer";
 import { localTimeRenderer } from "./localTimeRenderer";
 import { multiSelectListBoxRenderer } from "./multiSelectListBoxRenderer";
 import { nameFilterRenderer } from "./nameFilterRenderer";
 import { numberRenderer } from "./numberRenderer";
+import { quantityRenderer } from "./quantityRenderer";
 import { radioRenderer } from "./radioRenderer";
+import { radioWithDescriptionRenderer } from "./radioWithDescriptionRenderer";
 import { richTextRenderer } from "./richTextRenderer";
 import { sectionLayoutRenderer } from "./sectionLayoutRenderer";
 import { settingsSubPanelLayoutRenderer } from "./sectionSubPanelLayoutRenderer";
+import { simpleArrayLayoutRenderer } from "./simpleArrayLayoutRenderer";
 import { simpleButtonRenderer } from "./simpleButtonRenderer";
 import { singleSelectListBoxRenderer } from "./singleSelectListBoxRenderer";
 import { singleSelectRenderer } from "./singleSelectRenderer";
 import { sortListRenderer } from "./sortListRenderer";
+import { teamResourceRenderer } from "./teamResourceRenderer";
 import { textAreaRenderer } from "./textAreaRenderer";
 import { textMessageRenderer } from "./textMessageRenderer";
+import { timeframesRenderer } from "./timeframesRenderer";
 import {
   manualTwinlistRenderer,
   simpleTwinlistRenderer,
@@ -70,13 +82,25 @@ export const controls = {
   valueSwitchRenderer,
   zonedDateTimeRenderer,
   singleSelectRenderer,
+  gridSelectionRenderer,
+  timeframesRenderer,
+  quantityRenderer,
   // without label:
   simpleButtonRenderer,
   textMessageRenderer,
+  linkRenderer,
   /**
    * Containing an optional checkbox. Keep Label in control until we have a framework for that.
    */
   dropdownRenderer,
+  // custom hub renderers
+  executionContextDropdownRenderer,
+  dockerImageDropdownRenderer,
+  radioWithDescriptionRenderer,
+  fileUploadRenderer,
+  teamResourceRenderer,
+  executorCoresResourceRenderer,
+  executorMemoryResourceRenderer,
   ...fallbackControlRenderers,
 } satisfies Record<string, VueControlRenderer>;
 
@@ -120,7 +144,7 @@ export const toRenderers = ({
   ]);
 
 export const defaultRenderers: readonly NamedRenderer[] = toRenderers({
-  renderers: [],
+  renderers: [simpleArrayLayoutRenderer],
   controls: Object.values(controls),
   layouts: Object.values(layouts),
 });

@@ -8,6 +8,7 @@ export const inputFormats = {
   checkboxes: "checkboxes",
   integer: "integer",
   number: "number",
+  quantity: "quantity",
   typedStringFilter: "typedStringFilter",
   nameFilter: "nameFilter",
   richTextInput: "richTextInput",
@@ -27,6 +28,17 @@ export const inputFormats = {
   dateTimeFormat: "dateTimeFormat",
   multiSelectListBox: "multiSelectListBox",
   singleSelectListBox: "singleSelectListBox",
+  gridSelection: "gridSelection",
+  timeframes: "timeframes",
+  link: "linkButton",
+  // custom hub formats
+  executionContextDropdown: "executionContextDropdown",
+  dockerImageDropdown: "dockerImageDropdown",
+  radioButtonsWithDescription: "radioButtonsWithDescription",
+  fileUpload: "fileUpload",
+  teamResources: "teamResources",
+  executorCoresResources: "executorCoresResources",
+  executorMemoryResources: "executorMemoryResources",
 } as const;
 
 // union type of the values of the inputFormats object:

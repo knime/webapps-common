@@ -44,11 +44,6 @@
       "count": 1
     }
   },
-  "packages/components/src/components/FileSelector/FileSelector.vue": {
-    "vue/block-lang": {
-      "count": 1
-    }
-  },
   "packages/components/src/components/IdleReadyButton/IdleReadyButton.vue": {
     "vue/block-lang": {
       "count": 1
@@ -127,11 +122,6 @@
   "packages/components/src/components/forms/DateTimeFormatInput/components/DateTimeFormatPickerPopover.vue": {
     "@typescript-eslint/no-floating-promises": {
       "count": 2
-    }
-  },
-  "packages/components/src/components/forms/DateTimeInput/DateTimeInput.vue": {
-    "vue/block-lang": {
-      "count": 1
     }
   },
   "packages/components/src/components/forms/Dropdown/Dropdown.vue": {
@@ -284,6 +274,11 @@
   },
   "packages/jsonforms/src/layoutComponents/LayoutComponentWrapper.vue": {
     "vue/block-lang": {
+      "count": 1
+    }
+  },
+  "packages/jsonforms/src/uiComponents/FileUploadControl.vue": {
+    "depend/ban-dependencies": {
       "count": 1
     }
   },

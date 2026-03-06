@@ -1,0 +1,230 @@
+<script setup lang="ts">
+import { computed } from "vue";
+
+import { Dropdown } from "@knime/components";
+import ExecutionContextSharedIcon from "@knime/styles/img/icons/execution-context-shared.svg";
+import ServerRackWorkflowIcon from "@knime/styles/img/icons/server-rack-workflow.svg";
+import SignWarningIcon from "@knime/styles/img/icons/sign-warning.svg";
+
+import type { VueControlPropsForLabelContent } from "../higherOrderComponents";
+
+import {
+  type ECStatusToClassKeyType,
+  EXECUTION_CONTEXT_SHARED_STATUS,
+  EXECUTION_CONTEXT_STATUS,
+  EXECUTION_CONTEXT_STATUS_TO_CLASS,
+} from "./configs/executionContexts.config";
+
+interface ExecutionContextSlotData {
+  name: string;
+  executorApVersion: string;
+  shortExecutorApVersion: string;
+  executionStatus: ECStatusToClassKeyType;
+  autoStartEnabled: boolean;
+  sharedStatus: string[];
+}
+
+interface ExecutionContextOption {
+  const: string;
+  title?: string;
+  slotData?: ExecutionContextSlotData;
+}
+
+const props = defineProps<VueControlPropsForLabelContent<string>>();
+
+const possibleValues = computed(() => {
+  const oneOf = props.control.schema.oneOf as
+    | ExecutionContextOption[]
+    | undefined;
+  return (
+    oneOf?.map(({ const: id, title, slotData }) => ({
+      id,
+      text: title ?? "",
+      slotData,
+    })) || []
+  );
+});
+
+const modelValue = computed<string>({
+  get: () => props.control.data ?? "",
+  set: props.changeValue,
+});
+
+const formatExecutionStatus = ({
+  executionStatus,
+  autoStartEnabled,
+}: {
+  executionStatus: string;
+  autoStartEnabled: boolean;
+}) => {
+  if (
+    (executionStatus === EXECUTION_CONTEXT_STATUS.STOPPED ||
+      executionStatus === EXECUTION_CONTEXT_STATUS.SHUTTING_DOWN) &&
+    autoStartEnabled
+  ) {
+    return `${executionStatus} - Starts up on demand`;
+  } else {
+    return executionStatus;
+  }
+};
+const getExecutionStatusClass = ({
+  executionStatus,
+}: {
+  executionStatus: ECStatusToClassKeyType;
+}) => {
+  return (
+    EXECUTION_CONTEXT_STATUS_TO_CLASS[executionStatus] ||
+    EXECUTION_CONTEXT_STATUS_TO_CLASS.Unknown
+  );
+};
+const getIcon = ({ sharedStatus }: { sharedStatus: string[] }) => {
+  if (sharedStatus.includes(EXECUTION_CONTEXT_SHARED_STATUS.SHARED)) {
+    return ExecutionContextSharedIcon;
+  } else {
+    return ServerRackWorkflowIcon;
+  }
+};
+</script>
+
+<template>
+  <!-- eslint-disable vue/attribute-hyphenation typescript complains with ':aria-label' instead of ':ariaLabel'-->
+  <Dropdown
+    :id="labelForId"
+    v-model="modelValue"
+    v-bind="$attrs"
+    class="dropdown-input"
+    :disabled="disabled"
+    :possible-values="possibleValues"
+    :ariaLabel="control.label"
+  >
+    <template #option="{ slotData, isMissing, selectedValue }">
+      <div v-if="isMissing" class="dropdown-item-wrapper">
+        <SignWarningIcon class="missing" />
+        <div class="main-content">
+          <div class="title">(MISSING) {{ selectedValue }}</div>
+          <div class="run-status">Execution context not found.</div>
+        </div>
+      </div>
+      <div v-else class="dropdown-item-wrapper slot-option">
+        <Component :is="getIcon({ sharedStatus: slotData.sharedStatus })" />
+        <div class="main-content">
+          <div class="title">
+            <span :title="slotData.name">{{ slotData.name }}</span>
+            <span :title="slotData.executorApVersion">{{
+              slotData.shortExecutorApVersion
+            }}</span>
+          </div>
+          <div class="run-status">
+            <div
+              class="dot"
+              :class="{
+                [getExecutionStatusClass({
+                  executionStatus: slotData.executionStatus,
+                })]: true,
+              }"
+            />
+            <div>
+              {{
+                formatExecutionStatus({
+                  executionStatus: slotData.executionStatus,
+                  autoStartEnabled: slotData.autoStartEnabled,
+                })
+              }}
+            </div>
+          </div>
+        </div>
+        <div class="shared-status">
+          {{ slotData.sharedStatus.join(", ") }}
+        </div>
+      </div>
+    </template>
+  </Dropdown>
+</template>
+
+<style scoped>
+.dropdown-input {
+  --dropdown-max-height: calc(58px * 5); /* show 5 items per default */
+}
+
+.dropdown-item-wrapper {
+  display: flex;
+  flex-direction: row;
+  gap: var(--kds-spacing-container-0-75x);
+  width: 100%;
+  padding: var(--kds-spacing-container-0-75x) 0;
+  font-family: Roboto, sans-serif;
+
+  & > svg {
+    flex: 0 0 var(--kds-dimension-component-height-1x);
+    height: var(--kds-dimension-component-height-1x);
+    stroke-width: 1.3px;
+  }
+}
+
+.main-content {
+  display: flex;
+  flex-grow: 1;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.run-status {
+  display: flex;
+  flex-direction: row;
+  gap: var(--kds-spacing-container-0-37x);
+  align-items: center;
+  justify-content: left;
+  font: var(--kds-font-base-body-small);
+
+  & .dot {
+    width: var(--kds-dimension-component-width-0-25x);
+    height: var(--kds-dimension-component-height-0-25x);
+    content: "";
+    border-radius: 50%;
+
+    &.status-running {
+      background-color: var(--knime-meadow);
+    }
+
+    &.status-starting-up,
+    &.status-shutting-down,
+    &.status-updating,
+    &.status-processing,
+    &.status-at-full-capacity {
+      background-color: var(--knime-carrot);
+    }
+
+    &.status-stopped {
+      background-color: var(--knime-coral-dark);
+    }
+
+    &.status-unknown {
+      background-color: var(--knime-silver-sand);
+    }
+  }
+}
+
+.title {
+  display: flex;
+  align-items: baseline;
+  margin-bottom: var(--kds-spacing-container-0-25x);
+}
+
+.title span:nth-child(1) {
+  flex: 0 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.title span:nth-child(2) {
+  flex: 0 0 auto;
+  padding-left: var(--kds-spacing-container-0-5x);
+  font: var(--kds-font-base-body-small);
+}
+
+.title span:first-child,
+.shared-status {
+  font: var(--kds-font-base-title-medium);
+}
+</style>
