@@ -68,6 +68,7 @@ describe("IntervalControl", () => {
       disabled: false,
       modelValue: props.control.data,
       format: "DATE_OR_TIME",
+      allowDescending: true,
     });
   });
 
@@ -92,6 +93,44 @@ describe("IntervalControl", () => {
     });
     expect(wrapper.getComponent(IntervalInput).props()).toMatchObject({
       format: "DATE",
+    });
+  });
+
+  it("uses allowDescending from options", () => {
+    props.control.uischema.options!.allowDescending = false;
+    const { wrapper } = mountJsonFormsControlLabelContent(IntervalControl, {
+      props,
+    });
+    expect(wrapper.getComponent(IntervalInput).props()).toMatchObject({
+      allowDescending: false,
+    });
+  });
+
+  it("uses allowDescending from provider in options", async () => {
+    props.control.uischema.providedOptions = ["allowDescending"];
+    let provideAllowDescending: (allowDescending: boolean) => void;
+    const addStateProviderListener = vi.fn((_id, callback) => {
+      provideAllowDescending = callback;
+    });
+    const { wrapper } = mountJsonFormsControlLabelContent(IntervalControl, {
+      props,
+      provide: { addStateProviderListener },
+    });
+    expect(addStateProviderListener).toHaveBeenCalledWith(
+      {
+        providedOptionName: "allowDescending",
+        scope: "#/properties/view/properties/maxRows",
+      },
+      expect.anything(),
+    );
+    expect(wrapper.getComponent(IntervalInput).props()).toMatchObject({
+      allowDescending: true,
+    });
+
+    provideAllowDescending!(false);
+    await flushPromises();
+    expect(wrapper.getComponent(IntervalInput).props()).toMatchObject({
+      allowDescending: false,
     });
   });
 
