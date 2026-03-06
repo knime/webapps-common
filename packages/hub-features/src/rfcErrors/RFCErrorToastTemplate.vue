@@ -35,7 +35,13 @@ const { copy, copied } = useClipboard({
   copiedDuring: 3000,
 });
 
-const showDetails = ref(false);
+const hasDetails =
+  props.details?.length ||
+  props.status !== undefined ||
+  props.date !== undefined ||
+  props.requestId !== undefined ||
+  props.errorId !== undefined;
+const showDetails = ref(!hasDetails);
 
 const formatDate = (date: Date): string =>
   date ? formatDateTimeString(date.getTime()) : "";
