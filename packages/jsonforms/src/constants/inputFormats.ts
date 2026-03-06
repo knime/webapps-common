@@ -36,6 +36,7 @@ export const inputFormats = {
   // custom hub formats
   executionContextDropdown: "executionContextDropdown",
   dockerImageDropdown: "dockerImageDropdown",
+  radioButtonsWithDescription: "radioButtonsWithDescription",
 } as const;
 
 // union type of the values of the inputFormats object:
