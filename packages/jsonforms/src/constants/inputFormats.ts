@@ -37,6 +37,7 @@ export const inputFormats = {
   executionContextDropdown: "executionContextDropdown",
   dockerImageDropdown: "dockerImageDropdown",
   radioButtonsWithDescription: "radioButtonsWithDescription",
+  fileUpload: "fileUpload",
 } as const;
 
 // union type of the values of the inputFormats object:
