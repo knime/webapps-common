@@ -22,11 +22,15 @@ const multiple = computed(
   () => props.control.uischema.options?.multiple ?? false,
 );
 
-watch(files, (newValue, oldValue) => {
-  if (!isEqual(newValue, oldValue)) {
-    props.handleChange(props.control.path, Array.from(newValue));
-  }
-});
+watch(
+  files,
+  (newValue, oldValue) => {
+    if (!isEqual(newValue, oldValue)) {
+      props.handleChange(props.control.path, Array.from(newValue));
+    }
+  },
+  { deep: true },
+);
 </script>
 
 <template>
