@@ -17,6 +17,8 @@ import { dateTimeRenderer } from "./dateTimeRenderer";
 import { dockerImageDropdownRenderer } from "./dockerImageDropdownRenderer";
 import { dropdownRenderer } from "./dropdownRenderer";
 import { executionContextDropdownRenderer } from "./executionContextDropdownRenderer";
+import { executorCoresResourceRenderer } from "./executorCoresResourceRenderer";
+import { executorMemoryResourceRenderer } from "./executorMemoryResourceRenderer";
 import {
   fallbackControlRenderers,
   fallbackLayoutRenderers,
@@ -43,6 +45,7 @@ import { simpleButtonRenderer } from "./simpleButtonRenderer";
 import { singleSelectListBoxRenderer } from "./singleSelectListBoxRenderer";
 import { singleSelectRenderer } from "./singleSelectRenderer";
 import { sortListRenderer } from "./sortListRenderer";
+import { teamResourceRenderer } from "./teamResourceRenderer";
 import { textAreaRenderer } from "./textAreaRenderer";
 import { textMessageRenderer } from "./textMessageRenderer";
 import { timeframesRenderer } from "./timeframesRenderer";
@@ -99,6 +102,9 @@ export const controls = {
   dockerImageDropdownRenderer,
   radioWithDescriptionRenderer,
   fileUploadRenderer,
+  teamResourceRenderer,
+  executorCoresResourceRenderer,
+  executorMemoryResourceRenderer,
   ...fallbackControlRenderers,
 } satisfies Record<string, VueControlRenderer>;
 
