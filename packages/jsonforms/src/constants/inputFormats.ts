@@ -37,6 +37,9 @@ export const inputFormats = {
   dockerImageDropdown: "dockerImageDropdown",
   radioButtonsWithDescription: "radioButtonsWithDescription",
   fileUpload: "fileUpload",
+  teamResources: "teamResources",
+  executorCoresResources: "executorCoresResources",
+  executorMemoryResources: "executorMemoryResources",
 } as const;
 
 // union type of the values of the inputFormats object:
