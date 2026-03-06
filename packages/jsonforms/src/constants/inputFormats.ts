@@ -25,6 +25,7 @@ export const inputFormats = {
   interval: "interval",
   dateTimeFormatWithType: "dateTimeFormatWithType",
   dateTimeFormat: "dateTimeFormat",
+  color: "color",
   multiSelectListBox: "multiSelectListBox",
   singleSelectListBox: "singleSelectListBox",
 } as const;

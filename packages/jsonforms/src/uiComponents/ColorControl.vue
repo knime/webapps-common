@@ -1,0 +1,17 @@
+<script setup lang="ts">
+import { KdsColorInput } from "@knime/kds-components";
+
+import type { VueControlPropsForLabelContent } from "../higherOrderComponents";
+
+defineProps<VueControlPropsForLabelContent<string | null>>();
+</script>
+
+<template>
+  <KdsColorInput
+    :id="labelForId"
+    :model-value="control.data ?? ''"
+    :disabled="disabled"
+    :error="!isValid"
+    @update:model-value="changeValue"
+  />
+</template>
