@@ -46,7 +46,14 @@ const modelValue = computed<string>({
     :disabled="disabled"
     ariaLabel="Docker image name"
   >
-    <template #option="{ slotData, isMissing, selectedValue, expanded }">
+    <template
+      #option="{
+        slotData = { name: 'whoops', description: 'oopsie' },
+        isMissing,
+        selectedValue,
+        expanded,
+      }"
+    >
       <div v-if="isMissing">
         <div class="dropdown-item-wrapper">
           <SignWarningIcon class="missing" />
