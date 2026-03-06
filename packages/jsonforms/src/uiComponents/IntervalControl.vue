@@ -14,6 +14,7 @@ import useProvidedState, {
 
 type IntervalControlOptions = {
   intervalType?: AllowedIntervalFormatsType;
+  allowDescending?: boolean;
 };
 
 type IntervalControlUiSchema =
@@ -30,12 +31,15 @@ const intervalType = useProvidedState(
   "intervalType",
   "DATE_OR_TIME" as AllowedIntervalFormatsType,
 );
+
+const allowDescending = useProvidedState(uischema, "allowDescending", true);
 </script>
 
 <template>
   <IntervalInput
     :id="labelForId"
     compact
+    :allow-descending
     :disabled="disabled"
     :model-value="control.data"
     :format="intervalType"
