@@ -25,7 +25,7 @@
     "@jsonforms/vue": "3.4.0",
     "@jsonforms/vue-vanilla": "3.4.0",
     "@knime/components": "workspace:*",
-    "@knime/kds-components": "catalog:",
+    "@knime/kds-components": "link:/Users/robin/Documents/Projects/knime-designsystem/packages/components",
     "@knime/rich-text-editor": "workspace:*",
     "@knime/styles": "workspace:*",
     "@knime/utils": "workspace:*",
