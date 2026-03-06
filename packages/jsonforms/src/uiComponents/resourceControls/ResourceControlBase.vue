@@ -9,16 +9,13 @@ import type { VueControlPropsForLabelContent } from "../../higherOrderComponents
 
 const props = defineProps<VueControlPropsForLabelContent<number>>();
 
+// whether the input models the maximum value (relevant for the donut chart)
 const modelMax = computed(
   () => props.control.uischema.options?.modelMax ?? false,
 );
-const useStaticCurrentUsage = computed(
-  () => props.control.uischema.options?.useStaticCurrentUsage,
-);
-const currentUsage = computed(() =>
-  modelMax.value || useStaticCurrentUsage.value
-    ? props.control.uischema.options?.currentUsage
-    : props.control.data,
+const currentUsage = computed(
+  // if currentUsage is supplied the donut chart should use that since the data will model something else (e.g. the maximum usage)
+  () => props.control.uischema.options?.currentUsage ?? props.control.data,
 );
 const secondaryValue = computed(
   () =>
@@ -47,6 +44,7 @@ const showDonut = computed(
   () => props.control.uischema.options?.showDonut ?? true,
 );
 
+// number input props
 const min = computed(() => props.control.schema.minimum || 0);
 const max = computed(() => props.control.schema.maximum || Infinity);
 const step = computed(() => props.control.uischema.options?.step || 1);
