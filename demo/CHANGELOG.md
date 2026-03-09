@@ -1,5 +1,17 @@
 # demo
 
+## 1.8.18
+
+### Patch Changes
+
+- b27134e: Resolve ignored audit issue (DOMPurify)
+- Updated dependencies [b27134e]
+  - @knime/hub-features@1.22.2
+  - @knime/utils@1.10.1
+  - @knime/components@1.45.8
+  - @knime/rich-text-editor@1.8.14
+  - @knime/virtual-tree@1.7.14
+
 ## 1.8.17
 
 ### Patch Changes

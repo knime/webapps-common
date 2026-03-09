@@ -1,5 +1,15 @@
 # @knime/json-forms
 
+## 1.18.14
+
+### Patch Changes
+
+- b27134e: Resolve ignored audit issue (DOMPurify)
+- Updated dependencies [b27134e]
+  - @knime/utils@1.10.1
+  - @knime/components@1.45.8
+  - @knime/rich-text-editor@1.8.14
+
 ## 1.18.13
 
 ### Patch Changes
