@@ -67,6 +67,17 @@ describe("RFCErrorToastTemplate", () => {
     expect(wrapper.text()).toContain(`Request id: ${defaultProps.requestId}`);
   });
 
+  it("is expanded when details are empty", () => {
+    const { wrapper } = doMount({
+      title: defaultProps.title,
+      details: [],
+    } as any);
+
+    expect(wrapper.find(".title").text()).toBe(defaultProps.title);
+    expect(wrapper.find("[data-test-id='show-details']").exists()).toBe(false);
+    expect(wrapper.find("button").text()).toBe("Copy error to clipboard");
+  });
+
   it("renders optional errorId", async () => {
     const { wrapper } = doMount({
       ...defaultProps,
