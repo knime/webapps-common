@@ -39,6 +39,8 @@ Projects need to specify the following `devDependencies` in their `package.json`
 - [Stylelint]
 - [Prettier]
 
+### Basic config for JS projects
+
 The following code block should give an understanding of a commonly used setup
 in your `eslint.config.js` file:
 
@@ -56,9 +58,23 @@ export default = [
 ];
 ```
 
-### Linting for TypeScript
+### Config for projects that use TypeScript
 
-Eslint Configs for TS projects export a function which takes the path to a tsconfig as an optional argument. Supplying a tsconfig will give you a config that extends the base TS config with some typed rules. Configs that make use of this are:
+```ts
+import knimeVue3TSConfig from "@knime/eslint-config/vue3-typescript.js";
+
+export default [
+  ...knimeVue3TSConfig(),
+  {
+    globals: {
+      consola: true,
+    },
+  },
+  // [...]
+];
+```
+
+Notice that the default export is a function instead of a configuration object. This function takes an _optional_ argument of a path to a tsconfig. Supplying a tsconfig will give you a config that extends the base TS config with some typed rules. Configs that make use of this are:
 
 - `typescript.js`
 - `vue3-typescript.js`
