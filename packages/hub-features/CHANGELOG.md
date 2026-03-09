@@ -1,5 +1,14 @@
 # @knime/hub-features
 
+## 1.22.2
+
+### Patch Changes
+
+- b27134e: Resolve ignored audit issue (DOMPurify)
+- Updated dependencies [b27134e]
+  - @knime/utils@1.10.1
+  - @knime/components@1.45.8
+
 ## 1.22.1
 
 ### Patch Changes

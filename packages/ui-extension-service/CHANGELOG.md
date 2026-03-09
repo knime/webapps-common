@@ -1,5 +1,11 @@
 # @knime/ui-extension-service
 
+## 2.7.2
+
+### Patch Changes
+
+- b27134e: Resolve ignored audit issue (DOMPurify)
+
 ## 2.7.1
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @knime/utils
 
+## 1.10.1
+
+### Patch Changes
+
+- b27134e: Resolve ignored audit issue (DOMPurify)
+
 ## 1.10.0
 
 ### Minor Changes
