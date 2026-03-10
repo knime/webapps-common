@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.19.0
+
+### Minor Changes
+
+- d3748b8: Add Color Control to JSONForms
+
 ## 1.18.14
 
 ### Patch Changes
