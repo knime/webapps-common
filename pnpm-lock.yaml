@@ -86,7 +86,7 @@ catalogs:
       version: 3.0.4
   patch:
     v-calendar:
-      specifier: knime/v-calendar#048477f
+      specifier: git://github.com/knime/v-calendar.git#048477f
       version: 3.1.2
   peer:
     '@fontsource/roboto':
