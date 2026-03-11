@@ -73,6 +73,7 @@ describe("LoadingDropdown", () => {
         iconName: "secondType",
         iconTitle: "Second Type",
         size: "small",
+        disabled: false,
       });
       expect(summary.text()).toBe("Second");
     });

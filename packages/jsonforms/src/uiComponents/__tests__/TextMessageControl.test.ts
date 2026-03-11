@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { flushPromises } from "@vue/test-utils";
 
-import { InlineMessage } from "@knime/components";
+import { KdsInlineMessage } from "@knime/kds-components";
 
 import {
   type VueControlTestProps,
@@ -51,7 +51,7 @@ describe("TextMessageControl", () => {
     });
     provideMessage!(null);
     await flushPromises();
-    expect(wrapper.findComponent(InlineMessage).exists()).toBeFalsy();
+    expect(wrapper.findComponent(KdsInlineMessage).exists()).toBeFalsy();
   });
 
   it("sets correct message from provider", async () => {
@@ -70,6 +70,8 @@ describe("TextMessageControl", () => {
       description: "Here is a message that informs the user",
     });
     await flushPromises();
-    expect(wrapper.findComponent(InlineMessage).props("variant")).toBe("info");
+    expect(wrapper.findComponent(KdsInlineMessage).props("variant")).toBe(
+      "info",
+    );
   });
 });
