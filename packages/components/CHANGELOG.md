@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.45.9
+
+### Patch Changes
+
+- 8896ee8: fix v-calendar url for new pnpm
+
 ## 1.45.8
 
 ### Patch Changes
