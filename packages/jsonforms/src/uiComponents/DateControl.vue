@@ -23,6 +23,7 @@ const modelValue = computed<Date>({
     :show-time="false"
     compact
     :disabled="disabled"
+    :is-valid
     timezone="UTC"
   />
 </template>
