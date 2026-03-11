@@ -1,5 +1,11 @@
 # @knime/hub-features
 
+## 1.22.4
+
+### Patch Changes
+
+- 12e9b4a: Auto-expand RFC error toast when details list is empty
+
 ## 1.22.3
 
 ### Patch Changes
