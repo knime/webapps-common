@@ -12,9 +12,12 @@ import * as pkg from "empathic/package";
 import licensechecker from "license-checker";
 import semver from "semver";
 
-// esm requires file extensions
-import config from "../config/license.config.js";
-
+import {
+  buildLicenseCheckerOptions,
+  throwOnLicenseError,
+  toUniqueSortedPackages,
+} from "./license-checker-utils.js";
+import { loadAndMergeLicenseConfig } from "./load-license-config.js";
 import read from "./read-packages.js";
 
 const program = new Command();
@@ -38,6 +41,10 @@ program
     "Location of the output file to be created, relative to the calling project root",
     path.resolve(basePath, "used-packages.json"),
   )
+  .option(
+    "-f, --config <file>",
+    "Optional project-specific license config path, relative to the calling project root",
+  )
   // .option("-n, --no-overwrite", "skip generation of output file", true)
   .parse();
 
@@ -52,6 +59,11 @@ const parentPkgPath =
 const parentRoot = path.resolve(parentPkgPath, "..");
 
 const checkLicenses = async (knimePackages) => {
+  const config = await loadAndMergeLicenseConfig({
+    basePath,
+    configPath: programOptions.config,
+  });
+
   // exclude parent package
   const parentPkg = JSON.parse(await readFile(parentPkgPath, "utf-8"));
 
@@ -73,21 +85,18 @@ const checkLicenses = async (knimePackages) => {
   config.excludePackages.push(...knimePackages);
 
   // collect all used production packages and their licenses
-  const options = {
-    start: parentRoot,
-    production: false,
-    onlyAllow: config.onlyAllow.join(";"),
-    excludePackages: config.excludePackages.join(";"),
+  const options = buildLicenseCheckerOptions({
+    parentRoot,
+    config,
     customPath: path.resolve(
       import.meta.dirname,
       "../config/collect-packages-format.json",
     ),
-  };
+  });
 
   licensechecker.init(options, (err, collectedPackages) => {
-    if (err) {
-      throw err;
-    }
+    throwOnLicenseError({ error: err });
+
     if (programOptions.summary) {
       console.log("Summary of used licenses:");
       console.log(licensechecker.asSummary(collectedPackages));
@@ -98,36 +107,10 @@ const checkLicenses = async (knimePackages) => {
       );
       return;
     }
-    // convert collected packages to array and merge with manually added packages
-    let allPackages = Object.values(collectedPackages).concat(
-      config.manualPackages,
-    );
-
-    // keep only the needed props
-    allPackages = allPackages.map((pkg) => ({
-      name: pkg.name,
-      repository: pkg.repository ?? "",
-      licenseText: pkg.licenseText ?? "",
-    }));
-
-    let allUniquePackages = [];
-
-    allPackages.forEach((pkg) => {
-      const alreadyExists = allUniquePackages.some(
-        (firstPkg) =>
-          firstPkg.name.toLowerCase() === pkg.name.toLowerCase() &&
-          firstPkg.repository?.toLowerCase() === pkg.repository.toLowerCase() &&
-          firstPkg.licenseText?.replace(/\s+/g, "") ===
-            pkg.licenseText.replace(/\s+/g, ""),
-      );
-
-      if (!alreadyExists) {
-        allUniquePackages.push(pkg);
-      }
+    const allUniquePackages = toUniqueSortedPackages({
+      collectedPackages,
+      manualPackages: config.manualPackages,
     });
-
-    // sort packages by name
-    allUniquePackages.sort((a, b) => a.name.localeCompare(b.name));
     // write file to be imported by the app to show open source credits
     fs.writeFile(outFile, JSON.stringify(allUniquePackages), (err) => {
       if (err) {
