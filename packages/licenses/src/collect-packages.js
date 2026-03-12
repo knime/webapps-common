@@ -12,9 +12,7 @@ import * as pkg from "empathic/package";
 import licensechecker from "license-checker";
 import semver from "semver";
 
-// esm requires file extensions
-import config from "../config/license.config.js";
-
+import { loadAndMergeLicenseConfig } from "./load-license-config.js";
 import read from "./read-packages.js";
 
 const program = new Command();
@@ -38,6 +36,10 @@ program
     "Location of the output file to be created, relative to the calling project root",
     path.resolve(basePath, "used-packages.json"),
   )
+  .option(
+    "-f, --config <file>",
+    "Optional project-specific license config path, relative to the calling project root",
+  )
   // .option("-n, --no-overwrite", "skip generation of output file", true)
   .parse();
 
@@ -52,6 +54,11 @@ const parentPkgPath =
 const parentRoot = path.resolve(parentPkgPath, "..");
 
 const checkLicenses = async (knimePackages) => {
+  const config = await loadAndMergeLicenseConfig({
+    basePath,
+    configPath: programOptions.config,
+  });
+
   // exclude parent package
   const parentPkg = JSON.parse(await readFile(parentPkgPath, "utf-8"));
 
