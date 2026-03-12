@@ -80,9 +80,12 @@ export const loadAndMergeLicenseConfig = async ({ basePath, configPath }) => {
   }
 
   if (!fs.existsSync(resolvedProjectConfigPath)) {
-    throw new Error(
-      `Could not find project license config at ${resolvedProjectConfigPath}`,
-    );
+    return {
+      ...defaultConfig,
+      onlyAllow: [...toArray(defaultConfig.onlyAllow)],
+      excludePackages: [...toArray(defaultConfig.excludePackages)],
+      manualPackages: [...toArray(defaultConfig.manualPackages)],
+    };
   }
 
   const projectConfig = await loadConfigFile(resolvedProjectConfigPath);

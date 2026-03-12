@@ -12,6 +12,10 @@ import * as pkg from "empathic/package";
 import licensechecker from "license-checker";
 import semver from "semver";
 
+import {
+  buildLicenseCheckerOptions,
+  toUniqueSortedPackages,
+} from "./license-checker-utils.js";
 import { loadAndMergeLicenseConfig } from "./load-license-config.js";
 import read from "./read-packages.js";
 
@@ -80,16 +84,14 @@ const checkLicenses = async (knimePackages) => {
   config.excludePackages.push(...knimePackages);
 
   // collect all used production packages and their licenses
-  const options = {
-    start: parentRoot,
-    production: false,
-    onlyAllow: config.onlyAllow.join(";"),
-    excludePackages: config.excludePackages.join(";"),
+  const options = buildLicenseCheckerOptions({
+    parentRoot,
+    config,
     customPath: path.resolve(
       import.meta.dirname,
       "../config/collect-packages-format.json",
     ),
-  };
+  });
 
   licensechecker.init(options, (err, collectedPackages) => {
     if (err) {
@@ -105,36 +107,10 @@ const checkLicenses = async (knimePackages) => {
       );
       return;
     }
-    // convert collected packages to array and merge with manually added packages
-    let allPackages = Object.values(collectedPackages).concat(
-      config.manualPackages,
-    );
-
-    // keep only the needed props
-    allPackages = allPackages.map((pkg) => ({
-      name: pkg.name,
-      repository: pkg.repository ?? "",
-      licenseText: pkg.licenseText ?? "",
-    }));
-
-    let allUniquePackages = [];
-
-    allPackages.forEach((pkg) => {
-      const alreadyExists = allUniquePackages.some(
-        (firstPkg) =>
-          firstPkg.name.toLowerCase() === pkg.name.toLowerCase() &&
-          firstPkg.repository?.toLowerCase() === pkg.repository.toLowerCase() &&
-          firstPkg.licenseText?.replace(/\s+/g, "") ===
-            pkg.licenseText.replace(/\s+/g, ""),
-      );
-
-      if (!alreadyExists) {
-        allUniquePackages.push(pkg);
-      }
+    const allUniquePackages = toUniqueSortedPackages({
+      collectedPackages,
+      manualPackages: config.manualPackages,
     });
-
-    // sort packages by name
-    allUniquePackages.sort((a, b) => a.name.localeCompare(b.name));
     // write file to be imported by the app to show open source credits
     fs.writeFile(outFile, JSON.stringify(allUniquePackages), (err) => {
       if (err) {

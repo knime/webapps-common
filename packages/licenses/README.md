@@ -27,6 +27,8 @@ By default, `license-check` automatically looks for one of these files in the ca
 
 You can also explicitly set a config file path with `--config`.
 
+If no project config file is found, or the configured file path does not exist, the tool falls back to the default `@knime/licenses` configuration.
+
 The project config must match the default config structure (`onlyAllow`, `excludePackages`, `manualPackages`) and is merged with the built-in defaults:
 
 - `onlyAllow`: concatenated and de-duplicated
