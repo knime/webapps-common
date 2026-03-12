@@ -6,6 +6,7 @@ import type { VueLayoutRenderer } from "../higherOrderComponents/layout/types";
 import type { NamedRenderer } from "../higherOrderComponents/types";
 
 import { checkboxesRenderer } from "./checkboxesRenderer";
+import { colorPreviewRenderer } from "./colorPreviewRenderer";
 import { colorRenderer } from "./colorRenderer";
 import { comboBoxRenderer } from "./comboBoxRenderer";
 import {
@@ -48,6 +49,7 @@ import { zonedDateTimeRenderer } from "./zonedDateTimeRenderer";
 
 export const controls = {
   checkboxesRenderer,
+  colorPreviewRenderer,
   colorRenderer,
   typedStringFilterRenderer,
   comboBoxRenderer,

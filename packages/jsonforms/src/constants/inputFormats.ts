@@ -26,6 +26,7 @@ export const inputFormats = {
   dateTimeFormatWithType: "dateTimeFormatWithType",
   dateTimeFormat: "dateTimeFormat",
   color: "color",
+  colorPreview: "colorPreview",
   multiSelectListBox: "multiSelectListBox",
   singleSelectListBox: "singleSelectListBox",
 } as const;
