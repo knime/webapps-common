@@ -122,6 +122,7 @@ describe("SubMenu", () => {
   it("does not close menu on item-click if item is checkbox", async () => {
     const items = [
       {
+        text: "Checkbox item",
         checkbox: {
           checked: true,
         },

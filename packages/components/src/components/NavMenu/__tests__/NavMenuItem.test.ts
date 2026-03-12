@@ -21,7 +21,7 @@ describe("NavMenuItem.vue", () => {
   const doMount = (opts: MountOptions = {}) => {
     const LinkComponent = defineComponent({
       props: {
-        href: { type: String, required: true },
+        href: { type: String },
       },
       setup(fallbackProps, { slots }) {
         const navigate = vi.fn();

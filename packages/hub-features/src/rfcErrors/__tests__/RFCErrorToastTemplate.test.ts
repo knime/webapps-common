@@ -69,9 +69,10 @@ describe("RFCErrorToastTemplate", () => {
 
   it("is expanded when details are empty", () => {
     const { wrapper } = doMount({
+      headline: defaultProps.headline,
       title: defaultProps.title,
       details: [],
-    } as any);
+    });
 
     expect(wrapper.find(".title").text()).toBe(defaultProps.title);
     expect(wrapper.find("[data-test-id='show-details']").exists()).toBe(false);

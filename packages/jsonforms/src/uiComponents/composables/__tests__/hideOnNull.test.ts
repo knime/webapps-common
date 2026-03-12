@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
-import { ref } from "vue";
+import { defineComponent, ref } from "vue";
+import { mount } from "@vue/test-utils";
 
 import useHideOnNull from "../useHideOnNull";
 
@@ -12,21 +13,31 @@ describe("hideOnNull", () => {
     } = {},
   ) => {
     const { hideOnNull = false, data, disabled = false } = params;
-    return useHideOnNull({
-      control: ref({
-        uischema: hideOnNull
-          ? {
-              options: {
-                hideOnNull,
-              },
-            }
-          : {},
-        data,
-      }) as any,
-      changeValue: vi.fn(),
-      disabled: ref(disabled),
-      controlElement: ref(null),
-    });
+    let result: ReturnType<typeof useHideOnNull>;
+    mount(
+      defineComponent({
+        setup() {
+          result = useHideOnNull({
+            control: ref({
+              uischema: hideOnNull
+                ? {
+                    options: {
+                      hideOnNull,
+                    },
+                  }
+                : {},
+              data,
+            }) as any,
+            changeValue: vi.fn(),
+            disabled: ref(disabled),
+            controlElement: ref(null),
+          });
+          return () => null;
+        },
+      }),
+      { global: { provide: { addStateProviderListener: vi.fn() } } },
+    );
+    return result!;
   };
 
   it("sets showCheckbox to false per default", () => {
