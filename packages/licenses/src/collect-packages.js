@@ -14,6 +14,7 @@ import semver from "semver";
 
 import {
   buildLicenseCheckerOptions,
+  throwOnLicenseError,
   toUniqueSortedPackages,
 } from "./license-checker-utils.js";
 import { loadAndMergeLicenseConfig } from "./load-license-config.js";
@@ -94,9 +95,8 @@ const checkLicenses = async (knimePackages) => {
   });
 
   licensechecker.init(options, (err, collectedPackages) => {
-    if (err) {
-      throw err;
-    }
+    throwOnLicenseError({ error: err });
+
     if (programOptions.summary) {
       console.log("Summary of used licenses:");
       console.log(licensechecker.asSummary(collectedPackages));

@@ -42,3 +42,11 @@ export const toUniqueSortedPackages = ({
 
   return allUniquePackages;
 };
+
+export const throwOnLicenseError = ({ error }) => {
+  if (!error) {
+    return;
+  }
+
+  throw error;
+};
