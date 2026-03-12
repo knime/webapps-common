@@ -1,5 +1,11 @@
 # @knime/licenses
 
+## 1.5.0
+
+### Minor Changes
+
+- de5e5c8: Allow for project specific configs to be passed with `--config` CLI option
+
 ## 1.4.0
 
 ### Minor Changes
