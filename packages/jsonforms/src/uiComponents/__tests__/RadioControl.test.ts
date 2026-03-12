@@ -97,7 +97,7 @@ describe("RadioControl", () => {
   it("calls changeValue when radio button is changed", () => {
     wrapper
       .findComponent(KdsRadioButtonGroup)
-      .vm.$emit("update:model-value", "VALUE");
+      .vm.$emit("update:modelValue", "VALUE");
     expect(changeValue).toHaveBeenCalledWith("VALUE");
   });
 

@@ -9,6 +9,8 @@ import { optionsMapper } from "../utils";
 
 import { usePossibleValues } from "./composables/usePossibleValues";
 
+defineOptions({ inheritAttrs: false });
+
 const props = defineProps<
   VueControlPropsForLabelContent<string> & {
     type: "radio" | "valueSwitch";
