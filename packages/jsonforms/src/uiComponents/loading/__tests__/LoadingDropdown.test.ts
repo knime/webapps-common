@@ -29,6 +29,7 @@ describe("LoadingDropdown", () => {
       modelValue: "first",
       id: labelForId,
       disabled: false,
+      error: false,
       ariaLabel: "defaultLabel",
     };
 

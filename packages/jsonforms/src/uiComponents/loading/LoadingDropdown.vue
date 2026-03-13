@@ -66,6 +66,7 @@ const onUpdateModelValue = (value: string | null) => {
     :possible-values="possibleValues"
     :loading="isLoading"
     :placeholder="placeholderText"
+    :error="props.error"
     @update:model-value="onUpdateModelValue"
   />
 </template>

@@ -70,6 +70,7 @@ describe("SingleSelectControl", () => {
     expect(wrapper.findComponent(LoadingDropdown).props()).toEqual({
       ariaLabel: "defaultLabel",
       disabled: false,
+      error: false,
       id: "myLabelForId",
       modelValue: "__special__first",
       possibleValues: null,

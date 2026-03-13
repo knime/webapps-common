@@ -6,4 +6,5 @@ export type LoadingDropdownProps = {
   id: string;
   ariaLabel: string;
   disabled: boolean;
+  error: boolean;
 };

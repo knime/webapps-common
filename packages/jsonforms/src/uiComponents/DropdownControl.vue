@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, toRef } from "vue";
 
-import { InputField } from "@knime/components";
+import { KdsTextInput } from "@knime/kds-components";
 
 import type { VueControlPropsForLabelContent } from "../higherOrderComponents/control/withLabel";
 
@@ -24,13 +24,12 @@ const hasNoSuggestions = computed(
 </script>
 
 <template>
-  <InputField
+  <KdsTextInput
     v-if="hasNoSuggestions"
     :id="labelForId"
     :disabled="disabled"
     :model-value="control.data"
-    :is-valid
-    compact
+    :error="!isValid"
     @update:model-value="changeValue"
   />
   <!-- eslint-disable vue/attribute-hyphenation typescript complains with ':aria-label' instead of ':ariaLabel'-->
@@ -41,9 +40,7 @@ const hasNoSuggestions = computed(
     :disabled="disabled"
     :model-value="control.data ?? ''"
     :possible-values="possibleValues"
-    :is-valid
-    :allow-new-value
-    compact
+    :error="!isValid"
     @update:model-value="changeValue"
   />
 </template>

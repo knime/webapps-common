@@ -11,8 +11,7 @@ import { nextTick } from "vue";
 import type { VueWrapper } from "@vue/test-utils";
 import { flushPromises } from "@vue/test-utils";
 
-import { InputField } from "@knime/components";
-import { KdsDropdown } from "@knime/kds-components";
+import { KdsDropdown, KdsTextInput } from "@knime/kds-components";
 
 import {
   type VueControlTestProps,
@@ -195,20 +194,6 @@ describe("DropdownControl", () => {
     ).not.toBeNull();
   });
 
-  it("passes down allowNewValue attribute to LoadingDropdown", async () => {
-    props.control.uischema.options = {
-      ...props.control.uischema.options,
-      allowNewValue: true,
-    };
-    const { wrapper } = mountJsonFormsControlLabelContent(DropdownControl, {
-      props,
-    });
-    await flushPromises();
-    expect(
-      wrapper.findComponent(LoadingDropdown).attributes("allow-new-value"),
-    ).toBe("true");
-  });
-
   it("renders InputField if allowNewValue is true and there are no suggestions", async () => {
     props.control.uischema.options = {
       ...props.control.uischema.options,
@@ -220,6 +205,6 @@ describe("DropdownControl", () => {
     });
     await flushPromises();
     expect(wrapper.findComponent(LoadingDropdown).exists()).toBe(false);
-    expect(wrapper.findComponent(InputField).exists()).toBe(true);
+    expect(wrapper.findComponent(KdsTextInput).exists()).toBe(true);
   });
 });
