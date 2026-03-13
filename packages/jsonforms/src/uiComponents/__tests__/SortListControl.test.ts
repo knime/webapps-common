@@ -291,6 +291,7 @@ describe("SortListControl", () => {
         iconName: "type_1",
         iconTitle: "Type 1",
         size: "small",
+        disabled: false,
       });
     });
 

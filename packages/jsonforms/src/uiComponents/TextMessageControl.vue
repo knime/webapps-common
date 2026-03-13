@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-import { InlineMessage, type InlineMessageVariant } from "@knime/components";
+import {
+  KdsInlineMessage,
+  type KdsInlineMessageVariant,
+} from "@knime/kds-components";
 
 import type { VueControlProps } from "../higherOrderComponents/control/types";
 
@@ -30,10 +33,10 @@ const message = useProvidedState(uischema, "message");
 </script>
 
 <template>
-  <InlineMessage
+  <KdsInlineMessage
     v-if="message"
-    :variant="message.type.toLowerCase() as InlineMessageVariant"
-    :title="message.title"
-    :message="message.description"
+    :variant="message.type.toLowerCase() as KdsInlineMessageVariant"
+    :headline="message.title"
+    :description="message.description"
   />
 </template>
