@@ -1,12 +1,16 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-import { Dropdown, LoadingIcon } from "@knime/components";
-import { KdsDataType } from "@knime/kds-components";
+import { KdsDropdown } from "@knime/kds-components";
 
 import type { LoadingDropdownProps } from "./types/LoadingDropdownProps";
 
 const props = defineProps<LoadingDropdownProps>();
+const emit = defineEmits<{
+  "update:modelValue": [value: string];
+}>();
+
+const isLoading = computed(() => props.possibleValues === null);
 
 const placeholderText = computed(() => {
   const { possibleValues } = props;
@@ -27,86 +31,41 @@ const isPartiallyTyped = computed(() =>
 const disabledOrNoOptions = computed(
   () =>
     props.disabled ||
-    props.possibleValues === null ||
-    props.possibleValues.length === 0,
+    (props.possibleValues !== null && props.possibleValues.length === 0),
 );
 
 const possibleValues = computed(() => {
   if (props.possibleValues === null) {
     return [];
   }
-  if (!isPartiallyTyped.value) {
-    return props.possibleValues;
-  }
   return props.possibleValues.map((value) => ({
-    ...value,
-    slotData: {
-      text: value.text,
-      ...(value.type && { typeId: value.type.id, typeText: value.type.text }),
-    },
+    id: value.id,
+    text: value.text,
+    disabled: value.disabled,
+    accessory: isPartiallyTyped.value
+      ? {
+          type: "dataType" as const,
+          name: value.type?.id ?? "missing_type",
+        }
+      : undefined,
   }));
 });
+
+const onUpdateModelValue = (value: string | null) => {
+  emit("update:modelValue", value ?? "");
+};
 </script>
 
 <template>
-  <Dropdown
-    v-bind="{ ...$props, ...$attrs }"
+  <KdsDropdown
+    v-bind="$attrs"
+    :id="props.id"
+    :aria-label="props.ariaLabel"
     :model-value="asyncValue"
     :disabled="disabledOrNoOptions"
-    :possible-values="possibleValues ?? []"
+    :possible-values="possibleValues"
+    :loading="isLoading"
     :placeholder="placeholderText"
-    compact
-  >
-    <template
-      #option="{ slotData, selectedValue, isMissing, expanded } = {
-        slotData: {},
-      }"
-    >
-      <template v-if="expanded || selectedValue !== '' || isMissing">
-        <div
-          :class="[
-            'data-type-entry',
-            { missing: isMissing, 'with-type': isMissing || slotData.typeId },
-          ]"
-        >
-          <template v-if="isMissing">
-            <KdsDataType size="small" />
-            <span>(MISSING) {{ selectedValue }}</span>
-          </template>
-          <template v-else>
-            <template v-if="slotData.typeId">
-              <KdsDataType
-                :icon-name="slotData.typeId"
-                :icon-title="slotData.typeText"
-                size="small"
-              />
-            </template>
-            <span>{{ slotData.text }}</span>
-          </template>
-        </div>
-      </template>
-      <template v-else>{{ placeholderText }}</template>
-    </template>
-    <template #icon-right>
-      <LoadingIcon v-if="possibleValues === null" class="loading-icon" />
-    </template>
-  </Dropdown>
+    @update:model-value="onUpdateModelValue"
+  />
 </template>
-
-<style lang="postcss" scoped>
-.data-type-entry.with-type {
-  display: flex;
-  gap: var(--space-4);
-  align-items: center;
-
-  & > span {
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-}
-
-.loading-icon {
-  width: 14px;
-  height: 14px;
-}
-</style>

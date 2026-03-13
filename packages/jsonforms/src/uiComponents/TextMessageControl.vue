@@ -34,6 +34,6 @@ const message = useProvidedState(uischema, "message");
     v-if="message"
     :variant="message.type.toLowerCase() as InlineMessageVariant"
     :title="message.title"
-    :description="message.description"
+    :message="message.description"
   />
 </template>
