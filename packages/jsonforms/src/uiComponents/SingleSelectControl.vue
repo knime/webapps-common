@@ -139,6 +139,7 @@ const modelValue = computed<string>({
     :possible-values="allChoices"
     :ariaLabel="control.label"
     :disabled="disabled"
+    :error="!isValid"
     compact
   />
 </template>

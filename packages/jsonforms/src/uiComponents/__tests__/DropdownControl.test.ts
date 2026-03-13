@@ -11,7 +11,7 @@ import { nextTick } from "vue";
 import type { VueWrapper } from "@vue/test-utils";
 import { flushPromises } from "@vue/test-utils";
 
-import { Dropdown, InputField } from "@knime/components";
+import { KdsDropdown, KdsTextInput } from "@knime/kds-components";
 
 import {
   type VueControlTestProps,
@@ -80,24 +80,23 @@ describe("DropdownControl", () => {
   });
 
   it("renders", () => {
-    expect(wrapper.findComponent(Dropdown).exists()).toBe(true);
-    expect(wrapper.findComponent(Dropdown).props("allowNewValue")).toBe(false);
+    expect(wrapper.findComponent(LoadingDropdown).exists()).toBe(true);
   });
 
   it("sets labelForId", () => {
-    expect(wrapper.getComponent(Dropdown).props().id).toBe(labelForId);
+    expect(wrapper.getComponent(LoadingDropdown).props().id).toBe(labelForId);
   });
 
   it("calls handleChange when input is changed", () => {
     const changedDropdownControl = "Shaken not stirred";
     wrapper
-      .findComponent(Dropdown)
+      .findComponent(LoadingDropdown)
       .vm.$emit("update:modelValue", changedDropdownControl);
     expect(changeValue).toHaveBeenCalledWith(changedDropdownControl);
   });
 
   it("sets correct initial value", () => {
-    expect(wrapper.findComponent(Dropdown).vm.modelValue).toBe(
+    expect(wrapper.findComponent(LoadingDropdown).props("modelValue")).toBe(
       props.control.data,
     );
   });
@@ -109,7 +108,9 @@ describe("DropdownControl", () => {
       props,
     });
     await flushPromises();
-    expect(wrapper.findComponent(Dropdown).props().placeholder).toBe("Loading");
+    expect(wrapper.findComponent(KdsDropdown).props().placeholder).toBe(
+      "Loading",
+    );
   });
 
   it("sets placeholder text correctly if possible values are empty", async () => {
@@ -118,7 +119,7 @@ describe("DropdownControl", () => {
       props,
     });
     await flushPromises();
-    expect(wrapper.findComponent(Dropdown).props().placeholder).toBe(
+    expect(wrapper.findComponent(KdsDropdown).props().placeholder).toBe(
       "No values present",
     );
   });
@@ -129,14 +130,14 @@ describe("DropdownControl", () => {
       props,
     });
     await flushPromises();
-    expect(wrapper.findComponent(Dropdown).props().placeholder).toBe(
+    expect(wrapper.findComponent(KdsDropdown).props().placeholder).toBe(
       "No value selected",
     );
   });
 
   it("disables dropdown by prop", async () => {
     await wrapper.setProps({ disabled: true });
-    expect(wrapper.findComponent(Dropdown).vm.disabled).toBeTruthy();
+    expect(wrapper.findComponent(KdsDropdown).props("disabled")).toBeTruthy();
   });
 
   it("disables dropdown when there are no possible values", async () => {
@@ -148,7 +149,7 @@ describe("DropdownControl", () => {
       },
     );
     await flushPromises();
-    expect(wrapper.findComponent(Dropdown).vm.disabled).toBeTruthy();
+    expect(wrapper.findComponent(KdsDropdown).props("disabled")).toBeTruthy();
   });
 
   it("uses choicesProvider if present", async () => {
@@ -178,7 +179,7 @@ describe("DropdownControl", () => {
     provideChoices!(providedChoices);
     await nextTick();
     expect(
-      wrapper.findComponent(Dropdown).props().possibleValues,
+      wrapper.findComponent(LoadingDropdown).props().possibleValues,
     ).toStrictEqual(providedChoices);
   });
 
@@ -193,18 +194,6 @@ describe("DropdownControl", () => {
     ).not.toBeNull();
   });
 
-  it("passes down allowNewValue prop to Dropdown", async () => {
-    props.control.uischema.options = {
-      ...props.control.uischema.options,
-      allowNewValue: true,
-    };
-    const { wrapper } = mountJsonFormsControlLabelContent(DropdownControl, {
-      props,
-    });
-    await flushPromises();
-    expect(wrapper.findComponent(Dropdown).props("allowNewValue")).toBe(true);
-  });
-
   it("renders InputField if allowNewValue is true and there are no suggestions", async () => {
     props.control.uischema.options = {
       ...props.control.uischema.options,
@@ -215,7 +204,7 @@ describe("DropdownControl", () => {
       props,
     });
     await flushPromises();
-    expect(wrapper.findComponent(Dropdown).exists()).toBe(false);
-    expect(wrapper.findComponent(InputField).exists()).toBe(true);
+    expect(wrapper.findComponent(LoadingDropdown).exists()).toBe(false);
+    expect(wrapper.findComponent(KdsTextInput).exists()).toBe(true);
   });
 });

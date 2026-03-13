@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { type VueWrapper, mount } from "@vue/test-utils";
 
-import { KdsDataType } from "@knime/kds-components";
+import { KdsDropdown } from "@knime/kds-components";
 
 import { type VueControlTestProps } from "../../../../testUtils";
 import LoadingDropdown from "../LoadingDropdown.vue";
@@ -29,6 +29,7 @@ describe("LoadingDropdown", () => {
       modelValue: "first",
       id: labelForId,
       disabled: false,
+      error: false,
       ariaLabel: "defaultLabel",
     };
 
@@ -37,70 +38,102 @@ describe("LoadingDropdown", () => {
     });
   });
 
-  describe("slot rendering", () => {
-    it("does not render a slot if all possibleValues are untyped", async () => {
-      await wrapper.setProps({
-        possibleValues: [
-          { id: "first", text: "First" },
-          { id: "second", text: "Second" },
-          { id: "third", text: "Third" },
-        ],
-      });
-      expect(wrapper.find(".data-type-entry").exists()).toBeFalsy();
+  it("passes mapped options to KdsDropdown", () => {
+    expect(wrapper.findComponent(KdsDropdown).props("possibleValues")).toEqual([
+      {
+        id: "first",
+        text: "First",
+        disabled: undefined,
+        accessory: { type: "dataType", name: "missing_type" },
+      },
+      {
+        id: "second",
+        text: "Second",
+        disabled: undefined,
+        accessory: { type: "dataType", name: "secondType" },
+      },
+      {
+        id: "third",
+        text: "Third",
+        disabled: undefined,
+        accessory: { type: "dataType", name: "thirdType" },
+      },
+    ]);
+  });
+
+  it("does not map accessory when values are not partially typed", async () => {
+    await wrapper.setProps({
+      possibleValues: [
+        { id: "first", text: "First" },
+        { id: "second", text: "Second" },
+      ],
     });
 
-    it("renders an untyped value", () => {
-      const slots = wrapper.findAll(".data-type-entry");
-      // +1 for the summary entry if the dropdown is not expanded
-      expect(slots).toHaveLength(props.possibleValues!.length + 1);
-      const summary = slots[0];
-      expect(summary.exists()).toBeTruthy();
-      expect(summary.findComponent(KdsDataType).exists()).toBeFalsy();
-      expect(summary.text()).toBe("First");
+    expect(wrapper.findComponent(KdsDropdown).props("possibleValues")).toEqual([
+      {
+        id: "first",
+        text: "First",
+        disabled: undefined,
+        accessory: undefined,
+      },
+      {
+        id: "second",
+        text: "Second",
+        disabled: undefined,
+        accessory: undefined,
+      },
+    ]);
+  });
+
+  it("considers disabled item state", async () => {
+    await wrapper.setProps({
+      possibleValues: [
+        { id: "first", text: "First" },
+        {
+          id: "second",
+          text: "Second",
+          disabled: true,
+          type: { id: "secondType", text: "Second Type" },
+        },
+      ],
     });
 
-    it("renders a typed value", async () => {
-      await wrapper.setProps({
-        modelValue: "second",
-      });
-      const slots = wrapper.findAll(".data-type-entry");
-      // +1 for the summary entry if the dropdown is not expanded
-      expect(slots).toHaveLength(props.possibleValues!.length + 1);
-      const summary = slots[0];
-      expect(summary.exists()).toBeTruthy();
-      expect(summary.findComponent(KdsDataType).exists()).toBeTruthy();
-      expect(summary.findComponent(KdsDataType).props()).toStrictEqual({
-        iconName: "secondType",
-        iconTitle: "Second Type",
-        size: "small",
-      });
-      expect(summary.text()).toBe("Second");
+    const possibleValues = wrapper
+      .findComponent(KdsDropdown)
+      .props("possibleValues");
+    expect(possibleValues[1]).toMatchObject({ disabled: true });
+  });
+
+  it("uses loading state when possible values are null", async () => {
+    await wrapper.setProps({
+      possibleValues: null,
     });
 
-    it("renders a missing value", async () => {
-      await wrapper.setProps({
-        modelValue: "missingValue",
-      });
-      const slots = wrapper.findAll(".data-type-entry");
-      // +1 for the summary entry if the dropdown is not expanded
-      expect(slots).toHaveLength(props.possibleValues!.length + 1);
-      const summary = slots[0];
-      expect(summary.exists()).toBeTruthy();
-      expect(summary.findComponent(KdsDataType).exists()).toBeTruthy();
-      expect(summary.text()).toBe("(MISSING) missingValue");
+    const dropdown = wrapper.findComponent(KdsDropdown);
+    expect(dropdown.props("loading")).toBe(true);
+    expect(dropdown.props("placeholder")).toBe("Loading");
+    expect(dropdown.props("modelValue")).toBe("");
+  });
+
+  it("uses no values placeholder when list is empty", async () => {
+    await wrapper.setProps({
+      possibleValues: [],
     });
 
-    it("renders without a selected value", async () => {
-      await wrapper.setProps({
-        modelValue: "",
-      });
-      const slots = wrapper.findAll(".data-type-entry");
-      expect(slots).toHaveLength(props.possibleValues!.length);
-      const expectedPlaceholder = "No value selected";
-      expect(wrapper.html()).toContain(expectedPlaceholder);
-      slots.forEach((slot) => {
-        expect(slot.text()).not.toContain(expectedPlaceholder);
-      });
-    });
+    const dropdown = wrapper.findComponent(KdsDropdown);
+    expect(dropdown.props("placeholder")).toBe("No values present");
+    expect(dropdown.props("disabled")).toBe(true);
+  });
+
+  it("forwards update:modelValue from KdsDropdown", () => {
+    wrapper.findComponent(KdsDropdown).vm.$emit("update:modelValue", "second");
+
+    expect(wrapper.emitted("update:modelValue")).toEqual([["second"]]);
+  });
+
+  it("maps null update:modelValue to empty string", () => {
+    wrapper.findComponent(KdsDropdown).vm.$emit("update:modelValue", null);
+
+    expect(wrapper.emitted("update:modelValue")).toEqual([[""]]);
   });
 });
