@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.19.2
+
+### Patch Changes
+
+- db625ea: Integrated KdsDropdown and KdsInlineMessage
+
 ## 1.19.1
 
 ### Patch Changes
