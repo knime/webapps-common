@@ -1,0 +1,401 @@
+{
+  "schema": {
+    "type": "object",
+    "properties": {
+      "deploymentName": {
+        "title": "Deployment name",
+        "type": "string"
+      },
+      "version": {
+        "title": "Version",
+        "oneOf": [
+          {
+            "const": "current-state",
+            "title": "Latest"
+          },
+          {
+            "const": "2",
+            "title": "0.0.1 – wish you were stable 🙈",
+            "date": "2022-12-02T12:07:30+00:00"
+          }
+        ],
+        "default": "2"
+      },
+      "executionContext": {
+        "title": "Execution context",
+        "oneOf": [
+          {
+            "const": "4835366a-1fed-43ae-89ee-b126ce835a5a",
+            "title": "00 5.x Nightly (Auto-Updated by Jenkins; by Alice)",
+            "slotData": {
+              "name": "00 5.x Nightly (Auto-Updated by Jenkins; by Alice)",
+              "executionStatus": "Starting up",
+              "sharedStatus": [],
+              "autoStartEnabled": true,
+              "executorApVersion": "5.12.0.v202603051026",
+              "shortExecutorApVersion": "5.12.0",
+              "executionContextFeatures": ["EXECUTION", "EDITING"]
+            }
+          },
+          {
+            "const": "4e2314ea-4b7d-41fc-8618-ddf1c635ad0e",
+            "title": "5.3.4 Full RC1",
+            "slotData": {
+              "name": "5.3.4 Full RC1",
+              "executionStatus": "Stopped",
+              "sharedStatus": ["Shared"],
+              "autoStartEnabled": true,
+              "executorApVersion": "5.3.4.v202602062210",
+              "shortExecutorApVersion": "5.3.4",
+              "executionContextFeatures": ["EXECUTION"]
+            }
+          },
+          {
+            "const": "b718140e-9f4f-41fd-a61b-6e3ef9fcd1b1",
+            "title": "5.3.4 Standard RC1",
+            "slotData": {
+              "name": "5.3.4 Standard RC1",
+              "executionStatus": "Stopped",
+              "sharedStatus": ["Shared"],
+              "autoStartEnabled": true,
+              "executorApVersion": "5.3.4.v202602062210",
+              "shortExecutorApVersion": "5.3.4",
+              "executionContextFeatures": ["EXECUTION"]
+            }
+          },
+          {
+            "const": "ec5f1a71-fcc4-4efd-b8e8-417a99ae3826",
+            "title": "5.5.2 (Full)",
+            "slotData": {
+              "name": "5.5.2 (Full)",
+              "executionStatus": "Stopped",
+              "sharedStatus": [],
+              "autoStartEnabled": true,
+              "executorApVersion": "5.5.2.v202509292032",
+              "shortExecutorApVersion": "5.5.2",
+              "executionContextFeatures": ["EXECUTION"]
+            }
+          },
+          {
+            "const": "9a0b9e4e-cb35-4681-8322-db0899c62ec0",
+            "title": "5.8.0 run and edit",
+            "slotData": {
+              "name": "5.8.0 run and edit",
+              "executionStatus": "Stopped",
+              "sharedStatus": [],
+              "autoStartEnabled": true,
+              "executorApVersion": "5.8.0.v202510131944",
+              "shortExecutorApVersion": "5.8.0",
+              "executionContextFeatures": ["EXECUTION", "EDITING"]
+            }
+          },
+          {
+            "const": "4fba811b-5378-42fe-9276-08108fe0a9c0",
+            "title": "aretheexecutorsremote",
+            "slotData": {
+              "name": "aretheexecutorsremote",
+              "executionStatus": "Stopped",
+              "sharedStatus": [],
+              "autoStartEnabled": true,
+              "executorApVersion": "5.8.0.v202510131944",
+              "shortExecutorApVersion": "5.8.0",
+              "executionContextFeatures": ["EXECUTION"]
+            }
+          },
+          {
+            "const": "772e2aee-4525-4931-be1a-d1bec32371c0",
+            "title": "Common execution context",
+            "slotData": {
+              "name": "Common execution context",
+              "executionStatus": "Stopped",
+              "sharedStatus": ["Shared"],
+              "autoStartEnabled": true,
+              "executorApVersion": "5.8.0.v202510131944",
+              "shortExecutorApVersion": "5.8.0",
+              "executionContextFeatures": ["EXECUTION"]
+            }
+          },
+          {
+            "const": "6bed6ad4-ea75-476c-8eba-0baedd409b3c",
+            "title": "Latest stable release",
+            "slotData": {
+              "name": "Latest stable release",
+              "executionStatus": "Stopped",
+              "sharedStatus": [],
+              "autoStartEnabled": true,
+              "executorApVersion": "5.4.4.v202504301443",
+              "shortExecutorApVersion": "5.4.4",
+              "executionContextFeatures": ["EXECUTION"]
+            }
+          },
+          {
+            "const": "1ffbbc6e-b876-4107-a5a9-f3b3d67da6eb",
+            "title": "Nightly 2026-03-05",
+            "slotData": {
+              "name": "Nightly 2026-03-05",
+              "executionStatus": "Stopped",
+              "sharedStatus": ["Shared"],
+              "autoStartEnabled": true,
+              "executorApVersion": "5.12.0.v202603051026",
+              "shortExecutorApVersion": "5.12.0",
+              "executionContextFeatures": ["EXECUTION", "EDITING"]
+            }
+          },
+          {
+            "const": "d8dae021-d8a9-4b17-b988-85f032473c07",
+            "title": "Bob",
+            "slotData": {
+              "name": "Bob",
+              "executionStatus": "Stopped",
+              "sharedStatus": [],
+              "autoStartEnabled": true,
+              "executorApVersion": "",
+              "shortExecutorApVersion": "",
+              "executionContextFeatures": ["EXECUTION", "EDITING"]
+            }
+          },
+          {
+            "const": "84f82337-c24d-49b6-aa0b-14592a06ffdd",
+            "title": "Remote Execution (Charlie)",
+            "slotData": {
+              "name": "Remote Execution (Charlie)",
+              "executionStatus": "Running",
+              "sharedStatus": [],
+              "autoStartEnabled": false,
+              "executorApVersion": "5.11.0.v202602121051",
+              "shortExecutorApVersion": "5.11.0",
+              "executionContextFeatures": [
+                "REMOTE_EXECUTOR",
+                "EXECUTION",
+                "EDITING"
+              ]
+            }
+          },
+          {
+            "const": "e872bd71-af63-438a-8d78-a344aea78f2f",
+            "title": "Remote Execution (Dana, Linux)",
+            "slotData": {
+              "name": "Remote Execution (Dana, Linux)",
+              "executionStatus": "Running",
+              "sharedStatus": ["Shared"],
+              "autoStartEnabled": false,
+              "executorApVersion": "5.8.2.v202601151630",
+              "shortExecutorApVersion": "5.8.2",
+              "executionContextFeatures": ["REMOTE_EXECUTOR", "EXECUTION"]
+            }
+          },
+          {
+            "const": "9c9f64fc-1939-49ce-a98a-487eaa9655ff",
+            "title": "Remote Execution (Dana, Windows)",
+            "slotData": {
+              "name": "Remote Execution (Dana, Windows)",
+              "executionStatus": "Running",
+              "sharedStatus": ["Shared"],
+              "autoStartEnabled": false,
+              "executorApVersion": "5.8.2.v202601151630",
+              "shortExecutorApVersion": "5.8.2",
+              "executionContextFeatures": [
+                "REMOTE_EXECUTOR",
+                "EXECUTION",
+                "EDITING"
+              ]
+            }
+          },
+          {
+            "const": "b4556da7-1cac-4c34-951f-6c41238c1b33",
+            "title": "Dana’s EC",
+            "slotData": {
+              "name": "Dana’s EC",
+              "executionStatus": "Stopped",
+              "sharedStatus": [],
+              "autoStartEnabled": true,
+              "executorApVersion": "5.8.0.v202510131944",
+              "shortExecutorApVersion": "5.8.0",
+              "executionContextFeatures": ["EXECUTION"]
+            }
+          },
+          {
+            "const": "be90764f-165d-4f56-b2d5-771389d7a1ec",
+            "title": "Danas Executor Pool",
+            "slotData": {
+              "name": "Danas Executor Pool",
+              "executionStatus": "Stopped",
+              "sharedStatus": [],
+              "autoStartEnabled": true,
+              "executorApVersion": "",
+              "shortExecutorApVersion": "",
+              "executionContextFeatures": ["EXECUTION"]
+            }
+          },
+          {
+            "const": "a6ef436d-3adf-43db-8327-d4ae48853797",
+            "title": "testing using registry.hub.knime.com",
+            "slotData": {
+              "name": "testing using registry.hub.knime.com",
+              "executionStatus": "Stopped",
+              "sharedStatus": [],
+              "autoStartEnabled": true,
+              "executorApVersion": "",
+              "shortExecutorApVersion": "",
+              "executionContextFeatures": ["EXECUTION"]
+            }
+          },
+          {
+            "const": "e5767c61-81f8-4643-b21b-48101c592dac",
+            "title": "Eve's test EC",
+            "slotData": {
+              "name": "Eve's test EC",
+              "executionStatus": "Stopped",
+              "sharedStatus": [],
+              "autoStartEnabled": true,
+              "executorApVersion": "",
+              "shortExecutorApVersion": "",
+              "executionContextFeatures": ["EXECUTION"]
+            }
+          }
+        ],
+        "default": "4835366a-1fed-43ae-89ee-b126ce835a5a",
+        "description": "Running execution contexts are ready to use. Execution contexts using the auto start and stop function might require time to load."
+      },
+      "enableWorkflowActions": {
+        "title": "Enable email notifications",
+        "type": "boolean",
+        "default": false
+      },
+      "workflowActions": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "email": {
+              "title": "Email address",
+              "type": "string",
+              "placeholder": "email@knime.com"
+            },
+            "condition": {
+              "title": "Condition",
+              "oneOf": [
+                {
+                  "title": "Success",
+                  "const": "onSuccess"
+                },
+                {
+                  "title": "Failure",
+                  "const": "onFailure"
+                },
+                {
+                  "title": "Success or failure",
+                  "const": "onSuccessOrFailure"
+                }
+              ],
+              "default": "onFailure"
+            }
+          }
+        }
+      },
+      "appendNodeMessages": {
+        "title": "Append workflow messages",
+        "type": "boolean",
+        "default": false
+      },
+      "configuration": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  },
+  "uiSchema": {
+    "type": "VerticalLayout",
+    "elements": [
+      {
+        "type": "Section",
+        "label": "Create ad hoc execution",
+        "elements": [
+          {
+            "type": "Control",
+            "scope": "#/properties/version",
+            "options": {
+              "format": "dropdownWithDatedOptions"
+            }
+          },
+          {
+            "type": "Control",
+            "scope": "#/properties/executionContext",
+            "options": {
+              "format": "executionContextDropdown"
+            }
+          },
+          {
+            "type": "Section",
+            "label": "Email notifications",
+            "description": "Setup email notifications of the workflow execution.",
+            "elements": [
+              {
+                "type": "Control",
+                "scope": "#/properties/enableWorkflowActions"
+              },
+              {
+                "rule": {
+                  "effect": "SHOW",
+                  "condition": {
+                    "scope": "#/properties/enableWorkflowActions",
+                    "type": "LEAF",
+                    "expectedValue": true
+                  }
+                },
+                "elements": [
+                  {
+                    "type": "SimpleArrayLayout",
+                    "scope": "#/properties/workflowActions",
+                    "options": {
+                      "addButtonText": "Add more",
+                      "showSortButtons": false,
+                      "detail": {
+                        "horizontalLayout": {
+                          "type": "HorizontalLayout",
+                          "elements": [
+                            {
+                              "type": "Control",
+                              "scope": "#/properties/email"
+                            },
+                            {
+                              "type": "Control",
+                              "scope": "#/properties/condition",
+                              "options": {
+                                "format": "dropdown"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "type": "Control",
+                    "scope": "#/properties/appendNodeMessages"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "data": {
+    "version": "2",
+    "executionContext": "4835366a-1fed-43ae-89ee-b126ce835a5a",
+    "enableWorkflowActions": true,
+    "appendNodeMessages": true,
+    "workflowActions": [
+      {
+        "email": "support@knime.com",
+        "condition": "onFailure"
+      },
+      {
+        "email": "info@knime.com",
+        "condition": "onSuccess"
+      }
+    ]
+  }
+}

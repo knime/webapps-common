@@ -1,0 +1,33 @@
+import type { JsonSchema, UISchemaElement } from "@jsonforms/core";
+
+import googleAiStudio from "./aiModels/googleAiStudio.mock.json";
+import adHocExecution from "./deployments/adHocExecution.mock.json";
+import genericOAuth2UsernamePassword from "./secrets/genericOAuth2UsernamePassword.mock.json";
+
+export interface MockSchema {
+  name: string;
+  schema: JsonSchema;
+  uischema: UISchemaElement;
+  data: unknown;
+}
+
+export const mocks: MockSchema[] = [
+  {
+    name: "Ad Hoc Execution",
+    schema: adHocExecution.schema as JsonSchema,
+    uischema: adHocExecution.uiSchema as UISchemaElement,
+    data: adHocExecution.data,
+  },
+  {
+    name: "Generic OAuth2 Username/Password",
+    schema: genericOAuth2UsernamePassword.schema as JsonSchema,
+    uischema: genericOAuth2UsernamePassword.uiSchema as UISchemaElement,
+    data: genericOAuth2UsernamePassword.data,
+  },
+  {
+    name: "Google AI Studio",
+    schema: googleAiStudio.schema as JsonSchema,
+    uischema: googleAiStudio.uiSchema as UISchemaElement,
+    data: googleAiStudio.data,
+  },
+];
