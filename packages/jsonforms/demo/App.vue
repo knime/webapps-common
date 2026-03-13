@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { ref } from "vue";
+
+import { KdsDropdown } from "@knime/kds-components";
 
 import { JsonFormsDialog, defaultRenderers } from "../src";
 
@@ -7,43 +9,27 @@ import { mocks } from "./mocks";
 import type { MockSchema } from "./mocks";
 
 const mockSchemas: MockSchema[] = mocks;
+const selected = ref<MockSchema>(mocks[0]);
 
-const selectedName = ref<string | null>(
-  mockSchemas.length > 0 ? mockSchemas[0].name : null,
-);
-
-const selected = computed(
-  () => mockSchemas.find((m) => m.name === selectedName.value) ?? null,
-);
-
-const currentData = ref<unknown>(null);
-
-function onSchemaSelect(event: Event) {
-  const value = (event.target as HTMLSelectElement).value;
-  selectedName.value = value || null;
-  currentData.value = selected.value?.data ?? null;
-}
-
-function onChange({ data }: { data: unknown }) {
-  currentData.value = data;
+function onSchemaSelect(id: string) {
+  const found = mockSchemas.find((m) => m.id === id);
+  if (found) {
+    selected.value = found;
+  }
 }
 </script>
 
 <template>
   <div class="page">
     <div class="toolbar">
-      <label for="schema-select">Schema:</label>
-      <select id="schema-select" @change="onSchemaSelect">
-        <option value="">— select a schema —</option>
-        <option
-          v-for="mock in mockSchemas"
-          :key="mock.name"
-          :value="mock.name"
-          :selected="mock.name === selectedName"
-        >
-          {{ mock.name }}
-        </option>
-      </select>
+      <KdsDropdown
+        :model-value="selected?.id"
+        :possible-values="
+          mockSchemas.map((mock) => ({ id: mock.id, text: mock.name }))
+        "
+        placeholder="Select a schema"
+        @update:model-value="onSchemaSelect"
+      />
     </div>
 
     <div class="dialog-wrapper">
@@ -52,9 +38,8 @@ function onChange({ data }: { data: unknown }) {
         :key="selected.name"
         :schema="selected.schema"
         :uischema="selected.uischema"
-        :data="currentData ?? selected.data"
+        :data="selected.data"
         :renderers="defaultRenderers"
-        @change="onChange"
       />
       <p v-else class="placeholder">Select a schema to preview the form.</p>
     </div>
