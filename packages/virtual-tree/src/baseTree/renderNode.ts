@@ -1,4 +1,4 @@
-import { type PropType, defineComponent, renderSlot, toRefs } from "vue";
+import { type PropType, defineComponent, h, renderSlot, toRefs } from "vue";
 
 import { BaseTreeNode } from "./baseTreeNode";
 import type { TreeContext } from "./types";
@@ -22,14 +22,13 @@ export default defineComponent({
   setup(props) {
     const { context, node, titleCls } = toRefs(props);
     return () => {
-      // eslint-disable-next-line no-nested-ternary
-      return context.value.renderNode ? (
-        context.value.renderNode(node.value)
-      ) : context.value.slots.node ? (
-        renderSlot(context.value.slots, "node", { node: node.value })
-      ) : (
-        <span class={titleCls.value}>{node.value.name}</span>
-      );
+      if (context.value.renderNode) {
+        return context.value.renderNode(node.value);
+      }
+      if (context.value.slots.node) {
+        return renderSlot(context.value.slots, "node", { node: node.value });
+      }
+      return h("span", { class: titleCls.value }, node.value.name);
     };
   },
 });

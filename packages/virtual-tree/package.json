@@ -38,7 +38,6 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "catalog:",
-    "@vitejs/plugin-vue-jsx": "catalog:",
     "@vue/test-utils": "catalog:",
     "consola": "catalog:",
     "vite": "catalog:",
