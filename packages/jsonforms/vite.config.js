@@ -30,10 +30,11 @@ export default defineConfig({
           vue: "Vue",
         },
         assetFileNames: (assetInfo) => {
-          if (assetInfo.name.endsWith(".css")) {
+          const name = assetInfo.names?.[0];
+          if (name?.endsWith(".css")) {
             return "knime-jsonforms.css";
           }
-          return assetInfo.name;
+          return name ?? "[name][extname]";
         },
       },
     },
