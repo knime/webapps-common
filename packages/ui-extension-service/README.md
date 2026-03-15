@@ -105,7 +105,7 @@ When committing your changes, a couple of commit hooks will run via [husky].
 
 #### Running unit tests
 
-This project contains unit tests written with [jest]. They are run with
+This project contains unit tests. They are run with
 
 ```sh
 npm run test:unit
@@ -127,7 +127,7 @@ npm run audit
 
 ## Build production version
 
-Bundles with rollup into esmodule format and an IIFE bundle.
+Bundles into esmodule format and an IIFE bundle.
 
 ```sh
 npm run build
@@ -139,6 +139,5 @@ npm run build
 
 [node]: https://nodejs.org/
 [Vue]: https://vuejs.org/
-[jest]: https://jestjs.io/en
 [husky]: https://www.npmjs.com/package/husky
 [lintstaged]: https://github.com/okonet/lint-staged

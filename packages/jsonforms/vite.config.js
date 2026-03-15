@@ -20,10 +20,10 @@ export default defineConfig({
         "knime-jsonforms": "src/index.ts",
         testing: "testUtils/index.ts",
       },
-      name: "KNIME JSON Forms integration",
+      name: "KNIME JSONForms integration",
       formats: ["es"],
     },
-    rollupOptions: {
+    rolldownOptions: {
       external: ["vue"],
       output: {
         globals: {

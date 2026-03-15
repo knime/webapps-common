@@ -10,8 +10,8 @@ This is a **pnpm monorepo** containing shared frontend code for KNIME web projec
 - **Package Manager:** pnpm 10.18.1 (specified in packageManager field)
 - **Language:** TypeScript, JavaScript (ES modules)
 - **Framework:** Vue 3 (~3.5.18)
-- **Build Tool:** Vite 7.x
-- **Test Framework:** Vitest 3.2.4
+- **Build Tool:** Vite 8.x
+- **Test Framework:** Vitest 4.x
 - **Linting:** ESLint 9.38.0, Stylelint 16.23.0
 - **Formatting:** Prettier 3.3.2
 
