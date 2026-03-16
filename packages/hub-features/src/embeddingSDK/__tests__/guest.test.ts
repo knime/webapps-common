@@ -1,16 +1,35 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
-import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
+import {
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
 import { flushPromises } from "@vue/test-utils";
+import consola from "consola";
 
 import * as guest from "../guest";
 import { MESSAGES } from "../messages";
 import type { UserActivityInfo } from "../types";
 
-vi.mock("consola");
-
 describe("Embedding SDK::GUEST", () => {
   beforeAll(() => {
     import.meta.env.DEV = false;
+  });
+
+  beforeEach(() => {
+    // guest.ts uses global consola (set via window.consola in vitest.setup.ts).
+    // Spy on withTag so that the tagged logger's calls are suppressed.
+    vi.spyOn(consola, "withTag").mockReturnValue({
+      warn: vi.fn(),
+      fatal: vi.fn(),
+      error: vi.fn(),
+      info: vi.fn(),
+      trace: vi.fn(),
+    } as any);
   });
 
   afterEach(() => {

@@ -175,7 +175,7 @@ describe("SplitPanel", () => {
       const splitter = wrapper.findComponent(Splitter);
 
       splitter.vm.$emit("update:percent", 42);
-      splitter.vm.$emit("drag-end");
+      splitter.vm.$emit("dragEnd");
 
       await nextTick();
 

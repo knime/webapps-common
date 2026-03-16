@@ -1,5 +1,6 @@
 import {
   type MockInstance,
+  afterEach,
   beforeEach,
   describe,
   expect,
@@ -8,6 +9,7 @@ import {
 } from "vitest";
 import { nextTick } from "vue";
 import { flushPromises } from "@vue/test-utils";
+import consola from "consola";
 
 import type { useUploadManager } from "@knime/components";
 import { knimeFileFormats, promise } from "@knime/utils";
@@ -73,6 +75,9 @@ describe("useFileUpload", () => {
   );
 
   beforeEach(() => {
+    // Prevent actual XHR network calls that cause jsdom errors and consola noise
+    vi.spyOn(XMLHttpRequest.prototype, "send").mockImplementation(() => {});
+    vi.spyOn(consola, "error").mockImplementation(() => {});
     $ofetchMock
       .mockResolvedValueOnce({
         items: {
@@ -81,6 +86,10 @@ describe("useFileUpload", () => {
         },
       })
       .mockResolvedValue(JSON.stringify({ method: "", url: "" }));
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it("should start an upload", async () => {
@@ -463,10 +472,6 @@ describe("useFileUpload", () => {
 
     it("should handle failing to complete an upload", async () => {
       $ofetchMock.mockReset();
-
-      // mute consola
-      // @ts-expect-error Property 'raw' is missing in type '() => void' but required in type 'LogFn'
-      consola.error = () => {};
 
       const apiError = new Error("api error");
       $ofetchMock

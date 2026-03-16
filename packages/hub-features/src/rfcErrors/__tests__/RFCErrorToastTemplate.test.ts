@@ -15,6 +15,10 @@ vi.mock("@vueuse/core", () => ({
 }));
 
 describe("RFCErrorToastTemplate", () => {
+  type RFCErrorToastTemplateProps = InstanceType<
+    typeof RFCErrorToastTemplate
+  >["$props"];
+
   const defaultProps = {
     headline: "Toast headline",
     title: "There was an error",
@@ -22,9 +26,12 @@ describe("RFCErrorToastTemplate", () => {
     status: 500,
     date: new Date(2012, 11, 12),
     requestId: "123456789",
-  };
+  } satisfies Pick<
+    RFCErrorToastTemplateProps,
+    "headline" | "title" | "details" | "status" | "date" | "requestId"
+  >;
   const formattedDate = formatDateTimeString(defaultProps.date.getTime());
-  const doMount = (props = defaultProps) => {
+  const doMount = (props: RFCErrorToastTemplateProps = defaultProps) => {
     const copiedMock = ref(false);
     const copyMock = vi.fn(() => {
       copiedMock.value = true;
@@ -69,9 +76,10 @@ describe("RFCErrorToastTemplate", () => {
 
   it("is expanded when details are empty", () => {
     const { wrapper } = doMount({
+      headline: defaultProps.headline,
       title: defaultProps.title,
       details: [],
-    } as any);
+    });
 
     expect(wrapper.find(".title").text()).toBe(defaultProps.title);
     expect(wrapper.find("[data-test-id='show-details']").exists()).toBe(false);
