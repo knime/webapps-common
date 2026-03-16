@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type Ref, computed, onMounted, ref, toRef } from "vue";
+import { type Ref, computed, onMounted, ref, toRef, useAttrs } from "vue";
 
 import { KdsRadioButtonGroup, KdsValueSwitch } from "@knime/kds-components";
 
@@ -10,6 +10,8 @@ import { optionsMapper } from "../utils";
 import { usePossibleValues } from "./composables/usePossibleValues";
 
 defineOptions({ inheritAttrs: false });
+
+const attrs = useAttrs();
 
 const props = defineProps<
   VueControlPropsForLabelContent<string> & {
@@ -48,6 +50,7 @@ onMounted(() => {
   <template v-if="options">
     <KdsValueSwitch
       v-if="props.type === 'valueSwitch'"
+      v-bind="attrs"
       :id="labelForId"
       :possible-values="options"
       :disabled="disabled"
@@ -58,6 +61,7 @@ onMounted(() => {
     />
     <KdsRadioButtonGroup
       v-else
+      v-bind="attrs"
       :id="labelForId"
       :possible-values="options"
       :alignment="alignment"
