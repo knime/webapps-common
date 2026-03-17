@@ -33,6 +33,7 @@ export const inputFormats = {
   gridSelection: "gridSelection",
   timeframes: "timeframes",
   link: "linkButton",
+  credentials: "credentials",
   // custom hub formats
   executionContextDropdown: "executionContextDropdown",
   dockerImageDropdown: "dockerImageDropdown",

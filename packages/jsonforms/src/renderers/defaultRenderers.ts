@@ -9,6 +9,7 @@ import { checkboxesRenderer } from "./checkboxesRenderer";
 import { colorPreviewRenderer } from "./colorPreviewRenderer";
 import { colorRenderer } from "./colorRenderer";
 import { comboBoxRenderer } from "./comboBoxRenderer";
+import { credentialsRenderer } from "./credentialsRenderer";
 import {
   dateTimeFormatPickerRenderer,
   dateTimeFormatPickerWithTypeRenderer,
@@ -89,6 +90,7 @@ export const controls = {
   gridSelectionRenderer,
   timeframesRenderer,
   quantityRenderer,
+  credentialsRenderer,
   // without label:
   simpleButtonRenderer,
   textMessageRenderer,
