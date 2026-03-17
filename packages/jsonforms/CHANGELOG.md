@@ -1,5 +1,12 @@
 # @knime/json-forms
 
+## 1.19.3
+
+### Patch Changes
+
+- db87f97: Add `colorPreview` renderer and UI components for palette/gradient color previews, including tests.
+- 91adce9: Enable isValid flag in DateControl
+
 ## 1.19.2
 
 ### Patch Changes
