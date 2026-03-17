@@ -107,18 +107,17 @@ describe("SearchableCheckboxes", () => {
       props,
     });
 
-    const calcedStyle = wrapper.vm.cssStyleSize;
     expect(wrapper.find(".container").element.style.height).toBe(
-      calcedStyle.height,
+      `${
+        5 * 28 + 2
+      }px` /** list size * element height + 2 (see computed styles in component) */,
     );
 
     await wrapper.setProps({
       alignment: "horizontal",
     });
 
-    expect(wrapper.find(".container").element.style.height).toBe(
-      calcedStyle.height,
-    );
+    expect(wrapper.find(".container").element.style.height).toBe("auto");
   });
 
   it("provides a valid hasSelection method", async () => {
