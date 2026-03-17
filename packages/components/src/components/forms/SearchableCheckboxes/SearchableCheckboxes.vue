@@ -236,17 +236,15 @@ export default {
       }
       return this.size;
     },
-    cssStyleSize() {
+    styles() {
+      if (this.alignment === "horizontal") {
+        return { height: "auto" };
+      }
       const pixSize = `${this.listSize * DEF_PIX_SIZE + 2}px`;
       return this.listSize > 0 ? { height: pixSize } : {};
     },
     returnContainerRef() {
       return this.$refs.div as HTMLDivElement;
-    },
-    alignmentCheck() {
-      return this.alignment === "vertical"
-        ? this.cssStyleSize
-        : { height: "auto" };
     },
   },
   methods: {
@@ -318,7 +316,7 @@ export default {
       ref="div"
       class="container"
       :class="{ disabled, 'empty-box': withIsEmptyState }"
-      :style="[alignmentCheck, cssStyleSize]"
+      :style="styles"
       @mouseenter="handleMouseIn"
       @mouseleave="handleMouseLeave"
     >
