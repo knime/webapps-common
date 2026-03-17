@@ -76,7 +76,9 @@ const onSelect = (event: Event) => {
 <style lang="postcss" scoped>
 .filename {
   margin-left: 10px;
-  font: var(--kds-font-base-title-small);
-  color: var(--kds-color-text-and-icon-subtle);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 18px;
+  color: var(--knime-dove-gray);
 }
 </style>

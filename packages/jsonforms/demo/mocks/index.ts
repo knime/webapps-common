@@ -2,6 +2,7 @@ import type { JsonSchema, UISchemaElement } from "@jsonforms/core";
 
 import googleAiStudio from "./aiModels/googleAiStudio.mock.json";
 import adHocExecution from "./deployments/adHocExecution.mock.json";
+import fileUpload from "./secrets/fileUpload.mock.json";
 import genericOAuth2UsernamePassword from "./secrets/genericOAuth2UsernamePassword.mock.json";
 
 export interface MockSchema {
@@ -33,5 +34,12 @@ export const mocks: MockSchema[] = [
     schema: googleAiStudio.schema as JsonSchema,
     uischema: googleAiStudio.uiSchema as UISchemaElement,
     data: googleAiStudio.data,
+  },
+  {
+    id: "fileUpload",
+    name: "File Upload",
+    schema: fileUpload.schema as JsonSchema,
+    uischema: fileUpload.uiSchema as UISchemaElement,
+    data: fileUpload.data,
   },
 ];
