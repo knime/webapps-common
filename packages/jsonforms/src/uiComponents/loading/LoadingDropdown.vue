@@ -42,12 +42,15 @@ const possibleValues = computed(() => {
     id: value.id,
     text: value.text,
     disabled: value.disabled,
+    ...(value.subText ? { subText: value.subText } : {}),
     accessory: isPartiallyTyped.value
       ? {
           type: "dataType" as const,
           name: value.type?.id ?? "missing_type",
         }
-      : undefined,
+      : "accessory" in value
+        ? value.accessory
+        : undefined,
   }));
 });
 
