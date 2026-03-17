@@ -1,5 +1,11 @@
 # @knime/eslint-config
 
+## 9.5.4
+
+### Patch Changes
+
+- 45be0bc: Improve README
+
 ## 9.5.3
 
 ### Patch Changes
