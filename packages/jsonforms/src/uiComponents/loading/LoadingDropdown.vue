@@ -37,6 +37,7 @@ const possibleValues = computed<KdsDropdownOption[]>(() => {
       id: value.id,
       text: value.text,
       disabled: value.disabled,
+      ...(value.subText ? { subText: value.subText } : {}),
       accessory: isPartiallyTyped.value
         ? ({
             type: "dataType" as const,

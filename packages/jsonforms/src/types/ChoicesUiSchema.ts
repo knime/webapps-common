@@ -10,11 +10,28 @@ export type IdAndText = {
   disabled?: boolean;
 };
 
+export type SubText = {
+  subText?: string;
+};
+
 export type DataType = {
   type: IdAndText;
 };
 
-export type TypedIdAndText = IdAndText & Partial<DataType>;
+export type LiveStatus = {
+  type: "liveStatus";
+  status: "red" | "orange" | "green" | "disabled" | "yellow";
+  size?: "large" | "medium" | "small";
+  label?: string;
+};
+
+export type TypedIdAndText = IdAndText & SubText & Partial<DataType>;
+
+export type TypedIdAndTextWithLiveStatus = IdAndText &
+  SubText &
+  Partial<DataType> & {
+    accessory: LiveStatus;
+  };
 
 export type PossibleValue<SpecialChoicesProps extends Record<string, unknown>> =
   IdAndText & SpecialChoicesProps;
