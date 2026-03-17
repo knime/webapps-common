@@ -6,8 +6,8 @@ This is a **pnpm monorepo** containing shared frontend code for KNIME web projec
 
 **Key Technologies:**
 
-- **Node.js:** >=22.12.0 (specified in package.json engines; Vite 8 requires `^20.19.0 || >=22.12.0`)
-- **Package Manager:** pnpm 10.32.0 (specified in packageManager field)
+- **Node.js:** >=22.12.0 (specified in package.json engines)
+- **Package Manager:** pnpm 10.32.0 (specified in package.json packageManager field)
 - **Language:** TypeScript, JavaScript (ES modules)
 - **Framework:** Vue 3 (~3.5.18)
 - **Build Tool:** Vite 8.x
@@ -51,7 +51,7 @@ This is a **pnpm monorepo** containing shared frontend code for KNIME web projec
 
 ### Prerequisites
 
-**CRITICAL:** You MUST use Node.js 22.12.0 or later (Vite 8 requires `>=22.12.0`). Node 20.19.0+ is also supported by Vite 8 but not by this repo.
+**CRITICAL:** You MUST use Node.js 22.12.0 or later (Vite 8 requires `>=22.12.0`).
 
 ```bash
 # Install pnpm globally if not available
@@ -187,7 +187,7 @@ pnpm run audit
 ### Node Version Warning
 
 **Issue:** `WARN Unsupported engine: wanted: {"node":">=22.12.0 <25"} (current: {"node":"v22.x.y",...})`
-**Solution:** Use Node.js 22.12.0 or later. The repo requires Node >=22.12.0 (see package.json engines) due to Vite 8's Node requirement.
+**Solution:** Use Node.js 22.12.0 or later (see package.json engines).
 
 ### Missing CSS Variables Error
 
