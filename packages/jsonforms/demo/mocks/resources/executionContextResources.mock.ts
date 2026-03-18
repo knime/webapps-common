@@ -19,6 +19,8 @@ const schema: ComputedRef<JsonSchema> = computed(() => ({
     },
     containerCores: {
       title: "Number of vCores per executor",
+      description:
+        "To semi accurately show how this renderer is used the secondary value is calculated as numExecutors * containerCores to show the total vCore usage in the donut chart",
       type: "integer",
       maximum: 16,
       minimum: 1,
@@ -26,6 +28,8 @@ const schema: ComputedRef<JsonSchema> = computed(() => ({
     },
     containerMemory: {
       title: "RAM per executor",
+      description:
+        "To semi accurately show how this renderer is used the secondary value is calculated as numExecutors * containerMemory to show the total RAM usage in the donut chart",
       type: "integer",
       minimum: 2,
       maximum: 128,

@@ -1,11 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-import { AquamarineDark, Yellow } from "@knime/styles/colors/knimeColors";
-
-const DEFAULT_PRIMARY_COLOR = Yellow;
-const DEFAULT_SECONDARY_COLOR = AquamarineDark;
-
 const BACKGROUND_STROKE_OFFSET = 0.5;
 
 interface Props {
@@ -38,25 +33,15 @@ const {
 const radius = 22;
 const innerRadius = 10;
 
-const primarySegment = computed<Segment>(() =>
-  typeof value === "number" ? { value, color: DEFAULT_PRIMARY_COLOR } : value,
-);
-
-const secondarySegment = computed<Segment>(() =>
-  typeof secondaryValue === "number"
-    ? { value: secondaryValue, color: DEFAULT_SECONDARY_COLOR }
-    : secondaryValue,
-);
-
 const clippedValue = computed(() => {
-  const value = Math.max(0, primarySegment.value.value);
-  return acceptValuesLargerThanMax ? value : Math.min(value, maxValue);
+  const clipValue = Math.max(0, value);
+  return acceptValuesLargerThanMax ? clipValue : Math.min(clipValue, maxValue);
 });
 
 const secondaryClippedValue = computed(() => {
   // calculate secondary value including the first value (to overlap the two svgs)
-  const value = Math.max(0, secondarySegment.value.value + clippedValue.value);
-  return acceptValuesLargerThanMax ? value : Math.min(value, maxValue);
+  const clipValue = Math.max(0, secondaryValue + clippedValue.value);
+  return acceptValuesLargerThanMax ? clipValue : Math.min(clipValue, maxValue);
 });
 
 const strokeWidth = computed(() => radius - innerRadius);
@@ -142,12 +127,11 @@ const disabled = computed(() => !Number.isFinite(maxValue));
         fill="transparent"
       />
       <circle
-        v-if="secondarySegment"
+        v-if="secondaryValue"
         :class="['value-wedge', 'secondary-segment', { animate }]"
         :cx="radius"
         :cy="radius"
         :r="r"
-        :stroke="DEFAULT_SECONDARY_COLOR"
         :stroke-width="strokeWidth"
         :stroke-dasharray="circumference"
         :stroke-dashoffset="secondaryStrokeDashOffset"
@@ -159,7 +143,6 @@ const disabled = computed(() => !Number.isFinite(maxValue));
         :cx="radius"
         :cy="radius"
         :r="r"
-        :stroke="DEFAULT_PRIMARY_COLOR"
         :stroke-width="strokeWidth"
         :stroke-dasharray="circumference"
         :stroke-dashoffset="strokeDashOffset"
@@ -174,8 +157,17 @@ const disabled = computed(() => !Number.isFinite(maxValue));
 .donut-container {
   position: relative;
 
+  /* use kds tokens when available */
   & .background-circle {
     stroke: var(--theme-donut-chart-background-color);
+  }
+
+  & .primary-segment {
+    stroke: var(--knime-yellow);
+  }
+
+  & .secondary-segment {
+    stroke: var(--knime-aquamarine-dark);
   }
 
   & .disabled-circle {

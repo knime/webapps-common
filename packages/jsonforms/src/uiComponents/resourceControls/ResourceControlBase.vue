@@ -65,6 +65,7 @@ const unit = computed(() => props.control.uischema.options?.unit ?? "");
         @update:model-value="changeValue"
       />
       <div v-if="showDonut" class="chart">
+        <!-- replace with kds donut chart -->
         <SmallDonutChart
           :value="currentUsage"
           :secondary-value="secondaryValue"
