@@ -307,17 +307,17 @@
                         "options": {
                           "format": "ISOPeriod",
                           "includeSecondsAndMilliseconds": true
+                        },
+                        "rule": {
+                          "effect": "SHOW",
+                          "condition": {
+                            "scope": "#/properties/useCustomTimeout",
+                            "type": "LEAF",
+                            "expectedValue": true
+                          }
                         }
                       }
-                    ],
-                    "rule": {
-                      "effect": "SHOW",
-                      "condition": {
-                        "scope": "#/properties/useCustomTimeout",
-                        "type": "LEAF",
-                        "expectedValue": true
-                      }
-                    }
+                    ]
                   }
                 ]
               }
