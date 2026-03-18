@@ -2,7 +2,7 @@
 import { computed } from "vue";
 
 import {
-  type KdsDateFormatCategory,
+  type KdsDateTimeFormatEntry,
   KdsDateTimeFormatInput,
   type KdsTemporalType,
 } from "@knime/kds-components";
@@ -15,7 +15,7 @@ import useProvidedState, {
 
 type DateTimeFormatPickerControlOptions = {
   allowedFormats?: KdsTemporalType[];
-  dateTimeFormats: KdsDateFormatCategory[];
+  dateTimeFormats: KdsDateTimeFormatEntry[];
 };
 
 type DateTimeFormatPickerControlUiSchema =
@@ -48,7 +48,7 @@ const allBaseFormats = useProvidedState(uischema, "dateTimeFormats");
     :model-value="props.control.data"
     :disabled="disabled"
     :allowed-formats="allowedFormats"
-    :all-default-formats="allBaseFormats"
+    :all-default-formats="allBaseFormats ?? []"
     @update:model-value="changeValue"
   />
 </template>
