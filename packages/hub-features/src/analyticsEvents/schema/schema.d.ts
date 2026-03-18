@@ -15,55 +15,77 @@ export type NodeCreated_WithOptionalConnectedToPorts = NodeCreated_Common &
     connectedTo?: ConnectedTo_WithPorts;
   };
 
-export interface AnalyticsEvents {
-  version: "v1";
+export interface AnalyticsEventSchema {
+  version: "v1.0";
   events: {
-    "kai_prompted::kaiqa_button_prompt": EmptyPayload;
-    "kai_prompted::kaibuild_button_prompt": EmptyPayload;
-    "kai_prompted::qam_button_prompt": KaiPromptedPayload;
-    "layouteditor_opened::canvas_ctxmenu_openlayouteditor": EmptyPayload;
-    "layouteditor_opened::keyboard_shortcut_openlayouteditor": EmptyPayload;
-    "layouteditor_opened::wftoolbar_button_openlayouteditor": EmptyPayload;
-    "annotation_created::canvas_ctxmenu_newannotation": EmptyPayload;
-    "annotation_created::canvas_ctxmenu_kaiexplain": EmptyPayload;
-    "workflow_saved::wftoolbar_button_save": WorkflowSavedPayload;
-    "workflow_saved::keyboard_shortcut_savewf": WorkflowSavedPayload;
-    "connection_created::port_dragdrop_fwd": ConnectionCreatedPayload;
-    "connection_created::port_dragdrop_bwd": ConnectionCreatedPayload;
-    "connection_created::keyboard_shortcut_connectnodes": EmptyPayload;
-    "connection_created::keyboard_shortcut_connectflowvar": EmptyPayload;
-    "connection_created::canvas_ctxmenu_connectnodes": EmptyPayload;
-    "connection_created::canvas_ctxmenu_connectflowvar": EmptyPayload;
-    "node_created::noderepo_dragdrop_": NodeCreated_Base;
-    "node_created::noderepo_doubleclick_": NodeCreated_WithOptionalConnectedTo;
-    "node_created::noderepo_keyboard_enter": NodeCreated_WithOptionalConnectedTo;
-    "node_created::explorer_dragdrop_": NodeCreated_Base;
-    "node_created::qam_click_": NodeCreated_WithOptionalConnectedToPorts;
-    "node_created::qam_keyboard_enter": NodeCreated_WithOptionalConnectedToPorts;
-    "node_created::kaiqa_dragdrop_": NodeCreated_Base;
-    "node_created::kaiqa_keyboard_enter": NodeCreated_Base;
-    "qam_opened::port_dragdrop_fwd": QAMOpened_Payload;
-    "qam_opened::port_dragdrop_bwd": QAMOpened_Payload;
-    "qam_opened::canvas_doubleclick_": EmptyPayload;
-    "qam_opened::keyboard_shortcut_": QAMOpened_PartialPayload;
-    "qam_opened::canvas_ctxmenu_quickaddnode": EmptyPayload;
-    "node_searched::noderepo_type_": SearchPayload;
-    "node_searched::qam_type_": SearchPayload;
-    "sidepanel_opened::sidepanel_click_info": EmptyPayload;
-    "sidepanel_opened::sidepanel_click_noderepo": EmptyPayload;
-    "sidepanel_opened::sidepanel_click_explorer": EmptyPayload;
-    "sidepanel_opened::sidepanel_click_kai": EmptyPayload;
-    "sidepanel_opened::sidepanel_click_monitor": EmptyPayload;
-    "sidepanel_opened::wftoolbar_dropdownmenu_versionhistory": EmptyPayload;
-    "action_undone::wftoolbar_button_": EmptyPayload;
-    "action_undone::keyboard_shortcut_": EmptyPayload;
-    "action_redone::wftoolbar_button_": EmptyPayload;
-    "action_redone::keyboard_shortcut_": EmptyPayload;
+    kai_prompted: {
+      kaiqa_button_: EmptyPayload;
+      kaibuild_button_: EmptyPayload;
+      qam_button_: KaiPromptedPayload;
+    };
+    layouteditor_opened: {
+      canvas_ctxmenu_openlayouteditor: EmptyPayload;
+      keyboard_shortcut_openlayouteditor: EmptyPayload;
+      wftoolbar_button_openlayouteditor: EmptyPayload;
+    };
+    annotation_created: {
+      canvas_ctxmenu_newannotation: EmptyPayload;
+      canvas_ctxmenu_kaiexplain: EmptyPayload;
+    };
+    workflow_saved: {
+      wftoolbar_button_save: WorkflowSavedPayload;
+      keyboard_shortcut_savewf: WorkflowSavedPayload;
+    };
+    connection_created: {
+      port_dragdrop_fwd: ConnectionCreatedPayload;
+      port_dragdrop_bwd: ConnectionCreatedPayload;
+      keyboard_shortcut_connectnodes: EmptyPayload;
+      keyboard_shortcut_connectflowvar: EmptyPayload;
+      canvas_ctxmenu_connectnodes: EmptyPayload;
+      canvas_ctxmenu_connectflowvar: EmptyPayload;
+    };
+    node_created: {
+      noderepo_dragdrop_: NodeCreated_Base;
+      noderepo_doubleclick_: NodeCreated_WithOptionalConnectedTo;
+      noderepo_keyboard_enter: NodeCreated_WithOptionalConnectedTo;
+      explorer_dragdrop_: NodeCreated_Base;
+      qam_click_: NodeCreated_WithOptionalConnectedToPorts;
+      qam_keyboard_enter: NodeCreated_WithOptionalConnectedToPorts;
+      kaiqa_dragdrop_: NodeCreated_Base;
+      kaiqa_keyboard_enter: NodeCreated_Base;
+    };
+    qam_opened: {
+      port_dragdrop_fwd: QAMOpened_Payload;
+      port_dragdrop_bwd: QAMOpened_Payload;
+      canvas_doubleclick_: EmptyPayload;
+      keyboard_shortcut_: QAMOpened_PartialPayload;
+      canvas_ctxmenu_quickaddnode: EmptyPayload;
+    };
+    node_searched: {
+      noderepo_type_: SearchPayload;
+      qam_type_: SearchPayload;
+    };
+    sidepanel_opened: {
+      sidepanel_click_info: EmptyPayload;
+      sidepanel_click_noderepo: EmptyPayload;
+      sidepanel_click_explorer: EmptyPayload;
+      sidepanel_click_kai: EmptyPayload;
+      sidepanel_click_monitor: EmptyPayload;
+      wftoolbar_dropdownmenu_versionhistory: EmptyPayload;
+    };
+    action_undone: {
+      wftoolbar_button_: EmptyPayload;
+      keyboard_shortcut_: EmptyPayload;
+    };
+    action_redone: {
+      wftoolbar_button_: EmptyPayload;
+      keyboard_shortcut_: EmptyPayload;
+    };
   };
 }
 export interface KaiPromptedPayload {
   nodeFactoryId?: string;
-  nodeType?: string;
+  nodeType?: "node" | "component" | "metanode";
 }
 export interface WorkflowSavedPayload {
   isAutosyncEnabled: boolean;
@@ -73,24 +95,24 @@ export interface ConnectionCreatedPayload {
   toNode: ConnectionCreated_NodePayload;
 }
 export interface ConnectionCreated_NodePayload {
-  type: string;
-  portIndex: number;
-  portId: string;
-  factoryId?: string;
+  nodeType: "node" | "component" | "metanode";
+  nodePortIndex: number;
+  nodePortId: string;
+  nodeFactoryId?: string;
 }
 export interface NodeCreated_Common {
-  nodeType: string;
+  nodeType: "node" | "component";
 }
 export interface NodeOrComponent {
   nodeFactoryId?: string;
   nodeHubId?: string;
 }
 export interface ConnectedTo_Basic {
-  nodeType: string;
+  nodeType: "node" | "component" | "metanode";
   nodeFactoryId: string;
 }
 export interface ConnectedTo_WithPorts {
-  nodeType: string;
+  nodeType: "node" | "component" | "metanode";
   nodeFactoryId: string;
   nodePortIndex?: number;
   nodePortId?: string;

@@ -1,1 +1,2 @@
-export * from "./analytics-events";
+export * from "./analyticsEvents";
+export type { AnalyticsEventFn } from "./types";

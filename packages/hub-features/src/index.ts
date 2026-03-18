@@ -4,3 +4,4 @@ export * from "./useDownloadArtifact";
 export * from "./components/avatars";
 export * from "./embeddingSDK";
 export * from "./authUtils";
+export * from "./analyticsEvents";

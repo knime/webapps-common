@@ -65,6 +65,7 @@
       ]
     },
     "overrides": {
+      "v-calendar": "https://github.com/knime/v-calendar/archive/048477f.tar.gz",
       "@babel/runtime@<7.26.10": ">=7.26.10",
       "@eslint/plugin-kit@<0.3.3": ">=0.3.3",
       "@typescript-eslint/eslint-plugin": "8.46.2",
