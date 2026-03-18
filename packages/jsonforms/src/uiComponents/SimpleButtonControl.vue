@@ -1,7 +1,6 @@
 <script setup lang="ts" generic="SettingValue">
 import { computed, ref, watch } from "vue";
 
-import { Button } from "@knime/components";
 import { KdsButton } from "@knime/kds-components";
 
 import type { VueControlProps } from "../higherOrderComponents";
@@ -57,15 +56,6 @@ const hover = ref(false);
     @mouseover="hover = true"
     @mouseleave="hover = false"
   >
-    <Button
-      compact
-      with-border
-      :disabled="disabledOrRunning"
-      class="button-input"
-      @click="onClick"
-    >
-      <DynamicIcon v-if="icon" :icon="icon" />{{ control.label }}
-    </Button>
     <KdsButton
       variant="outlined"
       :disabled="disabledOrRunning"
