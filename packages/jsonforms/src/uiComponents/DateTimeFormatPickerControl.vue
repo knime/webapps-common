@@ -37,7 +37,7 @@ const allowedFormats = computed(() => options.value?.allowedFormats);
 // using backend communication.
 const allBaseFormats = useProvidedState(uischema, "dateTimeFormats");
 
-// TODO: Listen to the 'committed' event of the DateTimeFormatInput.
+// TODO: Listen to the 'update:model-value' event of the KdsDateTimeFormatInput.
 // If the format is not in the list and is valid,
 // get an example from the backend, add it to the list of formats.
 </script>
