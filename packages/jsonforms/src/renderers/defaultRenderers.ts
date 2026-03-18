@@ -1,3 +1,4 @@
+import { mapControls, withDescriptionButton } from "../higherOrderComponents";
 import { controlToRenderer } from "../higherOrderComponents/control/controlToRenderer";
 import type { VueControlRenderer } from "../higherOrderComponents/control/types";
 import type { PerformExternalValidation } from "../higherOrderComponents/control/validation/types";
@@ -113,6 +114,8 @@ export const controls = {
   ...fallbackControlRenderers,
 } satisfies Record<string, VueControlRenderer>;
 
+const mappedControls = mapControls(withDescriptionButton)(controls);
+
 export const layouts = {
   horizontalLayoutRenderer,
   verticalLayoutRenderer,
@@ -154,6 +157,6 @@ export const toRenderers = ({
 
 export const defaultRenderers: readonly NamedRenderer[] = toRenderers({
   renderers: [simpleArrayLayoutRenderer],
-  controls: Object.values(controls),
+  controls: Object.values(mappedControls),
   layouts: Object.values(layouts),
 });
