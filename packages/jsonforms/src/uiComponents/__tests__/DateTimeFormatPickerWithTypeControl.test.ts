@@ -10,13 +10,16 @@ import {
 import type { VueWrapper } from "@vue/test-utils";
 import { flushPromises } from "@vue/test-utils";
 
-import { DateTimeFormatInput, type FormatWithExample } from "@knime/components";
+import {
+  type KdsDateTimeFormatEntry,
+  KdsDateTimeFormatInput,
+} from "@knime/kds-components";
 
 import {
   type VueControlTestProps,
   getControlBase,
   mountJsonFormsControlLabelContent,
-} from "../../../testUtils/component";
+} from "../../../testUtils";
 import DateTimeFormatPickerWithTypeControl from "../DateTimeFormatPickerWithTypeControl.vue";
 
 describe("DateTimeFormatPickerWithTypeControl", () => {
@@ -68,10 +71,9 @@ describe("DateTimeFormatPickerWithTypeControl", () => {
   });
 
   it("renders", () => {
-    expect(wrapper.getComponent(DateTimeFormatInput).props()).toMatchObject({
-      compact: true,
+    expect(wrapper.getComponent(KdsDateTimeFormatInput).props()).toMatchObject({
       disabled: false,
-      modelValue: props.control.data,
+      modelValue: props.control.data.format,
     });
   });
 
@@ -80,19 +82,19 @@ describe("DateTimeFormatPickerWithTypeControl", () => {
   });
 
   it("calls changeValue when format input is changed", () => {
-    const changedFormat = {
-      format: "QQQ",
-      temporalType: "DATE",
-    };
+    const changedFormat = "QQQ";
     wrapper
-      .findComponent(DateTimeFormatInput)
+      .findComponent(KdsDateTimeFormatInput)
       .vm.$emit("update:modelValue", changedFormat);
-    expect(changeValue).toHaveBeenCalledWith(changedFormat);
+    expect(changeValue).toHaveBeenCalledWith({
+      format: changedFormat,
+      temporalType: "DATE",
+    });
   });
 
   it("uses format from provider in options", async () => {
     props.control.uischema.providedOptions = ["dateTimeFormats"];
-    let provideFormats: (formats: FormatWithExample[]) => void;
+    let provideFormats: (formats: KdsDateTimeFormatEntry[]) => void;
     const addStateProviderListener = vi.fn((_id, callback) => {
       provideFormats = callback;
     });
@@ -110,11 +112,11 @@ describe("DateTimeFormatPickerWithTypeControl", () => {
       },
       expect.anything(),
     );
-    expect(wrapper.getComponent(DateTimeFormatInput).props()).toMatchObject({
-      allDefaultFormats: null,
+    expect(wrapper.getComponent(KdsDateTimeFormatInput).props()).toMatchObject({
+      allDefaultFormats: [],
     });
 
-    const formatsToProvide: FormatWithExample[] = [
+    const formatsToProvide: KdsDateTimeFormatEntry[] = [
       {
         format: "yy-yyyy",
         temporalType: "DATE",
@@ -125,7 +127,7 @@ describe("DateTimeFormatPickerWithTypeControl", () => {
 
     provideFormats!(formatsToProvide);
     await flushPromises();
-    expect(wrapper.getComponent(DateTimeFormatInput).props()).toMatchObject({
+    expect(wrapper.getComponent(KdsDateTimeFormatInput).props()).toMatchObject({
       allDefaultFormats: formatsToProvide,
     });
   });

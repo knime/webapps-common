@@ -1,13 +1,11 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-import {
-  DateTimeFormatInput,
-  type DateTimeFormatModel,
-  type FormatDateType,
-  type FormatWithExample,
-  ValueSwitch,
-} from "@knime/components";
+import type {
+  KdsDateTimeFormatEntry,
+  KdsTemporalType,
+} from "@knime/kds-components";
+import { KdsDateTimeFormatInput, KdsValueSwitch } from "@knime/kds-components";
 
 import type { VueControlPropsForLabelContent } from "../higherOrderComponents/control/withLabel";
 
@@ -15,9 +13,14 @@ import useProvidedState, {
   type UiSchemaWithProvidedOptions,
 } from "./composables/useProvidedState";
 
+type DateTimeFormatModel = {
+  temporalType: KdsTemporalType;
+  format: string;
+};
+
 type DateTimeFormatPickerWithTypeControlOptions = {
-  allowedFormats?: FormatDateType[];
-  dateTimeFormats: FormatWithExample[];
+  allowedFormats?: KdsTemporalType[];
+  dateTimeFormats: KdsDateTimeFormatEntry[];
 };
 
 type DateTimeFormatPickerControlUiSchema =
@@ -29,10 +32,6 @@ const props =
 const uischema = computed(
   () => props.control.uischema as DateTimeFormatPickerControlUiSchema,
 );
-
-const options = computed(() => uischema.value.options);
-
-const allowedFormats = computed(() => options.value?.allowedFormats);
 
 // TODO: take the initial value from the control and put it
 // into the recents if it is not already there. For this you
@@ -80,24 +79,33 @@ const temporalTypeModel = computed({
     };
   },
 });
+
+const formatModelValue = computed({
+  get: () => modelValue.value.format,
+  set: (value) => {
+    modelValue.value = {
+      ...modelValue.value,
+      format: value,
+    };
+  },
+});
 </script>
 
 <template>
   <div :id="labelForId" class="control-container">
-    <ValueSwitch
+    <KdsValueSwitch
       v-model="temporalTypeModel"
-      compact
+      aria-label="Format category"
       :possible-values="possibleValueSwitchChoices"
       :disabled="disabled"
     />
-    <DateTimeFormatInput
-      v-model="modelValue"
-      compact
+    <KdsDateTimeFormatInput
+      v-model="formatModelValue"
+      aria-label="Format string"
       :disabled="disabled"
-      :show-type-switch-in-popover="false"
-      :allowed-formats="allowedFormats"
-      :all-default-formats="allBaseFormats"
-      :is-valid="true"
+      :allowed-formats="[temporalTypeModel]"
+      :all-default-formats="allBaseFormats ?? []"
+      :error="!isValid"
     />
   </div>
 </template>

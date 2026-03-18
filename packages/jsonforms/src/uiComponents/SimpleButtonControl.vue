@@ -2,11 +2,12 @@
 import { computed, ref, watch } from "vue";
 
 import { Button } from "@knime/components";
+import { KdsButton } from "@knime/kds-components";
 
-import type { VueControlProps } from "../higherOrderComponents/control/types";
+import type { VueControlProps } from "../higherOrderComponents";
 import inject from "../utils/inject";
 
-import DynamicIcon, { type Icon } from "./DynamicIcon.vue";
+import { type Icon } from "./DynamicIcon.vue";
 import useProvidedState, {
   type UiSchemaWithProvidedOptions,
 } from "./composables/useProvidedState";
@@ -65,6 +66,14 @@ const hover = ref(false);
     >
       <DynamicIcon v-if="icon" :icon="icon" />{{ control.label }}
     </Button>
+    <KdsButton
+      variant="outlined"
+      :disabled="disabledOrRunning"
+      class="button-input"
+      :label="control.label"
+      :leading-icon="icon"
+      @click="onClick"
+    />
     <slot name="buttons" :hover="hover" />
   </div>
 </template>

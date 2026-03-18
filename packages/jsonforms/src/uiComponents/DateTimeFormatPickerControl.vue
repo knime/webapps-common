@@ -49,6 +49,7 @@ const allBaseFormats = useProvidedState(uischema, "dateTimeFormats", []);
     :disabled="disabled"
     :allowed-formats="allowedFormats"
     :all-default-formats="allBaseFormats ?? []"
+    :error="!isValid"
     @update:model-value="changeValue"
   />
 </template>
