@@ -35,7 +35,7 @@ const allowedFormats = computed(() => options.value?.allowedFormats);
 // into the recents if it is not already there. For this you
 // will need to check its validity and generate an example,
 // using backend communication.
-const allBaseFormats = useProvidedState(uischema, "dateTimeFormats");
+const allBaseFormats = useProvidedState(uischema, "dateTimeFormats", []);
 
 // TODO: Listen to the 'update:model-value' event of the KdsDateTimeFormatInput.
 // If the format is not in the list and is valid,

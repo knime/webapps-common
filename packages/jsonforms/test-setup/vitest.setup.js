@@ -8,6 +8,18 @@ window.Vue = Vue;
 
 window.alert = vi.fn();
 
+if (!window.CSS) {
+  window.CSS = {};
+}
+
+if (!window.CSS.escape) {
+  window.CSS.escape = (value) => String(value);
+}
+
+if (!window.HTMLElement.prototype.scrollIntoView) {
+  window.HTMLElement.prototype.scrollIntoView = vi.fn();
+}
+
 vi.mock(
   "@jsonforms/vue",
   async () => {

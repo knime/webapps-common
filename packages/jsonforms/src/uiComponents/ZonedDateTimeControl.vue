@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-import { Dropdown } from "@knime/components";
 import { DateTimeInput } from "@knime/components/date-time-input";
+import { KdsDropdown } from "@knime/kds-components";
 
 import { type VueControlPropsForLabelContent } from "../higherOrderComponents";
 import { fromUTCTime, toUTCTime } from "../utils/localTimeUtils";
@@ -57,10 +57,9 @@ const choices = computed(() => options.value?.possibleValues ?? []);
       :disabled="disabled"
     />
     <!-- eslint-disable vue/attribute-hyphenation typescript complains with ':aria-label' instead of ':ariaLabel'-->
-    <Dropdown
+    <KdsDropdown
       v-model="zonePart"
-      :is-valid
-      compact
+      :error="!isValid"
       :possible-values="choices"
       :disabled="disabled"
       ariaLabel="Timezone"
@@ -72,6 +71,6 @@ const choices = computed(() => options.value?.possibleValues ?? []);
 .layout-container {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--kds-spacing-container-0-25x);
 }
 </style>
