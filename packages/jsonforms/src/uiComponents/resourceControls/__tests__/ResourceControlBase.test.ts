@@ -9,7 +9,7 @@ import {
 } from "vitest";
 import type { VueWrapper } from "@vue/test-utils";
 
-import { DonutChart, Tooltip } from "@knime/components";
+import { Tooltip } from "@knime/components";
 import { KdsNumberInput } from "@knime/kds-components";
 
 import {
@@ -18,6 +18,7 @@ import {
   mountJsonFormsControlLabelContent,
 } from "../../../../testUtils/component";
 import ResourceControlBase from "../ResourceControlBase.vue";
+import SmallDonutChart from "../SmallDonutChart.vue";
 
 describe("ResourceControlBase", () => {
   let props: VueControlTestProps<typeof ResourceControlBase>,
@@ -74,7 +75,7 @@ describe("ResourceControlBase", () => {
   });
 
   it("renders donut chart by default", () => {
-    expect(wrapper.findComponent(DonutChart).exists()).toBe(true);
+    expect(wrapper.findComponent(SmallDonutChart).exists()).toBe(true);
   });
 
   it("hides donut chart when showDonut is false", () => {
@@ -82,17 +83,15 @@ describe("ResourceControlBase", () => {
     const { wrapper } = mountJsonFormsControlLabelContent(ResourceControlBase, {
       props,
     });
-    expect(wrapper.findComponent(DonutChart).exists()).toBe(false);
+    expect(wrapper.findComponent(SmallDonutChart).exists()).toBe(false);
   });
 
   it("passes correct props to donut chart", () => {
-    const donutChart = wrapper.getComponent(DonutChart);
+    const donutChart = wrapper.getComponent(SmallDonutChart);
     expect(donutChart.props()).toMatchObject({
-      value: 5, // currentUsage defaults to control.data
+      value: 5,
       secondaryValue: 0,
-      maxValue: 20, // donutMax from options
-      radius: 22,
-      innerRadius: 10,
+      maxValue: 20,
       animate: true,
     });
   });
@@ -102,7 +101,7 @@ describe("ResourceControlBase", () => {
     const { wrapper } = mountJsonFormsControlLabelContent(ResourceControlBase, {
       props,
     });
-    const donutChart = wrapper.getComponent(DonutChart);
+    const donutChart = wrapper.getComponent(SmallDonutChart);
     expect(donutChart.props().value).toBe(3);
   });
 
@@ -111,7 +110,7 @@ describe("ResourceControlBase", () => {
     const { wrapper } = mountJsonFormsControlLabelContent(ResourceControlBase, {
       props,
     });
-    const donutChart = wrapper.getComponent(DonutChart);
+    const donutChart = wrapper.getComponent(SmallDonutChart);
     expect(donutChart.props().secondaryValue).toBe(7);
   });
 
@@ -121,7 +120,7 @@ describe("ResourceControlBase", () => {
     const { wrapper } = mountJsonFormsControlLabelContent(ResourceControlBase, {
       props,
     });
-    const donutChart = wrapper.getComponent(DonutChart);
+    const donutChart = wrapper.getComponent(SmallDonutChart);
     expect(donutChart.props().maxValue).toBe(15);
   });
 
@@ -130,8 +129,8 @@ describe("ResourceControlBase", () => {
     const { wrapper } = mountJsonFormsControlLabelContent(ResourceControlBase, {
       props,
     });
-    const donutChart = wrapper.getComponent(DonutChart);
-    expect(donutChart.props().maxValue).toBe(10); // schema.maximum
+    const donutChart = wrapper.getComponent(SmallDonutChart);
+    expect(donutChart.props().maxValue).toBe(10);
   });
 
   it("disables animation when animate is false", () => {
@@ -139,7 +138,7 @@ describe("ResourceControlBase", () => {
     const { wrapper } = mountJsonFormsControlLabelContent(ResourceControlBase, {
       props,
     });
-    const donutChart = wrapper.getComponent(DonutChart);
+    const donutChart = wrapper.getComponent(SmallDonutChart);
     expect(donutChart.props().animate).toBe(false);
   });
 

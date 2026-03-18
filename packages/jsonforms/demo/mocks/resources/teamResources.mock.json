@@ -1,0 +1,76 @@
+{
+  "schema": {
+    "type": "object",
+    "properties": {
+      "userLimit": {
+        "title": "Maximum seats allowed in team",
+        "type": "integer",
+        "maximum": 10
+      },
+      "vCores": {
+        "title": "Maximum execution vCore tokens allowed in team",
+        "type": "integer",
+        "maximum": 20
+      },
+      "executionMemory": {
+        "title": "Maximum RAM usage for execution",
+        "type": "integer",
+        "minimum": 0
+      }
+    }
+  },
+  "uiSchema": {
+    "type": "VerticalLayout",
+    "elements": [
+      {
+        "type": "Section",
+        "label": "Team resource management",
+        "elements": [
+          {
+            "type": "Control",
+            "scope": "#/properties/userLimit",
+            "options": {
+              "format": "teamResources",
+              "disabled": false,
+              "disabledTooltip": "Not available",
+              "donutTitle": "Seats",
+              "donutText": "available team seats used",
+              "currentUsage": 1,
+              "modelMax": true
+            }
+          },
+          {
+            "type": "Control",
+            "scope": "#/properties/vCores",
+            "options": {
+              "format": "teamResources",
+              "disabled": false,
+              "disabledTooltip": "Not available",
+              "donutTitle": "vCore token usage",
+              "donutText": "available vCore tokens for this team are being used",
+              "currentUsage": 1,
+              "modelMax": true
+            }
+          },
+          {
+            "type": "Control",
+            "scope": "#/properties/executionMemory",
+            "options": {
+              "format": "teamResources",
+              "donutTitle": "RAM",
+              "donutText": "GB",
+              "unit": "GB",
+              "currentUsage": 1,
+              "modelMax": true
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "data": {
+    "userLimit": 5,
+    "vCores": 10,
+    "executionMemory": 10
+  }
+}

@@ -2,10 +2,12 @@
 import { computed } from "vue";
 import type { JsonSchema } from "@jsonforms/core";
 
-import { DonutChart, Tooltip } from "@knime/components";
+import { Tooltip } from "@knime/components";
 import { KdsNumberInput } from "@knime/kds-components";
 
 import type { VueControlPropsForLabelContent } from "../../higherOrderComponents";
+
+import SmallDonutChart from "./SmallDonutChart.vue";
 
 const props = defineProps<VueControlPropsForLabelContent<number>>();
 
@@ -45,10 +47,10 @@ const showDonut = computed(
 );
 
 // number input props
-const min = computed(() => props.control.schema.minimum || 0);
-const max = computed(() => props.control.schema.maximum || Infinity);
-const step = computed(() => props.control.uischema.options?.step || 1);
-const unit = computed(() => props.control.uischema.options?.unit || "");
+const min = computed(() => props.control.schema.minimum ?? 0);
+const max = computed(() => props.control.schema.maximum ?? Infinity);
+const step = computed(() => props.control.uischema.options?.step ?? 1);
+const unit = computed(() => props.control.uischema.options?.unit ?? "");
 </script>
 
 <template>
@@ -63,12 +65,10 @@ const unit = computed(() => props.control.uischema.options?.unit || "");
         @update:model-value="changeValue"
       />
       <div v-if="showDonut" class="chart">
-        <DonutChart
+        <SmallDonutChart
           :value="currentUsage"
           :secondary-value="secondaryValue"
           :max-value="donutMax"
-          :radius="22"
-          :inner-radius="10"
           :animate="animate"
         />
         <slot name="donut-info" />
@@ -86,7 +86,7 @@ const unit = computed(() => props.control.uischema.options?.unit || "");
   & .chart {
     display: flex;
     flex-direction: row;
-    gap: var(--kds-spacing-container-0-5x);
+    gap: var(--kds-spacing-container-0-75x);
     align-items: center;
   }
 }
