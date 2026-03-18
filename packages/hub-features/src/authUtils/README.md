@@ -2,7 +2,7 @@
 
 The auth utils can be used to implement authentication in the hub. The idea is to use them in conjunction with the [knime-hub-auth-rely] service. Please check the service docs for detailed infos about the authentication flow.
 
-[knime-hub-auth-rely]: https://bitbucket.org/KNIME/knime-hub-auth-rely
+[knime-hub-auth-rely]: https://github.com/knime/knime-hub-auth-rely
 
 ## Common usage pattern
 
