@@ -70,18 +70,28 @@ export const useVersionsApi = ({
     }>;
   };
 
-  const fetchResourceLabels = ({
+  const fetchResourceLabels = async ({
     resourceType,
     resourceId,
   }: {
     resourceType: "savepoint";
     resourceId: string;
-  }) => {
-    return doHubRequest(
-      `/validation/validation/resources/${resourceType}/${resourceId}/labels`,
-    ).catch(() => ({ assignedLabels: [] })) as Promise<{
-      assignedLabels: Array<AssignedLabel>;
-    }>;
+  }): Promise<{
+    assignedLabels: Array<AssignedLabel>;
+  }> => {
+    try {
+      return await doHubRequest(
+        `/validation/validation/resources/${resourceType}/${resourceId}/labels`,
+      );
+    } catch (error) {
+      consola.error("useVersionsApi::Failed to fetch resource labels", {
+        resourceId,
+        resourceType,
+        error,
+      });
+
+      return { assignedLabels: [] };
+    }
   };
 
   const deleteVersion = ({
@@ -140,36 +150,50 @@ export const useVersionsApi = ({
   }: {
     accountName: string;
   }): Promise<HubAvatarData> => {
-    const accountInfo = await doHubRequest(`/accounts/name/${accountName}`, {
-      headers: {
-        Prefer: "representation=minimal",
-      },
-    });
+    try {
+      const accountInfo = await doHubRequest(`/accounts/name/${accountName}`, {
+        headers: {
+          Prefer: "representation=minimal",
+        },
+      });
 
-    return {
-      kind: accountInfo.type === "TEAM" ? "group" : "account",
-      name: accountInfo.name,
-      image: {
-        url: accountInfo.avatarUrl,
-        altText: `${accountInfo.realName ?? accountInfo.name} profile image`,
-      },
-    };
+      return {
+        kind: accountInfo.type === "TEAM" ? "group" : "account",
+        name: accountInfo.name,
+        image: {
+          url: accountInfo.avatarUrl,
+          altText: `${accountInfo.realName ?? accountInfo.name} profile image`,
+        },
+      };
+    } catch (error) {
+      consola.error("useVersionsApi::Failed to fetch user avatar", {
+        accountName,
+        error,
+      });
+
+      return {
+        kind: "account",
+        name: "?",
+        tooltip: "unknown",
+      };
+    }
   };
 
   const loadSavepointMetadata = async (
     savepoint: ItemSavepoint,
   ): Promise<WithAvatar & WithLabels> => {
-    return {
-      avatar: await getAvatar({
-        accountName: savepoint.version?.author ?? savepoint.author,
-      }),
-      labels: savepoint.itemVersionId
-        ? await fetchResourceLabels({
-            resourceType: "savepoint",
-            resourceId: savepoint.itemVersionId,
-          }).then((response) => response.assignedLabels)
-        : [],
-    };
+    const avatar = await getAvatar({
+      accountName: savepoint.version?.author ?? savepoint.author,
+    });
+
+    const labels = savepoint.itemVersionId
+      ? await fetchResourceLabels({
+          resourceType: "savepoint",
+          resourceId: savepoint.itemVersionId,
+        }).then((response) => response.assignedLabels)
+      : [];
+
+    return { avatar, labels };
   };
 
   const fetchItemSavepoints = ({

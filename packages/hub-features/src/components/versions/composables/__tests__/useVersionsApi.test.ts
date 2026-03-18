@@ -99,4 +99,97 @@ describe("useVersionsApi", () => {
       },
     );
   });
+
+  describe("loadSavepointMetadata", () => {
+    it("fetches user avatar and labels", async () => {
+      $ofetchMock
+        .mockResolvedValueOnce({
+          name: "John, wait for it, Doe",
+          kind: "account",
+          avatarUrl: "http://johnspic.com",
+        })
+        .mockResolvedValueOnce({ assignedLabels: [{ labelId: "label1" }] });
+
+      const { loadSavepointMetadata } = useVersionsApi({
+        customFetchClientOptions: { baseURL: mockBaseUrl },
+      });
+
+      await expect(
+        loadSavepointMetadata({
+          author: "john",
+          changes: [],
+          lastEditedOn: "",
+          savepointNumber: 19,
+          itemVersionId: "version",
+        }),
+      ).resolves.toEqual({
+        avatar: {
+          name: "John, wait for it, Doe",
+          kind: "account",
+          image: {
+            url: "http://johnspic.com",
+            altText: "John, wait for it, Doe profile image",
+          },
+        },
+        labels: [{ labelId: "label1" }],
+      });
+    });
+
+    it("fallbacks if user information fails to load", async () => {
+      $ofetchMock
+        .mockRejectedValueOnce({})
+        .mockResolvedValueOnce({ assignedLabels: [{ labelId: "label1" }] });
+
+      const { loadSavepointMetadata } = useVersionsApi({
+        customFetchClientOptions: { baseURL: mockBaseUrl },
+      });
+
+      await expect(
+        loadSavepointMetadata({
+          author: "john",
+          changes: [],
+          lastEditedOn: "",
+          savepointNumber: 19,
+          itemVersionId: "version",
+        }),
+      ).resolves.toEqual({
+        avatar: { kind: "account", name: "?", tooltip: "unknown" },
+        labels: [{ labelId: "label1" }],
+      });
+    });
+
+    it("fallbacks if labels fail to load", async () => {
+      $ofetchMock
+        .mockResolvedValueOnce({
+          name: "John, wait for it, Doe",
+          kind: "account",
+          avatarUrl: "http://johnspic.com",
+        })
+        .mockRejectedValueOnce({});
+
+      const { loadSavepointMetadata } = useVersionsApi({
+        customFetchClientOptions: { baseURL: mockBaseUrl },
+      });
+
+      await expect(
+        loadSavepointMetadata({
+          author: "john",
+          changes: [],
+          lastEditedOn: "",
+          savepointNumber: 19,
+          itemVersionId: "version",
+        }),
+      ).resolves.toEqual({
+        avatar: {
+          name: "John, wait for it, Doe",
+          kind: "account",
+          image: {
+            url: "http://johnspic.com",
+            altText: "John, wait for it, Doe profile image",
+          },
+        },
+        labels: [],
+      });
+    });
+  });
 });
