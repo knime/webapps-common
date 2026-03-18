@@ -79,7 +79,7 @@ export const unauthorizedInterceptor: HttpInterceptor = {
 ```
 
 However, in the above example, the usage of `authUtils.client.navigateToLogin` is client-side code, which uses the `window` object to
-redirect. Therefore, this doesn't work on SSR. If you need a server-side redirect, or if you want more control of _how_ you redirect (e.g using Nuxt's navigate function)
+redirect. Therefore, this doesn't work on SSR. If you need a server-side redirect, or if you want more control of _how_ you redirect (e.g using Nuxt's `navigateTo` function)
 you can instead call another util which returns the login url and you can perform the redirection on your own:
 
 ```ts
