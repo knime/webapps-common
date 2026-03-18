@@ -68,7 +68,7 @@ export const unauthorizedInterceptor: HttpInterceptor = {
   response: {
     onError: ({ response }) => {
       if (response?.status === 401) {
-        // This is function performs the redirection automatically.
+        // This function performs the redirection automatically.
         authUtils.client.navigateToLogin({ wdywtg: window.location.href });
 
         throw new Error("Auth failure");
