@@ -1,5 +1,11 @@
 # @knime/hub-features
 
+## 1.23.0
+
+### Minor Changes
+
+- 368d638: Fix error when fetching versions if user that created the version is no longer available
+
 ## 1.22.4
 
 ### Patch Changes
