@@ -1,7 +1,9 @@
 import { navigateToLogout } from "./client";
 import { logger } from "./logger";
 import { AUTH_SERVICE_PATH } from "./shared";
-import type { RefresherOptions } from "./types";
+import type { AuthRefresher } from "./types";
+
+type Options = Pick<AuthRefresher, "onRefreshComplete">;
 
 const REFRESH_BUFFER = 10;
 /**
@@ -19,7 +21,7 @@ let timeout: number | NodeJS.Timeout;
 /**
  * Start proactively refreshing the token before it expires.
  */
-export const startRefresher = (options: RefresherOptions = {}) => {
+export const startRefresher = (options: Options = {}) => {
   logger().debug("Starting token refresher");
 
   globalThis.clearTimeout(timeout);

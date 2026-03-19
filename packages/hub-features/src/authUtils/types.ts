@@ -1,6 +1,6 @@
 export type UserIdentity = { id: string; name: string };
 
-export type AccountInjectorOptions = {
+export type AuthRefresher = {
   /**
    * Fetcher function to obtain the basic user identity information
    */
@@ -10,8 +10,3 @@ export type AccountInjectorOptions = {
    */
   onRefreshComplete?: () => unknown;
 };
-
-export type RefresherOptions = Pick<
-  AccountInjectorOptions,
-  "onRefreshComplete"
->;

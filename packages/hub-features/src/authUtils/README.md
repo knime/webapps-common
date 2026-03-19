@@ -6,7 +6,7 @@ The auth utils can be used to implement authentication in the hub. The idea is t
 
 ## Common usage pattern
 
-First you need to setup the account injector. This will make sure that the auth identity information
+First you need to setup the auth refresher. This will make sure that the auth identity information
 is fetched on critical authenticated paths. Normally, this means as part of a `vue-router` route guard
 or a `Nuxt` middleware.
 
@@ -14,10 +14,10 @@ or a `Nuxt` middleware.
 /// router.ts
 import { authUtils } from "@knime/hub-features";
 
-const setupMainRouteMiddleware = (): NavigationGuard => {
-  // 1. First we create the injector. This returns the function that
+const myMiddleware = (): NavigationGuard => {
+  // 1. First we create the refresher. This returns the function that
   // schedules running the token refresher periodically
-  const accountRefresher = authUtils.createAccountInjector({
+  const authRefresher = authUtils.createAuthRefresher({
     // `getIdentity` is just a fetch function that hits the API to get the
     // account information; in a nutshell a user `id` and a `name`
     getIdentity,
@@ -26,7 +26,7 @@ const setupMainRouteMiddleware = (): NavigationGuard => {
   // 2. Here we're now returning the _actual_ navigation guard
   return async () => {
     try {
-      await accountRefresher();
+      await authRefresher();
       return true; // allow navigation
     } catch (error) {
       consola.error("Navigation middleware error", error);
@@ -43,10 +43,10 @@ const router = createRouter({
       name: "Home",
       component: HomeRouteComponent,
       // 3. Simply setup your middleware for usage
-      beforeEnter: [setupMainRouteMiddleware()],
+      beforeEnter: [myMiddleware()],
 
       // 4. A simpler usage could have been
-      // beforeEnter: [authUtils.createAccountInjector({ getIdentity })],
+      // beforeEnter: [authUtils.createAuthRefresher({ getIdentity })],
     },
   ],
 });
