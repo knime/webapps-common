@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { VueWrapper } from "@vue/test-utils";
 
-import { Dropdown } from "@knime/components";
+import { KdsDropdown } from "@knime/kds-components";
 
 import {
   type VueControlTestProps,
@@ -62,33 +62,33 @@ describe("OneOfDropdown", () => {
   });
 
   it("renders", () => {
-    expect(wrapper.findComponent(Dropdown).exists()).toBe(true);
+    expect(wrapper.findComponent(KdsDropdown).exists()).toBe(true);
   });
 
   it("sets labelForId", () => {
-    expect(wrapper.findComponent(Dropdown).props().id).toBe(labelForId);
+    expect(wrapper.findComponent(KdsDropdown).props().id).toBe(labelForId);
   });
 
   it("computed dropdown options from oneof options", async () => {
-    expect(await wrapper.getComponent(Dropdown).props().possibleValues).toEqual(
-      [
-        {
-          id: "Universe_0_0",
-          text: "Universe_0_0",
-        },
-        {
-          id: "Universe_0_1",
-          text: "Universe_0_1",
-        },
-        {
-          id: "Universe_1_0",
-          text: "Universe_1_0",
-        },
-        {
-          id: "Universe_1_1",
-          text: "Universe_1_1",
-        },
-      ],
-    );
+    expect(
+      await wrapper.getComponent(KdsDropdown).props().possibleValues,
+    ).toEqual([
+      {
+        id: "Universe_0_0",
+        text: "Universe_0_0",
+      },
+      {
+        id: "Universe_0_1",
+        text: "Universe_0_1",
+      },
+      {
+        id: "Universe_1_0",
+        text: "Universe_1_0",
+      },
+      {
+        id: "Universe_1_1",
+        text: "Universe_1_1",
+      },
+    ]);
   });
 });

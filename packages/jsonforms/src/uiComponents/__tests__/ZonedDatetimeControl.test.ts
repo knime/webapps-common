@@ -10,8 +10,8 @@ import {
 } from "vitest";
 import type { VueWrapper } from "@vue/test-utils";
 
-import { Dropdown } from "@knime/components";
 import { DateTimeInput } from "@knime/components/date-time-input";
+import { KdsDropdown } from "@knime/kds-components";
 
 import {
   type VueControlTestProps,
@@ -79,7 +79,7 @@ describe("ZonedDateTimeControl", () => {
 
   it("renders", () => {
     expect(wrapper.findComponent(DateTimeInput).exists()).toBe(true);
-    expect(wrapper.findComponent(Dropdown).exists()).toBe(true);
+    expect(wrapper.findComponent(KdsDropdown).exists()).toBe(true);
   });
 
   it("sets labelForId", () => {
@@ -90,7 +90,7 @@ describe("ZonedDateTimeControl", () => {
     const modelValue = wrapper.findComponent(DateTimeInput).vm
       .modelValue as Date;
     expect(modelValue.toISOString()).toBe(`${dummyTimeWithHours(20)}Z`);
-    expect(wrapper.findComponent(Dropdown).vm.modelValue).toBe(
+    expect(wrapper.findComponent(KdsDropdown).vm.modelValue).toBe(
       props.control.data.timeZone,
     );
     const changedModelValue = new Date(modelValue.setUTCHours(21));
@@ -107,7 +107,7 @@ describe("ZonedDateTimeControl", () => {
   it("calls changeValue when timeZone input is changed", () => {
     const changedTimeZone = "Europe/Paris";
     wrapper
-      .findComponent(Dropdown)
+      .findComponent(KdsDropdown)
       .vm.$emit("update:modelValue", changedTimeZone);
     expect(changeValue).toHaveBeenCalledWith({
       dateTime: expect.anything(),
@@ -118,6 +118,6 @@ describe("ZonedDateTimeControl", () => {
   it("disables both controls when disabled", async () => {
     await wrapper.setProps({ disabled: true });
     expect(wrapper.findComponent(DateTimeInput).props("disabled")).toBe(true);
-    expect(wrapper.findComponent(Dropdown).props("disabled")).toBe(true);
+    expect(wrapper.findComponent(KdsDropdown).props("disabled")).toBe(true);
   });
 });

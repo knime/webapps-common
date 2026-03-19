@@ -10,14 +10,10 @@ import {
 import { nextTick } from "vue";
 import type { VueWrapper } from "@vue/test-utils";
 
-import { Button } from "@knime/components";
-import ReloadIcon from "@knime/styles/img/icons/reload.svg";
+import { KdsButton } from "@knime/kds-components";
 
-import {
-  getControlBase,
-  mountJsonFormsControl,
-} from "../../../testUtils/component";
-import type { VueControlProps } from "../../higherOrderComponents/control/types";
+import { getControlBase, mountJsonFormsControl } from "../../../testUtils";
+import type { VueControlProps } from "../../higherOrderComponents";
 import SimpleButtonControl from "../SimpleButtonControl.vue";
 
 describe("SimpleButtonControl", () => {
@@ -71,11 +67,11 @@ describe("SimpleButtonControl", () => {
   });
 
   it("renders button with text", () => {
-    expect(wrapper.findComponent(Button).text()).toBe(buttonText);
+    expect(wrapper.findComponent(KdsButton).props("label")).toBe(buttonText);
   });
 
   it("calls provided trigger method when the button is clicked", async () => {
-    await wrapper.findComponent(Button).trigger("click");
+    await wrapper.findComponent(KdsButton).trigger("click");
     expect(trigger).toHaveBeenCalledWith({ id: triggerId });
   });
 
@@ -84,9 +80,9 @@ describe("SimpleButtonControl", () => {
     const { wrapper } = await mountJsonFormsControl(SimpleButtonControl, {
       props,
     });
-    expect(
-      wrapper.findComponent(Button).findComponent(ReloadIcon).exists(),
-    ).toBeTruthy();
+    expect(wrapper.findComponent(KdsButton).props("leadingIcon")).toBe(
+      "reload",
+    );
   });
 
   it("disables button on click if 'runFinished' provided option is used", async () => {
@@ -96,11 +92,11 @@ describe("SimpleButtonControl", () => {
       provide: { trigger },
     });
 
-    const button = wrapper.findComponent(Button);
-    expect(button.attributes("disabled")).toBeUndefined();
+    const button = wrapper.findComponent(KdsButton);
+    expect(button.props("disabled")).toBe(false);
 
     await button.trigger("click");
-    expect(button.attributes("disabled")).toBe("");
+    expect(button.props("disabled")).toBe(true);
   });
 
   it("enables button again when 'runFinished' uuid is updated", async () => {
@@ -115,16 +111,16 @@ describe("SimpleButtonControl", () => {
       provide: { trigger, addStateProviderListener },
     });
 
-    const button = wrapper.findComponent(Button);
-    expect(button.attributes("disabled")).toBeUndefined();
+    const button = wrapper.findComponent(KdsButton);
+    expect(button.props("disabled")).toBe(false);
 
     await button.trigger("click");
-    expect(button.attributes("disabled")).toBe("");
+    expect(button.props("disabled")).toBe(true);
 
     // Simulate update of runFinished uuid via state provider
     provideRunFinished!("new-uuid");
     await nextTick();
 
-    expect(button.attributes("disabled")).toBeUndefined();
+    expect(button.props("disabled")).toBe(false);
   });
 });

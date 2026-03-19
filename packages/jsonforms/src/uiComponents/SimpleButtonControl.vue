@@ -1,15 +1,16 @@
-<script setup lang="ts" generic="SettingValue">
+<script setup lang="ts">
 import { computed, ref, watch } from "vue";
 
-import { Button } from "@knime/components";
+import { KdsButton } from "@knime/kds-components";
 
-import type { VueControlProps } from "../higherOrderComponents/control/types";
+import type { VueControlProps } from "../higherOrderComponents";
 import inject from "../utils/inject";
 
-import DynamicIcon, { type Icon } from "./DynamicIcon.vue";
 import useProvidedState, {
   type UiSchemaWithProvidedOptions,
 } from "./composables/useProvidedState";
+
+type ReloadIcon = "reload";
 
 const props = defineProps<VueControlProps<undefined>>();
 const disabled = computed(() => !props.control.enabled);
@@ -21,7 +22,7 @@ const uischema = computed(
   () =>
     props.control.uischema as UiSchemaWithProvidedOptions<{
       triggerId: string;
-      icon?: Icon;
+      icon?: ReloadIcon;
       runFinished?: string;
     }>,
 );
@@ -37,7 +38,9 @@ if (disableOnClick) {
 const disabledOrRunning = computed(() => disabled.value || running.value);
 const triggerId = computed(() => uischema.value.options!.triggerId);
 
-const icon = computed<Icon | undefined>(() => uischema.value.options!.icon);
+const icon = computed<ReloadIcon | undefined>(
+  () => uischema.value.options!.icon,
+);
 
 const trigger = inject("trigger");
 
@@ -53,18 +56,17 @@ const hover = ref(false);
 <template>
   <div
     class="simple-button-input"
-    @mouseover="hover = true"
+    @mouseenter="hover = true"
     @mouseleave="hover = false"
   >
-    <Button
-      compact
-      with-border
+    <KdsButton
+      variant="outlined"
       :disabled="disabledOrRunning"
       class="button-input"
+      :label="control.label"
+      :leading-icon="icon"
       @click="onClick"
-    >
-      <DynamicIcon v-if="icon" :icon="icon" />{{ control.label }}
-    </Button>
+    />
     <slot name="buttons" :hover="hover" />
   </div>
 </template>
@@ -74,19 +76,11 @@ const hover = ref(false);
   position: relative;
   display: flex;
   place-content: center space-between;
-  margin-bottom: 10px;
+  margin-bottom: var(--kds-spacing-container-0-5x);
 
   & .button-input {
     min-width: 100px;
     text-align: center;
   }
-
-  & .button-input-text {
-    width: 100%;
-  }
-}
-
-svg {
-  height: 18px;
 }
 </style>
