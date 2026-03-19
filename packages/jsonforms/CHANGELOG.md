@@ -1,5 +1,13 @@
 # @knime/json-forms
 
+## 1.19.4
+
+### Patch Changes
+
+- 19a0919: Integrated KdsDateTimeFormat in DateTimeFormatPickerControl and DateTimeFormatPickerWithTypeControl
+  Integrated KdsDropdown in OneOfDropdown and ZonedDateTimeControl
+  Integrated KdsButton in SimpleButtonControl
+
 ## 1.19.3
 
 ### Patch Changes
