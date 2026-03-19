@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, getCurrentInstance, ref } from "vue";
+import { computed, ref } from "vue";
 import { cloneDeep } from "lodash-es";
 
 import { KdsButton } from "@knime/kds-components";
@@ -30,11 +30,6 @@ const displayedFilename = computed(() => {
   );
 });
 
-const fileSelectorId = computed(() => {
-  const uid = getCurrentInstance()?.uid;
-  return `file-selector-${uid}`;
-});
-
 const selectFileText = computed(() => {
   return `Select file${multiple.value ? "s" : ""}`;
 });
@@ -54,25 +49,25 @@ const onSelect = (event: Event) => {
 
 <template>
   <div class="wrapper">
-    <label :for="fileSelectorId">
-      <KdsButton
-        class="file-select-button"
-        :label="selectFileText"
-        leading-icon="search"
-        variant="outlined"
-        @click="openFileSelector"
-      />
-      <span class="filename">{{ displayedFilename }}</span>
-    </label>
+    <KdsButton
+      class="file-select-button"
+      :label="selectFileText"
+      leading-icon="search"
+      variant="outlined"
+      :disabled="disabled"
+      @click="openFileSelector"
+    />
+    <span class="filename">{{ displayedFilename }}</span>
     <input
-      :id="fileSelectorId"
+      :id="labelForId"
       ref="fileSelector"
       :aria-label="control.label"
       type="file"
       :accept="acceptedFileTypes"
       :multiple="multiple"
+      :disabled="disabled"
       hidden
-      @input="(event) => onSelect(event)"
+      @input="onSelect"
     />
   </div>
 </template>
