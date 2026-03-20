@@ -1,5 +1,18 @@
 # @knime/hub-features
 
+## 1.24.0
+
+### Minor Changes
+
+- 9bc7a76: Add authUtils package
+- 182d2d7: Added analyticEvents package. See README for usage and feature overview
+  Changed embeddingSDK analytics property on the embedding context.
+
+### Patch Changes
+
+- Updated dependencies [c4e0bfd]
+  - @knime/components@1.45.10
+
 ## 1.23.0
 
 ### Minor Changes
