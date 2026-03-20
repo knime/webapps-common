@@ -26,11 +26,15 @@
     },
     "./versions": {
       "import": "./src/components/versions/index.ts"
+    },
+    "./analytics": {
+      "import": "./src/analytics/index.ts"
     }
   },
   "scripts": {
     "type-check": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
-    "test:unit": "TZ='Europe/Berlin' vitest"
+    "test:unit": "TZ='Europe/Berlin' vitest",
+    "generate-analytics-events": "json2ts ./src/analyticsEvents/schema/schema.json > ./src/analyticsEvents/schema/schema.d.ts"
   },
   "dependencies": {
     "@floating-ui/vue": "catalog:",
@@ -52,6 +56,7 @@
     "@vitejs/plugin-vue": "catalog:",
     "@vue/test-utils": "catalog:",
     "consola": "catalog:",
+    "json-schema-to-typescript": "^15.0.4",
     "vite": "catalog:",
     "vite-svg-loader": "catalog:",
     "vue-tsc": "catalog:"

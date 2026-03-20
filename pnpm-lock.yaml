@@ -84,10 +84,6 @@ catalogs:
     vue-tsc:
       specifier: 3.0.4
       version: 3.0.4
-  patch:
-    v-calendar:
-      specifier: git://github.com/knime/v-calendar.git#048477f
-      version: 3.1.2
   peer:
     '@fontsource/roboto':
       specifier: 5.x
@@ -106,6 +102,7 @@ catalogs:
       version: 3.5.24
 
 overrides:
+  v-calendar: https://github.com/knime/v-calendar/archive/048477f.tar.gz
   '@babel/runtime@<7.26.10': '>=7.26.10'
   '@eslint/plugin-kit@<0.3.3': '>=0.3.3'
   '@typescript-eslint/eslint-plugin': 8.46.2
@@ -257,8 +254,8 @@ importers:
         specifier: 5.0.0
         version: 5.0.0
       v-calendar:
-        specifier: catalog:patch
-        version: https://codeload.github.com/knime/v-calendar/tar.gz/048477f(@popperjs/core@2.11.8)(vue@3.5.24(typescript@5.9.3))
+        specifier: https://github.com/knime/v-calendar/archive/048477f.tar.gz
+        version: https://github.com/knime/v-calendar/archive/048477f.tar.gz(@popperjs/core@2.11.8)(vue@3.5.24(typescript@5.9.3))
       vite:
         specifier: 'catalog:'
         version: 7.3.1(@types/node@24.10.1)(terser@5.44.1)(tsx@4.20.6)
@@ -317,8 +314,8 @@ importers:
         specifier: 13.0.0
         version: 13.0.0
       v-calendar:
-        specifier: catalog:patch
-        version: https://codeload.github.com/knime/v-calendar/tar.gz/048477f(@popperjs/core@2.11.8)(vue@3.5.24(typescript@5.9.3))
+        specifier: https://github.com/knime/v-calendar/archive/048477f.tar.gz
+        version: https://github.com/knime/v-calendar/archive/048477f.tar.gz(@popperjs/core@2.11.8)(vue@3.5.24(typescript@5.9.3))
       vue:
         specifier: catalog:peer
         version: 3.5.24(typescript@5.9.3)
@@ -393,6 +390,9 @@ importers:
       consola:
         specifier: 'catalog:'
         version: 3.4.2
+      json-schema-to-typescript:
+        specifier: ^15.0.4
+        version: 15.0.4
       vite:
         specifier: 'catalog:'
         version: 7.3.1(@types/node@24.10.1)(terser@5.44.1)(tsx@4.20.6)
@@ -476,8 +476,8 @@ importers:
         specifier: 'catalog:'
         version: 5.9.3
       v-calendar:
-        specifier: catalog:patch
-        version: https://codeload.github.com/knime/v-calendar/tar.gz/048477f(@popperjs/core@2.11.8)(vue@3.5.24(typescript@5.9.3))
+        specifier: https://github.com/knime/v-calendar/archive/048477f.tar.gz
+        version: https://github.com/knime/v-calendar/archive/048477f.tar.gz(@popperjs/core@2.11.8)(vue@3.5.24(typescript@5.9.3))
       vite:
         specifier: 'catalog:'
         version: 7.3.1(@types/node@24.10.1)(terser@5.44.1)(tsx@4.20.6)
@@ -850,6 +850,10 @@ packages:
 
   '@antfu/install-pkg@1.1.0':
     resolution: {integrity: sha512-MGQsmw10ZyI+EJo45CdSER4zEb+p31LpDAFp2Z3gkSd1yqVZGi0Ebx++YTEMonJy4oChEMLsxZ64j8FH6sSqtQ==}
+
+  '@apidevtools/json-schema-ref-parser@11.9.3':
+    resolution: {integrity: sha512-60vepv88RwcJtSHrD6MjIL6Ta3SOYbgfnkHb+ppAVK+o9mXprRtulx7VlRl3lN3bbvysAfCS7WMVfhUYemB0IQ==}
+    engines: {node: '>= 16'}
 
   '@asamuzakjp/css-color@3.2.0':
     resolution: {integrity: sha512-K1A6z8tS3XsmCMM86xoWdn7Fkdn9m6RSVtocUrJYIwZnFVkng/PvkEoWtOWmP+Scc6saYWHWZYbndEEXxl24jw==}
@@ -1654,6 +1658,9 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
+
+  '@jsdevtools/ono@7.1.3':
+    resolution: {integrity: sha512-4JQNk+3mVzK3xh2rqd6RB4J46qUR19azEHBneZyTZM+c456qOrbbM/5xcR8huNCCcbVt7+UmizG6GuUvPvKUYg==}
 
   '@jsonforms/core@3.4.0':
     resolution: {integrity: sha512-jeU98XLru6G2WVGmJqG19W2rmSLX4im/gOWbptTzQJYj8tS38cqDoYcIRuBmAQYASj2ogJDHQnDgIXARSL8vJA==}
@@ -4026,6 +4033,11 @@ packages:
     resolution: {integrity: sha512-lR4MXjGNgkJc7tkQ97kb2nuEMnNCyU//XYVH0MKTGcXEiSudQ5MKGKen3C5QubYy0vmq+JGitUg92uuywGEwIA==}
     engines: {node: ^18.17.0 || >=20.5.0}
 
+  json-schema-to-typescript@15.0.4:
+    resolution: {integrity: sha512-Su9oK8DR4xCmDsLlyvadkXzX6+GGXJpbhwoLtOGArAG61dvbW4YQmSEno2y66ahpIdmLMg6YUf/QHLgiwvkrHQ==}
+    engines: {node: '>=16.0.0'}
+    hasBin: true
+
   json-schema-traverse@0.4.1:
     resolution: {integrity: sha512-xbbCH5dCYU5T8LcEhhuh7HJ88HXuW3qsI3Y0zOZFKfZEHcpWiHU/Jxzk629Brsab/mMiHQti9wMP+845RPe3Vg==}
 
@@ -5421,8 +5433,8 @@ packages:
     resolution: {integrity: sha512-XQegIaBTVUjSHliKqcnFqYypAd4S+WCYt5NIeRs6w/UAry7z8Y9j5ZwRRL4kzq9U3sD6v+85er9FvkEaBpji2w==}
     hasBin: true
 
-  v-calendar@https://codeload.github.com/knime/v-calendar/tar.gz/048477f:
-    resolution: {tarball: https://codeload.github.com/knime/v-calendar/tar.gz/048477f}
+  v-calendar@https://github.com/knime/v-calendar/archive/048477f.tar.gz:
+    resolution: {tarball: https://github.com/knime/v-calendar/archive/048477f.tar.gz}
     version: 3.1.2
     peerDependencies:
       '@popperjs/core': ^2.0.0
@@ -5688,6 +5700,12 @@ snapshots:
     dependencies:
       package-manager-detector: 1.5.0
       tinyexec: 1.0.2
+
+  '@apidevtools/json-schema-ref-parser@11.9.3':
+    dependencies:
+      '@jsdevtools/ono': 7.1.3
+      '@types/json-schema': 7.0.15
+      js-yaml: 4.1.1
 
   '@asamuzakjp/css-color@3.2.0':
     dependencies:
@@ -6447,6 +6465,8 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
+
+  '@jsdevtools/ono@7.1.3': {}
 
   '@jsonforms/core@3.4.0':
     dependencies:
@@ -9065,6 +9085,18 @@ snapshots:
 
   json-parse-even-better-errors@4.0.0: {}
 
+  json-schema-to-typescript@15.0.4:
+    dependencies:
+      '@apidevtools/json-schema-ref-parser': 11.9.3
+      '@types/json-schema': 7.0.15
+      '@types/lodash': 4.17.20
+      is-glob: 4.0.3
+      js-yaml: 4.1.1
+      lodash: 4.17.23
+      minimist: 1.2.8
+      prettier: 3.3.2
+      tinyglobby: 0.2.15
+
   json-schema-traverse@0.4.1: {}
 
   json-schema-traverse@1.0.0: {}
@@ -10645,7 +10677,7 @@ snapshots:
 
   uuid@13.0.0: {}
 
-  v-calendar@https://codeload.github.com/knime/v-calendar/tar.gz/048477f(@popperjs/core@2.11.8)(vue@3.5.24(typescript@5.9.3)):
+  v-calendar@https://github.com/knime/v-calendar/archive/048477f.tar.gz(@popperjs/core@2.11.8)(vue@3.5.24(typescript@5.9.3)):
     dependencies:
       '@popperjs/core': 2.11.8
       '@types/lodash': 4.17.20

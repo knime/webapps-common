@@ -1,0 +1,472 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "inmemory://schemas/analytics-events.json",
+  "title": "AnalyticsEventSchema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "events"],
+  "properties": {
+    "version": {
+      "$comment": "Version of this document",
+      "type": "string",
+      "const": "v1.0"
+    },
+    "events": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kai_prompted",
+        "layouteditor_opened",
+        "annotation_created",
+        "workflow_saved",
+        "connection_created",
+        "node_created",
+        "qam_opened",
+        "node_searched",
+        "sidepanel_opened",
+        "action_undone",
+        "action_redone"
+      ],
+      "properties": {
+        "kai_prompted": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kaiqa_button_", "kaibuild_button_", "qam_button_"],
+          "properties": {
+            "kaiqa_button_": {
+              "$ref": "#/definitions/EmptyPayload"
+            },
+            "kaibuild_button_": {
+              "$ref": "#/definitions/EmptyPayload"
+            },
+            "qam_button_": {
+              "$ref": "#/definitions/KaiPromptedPayload"
+            }
+          }
+        },
+        "layouteditor_opened": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "canvas_ctxmenu_openlayouteditor",
+            "keyboard_shortcut_openlayouteditor",
+            "wftoolbar_button_openlayouteditor"
+          ],
+          "properties": {
+            "canvas_ctxmenu_openlayouteditor": {
+              "$ref": "#/definitions/EmptyPayload"
+            },
+            "keyboard_shortcut_openlayouteditor": {
+              "$ref": "#/definitions/EmptyPayload"
+            },
+            "wftoolbar_button_openlayouteditor": {
+              "$ref": "#/definitions/EmptyPayload"
+            }
+          }
+        },
+        "annotation_created": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "canvas_ctxmenu_newannotation",
+            "canvas_ctxmenu_kaiexplain"
+          ],
+          "properties": {
+            "canvas_ctxmenu_newannotation": {
+              "$ref": "#/definitions/EmptyPayload"
+            },
+            "canvas_ctxmenu_kaiexplain": {
+              "$ref": "#/definitions/EmptyPayload"
+            }
+          }
+        },
+        "workflow_saved": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["wftoolbar_button_save", "keyboard_shortcut_savewf"],
+          "properties": {
+            "wftoolbar_button_save": {
+              "$ref": "#/definitions/WorkflowSavedPayload"
+            },
+            "keyboard_shortcut_savewf": {
+              "$ref": "#/definitions/WorkflowSavedPayload"
+            }
+          }
+        },
+        "connection_created": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "port_dragdrop_fwd",
+            "port_dragdrop_bwd",
+            "keyboard_shortcut_connectnodes",
+            "keyboard_shortcut_connectflowvar",
+            "canvas_ctxmenu_connectnodes",
+            "canvas_ctxmenu_connectflowvar"
+          ],
+          "properties": {
+            "port_dragdrop_fwd": {
+              "$ref": "#/definitions/ConnectionCreatedPayload"
+            },
+            "port_dragdrop_bwd": {
+              "$ref": "#/definitions/ConnectionCreatedPayload"
+            },
+            "keyboard_shortcut_connectnodes": {
+              "$ref": "#/definitions/EmptyPayload"
+            },
+            "keyboard_shortcut_connectflowvar": {
+              "$ref": "#/definitions/EmptyPayload"
+            },
+            "canvas_ctxmenu_connectnodes": {
+              "$ref": "#/definitions/EmptyPayload"
+            },
+            "canvas_ctxmenu_connectflowvar": {
+              "$ref": "#/definitions/EmptyPayload"
+            }
+          }
+        },
+        "node_created": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "noderepo_dragdrop_",
+            "noderepo_doubleclick_",
+            "noderepo_keyboard_enter",
+            "explorer_dragdrop_",
+            "qam_click_",
+            "qam_keyboard_enter",
+            "kaiqa_dragdrop_",
+            "kaiqa_keyboard_enter"
+          ],
+          "properties": {
+            "noderepo_dragdrop_": {
+              "$ref": "#/definitions/NodeCreated_Base"
+            },
+            "noderepo_doubleclick_": {
+              "$ref": "#/definitions/NodeCreated_WithOptionalConnectedTo"
+            },
+            "noderepo_keyboard_enter": {
+              "$ref": "#/definitions/NodeCreated_WithOptionalConnectedTo"
+            },
+            "explorer_dragdrop_": {
+              "$ref": "#/definitions/NodeCreated_Base"
+            },
+            "qam_click_": {
+              "$ref": "#/definitions/NodeCreated_WithOptionalConnectedToPorts"
+            },
+            "qam_keyboard_enter": {
+              "$ref": "#/definitions/NodeCreated_WithOptionalConnectedToPorts"
+            },
+            "kaiqa_dragdrop_": {
+              "$ref": "#/definitions/NodeCreated_Base"
+            },
+            "kaiqa_keyboard_enter": {
+              "$ref": "#/definitions/NodeCreated_Base"
+            }
+          }
+        },
+        "qam_opened": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "port_dragdrop_fwd",
+            "port_dragdrop_bwd",
+            "canvas_doubleclick_",
+            "keyboard_shortcut_",
+            "canvas_ctxmenu_quickaddnode"
+          ],
+          "properties": {
+            "port_dragdrop_fwd": {
+              "$ref": "#/definitions/QAMOpened_Payload"
+            },
+            "port_dragdrop_bwd": {
+              "$ref": "#/definitions/QAMOpened_Payload"
+            },
+            "canvas_doubleclick_": {
+              "$ref": "#/definitions/EmptyPayload"
+            },
+            "keyboard_shortcut_": {
+              "$ref": "#/definitions/QAMOpened_PartialPayload"
+            },
+            "canvas_ctxmenu_quickaddnode": {
+              "$ref": "#/definitions/EmptyPayload"
+            }
+          }
+        },
+        "node_searched": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["noderepo_type_", "qam_type_"],
+          "properties": {
+            "noderepo_type_": {
+              "$ref": "#/definitions/SearchPayload"
+            },
+            "qam_type_": {
+              "$ref": "#/definitions/SearchPayload"
+            }
+          }
+        },
+        "sidepanel_opened": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "sidepanel_click_info",
+            "sidepanel_click_noderepo",
+            "sidepanel_click_explorer",
+            "sidepanel_click_kai",
+            "sidepanel_click_monitor",
+            "wftoolbar_dropdownmenu_versionhistory"
+          ],
+          "properties": {
+            "sidepanel_click_info": {
+              "$ref": "#/definitions/EmptyPayload"
+            },
+            "sidepanel_click_noderepo": {
+              "$ref": "#/definitions/EmptyPayload"
+            },
+            "sidepanel_click_explorer": {
+              "$ref": "#/definitions/EmptyPayload"
+            },
+            "sidepanel_click_kai": {
+              "$ref": "#/definitions/EmptyPayload"
+            },
+            "sidepanel_click_monitor": {
+              "$ref": "#/definitions/EmptyPayload"
+            },
+            "wftoolbar_dropdownmenu_versionhistory": {
+              "$ref": "#/definitions/EmptyPayload"
+            }
+          }
+        },
+        "action_undone": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["wftoolbar_button_", "keyboard_shortcut_"],
+          "properties": {
+            "wftoolbar_button_": {
+              "$ref": "#/definitions/EmptyPayload"
+            },
+            "keyboard_shortcut_": {
+              "$ref": "#/definitions/EmptyPayload"
+            }
+          }
+        },
+        "action_redone": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["wftoolbar_button_", "keyboard_shortcut_"],
+          "properties": {
+            "wftoolbar_button_": {
+              "$ref": "#/definitions/EmptyPayload"
+            },
+            "keyboard_shortcut_": {
+              "$ref": "#/definitions/EmptyPayload"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "EmptyPayload": {
+      "type": "null",
+      "additionalProperties": false,
+      "maxProperties": 0
+    },
+    "WorkflowSavedPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["isAutosyncEnabled"],
+      "properties": {
+        "isAutosyncEnabled": {
+          "type": "boolean"
+        }
+      }
+    },
+    "ConnectionCreated_NodePayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["nodeType", "nodePortIndex", "nodePortId"],
+      "properties": {
+        "nodeType": {
+          "type": "string",
+          "enum": ["node", "component", "metanode"]
+        },
+        "nodePortIndex": {
+          "type": "number"
+        },
+        "nodePortId": {
+          "type": "string"
+        },
+        "nodeFactoryId": {
+          "type": "string"
+        }
+      }
+    },
+    "ConnectionCreatedPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fromNode", "toNode"],
+      "properties": {
+        "fromNode": {
+          "$ref": "#/definitions/ConnectionCreated_NodePayload"
+        },
+        "toNode": {
+          "$ref": "#/definitions/ConnectionCreated_NodePayload"
+        }
+      }
+    },
+    "KaiPromptedPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "nodeFactoryId": {
+          "type": "string"
+        },
+        "nodeType": {
+          "type": "string",
+          "enum": ["node", "component", "metanode"]
+        }
+      }
+    },
+    "NodeOrComponent": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "nodeFactoryId": {
+          "type": "string",
+          "$comment": "asdasd"
+        },
+        "nodeHubId": {
+          "type": "string"
+        }
+      }
+    },
+    "NodeCreated_Common": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["nodeType"],
+      "properties": {
+        "nodeType": {
+          "type": "string",
+          "enum": ["node", "component"]
+        }
+      }
+    },
+    "ConnectedTo_Basic": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["nodeType", "nodeFactoryId"],
+      "properties": {
+        "nodeType": {
+          "type": "string",
+          "enum": ["node", "component", "metanode"]
+        },
+        "nodeFactoryId": {
+          "type": "string"
+        }
+      }
+    },
+    "ConnectedTo_WithPorts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["nodeType", "nodeFactoryId"],
+      "properties": {
+        "nodeType": {
+          "type": "string",
+          "enum": ["node", "component", "metanode"]
+        },
+        "nodeFactoryId": {
+          "type": "string"
+        },
+        "nodePortIndex": {
+          "type": "number"
+        },
+        "nodePortId": {
+          "type": "string"
+        }
+      }
+    },
+    "NodeCreated_Base": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/NodeCreated_Common"
+        },
+        {
+          "$ref": "#/definitions/NodeOrComponent"
+        }
+      ]
+    },
+    "NodeCreated_WithOptionalConnectedTo": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/NodeCreated_Common"
+        },
+        {
+          "$ref": "#/definitions/NodeOrComponent"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "connectedTo": {
+              "$ref": "#/definitions/ConnectedTo_Basic"
+            }
+          }
+        }
+      ]
+    },
+    "NodeCreated_WithOptionalConnectedToPorts": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/NodeCreated_Common"
+        },
+        {
+          "$ref": "#/definitions/NodeOrComponent"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "connectedTo": {
+              "$ref": "#/definitions/ConnectedTo_WithPorts"
+            }
+          }
+        }
+      ]
+    },
+    "QAMOpened_Payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["connectedTo"],
+      "properties": {
+        "connectedTo": {
+          "$ref": "#/definitions/ConnectedTo_WithPorts"
+        }
+      }
+    },
+    "QAMOpened_PartialPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "connectedTo": {
+          "$ref": "#/definitions/ConnectedTo_WithPorts"
+        }
+      }
+    },
+    "SearchPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repoType", "keyword"],
+      "properties": {
+        "repoType": {
+          "type": "string",
+          "enum": ["node", "component"]
+        },
+        "keyword": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
