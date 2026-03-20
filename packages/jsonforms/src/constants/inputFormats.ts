@@ -34,6 +34,8 @@ export const inputFormats = {
   timeframes: "timeframes",
   link: "linkButton",
   credentials: "credentials",
+  username: "username",
+  password: "password",
   // custom hub formats
   executionContextDropdown: "executionContextDropdown",
   dockerImageDropdown: "dockerImageDropdown",

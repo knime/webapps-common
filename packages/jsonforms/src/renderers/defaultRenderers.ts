@@ -9,7 +9,6 @@ import { checkboxesRenderer } from "./checkboxesRenderer";
 import { colorPreviewRenderer } from "./colorPreviewRenderer";
 import { colorRenderer } from "./colorRenderer";
 import { comboBoxRenderer } from "./comboBoxRenderer";
-import { credentialsRenderer } from "./credentialsRenderer";
 import {
   dateTimeFormatPickerRenderer,
   dateTimeFormatPickerWithTypeRenderer,
@@ -35,6 +34,7 @@ import { localTimeRenderer } from "./localTimeRenderer";
 import { multiSelectListBoxRenderer } from "./multiSelectListBoxRenderer";
 import { nameFilterRenderer } from "./nameFilterRenderer";
 import { numberRenderer } from "./numberRenderer";
+import { passwordRenderer } from "./passwordRenderer";
 import { quantityRenderer } from "./quantityRenderer";
 import { radioRenderer } from "./radioRenderer";
 import { radioWithDescriptionRenderer } from "./radioWithDescriptionRenderer";
@@ -56,6 +56,7 @@ import {
   twinlistRenderer,
 } from "./twinlistRenderer";
 import { typedStringFilterRenderer } from "./typedStringFilterRenderer";
+import { usernameRenderer } from "./usernameRenderer";
 import { valueSwitchRenderer } from "./valueSwitchRenderer";
 import { verticalLayoutRenderer } from "./verticalLayoutRenderer";
 import { zonedDateTimeRenderer } from "./zonedDateTimeRenderer";
@@ -90,11 +91,13 @@ export const controls = {
   gridSelectionRenderer,
   timeframesRenderer,
   quantityRenderer,
-  credentialsRenderer,
   // without label:
   simpleButtonRenderer,
   textMessageRenderer,
   linkRenderer,
+  // kds label
+  usernameRenderer,
+  passwordRenderer,
   /**
    * Containing an optional checkbox. Keep Label in control until we have a framework for that.
    */
