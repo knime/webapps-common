@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.45.10
+
+### Patch Changes
+
+- c4e0bfd: Fix height in horizontal searchable checkboxes
+
 ## 1.45.9
 
 ### Patch Changes
