@@ -46,6 +46,17 @@ export type AnalyticsPayload = {
   data: unknown;
 };
 
-export type AnalyticsEventFn<TReturn = void> = <K extends EventNames>(
+export type CreateEventFn<TReturn = void> = <K extends EventNames>(
   args: EventArgs<K>,
 ) => TReturn;
+
+export interface AnalyticsAdapter {
+  /**
+   * Function to send the event according to the API the adapter is implementing
+   */
+  sendEvent: (params: {
+    idParser: (id: string) => { category: string; action: string };
+    event: AnalyticsPayload;
+    metadata: Metadata;
+  }) => void;
+}

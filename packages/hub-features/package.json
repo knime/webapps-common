@@ -26,6 +26,9 @@
     },
     "./versions": {
       "import": "./src/components/versions/index.ts"
+    },
+    "./analytics": {
+      "import": "./src/analytics/index.ts"
     }
   },
   "scripts": {

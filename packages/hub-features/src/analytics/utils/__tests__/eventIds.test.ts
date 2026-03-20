@@ -9,7 +9,10 @@ describe("eventIds", () => {
   });
 
   it("parses", () => {
-    expect(eventID("bar::foo").parse()).toEqual(["bar", "foo"]);
+    expect(eventID("bar::foo").parse()).toEqual({
+      category: "bar",
+      action: "foo",
+    });
     expect(() => eventID("qwerty").parse()).toThrow();
   });
 });

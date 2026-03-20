@@ -1,8 +1,8 @@
-import { defaultAdapter } from "./adapters";
 import type {
-  AnalyticsEventFn,
+  AnalyticsAdapter,
   AnalyticsPayload,
   Context,
+  CreateEventFn,
   Metadata,
 } from "./types";
 import { eventID } from "./utils/eventIds";
@@ -11,8 +11,6 @@ import { toSnakeCaseDeep } from "./utils/toSnakeCaseDeep";
 const METADATA: Metadata = Object.freeze({
   version: "v1.0",
 });
-
-let __isSenderInitialized = false;
 
 export const analyticsEvents = Object.freeze({
   METADATA,
@@ -23,7 +21,7 @@ export const analyticsEvents = Object.freeze({
    * @returns
    */
   eventBuilder: (context: Context) => {
-    const newEvent: AnalyticsEventFn<AnalyticsPayload> = ({
+    const newEvent: CreateEventFn<AnalyticsPayload> = ({
       id: eventId,
       payload: eventData,
     }) => {
@@ -64,15 +62,15 @@ export const analyticsEvents = Object.freeze({
    * to forward the event's data to an external third-party provider
    * @returns
    */
-  eventSender: () => {
-    // because the adapter's init could be doing mutations or running side-effects
-    // make sure it's only initialized once
-    if (__isSenderInitialized) {
-      return { send: defaultAdapter.sendEvent };
-    }
+  eventSender: (adapter: AnalyticsAdapter) => {
+    const send = (event: AnalyticsPayload) => {
+      adapter.sendEvent({
+        event,
+        idParser: eventID(event.id).parse,
+        metadata: METADATA,
+      });
+    };
 
-    __isSenderInitialized = true;
-    defaultAdapter.init(METADATA.version);
-    return { send: defaultAdapter.sendEvent };
+    return { send };
   },
 });

@@ -8,7 +8,7 @@ const isValid = (id: string) => id.includes(SEPARATOR);
  * @returns
  * @throws when id format is invalid
  */
-const parse = (id: string): [string, string] => {
+const parse = (id: string): { category: string; action: string } => {
   if (!isValid(id)) {
     throw new Error(`Cannot parse event id. Invalid format found: ${id}`);
   }
@@ -19,7 +19,8 @@ const parse = (id: string): [string, string] => {
     throw new Error(`Cannot parse event id. Invalid format found: ${id}`);
   }
 
-  return out as [string, string];
+  const [category, action] = out;
+  return { category, action };
 };
 
 export const eventID = (id: string) => ({

@@ -7,7 +7,7 @@
   "required": ["version", "events"],
   "properties": {
     "version": {
-      "$comment": "Version of this document. Only update it when breaking changes are introduced",
+      "$comment": "Version of this document",
       "type": "string",
       "const": "v1.0"
     },
