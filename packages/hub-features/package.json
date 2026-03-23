@@ -29,16 +29,21 @@
     },
     "./analytics": {
       "import": "./src/analytics/index.ts"
+    },
+    "./space-explorer": {
+      "import": "./src/spaceExplorer/index.ts"
     }
   },
   "scripts": {
     "type-check": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
     "test:unit": "TZ='Europe/Berlin' vitest",
-    "generate-analytics-events": "json2ts ./src/analyticsEvents/schema/schema.json > ./src/analyticsEvents/schema/schema.d.ts"
+    "generate-analytics-events": "json2ts ./src/analyticsEvents/schema/schema.json > ./src/analyticsEvents/schema/schema.d.ts",
+    "generate-api-types": "npx openapi-typescript ./src/api/schema/catalog.yaml -o ./src/api/schema/schema.d.ts"
   },
   "dependencies": {
     "@floating-ui/vue": "catalog:",
     "@knime/components": "workspace:*",
+    "@knime/kds-components": "catalog:",
     "@knime/styles": "workspace:*",
     "@knime/utils": "workspace:*",
     "@vueuse/components": "catalog:",
@@ -57,6 +62,7 @@
     "@vue/test-utils": "catalog:",
     "consola": "catalog:",
     "json-schema-to-typescript": "^15.0.4",
+    "openapi-typescript": "^7.13.0",
     "vite": "catalog:",
     "vite-svg-loader": "catalog:",
     "vue-tsc": "catalog:"
