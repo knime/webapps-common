@@ -210,7 +210,11 @@
               },
               {
                 "type": "Control",
-                "scope": "#/properties/platformConfig/properties/apiKey"
+                "scope": "#/properties/platformConfig/properties/apiKey",
+                "options": {
+                  "format": "password",
+                  "variant": "key"
+                }
               }
             ]
           },
