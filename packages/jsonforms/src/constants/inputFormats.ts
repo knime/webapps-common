@@ -43,6 +43,7 @@ export const inputFormats = {
   teamResources: "teamResources",
   executorCoresResources: "executorCoresResources",
   executorMemoryResources: "executorMemoryResources",
+  teamAndSpacesDropdown: "teamAndSpacesDropdown",
 } as const;
 
 // union type of the values of the inputFormats object:

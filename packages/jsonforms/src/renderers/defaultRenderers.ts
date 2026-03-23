@@ -47,6 +47,7 @@ import { simpleButtonRenderer } from "./simpleButtonRenderer";
 import { singleSelectListBoxRenderer } from "./singleSelectListBoxRenderer";
 import { singleSelectRenderer } from "./singleSelectRenderer";
 import { sortListRenderer } from "./sortListRenderer";
+import { teamAndSpacesDropdownRenderer } from "./teamAndSpaceDropdownRenderer";
 import { teamResourceRenderer } from "./teamResourceRenderer";
 import { textAreaRenderer } from "./textAreaRenderer";
 import { textMessageRenderer } from "./textMessageRenderer";
@@ -110,6 +111,7 @@ export const controls = {
   teamResourceRenderer,
   executorCoresResourceRenderer,
   executorMemoryResourceRenderer,
+  teamAndSpacesDropdownRenderer,
   ...fallbackControlRenderers,
 } satisfies Record<string, VueControlRenderer>;
 
