@@ -61,6 +61,7 @@ const hover = ref(false);
   >
     <KdsButton
       variant="outlined"
+      size="small"
       :disabled="disabledOrRunning"
       class="button-input"
       :label="control.label"
