@@ -33,7 +33,6 @@ export const inputFormats = {
   gridSelection: "gridSelection",
   timeframes: "timeframes",
   link: "linkButton",
-  credentials: "credentials",
   username: "username",
   password: "password",
   // custom hub formats

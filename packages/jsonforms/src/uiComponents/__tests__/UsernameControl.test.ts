@@ -14,7 +14,7 @@ import { KdsUsernameInput } from "@knime/kds-components";
 import {
   type VueControlTestProps,
   getControlBase,
-  mountJsonFormsControl,
+  mountJsonFormsControlLabelContent,
 } from "../../../testUtils";
 import UsernameControl from "../UsernameControl.vue";
 
@@ -44,10 +44,10 @@ describe("UsernameControl", () => {
       },
       disabled: false,
       isValid: true,
-      messages: { errors: [] },
+      labelForId: "username",
     };
 
-    const component = await mountJsonFormsControl(UsernameControl, {
+    const component = await mountJsonFormsControlLabelContent(UsernameControl, {
       props,
     });
     wrapper = component.wrapper;
@@ -71,9 +71,12 @@ describe("UsernameControl", () => {
         data: "existingUser",
       },
     };
-    const { wrapper: wrapper2 } = await mountJsonFormsControl(UsernameControl, {
-      props,
-    });
+    const { wrapper: wrapper2 } = await mountJsonFormsControlLabelContent(
+      UsernameControl,
+      {
+        props,
+      },
+    );
     expect(wrapper2.findComponent(KdsUsernameInput).vm.modelValue).toBe(
       "existingUser",
     );
@@ -94,26 +97,6 @@ describe("UsernameControl", () => {
     });
   });
 
-  it("passes label and description to KdsUsernameInput", async () => {
-    expect(wrapper.findComponent(KdsUsernameInput).props("label")).toBe(
-      props.control.label,
-    );
-
-    props = {
-      ...props,
-      control: {
-        ...props.control,
-        description: "Enter your username",
-      },
-    };
-    const { wrapper: wrapper2 } = await mountJsonFormsControl(UsernameControl, {
-      props,
-    });
-    expect(wrapper2.findComponent(KdsUsernameInput).props("description")).toBe(
-      "Enter your username",
-    );
-  });
-
   it("handles disabled prop correctly", async () => {
     expect(wrapper.findComponent(KdsUsernameInput).props("disabled")).toBe(
       false,
@@ -123,9 +106,12 @@ describe("UsernameControl", () => {
       ...props,
       disabled: true,
     };
-    const { wrapper: wrapper2 } = await mountJsonFormsControl(UsernameControl, {
-      props: disabledProps,
-    });
+    const { wrapper: wrapper2 } = await mountJsonFormsControlLabelContent(
+      UsernameControl,
+      {
+        props: disabledProps,
+      },
+    );
     expect(wrapper2.findComponent(KdsUsernameInput).props("disabled")).toBe(
       true,
     );
