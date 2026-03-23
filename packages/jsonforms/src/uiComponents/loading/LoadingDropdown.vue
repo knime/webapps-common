@@ -38,17 +38,24 @@ const possibleValues = computed(() => {
   if (props.possibleValues === null) {
     return [];
   }
-  return props.possibleValues.map((value) => ({
-    id: value.id,
-    text: value.text,
-    disabled: value.disabled,
-    accessory: isPartiallyTyped.value
-      ? {
-          type: "dataType" as const,
-          name: value.type?.id ?? "missing_type",
-        }
-      : undefined,
-  }));
+  const result = [];
+  for (const value of props.possibleValues) {
+    if (!value.id || !value.text) {
+      continue;
+    }
+    result.push({
+      id: value.id,
+      text: value.text,
+      disabled: value.disabled,
+      accessory: isPartiallyTyped.value
+        ? {
+            type: "dataType" as const,
+            name: value.type?.id ?? "missing_type",
+          }
+        : undefined,
+    });
+  }
+  return result;
 });
 
 const onUpdateModelValue = (value: string | null) => {

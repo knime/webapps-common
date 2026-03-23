@@ -136,4 +136,30 @@ describe("LoadingDropdown", () => {
 
     expect(wrapper.emitted("update:modelValue")).toEqual([[""]]);
   });
+
+  it("filters out items with missing id or text", async () => {
+    await wrapper.setProps({
+      possibleValues: [
+        { id: "valid", text: "Valid" },
+        { id: "", text: "Empty ID" },
+        { id: "no-text", text: "" },
+        { id: "also-valid", text: "Also Valid" },
+      ] as any,
+    });
+
+    expect(wrapper.findComponent(KdsDropdown).props("possibleValues")).toEqual([
+      {
+        id: "valid",
+        text: "Valid",
+        disabled: undefined,
+        accessory: undefined,
+      },
+      {
+        id: "also-valid",
+        text: "Also Valid",
+        disabled: undefined,
+        accessory: undefined,
+      },
+    ]);
+  });
 });
