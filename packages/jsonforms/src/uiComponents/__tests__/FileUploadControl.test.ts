@@ -7,10 +7,9 @@ import {
   it,
   vi,
 } from "vitest";
-import { nextTick } from "vue";
 import type { VueWrapper } from "@vue/test-utils";
 
-import { FileSelector } from "@knime/components";
+import { KdsButton } from "@knime/kds-components";
 
 import {
   type VueControlTestProps,
@@ -29,6 +28,11 @@ describe("FileUploadControl", () => {
   const createMockFile = (name: string): File => {
     return new File(["content"], name, { type: "text/plain" });
   };
+
+  const getFileInput = (wrapper: VueWrapper) =>
+    wrapper.find('input[type="file"]');
+
+  const getFilenameSpan = (wrapper: VueWrapper) => wrapper.find(".filename");
 
   beforeEach(async () => {
     props = {
@@ -63,18 +67,22 @@ describe("FileUploadControl", () => {
     vi.clearAllMocks();
   });
 
-  it("renders FileSelector component", () => {
-    expect(wrapper.findComponent(FileSelector).exists()).toBe(true);
-    expect(wrapper.findComponent(FileSelector).props("label")).toBe(
+  it("renders file input and button", () => {
+    expect(getFileInput(wrapper).exists()).toBe(true);
+    expect(wrapper.findComponent(KdsButton).exists()).toBe(true);
+    expect(wrapper.findComponent(KdsButton).props("label")).toBe("Select file");
+    expect(getFileInput(wrapper).attributes("multiple")).toBeUndefined();
+    expect(getFilenameSpan(wrapper).text()).toBe("No file selected");
+    expect(getFileInput(wrapper).attributes("aria-label")).toBe(
       props.control.label,
     );
-    expect(wrapper.findComponent(FileSelector).props("acceptedFileTypes")).toBe(
-      "*",
-    );
-    expect(wrapper.findComponent(FileSelector).props("multiple")).toBe(false);
   });
 
-  it("uses custom acceptedFileTypes from uischema options", async () => {
+  it("uses default accept attribute '*' on file input", () => {
+    expect(getFileInput(wrapper).attributes("accept")).toBe("*");
+  });
+
+  it("uses custom accept from uischema options", async () => {
     props.control.uischema.options = {
       accept: ".pdf,.doc",
     };
@@ -82,9 +90,7 @@ describe("FileUploadControl", () => {
       FileUploadControl,
       { props },
     );
-    expect(wrapper.findComponent(FileSelector).props("acceptedFileTypes")).toBe(
-      ".pdf,.doc",
-    );
+    expect(getFileInput(wrapper).attributes("accept")).toBe(".pdf,.doc");
   });
 
   it("uses multiple from uischema options", async () => {
@@ -95,15 +101,29 @@ describe("FileUploadControl", () => {
       FileUploadControl,
       { props },
     );
-    expect(wrapper.findComponent(FileSelector).props("multiple")).toBe(true);
+    expect(getFileInput(wrapper).attributes("multiple")).toBeDefined();
+    expect(wrapper.findComponent(KdsButton).props("label")).toBe(
+      "Select files",
+    );
   });
 
   it("calls handleChange when files are selected", async () => {
     const mockFile = createMockFile("test.txt");
-    wrapper
-      .findComponent(FileSelector)
-      .vm.$emit("update:modelValue", [mockFile]);
-    await nextTick();
+    const fileInput = getFileInput(wrapper);
+
+    const mockFileList = {
+      0: mockFile,
+      length: 1,
+      item: (index: number) => (index === 0 ? mockFile : null),
+    };
+
+    Object.defineProperty(fileInput.element, "files", {
+      value: mockFileList,
+      writable: true,
+    });
+
+    await fileInput.trigger("input");
+
     expect(handleChange).toHaveBeenCalledWith(path, [mockFile]);
   });
 
@@ -115,42 +135,50 @@ describe("FileUploadControl", () => {
       FileUploadControl,
       { props },
     );
+
     const mockFiles = [
       createMockFile("file1.txt"),
       createMockFile("file2.txt"),
     ];
-    wrapper
-      .findComponent(FileSelector)
-      .vm.$emit("update:modelValue", mockFiles);
-    await nextTick();
+    const fileInput = getFileInput(wrapper);
+
+    const mockFileList = {
+      0: mockFiles[0],
+      1: mockFiles[1],
+      length: 2,
+      item: (index: number) => mockFiles[index] ?? null,
+    };
+
+    Object.defineProperty(fileInput.element, "files", {
+      value: mockFileList,
+      writable: true,
+    });
+
+    await fileInput.trigger("input");
+
     expect(handleChange).toHaveBeenCalledWith(path, mockFiles);
   });
 
-  it("sets initial files from control data", async () => {
+  it("displays initial filename from control data", async () => {
     const initialFiles = [createMockFile("initial.txt")];
     props.control.data = initialFiles;
     const { wrapper } = await mountJsonFormsControlLabelContent(
       FileUploadControl,
       { props },
     );
-    expect(wrapper.findComponent(FileSelector).props("modelValue")).toEqual(
-      initialFiles,
-    );
+    expect(getFilenameSpan(wrapper).text()).toBe("initial.txt");
   });
 
-  it("does not call handleChange when files have not changed", async () => {
-    const mockFile = createMockFile("test.txt");
-    props.control.data = [mockFile];
-    const { wrapper, handleChange } = await mountJsonFormsControlLabelContent(
+  it("displays multiple filenames separated by comma", async () => {
+    const initialFiles = [
+      createMockFile("file1.txt"),
+      createMockFile("file2.txt"),
+    ];
+    props.control.data = initialFiles;
+    const { wrapper } = await mountJsonFormsControlLabelContent(
       FileUploadControl,
       { props },
     );
-
-    // Emit the same file again
-    wrapper
-      .findComponent(FileSelector)
-      .vm.$emit("update:modelValue", [mockFile]);
-    await nextTick();
-    expect(handleChange).not.toHaveBeenCalled();
+    expect(getFilenameSpan(wrapper).text()).toBe("file1.txt, file2.txt");
   });
 });

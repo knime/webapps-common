@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
-import { cloneDeep, isEqual } from "lodash-es";
+import { computed, ref } from "vue";
+import { cloneDeep } from "lodash-es";
 
-import { FileSelector } from "@knime/components";
+import { KdsButton } from "@knime/kds-components";
 
 import type { VueControlPropsForLabelContent } from "../higherOrderComponents";
 
@@ -22,22 +22,64 @@ const multiple = computed(
   () => props.control.uischema.options?.multiple ?? false,
 );
 
-watch(
-  files,
-  (newValue, oldValue) => {
-    if (!isEqual(newValue, oldValue)) {
-      props.handleChange(props.control.path, Array.from(newValue));
-    }
-  },
-  { deep: true },
-);
+const fileSelector = ref<HTMLInputElement | null>(null);
+
+const displayedFilename = computed(() => {
+  return (
+    files.value?.map?.(({ name }) => name).join(", ") || "No file selected"
+  );
+});
+
+const selectFileText = computed(() => {
+  return `Select file${multiple.value ? "s" : ""}`;
+});
+
+const openFileSelector = () => {
+  fileSelector.value?.click();
+};
+
+const onSelect = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  if (target.files) {
+    files.value = Array.from(target.files);
+    props.handleChange(props.control.path, Array.from(files.value));
+  }
+};
 </script>
 
 <template>
-  <FileSelector
-    v-model="files"
-    :accepted-file-types="acceptedFileTypes"
-    :multiple="multiple"
-    :label="control.label"
-  />
+  <div class="wrapper">
+    <KdsButton
+      class="file-select-button"
+      :label="selectFileText"
+      leading-icon="search"
+      variant="outlined"
+      :disabled="disabled"
+      @click="openFileSelector"
+    />
+    <span class="filename">{{ displayedFilename }}</span>
+    <input
+      :id="labelForId"
+      ref="fileSelector"
+      :aria-label="control.label"
+      type="file"
+      :accept="acceptedFileTypes"
+      :multiple="multiple"
+      :disabled="disabled"
+      hidden
+      @input="onSelect"
+    />
+  </div>
 </template>
+
+<style lang="postcss" scoped>
+.file-select-button {
+  display: inline;
+}
+
+.filename {
+  margin-left: 10px;
+  font: var(--kds-font-base-title-small);
+  color: var(--kds-color-text-and-icon-subtle);
+}
+</style>
