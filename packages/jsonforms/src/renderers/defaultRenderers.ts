@@ -92,13 +92,12 @@ export const controls = {
   gridSelectionRenderer,
   timeframesRenderer,
   quantityRenderer,
+  usernameRenderer,
+  passwordRenderer,
   // without label:
   simpleButtonRenderer,
   textMessageRenderer,
   linkRenderer,
-  // kds label
-  usernameRenderer,
-  passwordRenderer,
   /**
    * Containing an optional checkbox. Keep Label in control until we have a framework for that.
    */
