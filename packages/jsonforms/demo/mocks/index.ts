@@ -1,14 +1,17 @@
+import type { ComputedRef } from "vue";
 import type { JsonSchema, UISchemaElement } from "@jsonforms/core";
 
 import googleAiStudio from "./aiModels/googleAiStudio.mock.json";
 import adHocExecution from "./deployments/adHocExecution.mock.json";
+import executionContextResources from "./resources/executionContextResources.mock";
+import manageTeamResources from "./resources/teamResources.mock.json";
 import fileUpload from "./secrets/fileUpload.mock.json";
 import genericOAuth2UsernamePassword from "./secrets/genericOAuth2UsernamePassword.mock.json";
 
 export interface MockSchema {
   id: string;
   name: string;
-  schema: JsonSchema;
+  schema: JsonSchema | ComputedRef<JsonSchema>;
   uischema: UISchemaElement;
   data: unknown;
 }
@@ -41,5 +44,19 @@ export const mocks: MockSchema[] = [
     schema: fileUpload.schema as JsonSchema,
     uischema: fileUpload.uiSchema as UISchemaElement,
     data: fileUpload.data,
+  },
+  {
+    id: "manageTeamResources",
+    name: "Manage Team Resources",
+    schema: manageTeamResources.schema as JsonSchema,
+    uischema: manageTeamResources.uiSchema as UISchemaElement,
+    data: manageTeamResources.data,
+  },
+  {
+    id: "executionContextResources",
+    name: "Execution Context Resources",
+    schema: executionContextResources.schema,
+    uischema: executionContextResources.uiSchema as UISchemaElement,
+    data: executionContextResources.data,
   },
 ];

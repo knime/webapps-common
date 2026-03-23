@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, isRef, ref } from "vue";
+import type { JsonSchema } from "@jsonforms/core";
 
 import { KdsDropdown } from "@knime/kds-components";
 
@@ -11,10 +12,22 @@ import type { MockSchema } from "./mocks";
 const mockSchemas: MockSchema[] = mocks;
 const selected = ref<MockSchema>(mocks[0]);
 
+const schema = computed(() => {
+  const s = selected.value?.schema;
+  return (isRef(s) ? s.value : s) as JsonSchema;
+});
+
 function onSchemaSelect(id: string) {
   const found = mockSchemas.find((m) => m.id === id);
   if (found) {
     selected.value = found;
+  }
+}
+
+function onFormChange({ data }: { data: unknown }) {
+  // Sync form changes back to the mock's reactive data (for computed schemas)
+  if (selected.value?.data && typeof data === "object" && data !== null) {
+    Object.assign(selected.value.data, data);
   }
 }
 </script>
@@ -36,10 +49,11 @@ function onSchemaSelect(id: string) {
       <JsonFormsDialog
         v-if="selected"
         :key="selected.name"
-        :schema="selected.schema"
+        :schema="schema"
         :uischema="selected.uischema"
         :data="selected.data"
         :renderers="defaultRenderers"
+        @change="onFormChange"
       />
       <p v-else class="placeholder">Select a schema to preview the form.</p>
     </div>
