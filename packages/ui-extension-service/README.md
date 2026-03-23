@@ -3,7 +3,6 @@
 [![Jenkins](https://jenkins.knime.com/buildStatus/icon?job=knime-ui-extension-service%2Fmaster)](https://jenkins.knime.com/job/knime-ui-extension-service/job/master/)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=knime_knime-ui-extension-service&metric=alert_status&token=886baf171d8f9be40b915343f94c7fcfacbd6196)](https://sonarcloud.io/summary/new_code?id=knime_knime-ui-extension-service)
 
-
 This package is maintained by the [KNIME UI Extensions Development Team](mailto:team-ui-extensions@knime.com).
 
 This repository contains the frontend wrapper that implements adapter pattern between data providers (back-end services) and
