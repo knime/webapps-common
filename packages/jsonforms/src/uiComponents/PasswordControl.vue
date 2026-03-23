@@ -3,11 +3,11 @@ import { computed, onMounted, ref } from "vue";
 
 import { KdsPasswordInput } from "@knime/kds-components";
 
-import type { VueControlProps } from "../higherOrderComponents";
+import type { VueControlPropsForLabelContent } from "../higherOrderComponents";
 
 const MAGIC_PASSWORD = "*************";
 
-const props = defineProps<VueControlProps<string>>();
+const props = defineProps<VueControlPropsForLabelContent<string>>();
 
 const initialPassword = ref("");
 const handleMagicPassword = computed(
@@ -59,8 +59,6 @@ onMounted(() => {
 <template>
   <KdsPasswordInput
     :model-value="password"
-    :label="control.label"
-    :description="control.description"
     :show-visibility-toggle="showPasswordToggle"
     :placeholder="passwordPlaceholder"
     :variant="variant"

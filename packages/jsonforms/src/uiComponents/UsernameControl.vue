@@ -3,9 +3,9 @@ import { ref } from "vue";
 
 import { KdsUsernameInput } from "@knime/kds-components";
 
-import type { VueControlProps } from "../higherOrderComponents";
+import type { VueControlPropsForLabelContent } from "../higherOrderComponents";
 
-const props = defineProps<VueControlProps<string>>();
+const props = defineProps<VueControlPropsForLabelContent<string>>();
 
 const username = ref(props.control.data);
 
@@ -17,8 +17,6 @@ const onChange = (value: string) => {
 <template>
   <KdsUsernameInput
     :model-value="username"
-    :label="control.label"
-    :description="control.description"
     :disabled="disabled"
     @update:model-value="onChange"
   />

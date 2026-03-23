@@ -1,3 +1,4 @@
+import { mapControls, withDescriptionButton } from "../higherOrderComponents";
 import { controlToRenderer } from "../higherOrderComponents/control/controlToRenderer";
 import type { VueControlRenderer } from "../higherOrderComponents/control/types";
 import type { PerformExternalValidation } from "../higherOrderComponents/control/validation/types";
@@ -91,13 +92,12 @@ export const controls = {
   gridSelectionRenderer,
   timeframesRenderer,
   quantityRenderer,
+  usernameRenderer,
+  passwordRenderer,
   // without label:
   simpleButtonRenderer,
   textMessageRenderer,
   linkRenderer,
-  // kds label
-  usernameRenderer,
-  passwordRenderer,
   /**
    * Containing an optional checkbox. Keep Label in control until we have a framework for that.
    */
@@ -112,6 +112,8 @@ export const controls = {
   executorMemoryResourceRenderer,
   ...fallbackControlRenderers,
 } satisfies Record<string, VueControlRenderer>;
+
+const mappedControls = mapControls(withDescriptionButton)(controls);
 
 export const layouts = {
   horizontalLayoutRenderer,
@@ -154,6 +156,6 @@ export const toRenderers = ({
 
 export const defaultRenderers: readonly NamedRenderer[] = toRenderers({
   renderers: [simpleArrayLayoutRenderer],
-  controls: Object.values(controls),
+  controls: Object.values(mappedControls),
   layouts: Object.values(layouts),
 });
