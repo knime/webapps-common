@@ -1,14 +1,9 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { nextTick, ref } from "vue";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { ref } from "vue";
+import { flushPromises } from "@vue/test-utils";
 import { useLocalStorage } from "@vueuse/core";
 
-import {
-  currentlyVisibleHint,
-  initialized,
-  useHintState,
-} from "../useHintState";
-
-import mountComposable from "./mountComposable";
+import { initialize, reset, useHintState } from "../useHintState";
 
 vi.mock("@vueuse/core", async () => {
   const actual = await vi.importActual("@vueuse/core");
@@ -19,181 +14,221 @@ vi.mock("@vueuse/core", async () => {
 });
 
 describe("useHintState", () => {
-  beforeEach(() => {
+  afterEach(() => {
     vi.resetAllMocks();
-    initialized.value = false;
-    currentlyVisibleHint.value = null;
+    reset();
   });
 
-  const doMount = ({
-    isAllSkipped = false,
-    isAlreadyInitialized = false,
-    completedHints = [],
-    currentlyVisible = null,
-  }: {
-    isAllSkipped?: boolean;
-    isAlreadyInitialized?: boolean;
-    isHintCompleted?: boolean;
-    completedHints?: string[];
-    currentlyVisible?: string | null;
-  } = {}) => {
-    if (isAlreadyInitialized) {
-      initialized.value = true;
-    }
-    if (currentlyVisibleHint) {
-      currentlyVisibleHint.value = currentlyVisible;
-    }
-
-    const state = ref({
-      completedHints,
-      skipAll: isAllSkipped,
-    });
-
-    const getRemoteHintStateMock = vi.fn().mockResolvedValue({});
-    const setRemoteHintStateMock = vi.fn();
-
-    // @ts-expect-error Property 'mockReturnValue' does not exist on type
-    useLocalStorage.mockReturnValue(state);
-
-    const { getComposableResult } = mountComposable({
-      composable: useHintState,
-      composableProps: {
-        storageKey: "onboarding.hints",
-        uniqueUserId: "",
-        getRemoteHintState: getRemoteHintStateMock,
-        setRemoteHintState: setRemoteHintStateMock,
-      },
-    });
-
-    return {
-      getComposableResult,
-      state,
-      getRemoteHintStateMock,
-      setRemoteHintStateMock,
-    };
+  const mockLocalState = (state: {
+    completedHints: string[];
+    isAllSkipped: boolean;
+  }) => {
+    (useLocalStorage as any).mockReturnValue(ref(state));
   };
 
-  it("initializes state", async () => {
-    const { getComposableResult, getRemoteHintStateMock } = doMount({
-      isAlreadyInitialized: false,
-      isAllSkipped: false,
+  describe("initialization", () => {
+    it("initializes", async () => {
+      const setRemoteHintState = vi.fn();
+      const getRemoteHintState = vi.fn();
+      const { isInitialized } = useHintState();
+
+      expect(isInitialized.value).toBe(false);
+      await initialize({
+        storageKey: "my-key",
+        uniqueUserId: "my-user",
+        setRemoteHintState,
+        getRemoteHintState,
+      });
+
+      expect(isInitialized.value).toBe(true);
     });
-    const { initialize, isInitialized } = getComposableResult();
 
-    await initialize();
+    it("does not initialize state when already initialized", async () => {
+      const setRemoteHintState = vi.fn();
+      const getRemoteHintState = vi.fn();
 
-    expect(getRemoteHintStateMock).toHaveBeenCalled();
-    expect(isInitialized.value).toBe(true);
+      await initialize({
+        storageKey: "my-key",
+        uniqueUserId: "my-user",
+        setRemoteHintState,
+        getRemoteHintState,
+      });
+
+      await initialize({
+        storageKey: "my-key",
+        uniqueUserId: "my-user",
+        setRemoteHintState,
+        getRemoteHintState,
+      });
+
+      expect(getRemoteHintState).toHaveBeenCalledOnce();
+    });
   });
 
   it("merges completedHints from remote state", async () => {
-    const { getComposableResult, getRemoteHintStateMock } = doMount({
-      isAlreadyInitialized: false,
-      isAllSkipped: false,
+    mockLocalState({
       completedHints: ["something"],
+      isAllSkipped: false,
     });
 
-    getRemoteHintStateMock.mockResolvedValue({
+    const setRemoteHintState = vi.fn();
+    const getRemoteHintState = vi.fn().mockResolvedValue({
       skipAll: true,
       completedHints: ["another", "more"],
     });
-    const { initialize, isInitialized, isCompleted, isAllSkipped } =
-      getComposableResult();
 
-    await initialize();
+    await initialize({
+      storageKey: "my-key",
+      uniqueUserId: "my-user",
+      setRemoteHintState,
+      getRemoteHintState,
+    });
 
-    expect(getRemoteHintStateMock).toHaveBeenCalled();
-    expect(isInitialized.value).toBe(true);
+    const { isCompleted, isAllSkipped } = useHintState();
+
+    expect(getRemoteHintState).toHaveBeenCalled();
     expect(isCompleted("something")).toBe(true);
     expect(isCompleted("another")).toBe(true);
     expect(isCompleted("more")).toBe(true);
     expect(isAllSkipped.value).toBe(true);
   });
 
-  it("does not initialize state when already initialized", async () => {
-    const { getComposableResult, getRemoteHintStateMock } = doMount({
-      isAlreadyInitialized: true,
-      isAllSkipped: false,
-    });
-    const { initialize } = getComposableResult();
-
-    await initialize();
-
-    expect(getRemoteHintStateMock).not.toHaveBeenCalled();
-  });
-
-  it("does not initialize store when skip all hints is true", async () => {
-    const { getComposableResult, getRemoteHintStateMock } = doMount({
-      isAlreadyInitialized: false,
-      isAllSkipped: true,
-    });
-    const { initialize, isInitialized } = getComposableResult();
-
-    await initialize();
-
-    expect(getRemoteHintStateMock).not.toHaveBeenCalled();
-    expect(isInitialized.value).toBe(false);
-  });
-
   it("can complete hint", async () => {
     const hintKey = "myHint";
-    const { getComposableResult, state, setRemoteHintStateMock } = doMount({
+    mockLocalState({
+      completedHints: [],
       isAllSkipped: false,
-      isAlreadyInitialized: true,
-      currentlyVisible: hintKey,
+    });
+
+    const setRemoteHintState = vi.fn();
+    const getRemoteHintState = vi.fn().mockResolvedValue({
+      skipAll: false,
       completedHints: [],
     });
-    const { completeHint } = getComposableResult();
+
+    await initialize({
+      storageKey: "my-key",
+      uniqueUserId: "my-user",
+      setRemoteHintState,
+      getRemoteHintState,
+    });
+
+    const { isCompleted, completeHint, setCurrentlyVisibleHint } =
+      useHintState();
+    setCurrentlyVisibleHint(hintKey);
+
+    expect(isCompleted(hintKey)).toBe(false);
 
     completeHint(hintKey);
-    await nextTick();
+    await flushPromises();
+    expect(isCompleted(hintKey)).toBe(true);
 
-    expect(state.value.completedHints).toContain(hintKey);
-    expect(setRemoteHintStateMock).toHaveBeenCalledWith(
-      "onboarding.hints",
-      state.value,
-    );
+    expect(setRemoteHintState).toHaveBeenCalledWith("my-key.my-user", {
+      completedHints: ["myHint"],
+      skipAll: false,
+    });
   });
 
-  it("does not complete hint when already completed", () => {
+  it("does not complete hint when already completed", async () => {
     const hintKey = "myHint";
-    const { getComposableResult, state } = doMount({
-      completedHints: [hintKey],
+    mockLocalState({
+      completedHints: [],
+      isAllSkipped: false,
     });
-    const { completeHint } = getComposableResult();
+
+    const setRemoteHintState = vi.fn();
+    const getRemoteHintState = vi.fn().mockResolvedValue({
+      skipAll: false,
+      completedHints: [],
+    });
+
+    await initialize({
+      storageKey: "my-key",
+      uniqueUserId: "my-user",
+      setRemoteHintState,
+      getRemoteHintState,
+    });
+
+    const { completeHint, setCurrentlyVisibleHint } = useHintState();
+    setCurrentlyVisibleHint(hintKey);
 
     completeHint(hintKey);
+    completeHint(hintKey);
+    completeHint(hintKey);
+    await flushPromises();
 
-    expect(state.value.completedHints).toStrictEqual([hintKey]);
+    expect(setRemoteHintState).toHaveBeenCalledExactlyOnceWith(
+      "my-key.my-user",
+      {
+        completedHints: ["myHint"],
+        skipAll: false,
+      },
+    );
   });
 
   it("can skip all hints", async () => {
-    const { getComposableResult, setRemoteHintStateMock, state } = doMount({
-      isAlreadyInitialized: true,
+    mockLocalState({
+      completedHints: [],
       isAllSkipped: false,
     });
-    const { setSkipAll, isAllSkipped } = getComposableResult();
+
+    const setRemoteHintState = vi.fn();
+    const getRemoteHintState = vi.fn().mockResolvedValue({
+      skipAll: false,
+      completedHints: [],
+    });
+
+    await initialize({
+      storageKey: "my-key",
+      uniqueUserId: "my-user",
+      setRemoteHintState,
+      getRemoteHintState,
+    });
+
+    const { setSkipAll } = useHintState();
 
     setSkipAll();
-
-    expect(isAllSkipped.value).toBe(true);
-    await nextTick();
-    expect(setRemoteHintStateMock).toHaveBeenCalledWith(
-      "onboarding.hints",
-      state.value,
+    await flushPromises();
+    expect(setRemoteHintState).toHaveBeenCalledExactlyOnceWith(
+      "my-key.my-user",
+      expect.objectContaining({
+        skipAll: true,
+      }),
     );
   });
 
-  it("can set currently visible hint", () => {
-    const hintKey = "myHint";
-    const { getComposableResult } = doMount();
-    const { setCurrentlyVisibleHint, currentlyVisibleHint } =
-      getComposableResult();
+  it("can complete without visibility", async () => {
+    mockLocalState({
+      completedHints: [],
+      isAllSkipped: false,
+    });
 
-    setCurrentlyVisibleHint(hintKey);
+    const setRemoteHintState = vi.fn();
+    const getRemoteHintState = vi.fn().mockResolvedValue({
+      skipAll: false,
+      completedHints: [],
+    });
 
-    expect(currentlyVisibleHint.value).toEqual(hintKey);
+    await initialize({
+      storageKey: "my-key",
+      uniqueUserId: "my-user",
+      setRemoteHintState,
+      getRemoteHintState,
+    });
+
+    const { isCompleted, completeHintWithoutVisibility, currentlyVisibleHint } =
+      useHintState();
+
+    expect(currentlyVisibleHint.value).toBeNull();
+
+    completeHintWithoutVisibility("foo");
+
+    await flushPromises();
+    expect(isCompleted("foo")).toBe(true);
+
+    expect(setRemoteHintState).toHaveBeenCalledWith("my-key.my-user", {
+      completedHints: ["foo"],
+      skipAll: false,
+    });
   });
-
-  it.todo("tests for completeHintWithoutVisibility");
 });

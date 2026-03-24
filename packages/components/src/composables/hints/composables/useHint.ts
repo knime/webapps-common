@@ -3,7 +3,6 @@ import {
   type Ref,
   type WatchStopHandle,
   computed,
-  onBeforeMount,
   onBeforeUnmount,
   readonly,
   ref,
@@ -12,9 +11,10 @@ import {
 } from "vue";
 
 import type { HintConfiguration, HintState, MaybeElement } from "../types";
+import { logger } from "../util/logger";
 
 import { useHintProvider } from "./useHintProvider";
-import { useHintState } from "./useHintState";
+import { initialize, useHintState } from "./useHintState";
 
 type UseHintSetupOptions = {
   /** the hints */
@@ -57,17 +57,23 @@ export const setupHints = (
     getRemoteHintState,
     setRemoteHintState,
   };
+
+  if (skipHints) {
+    return;
+  }
+
+  initialize({
+    getRemoteHintState,
+    setRemoteHintState,
+    storageKey,
+    uniqueUserId,
+  }).catch((err) => {
+    logger().error("Initialization failure", err);
+  });
 };
 
 export const useHint = ({ hintSetupId = "default" } = {}) => {
-  const {
-    hints,
-    uniqueUserId,
-    storageKey,
-    skipHints,
-    getRemoteHintState,
-    setRemoteHintState,
-  } = hintSetup[hintSetupId];
+  const { hints, skipHints } = hintSetup[hintSetupId];
 
   if (unref(skipHints)) {
     return {
@@ -80,7 +86,6 @@ export const useHint = ({ hintSetupId = "default" } = {}) => {
   }
 
   const {
-    initialize,
     isInitialized,
     completeHint,
     completeHintWithoutVisibility,
@@ -89,18 +94,9 @@ export const useHint = ({ hintSetupId = "default" } = {}) => {
     setSkipAll,
     currentlyVisibleHint,
     setCurrentlyVisibleHint,
-  } = useHintState({
-    uniqueUserId,
-    getRemoteHintState,
-    setRemoteHintState,
-    storageKey,
-  });
+  } = useHintState();
 
   const { createHintData } = useHintProvider();
-
-  onBeforeMount(() => {
-    initialize();
-  });
 
   const getHintConfiguration = (hintId: string) => {
     return hints[hintId] || null;
@@ -125,11 +121,8 @@ export const useHint = ({ hintSetupId = "default" } = {}) => {
     const allDependencyHintsCompleted = dependsOn.every((dependencyHint) =>
       isCompleted(dependencyHint),
     );
-    if (!allDependencyHintsCompleted) {
-      return false;
-    }
 
-    return true;
+    return allDependencyHintsCompleted;
   };
 
   const completeHintComponentCallbacks: Record<string, () => void> = {};
@@ -140,6 +133,7 @@ export const useHint = ({ hintSetupId = "default" } = {}) => {
 
   const visibilityUnWatchCallbacks: Array<() => void> = [];
   const destroyHintCallbacks: Array<() => void> = [];
+
   onBeforeUnmount(() => {
     visibilityUnWatchCallbacks.forEach((callback) => callback());
     destroyHintCallbacks.forEach((callback) => callback());
@@ -151,6 +145,8 @@ export const useHint = ({ hintSetupId = "default" } = {}) => {
     referenceSelector,
     referenceElement,
     isVisibleCondition = ref(true),
+    onShow,
+    onDismiss,
   }: {
     hintId: string;
     /** custom selector - takes precedence over the configured one */
@@ -158,6 +154,14 @@ export const useHint = ({ hintSetupId = "default" } = {}) => {
     /** element reference - if given this is used over any selector */
     referenceElement?: Ref<MaybeElement>;
     isVisibleCondition?: Ref<boolean>;
+    /**
+     * Callback triggered when the hint is first displayed
+     */
+    onShow?: (hintId: string) => void;
+    /**
+     * Callback triggered when the hint is dismissed by the user
+     */
+    onDismiss?: (hintId: string) => void;
   }) => {
     const hintConfiguration = getHintConfiguration(hintId);
 
@@ -200,6 +204,7 @@ export const useHint = ({ hintSetupId = "default" } = {}) => {
         unWatchVisibility();
         setHintCompleted();
         closeHint(hintId);
+        onDismiss?.(hintId);
       },
       onSkipAllHints: () => {
         setSkipAll();
@@ -215,15 +220,22 @@ export const useHint = ({ hintSetupId = "default" } = {}) => {
       closeHint(hintId);
     };
 
-    const isVisible = computed(
-      () => checkHintVisibilityConstraints(hintId) && isVisibleCondition.value,
-    );
+    const isVisible = computed(() => {
+      return checkHintVisibilityConstraints(hintId) && isVisibleCondition.value;
+    });
+
     unWatchVisibility = watch(
       isVisible,
       (value) => {
+        logger().debug("Updating visibility for hint", {
+          hintId,
+          visible: value,
+        });
+
         if (value) {
           setCurrentlyVisibleHint(hintId);
           showHint(hintId);
+          onShow?.(hintId);
           destroyHintCallbacks.unshift(() => closeHint(hintId));
         }
       },
