@@ -134,18 +134,18 @@ const returnLabel = (index: number) =>
     display: flex;
     align-items: baseline;
     justify-content: space-between;
-    margin-top: var(--space-8);
-    margin-bottom: var(--space-8);
+    margin-top: var(--kds-spacing-container-0-5x);
+    margin-bottom: var(--kds-spacing-container-0-5x);
   }
 
   & .element {
     display: flex;
-    gap: var(--space-4);
+    gap: var(--kds-spacing-container-0-25x);
     align-items: end;
-    margin-bottom: var(--space-16);
+    margin-bottom: var(--kds-spacing-container-1x);
 
     & .horizontal + .item-controls {
-      margin-bottom: var(--space-4);
+      margin-bottom: var(--kds-spacing-container-0-25x);
     }
 
     & .form-component {

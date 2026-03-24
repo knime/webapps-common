@@ -6,8 +6,8 @@ import {
   type VueControlTestProps,
   getControlBase,
   mountJsonFormsControlLabelContent,
-} from "../../../../testUtils/component";
-import TeamAndSpacesControl from "../../../uiComponents/TeamAndSpacesControl.vue";
+} from "../../../testUtils/component";
+import TeamAndSpacesControl from "../TeamAndSpacesControl.vue";
 
 const possibleTeamsMock = [
   {
