@@ -26,6 +26,7 @@ defineProps<VueLayoutProps>();
 .horizontal {
   display: inline-flex;
   gap: 5px;
+  align-items: end;
   justify-content: space-between;
   width: 100%;
 }
