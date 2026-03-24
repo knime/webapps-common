@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-import { KdsDropdown } from "@knime/kds-components";
+import {
+  KdsDropdown,
+  type KdsDropdownOption,
+  type KdsDropdownOptionAccessory,
+} from "@knime/kds-components";
 
 import type { LoadingDropdownProps } from "./types/LoadingDropdownProps";
 
@@ -10,37 +14,23 @@ const emit = defineEmits<{
   "update:modelValue": [value: string];
 }>();
 
-const isLoading = computed(() => props.possibleValues === null);
-
-const placeholderText = computed(() => {
-  const { possibleValues } = props;
-  if (possibleValues === null) {
-    return "Loading";
-  }
-  return possibleValues.length > 0 ? "No value selected" : "No values present";
-});
-
 const asyncValue = computed(() => {
   return props.possibleValues === null ? "" : props.modelValue;
 });
+
+const isLoading = computed(() => props.possibleValues === null);
 
 const isPartiallyTyped = computed(() =>
   props.possibleValues?.some((value) => value.type !== undefined),
 );
 
-const disabledOrNoOptions = computed(
-  () =>
-    props.disabled ||
-    (props.possibleValues !== null && props.possibleValues.length === 0),
-);
-
-const possibleValues = computed(() => {
+const possibleValues = computed<KdsDropdownOption[]>(() => {
   if (props.possibleValues === null) {
     return [];
   }
-  const result = [];
+  const result: KdsDropdownOption[] = [];
   for (const value of props.possibleValues) {
-    if (!value.id || !value.text) {
+    if (!value.text) {
       continue;
     }
     result.push({
@@ -48,15 +38,29 @@ const possibleValues = computed(() => {
       text: value.text,
       disabled: value.disabled,
       accessory: isPartiallyTyped.value
-        ? {
+        ? ({
             type: "dataType" as const,
             name: value.type?.id ?? "missing_type",
-          }
+          } as KdsDropdownOptionAccessory)
         : undefined,
     });
   }
   return result;
 });
+
+const placeholderText = computed(() => {
+  if (isLoading.value) {
+    return "Loading";
+  }
+
+  return possibleValues.value.length > 0
+    ? "No value selected"
+    : "No values present";
+});
+
+const disabledOrNoOptions = computed(
+  () => props.disabled || possibleValues.value.length === 0,
+);
 
 const onUpdateModelValue = (value: string | null) => {
   emit("update:modelValue", value ?? "");
