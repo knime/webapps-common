@@ -1,5 +1,12 @@
 # @knime/json-forms
 
+## 1.19.6
+
+### Patch Changes
+
+- 53d7e59: Reduce button size of SimpleButtonControl
+- 469a2da: Filter empty values for dropdowns
+
 ## 1.19.5
 
 ### Patch Changes
