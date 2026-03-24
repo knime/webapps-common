@@ -4,6 +4,7 @@ import { type VueWrapper, mount } from "@vue/test-utils";
 import { KdsDropdown } from "@knime/kds-components";
 
 import { type VueControlTestProps } from "../../../../testUtils";
+import type { TypedIdAndText } from "../../../types/ChoicesUiSchema";
 import LoadingDropdown from "../LoadingDropdown.vue";
 
 describe("LoadingDropdown", () => {
@@ -135,5 +136,37 @@ describe("LoadingDropdown", () => {
     wrapper.findComponent(KdsDropdown).vm.$emit("update:modelValue", null);
 
     expect(wrapper.emitted("update:modelValue")).toEqual([[""]]);
+  });
+
+  it("filters out items with missing text", async () => {
+    await wrapper.setProps({
+      possibleValues: [
+        { id: "valid", text: "Valid" },
+        { id: "", text: "Empty ID" },
+        { id: "no-text", text: "" },
+        { id: "also-valid", text: "Also Valid" },
+      ] as TypedIdAndText[],
+    });
+
+    expect(wrapper.findComponent(KdsDropdown).props("possibleValues")).toEqual([
+      {
+        id: "valid",
+        text: "Valid",
+        disabled: undefined,
+        accessory: undefined,
+      },
+      {
+        id: "",
+        text: "Empty ID",
+        disabled: undefined,
+        accessory: undefined,
+      },
+      {
+        id: "also-valid",
+        text: "Also Valid",
+        disabled: undefined,
+        accessory: undefined,
+      },
+    ]);
   });
 });
