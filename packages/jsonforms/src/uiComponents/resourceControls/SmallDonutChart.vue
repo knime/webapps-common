@@ -87,13 +87,7 @@ const disabled = computed(() => !Number.isFinite(maxValue));
 
 <template>
   <div class="donut-container">
-    <svg
-      v-if="disabled"
-      :height="diameter"
-      :width="diameter"
-      :viewBox="viewBox"
-      class="donut-chart"
-    >
+    <svg v-if="disabled" :viewBox="viewBox" class="donut-chart">
       <circle
         class="disabled-circle"
         :cx="radius"
@@ -111,13 +105,7 @@ const disabled = computed(() => !Number.isFinite(maxValue));
         fill="transparent"
       />
     </svg>
-    <svg
-      v-else
-      :height="diameter"
-      :width="diameter"
-      :viewBox="viewBox"
-      class="donut-chart"
-    >
+    <svg v-else :viewBox="viewBox" class="donut-chart">
       <circle
         class="background-circle"
         :cx="radius"
@@ -157,30 +145,31 @@ const disabled = computed(() => !Number.isFinite(maxValue));
 .donut-container {
   position: relative;
 
-  /* use kds tokens when available */
   & .background-circle {
-    stroke: var(--theme-donut-chart-background-color);
+    stroke: var(--kds-color-background-static-chart-0);
   }
 
   & .primary-segment {
-    stroke: var(--knime-yellow);
+    stroke: var(--kds-color-background-static-chart-1);
   }
 
   & .secondary-segment {
-    stroke: var(--knime-aquamarine-dark);
+    stroke: var(--kds-color-background-static-chart-2);
   }
 
   & .disabled-circle {
-    stroke: var(--theme-donut-chart-disabled-color);
+    stroke: var(--kds-color-background-static-chart-0);
   }
 
   & .disabled-inner-circle {
-    stroke: var(--theme-donut-chart-disabled-color);
+    stroke: var(--kds-color-background-static-chart-0);
   }
 }
 
 svg {
   display: block;
+  width: var(--kds-dimension-component-width-2-75x);
+  height: var(--kds-dimension-component-height-2-75x);
 
   & circle.value-wedge {
     &.animate {
