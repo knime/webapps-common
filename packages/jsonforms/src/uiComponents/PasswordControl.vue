@@ -34,7 +34,9 @@ const passwordPlaceholder = computed(() =>
     : props.control.uischema.options?.passwordPlaceholder ?? "Password",
 );
 
-const showPasswordToggle = computed(() => password.value !== "");
+const showPasswordToggle = computed(
+  () => password.value !== "" && !props.disabled,
+);
 
 const onChange = (value: string) => {
   // The magic password is a 'decrypted' string sent from the backend if the password is prefilled.
@@ -62,6 +64,7 @@ onMounted(() => {
     :show-visibility-toggle="showPasswordToggle"
     :placeholder="passwordPlaceholder"
     :variant="variant"
+    :disabled="disabled"
     @update:model-value="onChange"
   />
 </template>
