@@ -11,7 +11,7 @@ import { nextTick } from "vue";
 import type { VueWrapper } from "@vue/test-utils";
 import { flushPromises } from "@vue/test-utils";
 
-import { KdsDropdown, KdsTextInput } from "@knime/kds-components";
+import { KdsDropdown } from "@knime/kds-components";
 
 import {
   type VueControlTestProps,
@@ -99,20 +99,6 @@ describe("DropdownControl", () => {
     expect(wrapper.findComponent(LoadingDropdown).props("modelValue")).toBe(
       props.control.data,
     );
-  });
-
-  it("renders empty string when control data is null and allowNewValue is true", async () => {
-    props.control.data = null;
-    props.control.uischema.options = {
-      ...props.control.uischema.options,
-      allowNewValue: true,
-      possibleValues: [],
-    };
-    const { wrapper } = mountJsonFormsControlLabelContent(DropdownControl, {
-      props,
-    });
-    await flushPromises();
-    expect(wrapper.findComponent(KdsTextInput).vm.modelValue).toBe("");
   });
 
   it("sets placeholder text correctly if possible values are not yet available", async () => {
@@ -206,19 +192,5 @@ describe("DropdownControl", () => {
     expect(
       wrapper.findComponent(LoadingDropdown).props("possibleValues"),
     ).not.toBeNull();
-  });
-
-  it("renders InputField if allowNewValue is true and there are no suggestions", async () => {
-    props.control.uischema.options = {
-      ...props.control.uischema.options,
-      allowNewValue: true,
-      possibleValues: [],
-    };
-    const { wrapper } = mountJsonFormsControlLabelContent(DropdownControl, {
-      props,
-    });
-    await flushPromises();
-    expect(wrapper.findComponent(LoadingDropdown).exists()).toBe(false);
-    expect(wrapper.findComponent(KdsTextInput).exists()).toBe(true);
   });
 });

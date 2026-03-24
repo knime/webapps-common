@@ -121,6 +121,32 @@ describe("TextControl", () => {
     );
   });
 
+  it("passes suggestions from provider", async () => {
+    props.control.uischema.providedOptions = ["suggestions"];
+
+    let provideSuggestions: (suggestions: string[]) => void;
+    const addStateProviderListener = vi.fn((_id, callback) => {
+      provideSuggestions = callback;
+    });
+
+    const { wrapper } = mountJsonFormsControlLabelContent(TextControl, {
+      props,
+      provide: { addStateProviderListener },
+    });
+    const suggestions = ["option1", "option2", "option3"];
+    provideSuggestions!(suggestions);
+    await flushPromises();
+    expect(wrapper.findComponent(KdsTextInput).props("suggestions")).toEqual(
+      suggestions,
+    );
+  });
+
+  it("does not pass suggestions when not provided", () => {
+    expect(
+      wrapper.findComponent(KdsTextInput).props("suggestions"),
+    ).toBeUndefined();
+  });
+
   it("validates pattern if given", () => {
     const pattern = ".";
     const patternErrorMessage = `The value has to match the pattern "${pattern}"`;
