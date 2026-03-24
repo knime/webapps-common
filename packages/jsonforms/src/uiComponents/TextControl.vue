@@ -60,7 +60,7 @@ defineExpose<VueControlExposed>({
     :id="labelForId"
     ref="inputField"
     :placeholder="placeholder"
-    :model-value="control.data"
+    :model-value="control.data ?? ''"
     :disabled="disabled"
     :error="!isValid"
     @update:model-value="changeValue"

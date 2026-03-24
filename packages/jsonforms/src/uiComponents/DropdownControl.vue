@@ -28,7 +28,7 @@ const hasNoSuggestions = computed(
     v-if="hasNoSuggestions"
     :id="labelForId"
     :disabled="disabled"
-    :model-value="control.data"
+    :model-value="control.data ?? ''"
     :error="!isValid"
     @update:model-value="changeValue"
   />

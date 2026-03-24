@@ -101,6 +101,20 @@ describe("DropdownControl", () => {
     );
   });
 
+  it("renders empty string when control data is null and allowNewValue is true", async () => {
+    props.control.data = null;
+    props.control.uischema.options = {
+      ...props.control.uischema.options,
+      allowNewValue: true,
+      possibleValues: [],
+    };
+    const { wrapper } = mountJsonFormsControlLabelContent(DropdownControl, {
+      props,
+    });
+    await flushPromises();
+    expect(wrapper.findComponent(KdsTextInput).vm.modelValue).toBe("");
+  });
+
   it("sets placeholder text correctly if possible values are not yet available", async () => {
     delete props.control.uischema.options!.possibleValues;
     props.control.uischema.providedOptions = ["possibleValues"];

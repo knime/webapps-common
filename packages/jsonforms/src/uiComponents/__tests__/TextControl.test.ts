@@ -84,6 +84,14 @@ describe("TextControl", () => {
     );
   });
 
+  it("renders empty string when control data is null", () => {
+    props.control.data = null;
+    const { wrapper } = mountJsonFormsControlLabelContent(TextControl, {
+      props,
+    });
+    expect(wrapper.findComponent(KdsTextInput).vm.modelValue).toBe("");
+  });
+
   it("sets correct placeholder text", () => {
     props.control.uischema.options!.placeholder = "Bond";
     const { wrapper } = mountJsonFormsControlLabelContent(TextControl, {
