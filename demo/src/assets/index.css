@@ -1,5 +1,5 @@
-@import "@knime/styles/css";
-@import "./prism-theme-knime";
+@import "@knime/styles/css/index.css";
+@import "./prism-theme-knime.css";
 
 :root {
   font-size: 16px;

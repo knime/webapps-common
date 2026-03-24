@@ -2,6 +2,7 @@ import {
   type PropType,
   computed,
   defineComponent,
+  h,
   renderSlot,
   toRefs,
 } from "vue";
@@ -26,24 +27,25 @@ export default defineComponent({
     const { expandedKeys, renderIcon, slots } = context;
     const expanded = computed(() => expandedKeys.has(key.value));
     return () => {
-      // eslint-disable-next-line no-nested-ternary
-      return renderIcon ? (
-        renderIcon({ node, loading: loading.value, expanded: expanded.value })
-      ) : slots.icon ? (
-        renderSlot(slots, "icon", {
+      if (renderIcon) {
+        return renderIcon({
           node,
           loading: loading.value,
           expanded: expanded.value,
-        })
-      ) : (
-        <div class="def-arrow">
-          {loading.value ? (
-            <i class="icon loading" />
-          ) : (
-            <i class="icon expand" />
-          )}
-        </div>
-      );
+        });
+      }
+      if (slots.icon) {
+        return renderSlot(slots, "icon", {
+          node,
+          loading: loading.value,
+          expanded: expanded.value,
+        });
+      }
+      return h("div", { class: "def-arrow" }, [
+        loading.value
+          ? h("i", { class: "icon loading" })
+          : h("i", { class: "icon expand" }),
+      ]);
     };
   },
 });

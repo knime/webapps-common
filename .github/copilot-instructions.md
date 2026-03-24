@@ -6,12 +6,12 @@ This is a **pnpm monorepo** containing shared frontend code for KNIME web projec
 
 **Key Technologies:**
 
-- **Node.js:** 22.x (specified in package.json engines)
-- **Package Manager:** pnpm 10.18.1 (specified in packageManager field)
+- **Node.js:** >=22.12.0 (specified in package.json engines)
+- **Package Manager:** pnpm 10.32.0 (specified in package.json packageManager field)
 - **Language:** TypeScript, JavaScript (ES modules)
 - **Framework:** Vue 3 (~3.5.18)
-- **Build Tool:** Vite 7.x
-- **Test Framework:** Vitest 3.2.4
+- **Build Tool:** Vite 8.x
+- **Test Framework:** Vitest 4.x
 - **Linting:** ESLint 9.38.0, Stylelint 16.23.0
 - **Formatting:** Prettier 3.3.2
 
@@ -51,11 +51,11 @@ This is a **pnpm monorepo** containing shared frontend code for KNIME web projec
 
 ### Prerequisites
 
-**CRITICAL:** You MUST use Node.js 22.x. Using Node 20.x will work but produces warnings that clutter output.
+**CRITICAL:** You MUST use Node.js 22.12.0 or later (Vite 8 requires `>=22.12.0`).
 
 ```bash
 # Install pnpm globally if not available
-npm install -g pnpm@10.18.1
+npm install -g pnpm@10.32.0
 ```
 
 ### Initial Setup
@@ -186,8 +186,8 @@ pnpm run audit
 
 ### Node Version Warning
 
-**Issue:** `WARN Unsupported engine: wanted: {"node":"22.x"} (current: {"node":"v20.19.5",...})`
-**Solution:** Use Node.js 22.x. The repo requires Node 22 (see package.json engines). Node 20 will work but produces warnings.
+**Issue:** `WARN Unsupported engine: wanted: {"node":">=22.12.0 <25"} (current: {"node":"v22.x.y",...})`
+**Solution:** Use Node.js 22.12.0 or later (see package.json engines).
 
 ### Missing CSS Variables Error
 
@@ -322,7 +322,7 @@ pnpm run audit
 ## Important Notes
 
 1. **ALWAYS build @knime/styles first** - Other packages import its generated CSS
-2. **Node 22.x required** - Package.json specifies "engines": {"node": "22.x"}
+2. **Node >=22.12.0 required** - Package.json specifies `"engines": {"node": ">=22.12.0 <25"}` (Vite 8 requirement)
 3. **Use pnpm, not npm/yarn** - This is a pnpm workspace
 4. **Timezone matters** - Tests use TZ='Europe/Berlin'
 5. **Demo ignores linting** - See eslint.config.js ignores: ["demo/*"]

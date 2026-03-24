@@ -20,20 +20,21 @@ export default defineConfig({
         "knime-jsonforms": "src/index.ts",
         testing: "testUtils/index.ts",
       },
-      name: "KNIME JSON Forms integration",
+      name: "KNIME JSONForms integration",
       formats: ["es"],
     },
-    rollupOptions: {
+    rolldownOptions: {
       external: ["vue"],
       output: {
         globals: {
           vue: "Vue",
         },
         assetFileNames: (assetInfo) => {
-          if (assetInfo.name.endsWith(".css")) {
+          const name = assetInfo.names?.[0];
+          if (name?.endsWith(".css")) {
             return "knime-jsonforms.css";
           }
-          return assetInfo.name;
+          return name ?? "[name][extname]";
         },
       },
     },
