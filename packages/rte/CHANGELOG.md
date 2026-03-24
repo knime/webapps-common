@@ -1,5 +1,12 @@
 # @knime/rich-text-editor
 
+## 1.4.8
+
+### Patch Changes
+
+- Updated dependencies [eef8146]
+  - @knime/components@1.25.5
+
 ## 1.4.7
 
 ### Patch Changes
