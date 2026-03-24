@@ -17,7 +17,9 @@ const secondaryValue = computed(
     (props.control.schema as JsonSchema & { secondaryValue?: number })
       .secondaryValue || 0,
 );
-const donutMax = computed(() => props.control.uischema.options?.donutMax);
+const donutMax = computed(
+  () => props.control.uischema.options?.donutMax ?? Infinity,
+);
 const textMax = computed(() =>
   donutMax.value === -1 ? "unlimited" : donutMax.value,
 );

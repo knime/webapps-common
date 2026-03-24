@@ -29,14 +29,11 @@ const donutMax = computed(() =>
     ? props.control.data
     : props.control.uischema.options?.donutMax ?? props.control.schema.maximum,
 );
-const disabled = computed(
-  () => props.control.uischema.options?.disabled || false,
-);
 const disabledTooltip = computed(
   () => props.control.uischema.options?.disabledTooltip || "",
 );
 const tooltipOrDiv = computed(() => {
-  if (disabled.value && disabledTooltip.value) {
+  if (props.disabled && disabledTooltip.value) {
     return Tooltip;
   }
   return "div";
@@ -62,6 +59,7 @@ const unit = computed(() => props.control.uischema.options?.unit ?? "");
         :max="max"
         :step="step"
         :unit="unit"
+        :disabled="disabled"
         @update:model-value="changeValue"
       />
       <div v-if="showDonut" class="chart">

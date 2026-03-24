@@ -104,6 +104,6 @@ describe("TeamResourceControl", () => {
       props,
     });
     const description = wrapper.find(".chart-description").text();
-    expect(description).toBe("undefined of 100 vCore tokens allocated");
+    expect(description).toBe("0 of 100 vCore tokens allocated");
   });
 });

@@ -166,7 +166,7 @@ describe("ResourceControlBase", () => {
   });
 
   it("renders tooltip when disabled with disabledTooltip", () => {
-    props.control.uischema.options!.disabled = true;
+    (props.disabled as any) = true;
     props.control.uischema.options!.disabledTooltip = "Resource unavailable";
     const { wrapper } = mountJsonFormsControlLabelContent(ResourceControlBase, {
       props,

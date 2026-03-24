@@ -31,6 +31,7 @@ defineEmits<{
       size="small"
       variant="transparent"
       leading-icon="arrow-up"
+      aria-label="Move item up"
       @click="$emit('moveUp')"
     />
     <KdsButton
@@ -39,6 +40,7 @@ defineEmits<{
       size="small"
       variant="transparent"
       leading-icon="arrow-down"
+      aria-label="Move item down"
       @click="$emit('moveDown')"
     />
     <KdsButton
@@ -46,6 +48,7 @@ defineEmits<{
       class="trashButton"
       leading-icon="trash"
       variant="transparent"
+      aria-label="Delete item"
       @click="$emit('delete')"
     />
   </div>

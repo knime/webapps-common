@@ -14,7 +14,7 @@ const donutText = computed(
   () => props.control.uischema.options?.donutText || "",
 );
 const currentUsage = computed(
-  () => props.control.uischema.options?.currentUsage,
+  () => props.control.uischema.options?.currentUsage ?? 0,
 );
 const textMax = computed(() =>
   props.control.data === -1 ? "unlimited" : props.control.data,

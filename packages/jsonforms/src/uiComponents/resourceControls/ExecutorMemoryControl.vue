@@ -17,9 +17,11 @@ const donutTitle = computed(
   () => props.control.uischema.options?.donutTitle || "",
 );
 const currentUsage = computed(
-  () => props.control.uischema.options?.currentUsage || 0,
+  () => props.control.uischema.options?.currentUsage ?? 0,
 );
-const donutMax = computed(() => props.control.uischema.options?.donutMax);
+const donutMax = computed(
+  () => props.control.uischema.options?.donutMax ?? Infinity,
+);
 
 const totalUse = computed(() => secondaryValue.value + currentUsage.value);
 
