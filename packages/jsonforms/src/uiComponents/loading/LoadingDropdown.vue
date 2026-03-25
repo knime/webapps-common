@@ -33,17 +33,23 @@ const possibleValues = computed<KdsDropdownOption[]>(() => {
     if (!value.text) {
       continue;
     }
+
+    let accessory: KdsDropdownOptionAccessory | undefined;
+    if (isPartiallyTyped.value) {
+      accessory = {
+        type: "dataType" as const,
+        name: value.type?.id ?? "missing_type",
+      } as KdsDropdownOptionAccessory;
+    } else if ("accessory" in value) {
+      accessory = value.accessory as KdsDropdownOptionAccessory;
+    }
+
     result.push({
       id: value.id,
       text: value.text,
       disabled: value.disabled,
       ...(value.subText ? { subText: value.subText } : {}),
-      accessory: isPartiallyTyped.value
-        ? ({
-            type: "dataType" as const,
-            name: value.type?.id ?? "missing_type",
-          } as KdsDropdownOptionAccessory)
-        : undefined,
+      accessory,
     });
   }
   return result;

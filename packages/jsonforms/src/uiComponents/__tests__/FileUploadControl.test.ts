@@ -122,7 +122,7 @@ describe("FileUploadControl", () => {
       writable: true,
     });
 
-    await fileInput.trigger("input");
+    await fileInput.trigger("change");
 
     expect(handleChange).toHaveBeenCalledWith(path, [mockFile]);
   });
@@ -154,7 +154,7 @@ describe("FileUploadControl", () => {
       writable: true,
     });
 
-    await fileInput.trigger("input");
+    await fileInput.trigger("change");
 
     expect(handleChange).toHaveBeenCalledWith(path, mockFiles);
   });

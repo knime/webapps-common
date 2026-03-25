@@ -4,7 +4,7 @@ import type {
 } from "../../../types/ChoicesUiSchema";
 
 export type LoadingDropdownProps = {
-  possibleValues: TypedIdAndText[] | TypedIdAndTextWithLiveStatus[] | null;
+  possibleValues: (TypedIdAndText | TypedIdAndTextWithLiveStatus)[] | null;
   modelValue: string;
   id: string;
   ariaLabel: string;

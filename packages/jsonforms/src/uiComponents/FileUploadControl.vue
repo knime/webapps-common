@@ -67,7 +67,7 @@ const onSelect = (event: Event) => {
       :multiple="multiple"
       :disabled="disabled"
       hidden
-      @input="onSelect"
+      @change="onSelect"
     />
   </div>
 </template>
