@@ -1,53 +1,20 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { ref } from "vue";
+import { nextTick, ref } from "vue";
+import { flushPromises } from "@vue/test-utils";
 
 import type { HintConfiguration } from "../../types";
 import { setupHints, useHint } from "../useHint";
-import * as useHintProvider from "../useHintProvider";
 import * as useHintState from "../useHintState";
 
 import mountComposable from "./mountComposable";
 
-vi.mock("../useHintState", () => {
-  const initializeMock = vi.fn().mockResolvedValue({});
-  const completeHintMock = vi.fn();
-  const completeHintWithoutVisibilityMock = vi.fn();
-  const isCompletedMock = vi.fn();
-  const isAllSkippedMock = { value: false };
-  const setSkipAllMock = vi.fn();
-  const currentlyVisibleHintMock = { value: null };
-  const isInitializedMock = { value: true };
-  const setCurrentlyVisibleHintMock = vi.fn();
-  const useHintState = vi.fn().mockReturnValue({
-    initialize: initializeMock,
-    completeHint: completeHintMock,
-    completeHintWithoutVisibility: completeHintWithoutVisibilityMock,
-    isCompleted: isCompletedMock,
-    isAllSkipped: isAllSkippedMock,
-    setSkipAll: setSkipAllMock,
-    currentlyVisibleHint: currentlyVisibleHintMock,
-    setCurrentlyVisibleHint: setCurrentlyVisibleHintMock,
-    isInitialized: isInitializedMock,
-  });
-  return {
-    useHintState,
-    initializeMock,
-    completeHintMock,
-    completeHintWithoutVisibilityMock,
-    isCompletedMock,
-    isAllSkippedMock,
-    setSkipAllMock,
-    currentlyVisibleHintMock,
-    setCurrentlyVisibleHintMock,
-    isInitializedMock,
-  };
-});
+const { showHintMock, closeHintMock, createHintDataMock } = vi.hoisted(() => ({
+  showHintMock: vi.fn(),
+  closeHintMock: vi.fn(),
+  createHintDataMock: vi.fn(),
+}));
 
 vi.mock("../../composables/useHintProvider", () => {
-  const showHintMock = vi.fn();
-  const closeHintMock = vi.fn();
-  const createHintDataMock = vi.fn();
-
   return {
     useHintProvider: vi.fn().mockReturnValue({
       createHintData: createHintDataMock.mockReturnValue({
@@ -55,255 +22,231 @@ vi.mock("../../composables/useHintProvider", () => {
         closeHint: closeHintMock,
       }),
     }),
-    createHintDataMock,
-    showHintMock,
-    closeHintMock,
   };
 });
 
 describe("useHint", () => {
   const hintConfigurationsMock: Record<string, HintConfiguration> = {};
 
-  beforeEach(() => {
-    vi.clearAllMocks();
-    Object.keys(hintConfigurationsMock).forEach((key) => {
-      delete hintConfigurationsMock[key];
-    });
+  type Opts = Partial<Parameters<typeof setupHints>[0]> & {};
 
-    // @ts-expect-error Property 'isAllSkippedMock' does not exist on type
-    useHintState.isAllSkippedMock.value = false;
-    // @ts-expect-error Property 'currentlyVisibleHintMock' does not exist on type
-    useHintState.currentlyVisibleHintMock.value = null;
-    // @ts-expect-error Property 'isInitializedMock' does not exist on type
-    useHintState.isInitializedMock.value = true;
-  });
-
-  const doMount = ({
-    isLoggedIn = true,
-    loggedInUserId = "account:user:ead1c957-d8d2-468f-8788-b0df56f08380",
-    hintKey = "someHint",
-    hintConfig,
-    skipAllHints = false,
-    hintAlreadyCompleted = false,
-    currentlyVisibleHint,
-    alreadyCompletedHints = [],
-    attachHintIdToElement = true,
-  }: {
-    isLoggedIn?: boolean;
-    loggedInUserId?: string;
-    hintKey?: string;
-    hintConfig?: HintConfiguration;
-    skipAllHints?: boolean;
-    hintAlreadyCompleted?: boolean;
-    currentlyVisibleHint?: string | null;
-    alreadyCompletedHints?: Array<string>;
-    attachHintIdToElement?: boolean;
-  } = {}) => {
-    hintConfigurationsMock[hintKey] = Object.assign(
-      {
-        title: "my hint",
-        description: "this is a hint",
-        align: "center",
-        side: "bottom",
-        dependsOn: [],
-      },
-      hintConfig,
-    );
-
-    // @ts-expect-error Property 'isAllSkippedMock' does not exist on type
-    useHintState.isAllSkippedMock.value = skipAllHints;
-    // @ts-expect-error Property 'currentlyVisibleHintMock' does not exist on type
-    useHintState.currentlyVisibleHintMock.value = currentlyVisibleHint;
-
-    const completedHints = [
-      ...new Set(
-        [...alreadyCompletedHints, hintAlreadyCompleted && hintKey].filter(
-          (hintId) => Boolean(hintId),
-        ),
-      ),
-    ];
-    // @ts-expect-error Property 'isCompletedMock' does not exist on type
-    useHintState.isCompletedMock.mockImplementation((hintId: string) =>
-      completedHints.includes(hintId),
-    );
-
-    document.getElementById = vi.fn().mockReturnValue(attachHintIdToElement);
-
-    const skipHints = !isLoggedIn;
-    const uniqueUserId = loggedInUserId;
-    const getRemoteHintState = () => vi.fn().mockResolvedValue({});
-    const setRemoteHintState = () => vi.fn();
-
+  const doMount = (options: Opts = {}) => {
     setupHints({
-      hints: hintConfigurationsMock,
-      skipHints,
-      uniqueUserId,
-      // @ts-expect-error Type '() => Mock<Procedure>' is not assignable to type
-      getRemoteHintState,
-      // @ts-expect-error Type '() => Mock<Procedure>' is not assignable to type
-      setRemoteHintState,
+      ...options,
     });
 
     const { getComposableResult, lifeCycle } = mountComposable({
       composable: useHint,
-      composableProps: { hintSetupId: "default" },
+      composableProps: undefined,
     });
 
-    return {
-      getComposableResult,
-      lifeCycle,
-      // @ts-expect-error Property 'createHintDataMock' does not exist on type
-      createHintDataMock: useHintProvider.createHintDataMock,
-      // @ts-expect-error Property 'showHintMock' does not exist on type
-      showHintMock: useHintProvider.showHintMock,
-      // @ts-expect-error Property 'closeHintMock' does not exist on type
-      closeHintMock: useHintProvider.closeHintMock,
-      useHintState: useHintState.useHintState,
-      // @ts-expect-error Property 'initializeMock' does not exist on type
-      initializeMock: useHintState.initializeMock,
-      // @ts-expect-error Property 'completeHintMock' does not exist on type
-      completeHintMock: useHintState.completeHintMock,
-      completeHintWithoutVisibilityMock:
-        // @ts-expect-error Property 'completeHintWithoutVisibilityMock' does not exist on type
-        useHintState.completeHintWithoutVisibilityMock,
-      // @ts-expect-error Property 'isCompletedMock' does not exist on type
-      isCompletedMock: useHintState.isCompletedMock,
-      // @ts-expect-error Property 'setSkipAllMock' does not exist on type
-      setSkipAllMock: useHintState.setSkipAllMock,
-      // @ts-expect-error Property 'currentlyVisibleHintMock' does not exist on type
-      currentlyVisibleHintMock: useHintState.currentlyVisibleHintMock,
-      // @ts-expect-error Property 'setCurrentlyVisibleHintMock' does not exist on type
-      setCurrentlyVisibleHintMock: useHintState.setCurrentlyVisibleHintMock,
-    };
+    const useHintResult = getComposableResult() as ReturnType<typeof useHint>;
+
+    return { useHintResult, lifeCycle };
   };
 
-  it("does nothing when not logged in", () => {
-    const { useHintState, initializeMock } = doMount({ isLoggedIn: false });
-
-    expect(useHintState).not.toHaveBeenCalled();
-    expect(initializeMock).not.toHaveBeenCalled();
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.resetModules();
+    Object.keys(hintConfigurationsMock).forEach((key) => {
+      delete hintConfigurationsMock[key];
+    });
+    useHintState.__resetStateForTests();
   });
 
-  it("returns method to check if a hint is completed", () => {
-    const hintKey = "myHint";
-    const { getComposableResult, isCompletedMock } = doMount({});
-    const { isCompleted } = getComposableResult();
-    isCompleted(hintKey);
+  describe("setup", () => {
+    it("initializes state state", () => {
+      const initializeSpy = vi.spyOn(useHintState, "initialize");
 
-    expect(isCompletedMock).toHaveBeenCalledWith(hintKey);
-  });
+      const getRemoteHintState = vi.fn();
+      const setRemoteHintState = vi.fn();
 
-  it("returns method to complete hint without a component", () => {
-    const hintKey = "myHint";
-    const { getComposableResult, completeHintWithoutVisibilityMock } = doMount(
-      {},
-    );
-    const { completeHintWithoutComponent } = getComposableResult();
-    completeHintWithoutComponent(hintKey);
+      doMount({
+        storageKey: "the-storage-key",
+        uniqueUserId: "the-unique-user",
+        getRemoteHintState,
+        setRemoteHintState,
+      });
 
-    expect(completeHintWithoutVisibilityMock).toHaveBeenCalledWith(hintKey);
-  });
-
-  it.each([true, false])(
-    "isAllSkipped returns %s if skipAll in state is set to same value",
-    (allSkipped) => {
-      const { getComposableResult } = doMount({ skipAllHints: allSkipped });
-      const { isAllSkipped } = getComposableResult();
-
-      expect(isAllSkipped.value).toBe(allSkipped);
-    },
-  );
-
-  it("initializes useHintStore on mount", () => {
-    const loggedInUserId = "account:user:3e7557ca-021a-450f-b09a-1a729b7f0197";
-    const { useHintState, initializeMock } = doMount({
-      isLoggedIn: true,
-      loggedInUserId,
+      expect(initializeSpy).toHaveBeenCalledWith({
+        storageKey: "the-storage-key",
+        uniqueUserId: "the-unique-user",
+        getRemoteHintState,
+        setRemoteHintState,
+      });
     });
 
-    expect(useHintState).toHaveBeenCalled();
-    expect(initializeMock).toHaveBeenCalled();
+    it("does not initialize any state when skipHints is true", () => {
+      const initializeSpy = vi.spyOn(useHintState, "initialize");
+
+      setupHints({
+        skipHints: true,
+        hints: {
+          someHint: {
+            title: "my hint",
+            description: "this is a hint",
+            align: "center",
+            side: "bottom",
+            dependsOn: [],
+          },
+        },
+      });
+
+      expect(initializeSpy).not.toHaveBeenCalled();
+    });
   });
 
-  it("createHint creates hint", () => {
-    const hintKey = "myHint";
-    const hintConfig: HintConfiguration = {
-      title: "my hint",
-      description: "this is a hint",
-      linkText: "some link",
-      linkHref: "/path/to/resource",
-      align: "center",
-      side: "bottom",
-      dependsOn: [],
-    };
-    const { getComposableResult, createHintDataMock } = doMount({
-      hintKey,
-      hintConfig,
-    });
-    const { createHint } = getComposableResult();
-    createHint({
-      hintId: hintKey,
-      isVisibleCondition: ref(true),
-    });
-
-    expect(createHintDataMock).toHaveBeenCalledWith(
-      hintKey,
-      expect.objectContaining({
+  describe("useHint", () => {
+    it("creates a hint", async () => {
+      const hintKey = "____HINT_1___";
+      const hintConfig: HintConfiguration = {
         title: "my hint",
         description: "this is a hint",
         linkText: "some link",
         linkHref: "/path/to/resource",
         align: "center",
         side: "bottom",
-      }),
-    );
-  });
+        dependsOn: [],
+      };
 
-  it("created hint can be completed", () => {
-    const hintKey = "myHint";
-    const { getComposableResult, createHintDataMock, completeHintMock } =
-      doMount({
-        hintKey,
+      const { useHintResult, lifeCycle } = doMount({
+        hints: {
+          [hintKey]: hintConfig,
+        },
       });
-    const { createHint } = getComposableResult();
-    createHint({
-      hintId: hintKey,
-      isVisibleCondition: ref(true),
-    });
 
-    const completeHintCallback =
-      createHintDataMock.mock.calls[0][1].onCompleteHint;
-    completeHintCallback();
-    expect(completeHintMock).toHaveBeenCalledWith(hintKey);
-  });
+      await flushPromises();
 
-  it("created hint can trigger skip all", () => {
-    const hintKey = "myHint";
-    const { getComposableResult, createHintDataMock, setSkipAllMock } = doMount(
-      {
+      useHintResult.createHint({
+        hintId: hintKey,
+        isVisibleCondition: ref(true),
+      });
+
+      expect(createHintDataMock).toHaveBeenCalledWith(
         hintKey,
-      },
-    );
-    const { createHint } = getComposableResult();
-    createHint({
-      hintId: hintKey,
-      isVisibleCondition: ref(true),
+        expect.objectContaining({
+          title: "my hint",
+          description: "this is a hint",
+          linkText: "some link",
+          linkHref: "/path/to/resource",
+          align: "center",
+          side: "bottom",
+        }),
+      );
+      lifeCycle.unmount();
     });
 
-    const skippAllHintsCallback =
-      createHintDataMock.mock.calls[0][1].onSkipAllHints;
-    skippAllHintsCallback();
-    expect(setSkipAllMock).toHaveBeenCalled();
+    it("can check whether a hint is completed", async () => {
+      const { useHintResult, lifeCycle } = doMount({
+        getRemoteHintState: vi.fn().mockResolvedValue({
+          completedHints: ["bar"],
+          skipAll: false,
+        }),
+      });
+
+      await flushPromises();
+
+      expect(useHintResult.isCompleted("bar")).toBe(true);
+      expect(useHintResult.isCompleted("myHint")).toBe(false);
+
+      lifeCycle.unmount();
+    });
+
+    it("can complete hint without a component", async () => {
+      const { useHintResult } = doMount();
+
+      await flushPromises();
+
+      expect(useHintResult.isCompleted("myHint")).toBe(false);
+      useHintResult.completeHintWithoutComponent("myHint");
+
+      await nextTick();
+      expect(useHintResult.isCompleted("myHint")).toBe(true);
+    });
+
+    it("created hint handles onShow callback", async () => {
+      const hintKey = "____HINT_2___";
+      const hintConfig: HintConfiguration = {
+        title: "my hint",
+        description: "this is a hint",
+        linkText: "some link",
+        linkHref: "/path/to/resource",
+        align: "center",
+        side: "bottom",
+        dependsOn: [],
+      };
+
+      const { useHintResult, lifeCycle } = doMount({
+        hints: {
+          [hintKey]: hintConfig,
+        },
+      });
+
+      await flushPromises();
+
+      const visibility = ref(false);
+      const onShow = vi.fn();
+      useHintResult.createHint({
+        hintId: hintKey,
+        isVisibleCondition: visibility,
+        onShow,
+      });
+
+      expect(onShow).not.toHaveBeenCalled();
+
+      visibility.value = true;
+      await nextTick();
+      expect(onShow).toHaveBeenCalledWith(hintKey);
+      lifeCycle.unmount();
+    });
+
+    it("created hint handles onDismiss callback", async () => {
+      const hintKey = "____HINT_2___";
+      const hintConfig: HintConfiguration = {
+        title: "my hint",
+        description: "this is a hint",
+        linkText: "some link",
+        linkHref: "/path/to/resource",
+        align: "center",
+        side: "bottom",
+        dependsOn: [],
+      };
+
+      const { useHintResult, lifeCycle } = doMount({
+        hints: {
+          [hintKey]: hintConfig,
+        },
+      });
+
+      await flushPromises();
+
+      const visibility = ref(true);
+      const onDismiss = vi.fn();
+      useHintResult.createHint({
+        hintId: hintKey,
+        isVisibleCondition: visibility,
+        onDismiss,
+      });
+
+      expect(onDismiss).not.toHaveBeenCalled();
+
+      // trigger hint completion as if it was coming from the popover component
+      createHintDataMock.mock.calls[0][1].onCompleteHint();
+
+      await nextTick();
+
+      expect(onDismiss).toHaveBeenCalledWith(hintKey);
+      lifeCycle.unmount();
+    });
   });
 
   it("createHint does not create hint if no config available", () => {
     const hintKey = "unknwonHint";
-    const { getComposableResult, createHintDataMock } = doMount({
-      isLoggedIn: true,
+    const { useHintResult } = doMount({
+      hints: {},
     });
-    const { createHint } = getComposableResult();
 
-    createHint({
+    useHintResult.createHint({
       hintId: hintKey,
       isVisibleCondition: ref(true),
     });
@@ -311,123 +254,7 @@ describe("useHint", () => {
     expect(createHintDataMock).not.toHaveBeenCalled();
   });
 
-  it("createHint provides callback to complete hint", () => {
-    const hintKey = "myHint";
-    const { getComposableResult, closeHintMock } = doMount({
-      hintKey,
-    });
-    const { createHint, getCompleteHintComponentCallback } =
-      getComposableResult();
-
-    createHint({
-      hintId: hintKey,
-      isVisibleCondition: ref(true),
-    });
-    const completeHint = getCompleteHintComponentCallback(hintKey);
-    completeHint();
-
-    expect(closeHintMock).toHaveBeenCalled();
-  });
-
-  it("created hint is shown when visibility conditions are true", () => {
-    const hintKey = "myHint";
-    const hintConfig: HintConfiguration = {
-      dependsOn: [],
-      title: "",
-      description: "",
-    };
-    const {
-      getComposableResult,
-      showHintMock,
-      isCompletedMock,
-      setCurrentlyVisibleHintMock,
-    } = doMount({
-      hintKey,
-      hintConfig,
-      skipAllHints: false,
-      hintAlreadyCompleted: false,
-      currentlyVisibleHint: null,
-    });
-    const { createHint } = getComposableResult();
-    createHint({
-      hintId: hintKey,
-      isVisibleCondition: ref(true),
-    });
-
-    expect(showHintMock).toHaveBeenCalled();
-    expect(setCurrentlyVisibleHintMock).toHaveBeenCalledWith(hintKey);
-    expect(isCompletedMock).toHaveBeenCalledWith(hintKey);
-  });
-
-  it("created hint is not shown when skip all is true", () => {
-    const hintKey = "myHint";
-    const { getComposableResult, showHintMock, setCurrentlyVisibleHintMock } =
-      doMount({
-        hintKey,
-        skipAllHints: true,
-      });
-    const { createHint } = getComposableResult();
-    createHint({
-      hintId: hintKey,
-      isVisibleCondition: ref(true),
-    });
-
-    expect(showHintMock).not.toHaveBeenCalled();
-    expect(setCurrentlyVisibleHintMock).not.toHaveBeenCalled();
-  });
-
-  it("created hint is not shown when hint was already completed", () => {
-    const hintKey = "myHint";
-    const { getComposableResult, showHintMock, setCurrentlyVisibleHintMock } =
-      doMount({
-        hintKey,
-        hintAlreadyCompleted: true,
-      });
-    const { createHint } = getComposableResult();
-    createHint({
-      hintId: hintKey,
-      isVisibleCondition: ref(true),
-    });
-
-    expect(showHintMock).not.toHaveBeenCalled();
-    expect(setCurrentlyVisibleHintMock).not.toHaveBeenCalled();
-  });
-
-  it("created hint is not shown when a different hint is currently shown", () => {
-    const hintKey = "myHint";
-    const { getComposableResult, showHintMock, setCurrentlyVisibleHintMock } =
-      doMount({
-        hintKey,
-        currentlyVisibleHint: "differentHint",
-      });
-    const { createHint } = getComposableResult();
-    createHint({
-      hintId: hintKey,
-      isVisibleCondition: ref(true),
-    });
-
-    expect(showHintMock).not.toHaveBeenCalled();
-    expect(setCurrentlyVisibleHintMock).not.toHaveBeenCalled();
-  });
-
-  it("created hint is shown when the same hint is currently shown", () => {
-    const hintKey = "myHint";
-    const { getComposableResult, showHintMock, setCurrentlyVisibleHintMock } =
-      doMount({
-        hintKey,
-        currentlyVisibleHint: hintKey,
-      });
-    const { createHint } = getComposableResult();
-    createHint({
-      hintId: hintKey,
-      isVisibleCondition: ref(true),
-    });
-
-    expect(showHintMock).toHaveBeenCalled();
-    expect(setCurrentlyVisibleHintMock).toHaveBeenCalledWith(hintKey);
-  });
-
-  it("created hint is not shown when the dependent hints are not completed", () => {
+  it("created hint is not shown when the dependent hints are not completed", async () => {
     const dependencyHint = "otherHint";
     const secondDependencyHint = "secondOtherHint";
     const hintKey = "myHint";
@@ -436,134 +263,50 @@ describe("useHint", () => {
       title: "",
       description: "",
     };
-    const { getComposableResult, showHintMock, setCurrentlyVisibleHintMock } =
-      doMount({
-        hintKey,
-        hintConfig,
-        alreadyCompletedHints: [secondDependencyHint],
-      });
-    const { createHint } = getComposableResult();
-    createHint({
-      hintId: hintKey,
+
+    const { useHintResult, lifeCycle } = doMount({
+      hints: {
+        [dependencyHint]: {
+          title: "",
+          description: "",
+          dependsOn: [],
+        },
+        [hintKey]: hintConfig,
+      },
+      getRemoteHintState: vi.fn().mockResolvedValue({
+        completedHints: [secondDependencyHint],
+        skipAll: false,
+      }),
+    });
+
+    useHintResult.createHint({
+      hintId: dependencyHint,
       isVisibleCondition: ref(true),
     });
 
-    expect(showHintMock).not.toHaveBeenCalled();
-    expect(setCurrentlyVisibleHintMock).not.toHaveBeenCalled();
-  });
+    await flushPromises();
 
-  it("created hint is shown when the dependent hints are completed", () => {
-    const dependencyHint = "otherHint";
-    const hintKey = "myHint";
-    const hintConfig: HintConfiguration = {
-      dependsOn: [dependencyHint],
-      title: "",
-      description: "",
-    };
-    const {
-      getComposableResult,
-      showHintMock,
-      isCompletedMock,
-      setCurrentlyVisibleHintMock,
-    } = doMount({
-      hintKey,
-      hintConfig,
-      alreadyCompletedHints: [dependencyHint],
-    });
-    const { createHint } = getComposableResult();
-    createHint({
+    const visible = ref(false);
+    const onShow = vi.fn();
+    useHintResult.createHint({
       hintId: hintKey,
-      isVisibleCondition: ref(true),
+      isVisibleCondition: visible,
+      onShow,
     });
 
-    expect(showHintMock).toHaveBeenCalled();
-    expect(setCurrentlyVisibleHintMock).toHaveBeenCalledWith(hintKey);
-    expect(isCompletedMock).toHaveBeenCalledWith(dependencyHint);
-  });
+    expect(onShow).not.toHaveBeenCalled();
 
-  it("created hint is not shown when the hint condition returns false", () => {
-    const hintKey = "myHint";
-    const { getComposableResult, showHintMock, setCurrentlyVisibleHintMock } =
-      doMount({
-        hintKey,
-      });
-    const { createHint } = getComposableResult();
-    createHint({
-      hintId: hintKey,
-      isVisibleCondition: ref(false),
-    });
+    // change 2nd hint's visibilit -> still not shown
+    visible.value = true;
+    await nextTick();
+    expect(onShow).not.toHaveBeenCalled();
 
-    expect(showHintMock).not.toHaveBeenCalled();
-    expect(setCurrentlyVisibleHintMock).not.toHaveBeenCalled();
-  });
+    // trigger 1st hint's completion, which now resolves the dependency of the 2nd hint
+    createHintDataMock.mock.calls[0][1].onCompleteHint();
 
-  it("visible hint is closed when before component is destroyed", () => {
-    const hintKey = "myHint";
-    const { getComposableResult, closeHintMock, lifeCycle, showHintMock } =
-      doMount({
-        hintKey,
-      });
-    const { createHint } = getComposableResult();
-    createHint({
-      hintId: hintKey,
-      isVisibleCondition: ref(true),
-    });
+    await nextTick();
+    expect(onShow).toHaveBeenCalled();
+
     lifeCycle.unmount();
-
-    expect(showHintMock).toHaveBeenCalled();
-    expect(closeHintMock).toHaveBeenCalled();
-  });
-
-  it("visible hint is reset before component is destroyed", () => {
-    const hintKey = "myHint";
-    const { getComposableResult, lifeCycle, setCurrentlyVisibleHintMock } =
-      doMount({
-        hintKey,
-      });
-    const { createHint } = getComposableResult();
-    createHint({
-      hintId: hintKey,
-      isVisibleCondition: ref(true),
-    });
-    lifeCycle.unmount();
-
-    expect(setCurrentlyVisibleHintMock).toHaveBeenCalledWith(null);
-  });
-
-  it("not visible hint is not closed when before component is destroyed", () => {
-    const hintKey = "myHint";
-    const { getComposableResult, closeHintMock, lifeCycle, showHintMock } =
-      doMount({
-        hintKey,
-      });
-    const { createHint } = getComposableResult();
-    createHint({
-      hintId: hintKey,
-      isVisibleCondition: ref(false),
-    });
-    lifeCycle.unmount();
-
-    expect(showHintMock).not.toHaveBeenCalled();
-    expect(closeHintMock).not.toHaveBeenCalled();
-  });
-
-  it("does not show hint if hint state is not initialized", () => {
-    const hintKey = "myHint";
-    // @ts-expect-error Property 'isInitializedMock' does not exist on type
-    useHintState.isInitializedMock.value = false;
-
-    const { getComposableResult, showHintMock } = doMount({
-      hintKey,
-      hintAlreadyCompleted: false,
-      skipAllHints: false,
-    });
-
-    const { createHint } = getComposableResult();
-    createHint({
-      hintId: hintKey,
-      isVisibleCondition: ref(true),
-    });
-
-    expect(showHintMock).not.toHaveBeenCalled();
   });
 });
