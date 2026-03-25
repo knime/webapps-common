@@ -34,7 +34,7 @@ setupHints({
 });
 ```
 
-By default hints are stored in localstorage only. But you can also use a remote storage if you wish. Data will still be stored in localstorage but it will be synced constantly to your remote storage. You can do it like so:
+By default hints are stored in localStorage only. But you can also use a remote storage if you wish. Data will still be stored in localStorage but it will be synced constantly to your remote storage. You can do it like so:
 
 ```ts
 setupHints({
