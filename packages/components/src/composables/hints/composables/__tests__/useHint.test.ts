@@ -51,7 +51,7 @@ describe("useHint", () => {
     Object.keys(hintConfigurationsMock).forEach((key) => {
       delete hintConfigurationsMock[key];
     });
-    useHintState.reset();
+    useHintState.__resetStateForTests();
   });
 
   describe("setup", () => {
@@ -140,7 +140,7 @@ describe("useHint", () => {
       const { useHintResult, lifeCycle } = doMount({
         getRemoteHintState: vi.fn().mockResolvedValue({
           completedHints: ["bar"],
-          isAllSkipped: false,
+          skipAll: false,
         }),
       });
 
@@ -275,7 +275,7 @@ describe("useHint", () => {
       },
       getRemoteHintState: vi.fn().mockResolvedValue({
         completedHints: [secondDependencyHint],
-        isAllSkipped: false,
+        skipAll: false,
       }),
     });
 

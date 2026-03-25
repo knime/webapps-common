@@ -12,7 +12,7 @@ Below are two recommended usage patterns. NOTE: a few example function signature
 
 ### 1) Setup
 
-There are two pre-requisite steps for the usage of this feature:
+There are two prerequisite steps for the usage of this feature:
 
 1. You _must_ render the `HintProvider` component somewhere in your component tree. Ideally, as close as possible to the component tree's root
 2. Your application _must_ call `setupHints` at some early stage during the lifecycle of your application. This setup will initialize the internal state, as well as fetch any remote state (see config)
@@ -58,7 +58,7 @@ Assuming you have a hint called "fancy-button", which has already been supplied 
 </template>
 
 <script setup>
-  import { ref, useTemplateRef, onMounted } from "vue";
+  import { ref, useTemplateRef, onMounted, computed } from "vue";
   import { useHint } from "@knime/components";
 
   const clicked = ref(false);
@@ -86,7 +86,9 @@ If you need this use-case then you should use a `referenceSelector` instead:
 ```html
 <template>
   <button @click="clicked = true">Click me!!</button>
-  <div id="fancy-div" v-if="clicked">At first I was afraid, I was petrified</div>
+  <div id="fancy-div" v-if="clicked">
+    At first I was afraid, I was petrified
+  </div>
 </template>
 
 <script setup>
@@ -94,13 +96,12 @@ If you need this use-case then you should use a `referenceSelector` instead:
   import { useHint } from "@knime/components";
 
   const clicked = ref(false);
-  const fancyButtonRef = useTemplateRef("fancyButton");
 
   onMounted(() => {
     useHint().createHint({
       // this id must match one of the hints supplied to `setupHints`
       hintId: "fancy-div",
-      referenceSelector: '#fancy-div',
+      referenceSelector: "#fancy-div",
 
       // some arbitrary condition
       isVisibleCondition: computed(() => clicked.value),

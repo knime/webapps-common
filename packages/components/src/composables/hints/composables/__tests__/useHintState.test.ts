@@ -3,7 +3,11 @@ import { ref } from "vue";
 import { flushPromises } from "@vue/test-utils";
 import { useLocalStorage } from "@vueuse/core";
 
-import { initialize, reset, useHintState } from "../useHintState";
+import {
+  __resetStateForTests,
+  initialize,
+  useHintState,
+} from "../useHintState";
 
 vi.mock("@vueuse/core", async () => {
   const actual = await vi.importActual("@vueuse/core");
@@ -16,12 +20,12 @@ vi.mock("@vueuse/core", async () => {
 describe("useHintState", () => {
   afterEach(() => {
     vi.resetAllMocks();
-    reset();
+    __resetStateForTests();
   });
 
   const mockLocalState = (state: {
     completedHints: string[];
-    isAllSkipped: boolean;
+    skipAll: boolean;
   }) => {
     (useLocalStorage as any).mockReturnValue(ref(state));
   };
@@ -68,7 +72,7 @@ describe("useHintState", () => {
   it("merges completedHints from remote state", async () => {
     mockLocalState({
       completedHints: ["something"],
-      isAllSkipped: false,
+      skipAll: false,
     });
 
     const setRemoteHintState = vi.fn();
@@ -97,7 +101,7 @@ describe("useHintState", () => {
     const hintKey = "myHint";
     mockLocalState({
       completedHints: [],
-      isAllSkipped: false,
+      skipAll: false,
     });
 
     const setRemoteHintState = vi.fn();
@@ -133,7 +137,7 @@ describe("useHintState", () => {
     const hintKey = "myHint";
     mockLocalState({
       completedHints: [],
-      isAllSkipped: false,
+      skipAll: false,
     });
 
     const setRemoteHintState = vi.fn();
@@ -169,7 +173,7 @@ describe("useHintState", () => {
   it("can skip all hints", async () => {
     mockLocalState({
       completedHints: [],
-      isAllSkipped: false,
+      skipAll: false,
     });
 
     const setRemoteHintState = vi.fn();
@@ -200,7 +204,7 @@ describe("useHintState", () => {
   it("can complete without visibility", async () => {
     mockLocalState({
       completedHints: [],
-      isAllSkipped: false,
+      skipAll: false,
     });
 
     const setRemoteHintState = vi.fn();

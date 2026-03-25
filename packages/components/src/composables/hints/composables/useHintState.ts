@@ -1,10 +1,10 @@
 import { type MaybeRef, computed, ref, unref, watch } from "vue";
-import { useLocalStorage } from "@vueuse/core";
+import { type RemovableRef, useLocalStorage } from "@vueuse/core";
 
 import type { HintState } from "../types";
 import { logger } from "../util/logger";
 
-const status = ref<"uninitialized" | "initializing" | "initialized">(
+const initState = ref<"uninitialized" | "initializing" | "initialized">(
   "uninitialized",
 );
 const currentlyVisibleHint = ref<string | null>(null);
@@ -21,37 +21,43 @@ type Config = {
 };
 
 let __config: Config;
+let __state: RemovableRef<HintState>;
 
 export const getState = () => {
   if (!__config) {
     throw new Error("Hint state accessed before initialization");
   }
 
-  return useLocalStorage<HintState>(
+  if (__state) {
+    return __state;
+  }
+
+  __state = useLocalStorage<HintState>(
     __config.storageKey,
     { completedHints: [], skipAll: false },
     { deep: true, listenToStorageChanges: true },
   );
+
+  return __state;
 };
 
-export const reset = () => {
+export const __resetStateForTests = () => {
   if (import.meta.env.TEST) {
-    status.value = "uninitialized";
+    initState.value = "uninitialized";
     currentlyVisibleHint.value = null;
 
     if (!__config?.storageKey) {
       return;
     }
 
-    const state = getState();
-    if (state?.value) {
-      state.value = { completedHints: [], skipAll: false };
+    if (__state) {
+      __state.value = { completedHints: [], skipAll: false };
     }
   }
 };
 
 export const initialize = async (config: Config) => {
-  if (status.value === "initialized") {
+  if (initState.value !== "uninitialized") {
     logger().warn("Hint state cannot be initialized more than once");
     return;
   }
@@ -66,7 +72,7 @@ export const initialize = async (config: Config) => {
   logger().info("Initializing hint state");
 
   try {
-    status.value = "initializing";
+    initState.value = "initializing";
     const remoteState = await config.getRemoteHintState(localStorageKey);
     logger().debug("got remote state", remoteState);
 
@@ -84,15 +90,15 @@ export const initialize = async (config: Config) => {
       error,
     );
   } finally {
-    status.value = "initialized";
+    initState.value = "initialized";
   }
 
   watch(
     state,
     async (value) => {
-      if (status.value !== "initialized") {
+      if (initState.value !== "initialized") {
         logger().debug(
-          `Tried to update hint state but status is: ${status.value}`,
+          `Tried to update hint state but status is: ${initState.value}`,
         );
         return;
       }
@@ -141,7 +147,7 @@ export const useHintState = () => {
   };
 
   const completeHint = (hintId: string) => {
-    if (status.value === "uninitialized") {
+    if (initState.value !== "initialized") {
       logger().debug(
         `Tried to complete hint "${hintId}" but state is not initialized; aborting`,
       );
@@ -169,7 +175,7 @@ export const useHintState = () => {
   };
 
   const completeHintWithoutVisibility = (hintId: string) => {
-    if (status.value === "uninitialized") {
+    if (initState.value !== "initialized") {
       logger().debug(
         "Tried to completeHintWithoutVisibility but state is not initialized; aborting",
       );
@@ -184,7 +190,7 @@ export const useHintState = () => {
   };
 
   const setSkipAll = () => {
-    if (status.value === "uninitialized") {
+    if (initState.value !== "initialized") {
       logger().debug(
         "Tried to skipAll hints but state is not initialized; aborting",
       );
@@ -196,7 +202,7 @@ export const useHintState = () => {
   };
 
   return {
-    isInitialized: computed(() => status.value === "initialized"),
+    isInitialized: computed(() => initState.value === "initialized"),
     completeHint,
     completeHintWithoutVisibility,
     isCompleted,
