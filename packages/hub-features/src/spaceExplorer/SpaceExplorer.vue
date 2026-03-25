@@ -1,5 +1,13 @@
 <script lang="ts" setup>
-import { computed, defineAsyncComponent, onMounted, ref } from "vue";
+import {
+  computed,
+  defineAsyncComponent,
+  onMounted,
+  readonly,
+  ref,
+  toRef,
+  watch,
+} from "vue";
 
 import { FileExplorer, type FileExplorerItem } from "@knime/components";
 
@@ -13,9 +21,8 @@ import {
 import { EditSessionAvatar, useSessionsForWorkflowIds } from "./features/edit";
 
 import { useDeletion } from "./features/delete";
-import { renameItem } from "./features/rename";
-import { DestinationPickerModal, useMoveOrCopy } from "./features/moveAndCopy";
-import { useSpaceExplorerItemMasonControls } from "./useSpaceExplorerItemMasonControls";
+import { useRenameFeature } from "./features/rename";
+import { useMoveOrCopyFeature } from "./features/move-copy";
 import { useSpaceIcons } from "./useSpaceIcons";
 import type {
   RepositoryItem,
@@ -23,9 +30,11 @@ import type {
   Space,
   WorkflowGroup,
 } from "../api/types";
-import { isTeamAccountId } from "./utils/account";
-import { fetchItems } from "../api";
+
 import { SPACE_MOCK_DATA, WORKFLOW_GROUP_MOCK } from "./MOCKS/MOCKS";
+import { sortRepositoryItems } from "./utils/sortRepositoryItems";
+import { $httpClient } from "../api";
+import type { HubFileExplorerItem } from "./types";
 
 const DeletionModal = defineAsyncComponent(() =>
   import("./features/delete").then(({ DeletionModal }) => DeletionModal),
@@ -33,10 +42,6 @@ const DeletionModal = defineAsyncComponent(() =>
 const SpaceExplorerContextMenu = defineAsyncComponent(
   () => import("./SpaceExplorerContextMenu.vue"),
 );
-
-export type HubFileExplorerItem = FileExplorerItem<{
-  repositoryItem?: RepositoryItemAsMason;
-}>;
 
 export type NavigationEvent =
   | { type: "to-parent-dir" }
@@ -49,8 +54,9 @@ type ContextConfig = {
 
 type Props = {
   context: ContextConfig;
-  // space: Space;
+  accountId: string;
   spaceId: string;
+  rootItemId: string;
   generateShortLink?: (item: { id: string }) => string;
 };
 
@@ -60,43 +66,63 @@ const emit = defineEmits<{
   navigate: [payload: NavigationEvent];
 }>();
 
-// FIXME: rework fetching
+// FIXME: improve fetching
 const space = ref<Space>();
 const workflowGroup = ref<WorkflowGroup>();
 
 onMounted(async () => {
-  await new Promise((r) => setTimeout(r, 100));
-  workflowGroup.value = WORKFLOW_GROUP_MOCK;
-
-  space.value = SPACE_MOCK_DATA;
+  // FIXME: double check if this the is correct endpoint
+  space.value = await $httpClient
+    .GET("/repository/{id}", {
+      params: { path: { id: props.spaceId } },
+    })
+    .then((r) => r.data);
 });
 
-// FIXME: rework fetching
-const isTeamSpace = computed(
-  () =>
-    space.value?.ownerAccountId && isTeamAccountId(space.value?.ownerAccountId),
+watch(
+  toRef(props, "rootItemId"),
+  async () => {
+    // FIXME: types
+    workflowGroup.value = await $httpClient
+      .GET("/repository/{id}", { params: { path: { id: props.rootItemId } } })
+      .then(({ data }) => data);
+  },
+  { immediate: true },
 );
 
-const children = computed(() => workflowGroup.value?.children ?? []);
+// FIXME: improve fetching
+
+const children = computed(() =>
+  sortRepositoryItems(workflowGroup.value?.children ?? []),
+);
+
 const workflowGroupChildrenById = computed(() => {
   const entries = children.value.map((item) => [item.id, item]);
 
   return Object.fromEntries(entries) as Record<string, RepositoryItemAsMason>;
 });
 
-const visibleWorkflowIds = computed<string[]>(() => {
-  if (!workflowGroup.value) {
-    return [];
-  }
+// FIXME: edit sessions
+// import { isTeamAccountId } from "./utils/account";
 
-  return children.value
-    .filter((child) => child.type === "Workflow")
-    .map(({ id }) => id);
-});
+// const isTeamSpace = computed(
+//   () =>
+//     space.value?.ownerAccountId && isTeamAccountId(space.value?.ownerAccountId),
+// );
 
-const isWorkflowEditingPossible = computed(
-  () => props.context.isWorkflowEditingPossible,
-);
+// const visibleWorkflowIds = computed<string[]>(() => {
+//   if (!workflowGroup.value) {
+//     return [];
+//   }
+
+//   return children.value
+//     .filter((child) => child.type === "Workflow")
+//     .map(({ id }) => id);
+// });
+
+// const isWorkflowEditingPossible = computed(
+//   () => props.context.isWorkflowEditingPossible,
+// );
 
 // const { getSessionByWorkflowId } = useSessionsForWorkflowIds({
 //   canSubscribe: computed(() => {
@@ -115,7 +141,7 @@ const selectedItemIds = ref<string[]>([]);
 
 const path = computed(() => workflowGroup.value?.path ?? "");
 
-const mappedMasonControls = computed(() => {
+const mappedMasonControls = computed<Space["@controls"]>(() => {
   const controls = space.value?.["@controls"] ?? {};
   const result = {
     ...controls,
@@ -127,16 +153,17 @@ const mappedMasonControls = computed(() => {
     // has capability just checks for the existence of the property not the value
     result[MasonCapabilities.move] = {};
   }
+
   return result;
 });
 
 // rights granted to the space are also granted to any item in this space
 const canDeleteItems = computed(() => {
-  return hasDeleteCapability(mappedMasonControls.value);
+  return hasDeleteCapability(mappedMasonControls.value ?? {});
 });
 
 const canRenameItems = computed(() => {
-  return hasRenameCapability(mappedMasonControls.value);
+  return hasRenameCapability(mappedMasonControls.value ?? {});
 });
 
 const pathComponents = computed(() => {
@@ -161,12 +188,13 @@ const getRepositoryItem = (item: FileExplorerItem): RepositoryItemAsMason => {
 };
 
 const isWorkflowEditorOpen = ({ type, id }: RepositoryItemAsMason) => {
-  const activeSession = getSessionByWorkflowId(id);
-  return (
-    type === "Workflow" &&
-    activeSession.state === "locked" &&
-    activeSession.type === "EDIT_WORKFLOW"
-  );
+  return false;
+  // const activeSession = getSessionByWorkflowId(id);
+  // return (
+  //   type === "Workflow" &&
+  //   activeSession.state === "locked" &&
+  //   activeSession.type === "EDIT_WORKFLOW"
+  // );
 };
 
 const getTypeTitle = (item: FileExplorerItem) => {
@@ -244,61 +272,17 @@ const onDeleteItem = ({ items }: { items: FileExplorerItem[] }) => {
   triggerDelete(deleteItems);
 };
 
-const onRenameFile = async ({
-  itemId,
-  newName,
-}: {
-  itemId: string;
-  newName: string;
-}) => {
-  const targetItem = fileExplorerItems.value.find((item) => item.id === itemId);
-  if (!targetItem) {
-    consola.error("Could not find item to rename!");
-    return;
-  }
-  const oldName = targetItem.name;
-  try {
-    // optimistic update
-    targetItem.name = newName;
-
-    await renameItem({ id: itemId, newName });
-  } catch (e) {
-    // revert optimistic update
-    targetItem.name = oldName;
-    consola.error(e);
-  }
-};
-
-const { copyOrMove } = useMoveOrCopy({
-  masonControls: mappedMasonControls,
+const { handleRename } = useRenameFeature({
+  rootItem: computed(() => workflowGroup.value),
+  currentItems: fileExplorerItems,
 });
 
-// FIXME: move this to the corresponding feature
-const onMoveItems = ({
-  sourceItems,
-  targetItem,
-}: {
-  sourceItems: Array<string>;
-  targetItem: string;
-}) => {
-  const isBack = targetItem === "..";
-  const targetCanonicalPath = isBack
-    ? getParentPath({
-        repositoryPath: workflowGroup.value?.canonicalPath ?? "",
-      })
-    : workflowGroupChildrenById.value?.[targetItem]?.canonicalPath;
-
-  if (!targetCanonicalPath) {
-    consola.error("targetCanonicalPath to move to is not valid");
-    return;
-  }
-
-  copyOrMove(
-    "move",
-    fileExplorerItems.value.filter((item) => sourceItems.includes(item.id)),
-    targetCanonicalPath,
-  );
-};
+const { copyOrMoveViaDrag } = useMoveOrCopyFeature({
+  space: computed(() => space.value),
+  workflowGroup: computed(() => workflowGroup.value),
+  workflowGroupChildrenById,
+  currentItems: fileExplorerItems,
+});
 
 const getEditingUserId = (item: RepositoryItem) => {
   const sessionState = getSessionByWorkflowId(item.id);
@@ -319,8 +303,8 @@ const getEditingUserId = (item: RepositoryItem) => {
       @open-file="openItem"
       @change-directory="changeDirectory"
       @delete-items="onDeleteItem"
-      @rename-file="onRenameFile"
-      @move-items="onMoveItems"
+      @rename-file="handleRename"
+      @move-items="copyOrMoveViaDrag"
     >
       <template #itemIcon="{ item }">
         <span :title="getTypeTitle(item)">
@@ -328,7 +312,7 @@ const getEditingUserId = (item: RepositoryItem) => {
         </span>
       </template>
       <template #dynamicColumnActions="{ item }">
-        avatar
+        <!-- avatar -->
         <!-- <EditSessionAvatar
           v-if="isWorkflowEditorOpen(getRepositoryItem(item))"
           class="item-indicator"

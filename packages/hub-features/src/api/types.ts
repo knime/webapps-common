@@ -1,6 +1,5 @@
 import type { components } from "./schema/schema";
 
-// TODO
 export type WorkflowGroup = components["schemas"]["WorkflowGroup"];
 
 export type RepositoryItem = components["schemas"]["RepositoryItem"];

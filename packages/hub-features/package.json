@@ -49,8 +49,10 @@
     "@vueuse/components": "catalog:",
     "@vueuse/core": "catalog:",
     "@vueuse/shared": "catalog:",
+    "http-status-codes": "^2.3.0",
     "lodash-es": "catalog:",
     "ofetch": "^1.4.1",
+    "openapi-fetch": "^0.17.0",
     "typescript": "catalog:"
   },
   "peerDependencies": {

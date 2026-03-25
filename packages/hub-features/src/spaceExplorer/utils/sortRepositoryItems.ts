@@ -1,6 +1,8 @@
-import type { Children } from "#imports";
+import type { WorkflowGroup } from "../../api/types";
 
-export const sortRepositoryItems = (items: Children[]) =>
+export const sortRepositoryItems = (
+  items: NonNullable<WorkflowGroup["children"]>,
+) =>
   items.toSorted((a, b) => {
     // WorkflowGroups should come to the top
     if (a.type === "WorkflowGroup" && b.type !== "WorkflowGroup") {
