@@ -1,7 +1,6 @@
 import { type ComputedRef, computed } from "vue";
 import { StatusCodes } from "http-status-codes";
 
-import { useToasts } from "@knime/components";
 import { capitalize } from "@knime/utils";
 
 import { $httpClient } from "../../../api";
@@ -24,6 +23,7 @@ import {
 } from "../../utils/masonControls";
 import { getBaseName, getParentPath } from "../../utils/paths";
 import { pluralize } from "../../utils/pluralize";
+import { getToastsProvider } from "../../utils/toasts";
 
 import { useDestinationPicker } from "./DestinationPicker/useDestinationPicker";
 import { humanReadableSafeDate } from "./humanReadableSafeDate";
@@ -42,7 +42,7 @@ const showSuccessToast = (
   config?: SuccessToastConfig,
 ) => {
   const isSingleItem = count === 1;
-  return useToasts().show({
+  return getToastsProvider().show({
     type: "success",
     headline: isSingleItem
       ? `${capitalize(operationText)}`
@@ -212,7 +212,7 @@ export const useMoveOrCopyFeature = (options: Options) => {
     }
 
     if (strategy === "CANCEL" && succeeded.length > 0) {
-      useToasts().show({
+      getToastsProvider().show({
         headline: `Partial ${operation}`,
         message: `${pluralize(succeeded.length, "item")} ${operationText}, ${pluralize(failed.length, "item")} skipped due to name conflicts.`,
         type: "info",

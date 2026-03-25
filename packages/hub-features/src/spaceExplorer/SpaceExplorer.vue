@@ -20,7 +20,7 @@ import {
 
 import { EditSessionAvatar, useSessionsForWorkflowIds } from "./features/edit";
 
-import { useDeletion } from "./features/delete";
+import { useDeleteFeature } from "./features/delete";
 import { useRenameFeature } from "./features/rename";
 import { useMoveOrCopyFeature } from "./features/move-copy";
 import { useSpaceIcons } from "./useSpaceIcons";
@@ -31,14 +31,11 @@ import type {
   WorkflowGroup,
 } from "../api/types";
 
-import { SPACE_MOCK_DATA, WORKFLOW_GROUP_MOCK } from "./MOCKS/MOCKS";
 import { sortRepositoryItems } from "./utils/sortRepositoryItems";
 import { $httpClient } from "../api";
 import type { HubFileExplorerItem } from "./types";
+import { useAsyncState } from "@vueuse/core";
 
-const DeletionModal = defineAsyncComponent(() =>
-  import("./features/delete").then(({ DeletionModal }) => DeletionModal),
-);
 const SpaceExplorerContextMenu = defineAsyncComponent(
   () => import("./SpaceExplorerContextMenu.vue"),
 );
@@ -67,25 +64,24 @@ const emit = defineEmits<{
 }>();
 
 // FIXME: improve fetching
-const space = ref<Space>();
 const workflowGroup = ref<WorkflowGroup>();
 
-onMounted(async () => {
-  // FIXME: double check if this the is correct endpoint
-  space.value = await $httpClient
+const { state: space } = useAsyncState(
+  $httpClient
     .GET("/repository/{id}", {
       params: { path: { id: props.spaceId } },
     })
-    .then((r) => r.data);
-});
+    .then((r) => r.data as Space),
+  null,
+);
 
 watch(
   toRef(props, "rootItemId"),
   async () => {
-    // FIXME: types
-    workflowGroup.value = await $httpClient
+    // FIXME: enhance type usage if possible
+    workflowGroup.value = (await $httpClient
       .GET("/repository/{id}", { params: { path: { id: props.rootItemId } } })
-      .then(({ data }) => data);
+      .then(({ data }) => data)) as WorkflowGroup;
   },
   { immediate: true },
 );
@@ -262,7 +258,7 @@ const changeDirectory = (pathId: string) => {
   }
 };
 
-const { triggerDelete } = useDeletion();
+const { triggerDelete } = useDeleteFeature();
 const onDeleteItem = ({ items }: { items: FileExplorerItem[] }) => {
   const deleteItems = items.map((item) => ({
     id: item.id,
@@ -348,7 +344,6 @@ const getEditingUserId = (item: RepositoryItem) => {
       </template> -->
     </FileExplorer>
     <!-- <ClientOnly> -->
-    <!-- <DeletionModal /> -->
     <!-- <DestinationPickerModal /> -->
     <!-- </ClientOnly> -->
   </div>

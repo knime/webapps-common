@@ -1,7 +1,6 @@
-import { useToasts } from "@knime/components";
-
 import type { BulkRequestFail } from "./bulkRequests";
 import { pluralize } from "./pluralize";
+import { getToastsProvider } from "./toasts";
 
 export const showFailedToastForBulkRequests = <T>(
   operationText: string,
@@ -12,13 +11,13 @@ export const showFailedToastForBulkRequests = <T>(
     .map((failure) => failure.rfcError.data.title)
     .join("\n");
   if (succeededCount > 0) {
-    useToasts().show({
+    getToastsProvider().show({
       headline: `${pluralize(succeededCount, "item")} ${operationText} / ${failed.length} failed`,
       message,
       type: "warning",
     });
   } else {
-    useToasts().show({
+    getToastsProvider().show({
       headline: `${pluralize(failed.length, "item")} couldn’t be ${operationText}`,
       message,
       type: "error",
