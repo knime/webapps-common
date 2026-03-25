@@ -1,5 +1,14 @@
 # @knime/components
 
+## 1.46.0
+
+### Minor Changes
+
+- 6a0afa2: improve hints composable:
+
+  - rework internal api to remove racing conditions around initialization and duplicate watch instances
+  - provide optional callbacks when calling `createHint` (`onShow` and `onDismiss`)
+
 ## 1.45.10
 
 ### Patch Changes
