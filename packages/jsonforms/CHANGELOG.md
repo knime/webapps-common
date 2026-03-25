@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.20.2
+
+### Patch Changes
+
+- 00454d5: Ensure textfields get rendered when data value is null
+
 ## 1.20.1
 
 ### Patch Changes
