@@ -86,7 +86,7 @@ If you need this use-case then you should use a `referenceSelector` instead:
 ```html
 <template>
   <button @click="clicked = true">Click me!!</button>
-  <div id="fancy-div" v-if="clicked">At first I was afraid, I was petrified</button>
+  <div id="fancy-div" v-if="clicked">At first I was afraid, I was petrified</div>
 </template>
 
 <script setup>
