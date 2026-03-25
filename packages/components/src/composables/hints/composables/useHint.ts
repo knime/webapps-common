@@ -58,7 +58,7 @@ export const setupHints = (
     setRemoteHintState,
   };
 
-  if (skipHints) {
+  if (unref(skipHints)) {
     return;
   }
 
