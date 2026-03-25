@@ -59,7 +59,7 @@ const setInitialValues = () => {
 };
 
 const onChangeTeam = () => {
-  scopeOrSpaceId.value = possibleSpacesPerTeam.value[0]?.id ?? null;
+  scopeOrSpaceId.value = possibleSpacesPerTeam.value[0]?.id ?? "";
   props.changeValue(scopeOrSpaceId.value);
 };
 

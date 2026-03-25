@@ -16,6 +16,7 @@ const onChange = (value: string) => {
 
 <template>
   <KdsUsernameInput
+    :id="labelForId"
     :model-value="username"
     :disabled="disabled"
     @update:model-value="onChange"

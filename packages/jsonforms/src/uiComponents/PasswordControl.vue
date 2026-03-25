@@ -9,8 +9,6 @@ const MAGIC_PASSWORD = "*************";
 
 const props = defineProps<VueControlPropsForLabelContent<string>>();
 
-const initialPassword = ref("");
-
 const password = ref("");
 
 const variant = computed(
@@ -37,13 +35,13 @@ const onChange = (value: string) => {
 };
 
 onMounted(() => {
-  initialPassword.value = props.control.data;
   password.value = props.control.data ?? "";
 });
 </script>
 
 <template>
   <KdsPasswordInput
+    :id="labelForId"
     :model-value="password"
     :show-visibility-toggle="showPasswordToggle"
     :placeholder="passwordPlaceholder"
