@@ -1,5 +1,25 @@
 # @knime/json-forms
 
+## 1.20.0
+
+### Minor Changes
+
+- 80f6f17: - added KNIME Hub renderers
+  - grid and timeframe
+  - link
+  - quantity
+  - simple array layout
+  - file upload
+  - resources
+    - team resources
+    - execution memory
+    - execution cores
+  - username and password
+  - buttons with description (chub execution)
+  - team and space dropdown
+  - add description button to controls
+  - added a demo app using mock schemas
+
 ## 1.19.6
 
 ### Patch Changes
