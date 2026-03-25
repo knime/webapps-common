@@ -1,0 +1,324 @@
+{
+  "schema": {
+    "type": "object",
+    "properties": {
+      "deploymentName": {
+        "title": "Deployment name",
+        "type": "string"
+      },
+      "version": {
+        "title": "Version",
+        "default": "2"
+      },
+      "executionContext": {
+        "title": "Execution context",
+        "default": "4835366a-1fed-43ae-89ee-b126ce835a5a",
+        "description": "Running execution contexts are ready to use. Execution contexts using the auto start and stop function might require time to load."
+      },
+      "enableWorkflowActions": {
+        "title": "Enable email notifications",
+        "type": "boolean",
+        "default": false
+      },
+      "workflowActions": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "email": {
+              "title": "Email address",
+              "type": "string",
+              "placeholder": "email@knime.com"
+            },
+            "condition": {
+              "title": "Condition",
+              "oneOf": [
+                {
+                  "title": "Success",
+                  "const": "onSuccess"
+                },
+                {
+                  "title": "Failure",
+                  "const": "onFailure"
+                },
+                {
+                  "title": "Success or failure",
+                  "const": "onSuccessOrFailure"
+                }
+              ],
+              "default": "onFailure"
+            }
+          }
+        }
+      },
+      "appendNodeMessages": {
+        "title": "Append workflow messages",
+        "type": "boolean",
+        "default": false
+      },
+      "configuration": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  },
+  "uiSchema": {
+    "type": "VerticalLayout",
+    "elements": [
+      {
+        "type": "Section",
+        "label": "Create ad hoc execution",
+        "elements": [
+          {
+            "type": "Control",
+            "scope": "#/properties/version",
+            "options": {
+              "format": "dropDown",
+              "possibleValues": [
+                {
+                  "id": "current-state",
+                  "text": "Latest"
+                },
+                {
+                  "id": "2",
+                  "text": "0.0.1 – wish you were stable 🙈"
+                }
+              ]
+            }
+          },
+          {
+            "type": "Control",
+            "scope": "#/properties/executionContext",
+            "options": {
+              "format": "dropDown",
+              "possibleValues": [
+                {
+                  "id": "4835366a-1fed-43ae-89ee-b126ce835a5a",
+                  "text": "5.12.0 - 00 5.x Nightly (Auto-Updated by Jenkins; by Alice)",
+                  "subText": "Starting up",
+                  "accessory": {
+                    "type": "liveStatus",
+                    "status": "yellow"
+                  }
+                },
+                {
+                  "id": "4e2314ea-4b7d-41fc-8618-ddf1c635ad0e",
+                  "text": "5.3.4 - 5.3.4 Full RC1",
+                  "subText": "Stopped",
+                  "accessory": {
+                    "type": "liveStatus",
+                    "status": "red"
+                  }
+                },
+                {
+                  "id": "b718140e-9f4f-41fd-a61b-6e3ef9fcd1b1",
+                  "text": "5.3.4 - 5.3.4 Standard RC1",
+                  "subText": "Stopped",
+                  "accessory": {
+                    "type": "liveStatus",
+                    "status": "red"
+                  }
+                },
+                {
+                  "id": "ec5f1a71-fcc4-4efd-b8e8-417a99ae3826",
+                  "text": "5.5.2 - 5.5.2 (Full)",
+                  "subText": "Stopped",
+                  "accessory": {
+                    "type": "liveStatus",
+                    "status": "red"
+                  }
+                },
+                {
+                  "id": "9a0b9e4e-cb35-4681-8322-db0899c62ec0",
+                  "text": "5.8.0 - 5.8.0 run and edit",
+                  "subText": "Stopped",
+                  "accessory": {
+                    "type": "liveStatus",
+                    "status": "red"
+                  }
+                },
+                {
+                  "id": "4fba811b-5378-42fe-9276-08108fe0a9c0",
+                  "text": "5.8.0 - aretheexecutorsremote",
+                  "subText": "Stopped",
+                  "accessory": {
+                    "type": "liveStatus",
+                    "status": "red"
+                  }
+                },
+                {
+                  "id": "772e2aee-4525-4931-be1a-d1bec32371c0",
+                  "text": "5.8.0 - Common execution context",
+                  "subText": "Stopped",
+                  "accessory": {
+                    "type": "liveStatus",
+                    "status": "red"
+                  }
+                },
+                {
+                  "id": "6bed6ad4-ea75-476c-8eba-0baedd409b3c",
+                  "text": "5.4.4 - Latest stable release",
+                  "subText": "Stopped",
+                  "accessory": {
+                    "type": "liveStatus",
+                    "status": "red"
+                  }
+                },
+                {
+                  "id": "1ffbbc6e-b876-4107-a5a9-f3b3d67da6eb",
+                  "text": "5.12.0 - Nightly 2026-03-05",
+                  "subText": "Stopped",
+                  "accessory": {
+                    "type": "liveStatus",
+                    "status": "red"
+                  }
+                },
+                {
+                  "id": "d8dae021-d8a9-4b17-b988-85f032473c07",
+                  "text": "Bob",
+                  "subText": "Stopped",
+                  "accessory": {
+                    "type": "liveStatus",
+                    "status": "red"
+                  }
+                },
+                {
+                  "id": "84f82337-c24d-49b6-aa0b-14592a06ffdd",
+                  "text": "5.11.0 - Remote Execution (Charlie)",
+                  "subText": "Running",
+                  "accessory": {
+                    "type": "liveStatus",
+                    "status": "green"
+                  }
+                },
+                {
+                  "id": "e872bd71-af63-438a-8d78-a344aea78f2f",
+                  "text": "5.8.2 - Remote Execution (Dana, Linux)",
+                  "subText": "Running",
+                  "accessory": {
+                    "type": "liveStatus",
+                    "status": "green"
+                  }
+                },
+                {
+                  "id": "9c9f64fc-1939-49ce-a98a-487eaa9655ff",
+                  "text": "5.8.2 - Remote Execution (Dana, Windows)",
+                  "subText": "Running",
+                  "accessory": {
+                    "type": "liveStatus",
+                    "status": "green"
+                  }
+                },
+                {
+                  "id": "b4556da7-1cac-4c34-951f-6c41238c1b33",
+                  "text": "5.8.0 - Dana’s EC",
+                  "subText": "Stopped",
+                  "accessory": {
+                    "type": "liveStatus",
+                    "status": "red"
+                  }
+                },
+                {
+                  "id": "be90764f-165d-4f56-b2d5-771389d7a1ec",
+                  "text": "Danas Executor Pool",
+                  "subText": "Stopped",
+                  "accessory": {
+                    "type": "liveStatus",
+                    "status": "red"
+                  }
+                },
+                {
+                  "id": "a6ef436d-3adf-43db-8327-d4ae48853797",
+                  "text": "testing using registry.hub.knime.com",
+                  "subText": "Stopped",
+                  "accessory": {
+                    "type": "liveStatus",
+                    "status": "red"
+                  }
+                },
+                {
+                  "id": "e5767c61-81f8-4643-b21b-48101c592dac",
+                  "text": "Eve's test EC",
+                  "subText": "Stopped",
+                  "accessory": {
+                    "type": "liveStatus",
+                    "status": "red"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "Section",
+            "label": "Email notifications",
+            "description": "Setup email notifications of the workflow execution.",
+            "elements": [
+              {
+                "type": "Control",
+                "scope": "#/properties/enableWorkflowActions"
+              },
+              {
+                "rule": {
+                  "effect": "SHOW",
+                  "condition": {
+                    "scope": "#/properties/enableWorkflowActions",
+                    "type": "LEAF",
+                    "expectedValue": true
+                  }
+                },
+                "elements": [
+                  {
+                    "type": "SimpleArrayLayout",
+                    "scope": "#/properties/workflowActions",
+                    "options": {
+                      "addButtonText": "Add more",
+                      "showSortButtons": false,
+                      "detail": {
+                        "horizontalLayout": {
+                          "type": "HorizontalLayout",
+                          "elements": [
+                            {
+                              "type": "Control",
+                              "scope": "#/properties/email"
+                            },
+                            {
+                              "type": "Control",
+                              "scope": "#/properties/condition",
+                              "options": {
+                                "format": "dropdown"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "type": "Control",
+                    "scope": "#/properties/appendNodeMessages"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "data": {
+    "version": "2",
+    "executionContext": "4835366a-1fed-43ae-89ee-b126ce835a5a",
+    "enableWorkflowActions": true,
+    "appendNodeMessages": true,
+    "workflowActions": [
+      {
+        "email": "support@knime.com",
+        "condition": "onFailure"
+      },
+      {
+        "email": "info@knime.com",
+        "condition": "onSuccess"
+      }
+    ]
+  }
+}

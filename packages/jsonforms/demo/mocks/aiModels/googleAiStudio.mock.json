@@ -1,0 +1,350 @@
+{
+  "schema": {
+    "type": "object",
+    "properties": {
+      "showNameDescription": {
+        "title": "Use custom name and description",
+        "type": "boolean",
+        "default": false
+      },
+      "name": {
+        "title": "Name",
+        "type": "string",
+        "default": ""
+      },
+      "description": {
+        "title": "Description",
+        "type": "string",
+        "default": ""
+      },
+      "modelPlatform": {
+        "title": "Platform",
+        "oneOf": [
+          {
+            "const": "openai",
+            "title": "OpenAI"
+          },
+          {
+            "const": "azure",
+            "title": "Azure OpenAI"
+          },
+          {
+            "const": "bedrock",
+            "title": "Amazon Bedrock"
+          },
+          {
+            "const": "aistudio",
+            "title": "Google AI Studio"
+          },
+          {
+            "const": "anthropic",
+            "title": "Anthropic"
+          },
+          {
+            "const": "openaiCompatible",
+            "title": "OpenAI API-compatible Providers"
+          },
+          {
+            "const": "huggingface",
+            "title": "Hugging Face Hub"
+          },
+          {
+            "const": "mistral",
+            "title": "Mistral AI"
+          },
+          {
+            "const": "ollama",
+            "title": "Ollama"
+          }
+        ],
+        "default": "openai"
+      },
+      "platformConfig": {
+        "type": "object",
+        "properties": {
+          "apiKey": {
+            "type": "string",
+            "title": "API key",
+            "default": "",
+            "description": "A valid <a href='https://ai.google.dev/gemini-api/docs/api-key'>Google AI Studio API key</a>."
+          }
+        }
+      },
+      "modelType": {
+        "title": "Type of model",
+        "oneOf": [
+          {
+            "const": "chat",
+            "title": "Chat"
+          },
+          {
+            "const": "embedding",
+            "title": "Embedding"
+          }
+        ],
+        "default": "chat"
+      },
+      "model": {
+        "type": "object",
+        "properties": {
+          "modelChoice": {
+            "title": "Model",
+            "oneOf": [
+              {
+                "const": "default",
+                "title": "Default Models"
+              },
+              {
+                "const": "custom",
+                "title": "Custom Model"
+              }
+            ],
+            "default": "default"
+          },
+          "modelValue": {
+            "title": " ",
+            "oneOf": [
+              {
+                "const": "gemini-2.5-pro",
+                "title": "Gemini 2.5 Pro"
+              },
+              {
+                "const": "gemini-2.5-flash",
+                "title": "Gemini 2.5 Flash"
+              },
+              {
+                "const": "gemini-2.5-flash-lite",
+                "title": "Gemini 2.5 Flash Lite"
+              }
+            ],
+            "default": "gemini-2.5-pro",
+            "description": "Default models use provider aliases. Requests go to the latest version in that family (e.g., claude-sonnet-4-5 resolves to the newest dated release). Enter the exact Model ID under Custom model to pin a version."
+          }
+        }
+      },
+      "customHeaders": {
+        "type": "array",
+        "default": [],
+        "items": {
+          "type": "object",
+          "properties": {
+            "key": {
+              "title": "Key",
+              "type": "string",
+              "default": ""
+            },
+            "value": {
+              "title": "Value",
+              "type": "string",
+              "default": ""
+            }
+          }
+        }
+      },
+      "useCustomTimeout": {
+        "type": "boolean",
+        "title": "Override default",
+        "default": false
+      },
+      "inferenceTimeout": {
+        "title": "Timeout",
+        "type": "string",
+        "description": "Optional timeout for API requests.",
+        "default": "PT2M"
+      }
+    }
+  },
+  "uiSchema": {
+    "type": "VerticalLayout",
+    "elements": [
+      {
+        "type": "Section",
+        "label": "Register GenAI model",
+        "elements": [
+          {
+            "type": "VerticalLayout",
+            "elements": [
+              {
+                "type": "Control",
+                "scope": "#/properties/showNameDescription",
+                "options": {
+                  "format": "checkbox"
+                }
+              },
+              {
+                "type": "Control",
+                "scope": "#/properties/name",
+                "rule": {
+                  "effect": "SHOW",
+                  "condition": {
+                    "scope": "#/properties/showNameDescription",
+                    "type": "LEAF",
+                    "expectedValue": true
+                  }
+                }
+              },
+              {
+                "type": "Control",
+                "scope": "#/properties/description",
+                "rule": {
+                  "effect": "SHOW",
+                  "condition": {
+                    "scope": "#/properties/showNameDescription",
+                    "type": "LEAF",
+                    "expectedValue": true
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "type": "Section",
+            "label": "Platform Configuration",
+            "elements": [
+              {
+                "type": "Control",
+                "scope": "#/properties/modelPlatform",
+                "options": {
+                  "format": "dropdown"
+                }
+              },
+              {
+                "type": "Control",
+                "scope": "#/properties/platformConfig/properties/apiKey",
+                "options": {
+                  "format": "password",
+                  "variant": "key"
+                }
+              }
+            ]
+          },
+          {
+            "type": "Section",
+            "label": "Model Configuration",
+            "elements": [
+              {
+                "type": "Control",
+                "scope": "#/properties/modelType",
+                "options": {
+                  "format": "valueSwitch",
+                  "readonly": false
+                }
+              },
+              {
+                "type": "HorizontalLayout",
+                "elements": [
+                  {
+                    "type": "Control",
+                    "scope": "#/properties/model/properties/modelChoice",
+                    "options": {
+                      "format": "dropdown"
+                    }
+                  },
+                  {
+                    "type": "Control",
+                    "scope": "#/properties/model/properties/modelValue",
+                    "options": {
+                      "format": "dropdown"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "VerticalLayout",
+            "elements": [
+              {
+                "type": "SettingsSubPanelLayout",
+                "label": "Advanced settings",
+                "options": {
+                  "backButtonLabel": "Back"
+                },
+                "elements": [
+                  {
+                    "type": "Section",
+                    "label": "Custom http headers",
+                    "elements": [
+                      {
+                        "type": "SimpleArrayLayout",
+                        "scope": "#/properties/customHeaders",
+                        "options": {
+                          "addButtonText": "Add parameter",
+                          "showSortButtons": false,
+                          "detail": {
+                            "horizontalLayout": {
+                              "type": "HorizontalLayout",
+                              "elements": [
+                                {
+                                  "type": "Control",
+                                  "scope": "#/properties/key"
+                                },
+                                {
+                                  "type": "Control",
+                                  "scope": "#/properties/value"
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "type": "Section",
+                    "label": "Request timeout",
+                    "elements": [
+                      {
+                        "type": "Control",
+                        "scope": "#/properties/useCustomTimeout",
+                        "options": {
+                          "format": "checkbox"
+                        }
+                      },
+                      {
+                        "type": "Control",
+                        "scope": "#/properties/inferenceTimeout",
+                        "options": {
+                          "format": "ISOPeriod",
+                          "includeSecondsAndMilliseconds": true
+                        },
+                        "rule": {
+                          "effect": "SHOW",
+                          "condition": {
+                            "scope": "#/properties/useCustomTimeout",
+                            "type": "LEAF",
+                            "expectedValue": true
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "data": {
+    "showNameDescription": true,
+    "name": "Gemini 2.5 Pro",
+    "description": "Google AI Studio model for chat-based workflows.",
+    "modelPlatform": "aistudio",
+    "platformConfig": {
+      "apiKey": "****************************"
+    },
+    "modelType": "chat",
+    "model": {
+      "modelChoice": "default",
+      "modelValue": "gemini-2.5-pro"
+    },
+    "customHeaders": [
+      { "key": "X-Request-Source", "value": "knime-hub" },
+      { "key": "X-Trace-Id", "value": "abc123xyz" }
+    ],
+    "useCustomTimeout": false,
+    "inferenceTimeout": "PT600S"
+  }
+}

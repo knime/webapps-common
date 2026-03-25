@@ -1,3 +1,4 @@
+import { mapControls, withDescriptionButton } from "../higherOrderComponents";
 import { controlToRenderer } from "../higherOrderComponents/control/controlToRenderer";
 import type { VueControlRenderer } from "../higherOrderComponents/control/types";
 import type { PerformExternalValidation } from "../higherOrderComponents/control/validation/types";
@@ -15,34 +16,47 @@ import {
 } from "./dateTimeFormatPickerRenderer";
 import { dateTimeRenderer } from "./dateTimeRenderer";
 import { dropdownRenderer } from "./dropdownRenderer";
+import { executorCoresResourceRenderer } from "./executorCoresResourceRenderer";
+import { executorMemoryResourceRenderer } from "./executorMemoryResourceRenderer";
 import {
   fallbackControlRenderers,
   fallbackLayoutRenderers,
 } from "./fallbackRenderers";
+import { fileUploadRenderer } from "./fileUploadRenderer";
+import { gridSelectionRenderer } from "./gridSelectionRenderer";
 import { horizontalLayoutRenderer } from "./horizontalLayoutRenderer";
 import { integerRenderer } from "./integerRenderer";
 import { intervalRenderer } from "./intervalRenderer";
+import { linkRenderer } from "./linkRenderer";
 import { localDateRenderer } from "./localDateRenderer";
 import { localTimeRenderer } from "./localTimeRenderer";
 import { multiSelectListBoxRenderer } from "./multiSelectListBoxRenderer";
 import { nameFilterRenderer } from "./nameFilterRenderer";
 import { numberRenderer } from "./numberRenderer";
+import { passwordRenderer } from "./passwordRenderer";
+import { quantityRenderer } from "./quantityRenderer";
 import { radioRenderer } from "./radioRenderer";
+import { radioWithDescriptionRenderer } from "./radioWithDescriptionRenderer";
 import { richTextRenderer } from "./richTextRenderer";
 import { sectionLayoutRenderer } from "./sectionLayoutRenderer";
 import { settingsSubPanelLayoutRenderer } from "./sectionSubPanelLayoutRenderer";
+import { simpleArrayLayoutRenderer } from "./simpleArrayLayoutRenderer";
 import { simpleButtonRenderer } from "./simpleButtonRenderer";
 import { singleSelectListBoxRenderer } from "./singleSelectListBoxRenderer";
 import { singleSelectRenderer } from "./singleSelectRenderer";
 import { sortListRenderer } from "./sortListRenderer";
+import { teamAndSpacesDropdownRenderer } from "./teamAndSpaceDropdownRenderer";
+import { teamResourceRenderer } from "./teamResourceRenderer";
 import { textAreaRenderer } from "./textAreaRenderer";
 import { textMessageRenderer } from "./textMessageRenderer";
+import { timeframesRenderer } from "./timeframesRenderer";
 import {
   manualTwinlistRenderer,
   simpleTwinlistRenderer,
   twinlistRenderer,
 } from "./twinlistRenderer";
 import { typedStringFilterRenderer } from "./typedStringFilterRenderer";
+import { usernameRenderer } from "./usernameRenderer";
 import { valueSwitchRenderer } from "./valueSwitchRenderer";
 import { verticalLayoutRenderer } from "./verticalLayoutRenderer";
 import { zonedDateTimeRenderer } from "./zonedDateTimeRenderer";
@@ -74,15 +88,30 @@ export const controls = {
   valueSwitchRenderer,
   zonedDateTimeRenderer,
   singleSelectRenderer,
+  gridSelectionRenderer,
+  timeframesRenderer,
+  quantityRenderer,
+  usernameRenderer,
+  passwordRenderer,
   // without label:
   simpleButtonRenderer,
   textMessageRenderer,
+  linkRenderer,
   /**
    * Containing an optional checkbox. Keep Label in control until we have a framework for that.
    */
   dropdownRenderer,
+  // custom hub renderers
+  radioWithDescriptionRenderer,
+  fileUploadRenderer,
+  teamResourceRenderer,
+  executorCoresResourceRenderer,
+  executorMemoryResourceRenderer,
+  teamAndSpacesDropdownRenderer,
   ...fallbackControlRenderers,
 } satisfies Record<string, VueControlRenderer>;
+
+const mappedControls = mapControls(withDescriptionButton)(controls);
 
 export const layouts = {
   horizontalLayoutRenderer,
@@ -124,7 +153,7 @@ export const toRenderers = ({
   ]);
 
 export const defaultRenderers: readonly NamedRenderer[] = toRenderers({
-  renderers: [],
-  controls: Object.values(controls),
+  renderers: [simpleArrayLayoutRenderer],
+  controls: Object.values(mappedControls),
   layouts: Object.values(layouts),
 });
