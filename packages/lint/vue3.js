@@ -59,6 +59,11 @@ export default [
       "vue/padding-line-between-blocks": "error",
       "vue/require-v-for-key": "warn",
       "vue/v-slot-style": ["error", "shorthand"],
+      "vue/attribute-hyphenation": [
+        "error",
+        "always",
+        { ignore: ["ariaLabel"] },
+      ],
     },
   },
 ];
