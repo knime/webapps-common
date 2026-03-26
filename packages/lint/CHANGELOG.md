@@ -1,5 +1,11 @@
 # @knime/eslint-config
 
+## 9.5.5
+
+### Patch Changes
+
+- 835625e: Ignore camel case ariaLabel in Vue props
+
 ## 9.5.4
 
 ### Patch Changes
