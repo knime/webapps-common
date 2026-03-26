@@ -35,6 +35,7 @@ import { sortRepositoryItems } from "./utils/sortRepositoryItems";
 import { $httpClient } from "../api";
 import type { HubFileExplorerItem } from "./types";
 import { useAsyncState } from "@vueuse/core";
+import { initGlobalContext, type GlobalContext } from "./context";
 
 const SpaceExplorerContextMenu = defineAsyncComponent(
   () => import("./SpaceExplorerContextMenu.vue"),
@@ -45,23 +46,15 @@ export type NavigationEvent =
   | { type: "to-child-dir"; item: RepositoryItem }
   | { type: "to-item-details"; item: RepositoryItem; openInNewTab?: boolean };
 
-type ContextConfig = {
-  isWorkflowEditingPossible: boolean;
-};
-
 type Props = {
-  context: ContextConfig;
   accountId: string;
   spaceId: string;
   rootItemId: string;
-  generateShortLink?: (item: { id: string }) => string;
+  context: GlobalContext;
 };
 
 const props = defineProps<Props>();
-
-const emit = defineEmits<{
-  navigate: [payload: NavigationEvent];
-}>();
+initGlobalContext(props.context);
 
 // FIXME: improve fetching
 const workflowGroup = ref<WorkflowGroup>();
@@ -76,11 +69,13 @@ const { state: space } = useAsyncState(
 );
 
 watch(
-  toRef(props, "rootItemId"),
+  computed(() => props.rootItemId),
   async () => {
     // FIXME: enhance type usage if possible
     workflowGroup.value = (await $httpClient
-      .GET("/repository/{id}", { params: { path: { id: props.rootItemId } } })
+      .GET("/repository/{id}", {
+        params: { path: { id: props.rootItemId } },
+      })
       .then(({ data }) => data)) as WorkflowGroup;
   },
   { immediate: true },
@@ -130,6 +125,11 @@ const workflowGroupChildrenById = computed(() => {
 //     filters: { spaceId: space.value?.id ?? "" },
 //   },
 // });
+// const getEditingUserId = (item: RepositoryItem) => {
+//   const sessionState = getSessionByWorkflowId(item.id);
+
+//   return sessionState.state === "locked" ? sessionState.creator : "";
+// };
 const getSessionByWorkflowId = () => {};
 
 const activeRenameItemId = ref<string>();
@@ -167,6 +167,7 @@ const pathComponents = computed(() => {
 });
 
 const isSpaceRoot = computed(() => {
+  // FIXME: maybe use path utils here
   // /Users/<username>/<spacename> ==> root of space
   return pathComponents.value.length === 3; // eslint-disable-line no-magic-numbers
 });
@@ -243,18 +244,24 @@ const openItem = (item: FileExplorerItem) => {
     return;
   }
 
-  emit("navigate", { type: "to-item-details", item: repositoryItem });
+  props.context.navigation.navigate({
+    type: "to-item-details",
+    item: repositoryItem,
+  });
 };
 
 const changeDirectory = (pathId: string) => {
   if (pathId === "..") {
-    emit("navigate", { type: "to-parent-dir" });
+    props.context.navigation.navigate({ type: "to-parent-dir" });
     return;
   }
 
   const targetRepoItem = workflowGroupChildrenById.value[pathId];
   if (targetRepoItem) {
-    emit("navigate", { type: "to-child-dir", item: targetRepoItem });
+    props.context.navigation.navigate({
+      type: "to-child-dir",
+      item: targetRepoItem,
+    });
   }
 };
 
@@ -274,17 +281,11 @@ const { handleRename } = useRenameFeature({
 });
 
 const { copyOrMoveViaDrag } = useMoveOrCopyFeature({
-  space: computed(() => space.value),
+  space: computed(() => space.value ?? undefined),
   workflowGroup: computed(() => workflowGroup.value),
   workflowGroupChildrenById,
   currentItems: fileExplorerItems,
 });
-
-const getEditingUserId = (item: RepositoryItem) => {
-  const sessionState = getSessionByWorkflowId(item.id);
-
-  return sessionState.state === "locked" ? sessionState.creator : "";
-};
 </script>
 
 <template>
@@ -315,7 +316,8 @@ const getEditingUserId = (item: RepositoryItem) => {
           :user-id="getEditingUserId(getRepositoryItem(item))"
         /> -->
       </template>
-      <!-- <template
+
+      <template
         #contextMenu="{
           anchor,
           onItemClick,
@@ -328,20 +330,22 @@ const getEditingUserId = (item: RepositoryItem) => {
           :create-rename-option="createRenameOption"
           :create-delete-option="createDeleteOption"
           :anchor="anchor"
-          :generate-short-link="generateShortLink ?? (() => '')"
+          :generate-short-link="() => ''"
           :on-item-click="onItemClick"
           :close-context-menu="closeContextMenu"
           :selected-items="selectedItems"
           :get-edit-sessions-state="getSessionByWorkflowId"
           @show-item-details="
-            emit('navigate', {
-              type: 'to-item-details',
-              item: $event.item,
-              openInNewTab: $event.openInNewTab,
-            })
+            () => {
+              // emit('navigate', {
+              //   type: 'to-item-details',
+              //   item: $event.item,
+              //   openInNewTab: $event.openInNewTab,
+              // })
+            }
           "
         />
-      </template> -->
+      </template>
     </FileExplorer>
     <!-- <ClientOnly> -->
     <!-- <DestinationPickerModal /> -->

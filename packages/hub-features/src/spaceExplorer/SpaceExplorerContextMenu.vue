@@ -1,9 +1,5 @@
 <script lang="ts" setup>
 import { computed } from "vue";
-import type {
-  RepositoryItem,
-  Workflow,
-} from "#shared/repositoryDefinition/catalog";
 
 import {
   type Anchor,
@@ -18,22 +14,22 @@ import RenameIcon from "@knime/styles/img/icons/rename.svg";
 import TrashIcon from "@knime/styles/img/icons/trash.svg";
 import { getMetaOrCtrlKey, hotkeys } from "@knime/utils";
 
-import { menuGroupsBuilder } from "~/__shared/util/menuGroupsBuilder";
-import { valueOrEmpty } from "~/__shared/util/valueOrEmpty";
-import {
-  type MenuItemWithHandler,
-  useContextMenuHandlers,
-  useCopyShortLinkMenuItem,
-  useDownloadMenuItem,
-  useEditWorkflowMenuItem,
-} from "~/composables/contextMenu";
-import type { EditSession } from "~/composables/workflowEditing/useWorkflowEditingSessions";
+import { menuGroupsBuilder } from "@knime/components";
 
-import type { HubFileExplorerItem } from "./SpaceExplorer.vue";
-import { useMoveOrCopyOperations } from "./useMoveOrCopyOperations";
+// import {
+//   useContextMenuHandlers,
+//   useCopyShortLinkMenuItem,
+//   useDownloadMenuItem,
+//   useEditWorkflowMenuItem,
+// } from "~/composables/contextMenu";
+// import type { EditSession } from "~/composables/workflowEditing/useWorkflowEditingSessions";
 
-const requiresLogin = ["Space", "WorkflowGroup"];
-const downloadBlacklist = ["Component", "WorkflowTemplate"];
+// import { useMoveOrCopyFeature } from "./features/move-copy";
+import type { RepositoryItem, Workflow } from "../api/types";
+import type { HubFileExplorerItem, MenuItemWithHandler } from "./types";
+import { useDownloadFeature } from "./features/download";
+import { valueOrEmpty } from "./utils/value-or-empty";
+import { globalContext } from "./context";
 
 type Props = {
   anchor: Anchor;
@@ -48,22 +44,15 @@ type Props = {
 
 const props = defineProps<Props>();
 
-const emit = defineEmits<{
-  showItemDetails: [{ item: RepositoryItem; openInNewTab: boolean }];
-}>();
-
 const getRepositoryItem = (item: HubFileExplorerItem) =>
   item.meta!.repositoryItem as RepositoryItem;
+
 const anchorRepositoryItem = computed(() =>
-  getRepositoryItem(props.anchor.item),
+  getRepositoryItem(props.anchor.item as HubFileExplorerItem),
 );
 
 const isWorkflow = (item: RepositoryItem): item is Workflow =>
   item.type === "Workflow";
-
-const isDownloadable = (item: RepositoryItem) => {
-  return !downloadBlacklist.includes(item.type);
-};
 
 const showDetails = computed<MenuItemWithHandler>(() => {
   const isFolder = anchorRepositoryItem.value.type === "WorkflowGroup";
@@ -73,10 +62,18 @@ const showDetails = computed<MenuItemWithHandler>(() => {
     icon: ArrowNext,
     metadata: {
       handler: (event?: MouseEvent) => {
-        emit("showItemDetails", {
-          item: anchorRepositoryItem.value,
-          openInNewTab: Boolean(event?.[getMetaOrCtrlKey()]),
-        });
+        if (isFolder) {
+          globalContext.navigation().navigate({
+            type: "to-child-dir",
+            item: anchorRepositoryItem.value,
+          });
+        } else {
+          globalContext.navigation().navigate({
+            type: "to-item-details",
+            item: anchorRepositoryItem.value,
+            openInNewTab: Boolean(event?.[getMetaOrCtrlKey()]),
+          });
+        }
       },
     },
   };
@@ -91,23 +88,22 @@ const workflowItem = computed(() => {
   return anchorRepositoryItem.value;
 });
 
-const { menuItem: editWorkflow, isVisible } = useEditWorkflowMenuItem({
-  workflowId: computed(() => workflowItem.value.id),
-  masonControls: computed(() => workflowItem.value),
-  getEditSessionsState: props.getEditSessionsState,
-});
+// FIXME: edit feature
+// const { menuItem: editWorkflow, isVisible } = useEditWorkflowMenuItem({
+//   workflowId: computed(() => workflowItem.value.id),
+//   masonControls: computed(() => workflowItem.value),
+//   getEditSessionsState: props.getEditSessionsState,
+// });
 
-const copyShortlink = useCopyShortLinkMenuItem({
-  itemId: anchorRepositoryItem.value.id,
-  itemType: anchorRepositoryItem.value.type,
-  generateShortLink: props.generateShortLink,
-});
+// FIXME: copy link feature
+// const copyShortlink = useCopyShortLinkMenuItem({
+//   itemId: anchorRepositoryItem.value.id,
+//   itemType: anchorRepositoryItem.value.type,
+//   generateShortLink: props.generateShortLink,
+// });
 
-const download = useDownloadMenuItem<HubFileExplorerItem>({
-  selectedItems: computed(() => props.selectedItems),
-  isDownloadable: (item) => isDownloadable(item.meta!.repositoryItem!),
-  requiresLogin: (item) =>
-    requiresLogin.includes(item.meta!.repositoryItem!.type),
+const downloadFeature = useDownloadFeature({
+  items: computed(() => props.selectedItems),
 });
 
 const deleteItem = computed<MenuItem>(() =>
@@ -126,36 +122,37 @@ const renameItem = computed<MenuItem>(() =>
   }),
 );
 
-const { canCopyItems, canMoveItems, copyOrMoveAskForDestination } =
-  useMoveOrCopyOperations({
-    masonControls: computed(() => anchorRepositoryItem.value["@controls"]),
-  });
+// FIXME: copy/move feature
+// const { canCopyItems, canMoveItems, copyOrMoveAskForDestination } =
+//   useMoveOrCopyOperations({
+//     masonControls: computed(() => anchorRepositoryItem.value["@controls"]),
+//   });
 
-const moveItems = computed<MenuItemWithHandler>(() => {
-  return {
-    id: "move",
-    text: "Move to…",
-    icon: MoveIcon,
-    metadata: {
-      handler: async () => {
-        await copyOrMoveAskForDestination("move", props.selectedItems);
-      },
-    },
-  };
-});
+// const moveItems = computed<MenuItemWithHandler>(() => {
+//   return {
+//     id: "move",
+//     text: "Move to…",
+//     icon: MoveIcon,
+//     metadata: {
+//       handler: async () => {
+//         await copyOrMoveAskForDestination("move", props.selectedItems);
+//       },
+//     },
+//   };
+// });
 
-const copyItems = computed<MenuItemWithHandler>(() => {
-  return {
-    id: "copy",
-    text: "Copy to…",
-    icon: CopyIcon,
-    metadata: {
-      handler: async () => {
-        await copyOrMoveAskForDestination("copy", props.selectedItems);
-      },
-    },
-  };
-});
+// const copyItems = computed<MenuItemWithHandler>(() => {
+//   return {
+//     id: "copy",
+//     text: "Copy to…",
+//     icon: CopyIcon,
+//     metadata: {
+//       handler: async () => {
+//         await copyOrMoveAskForDestination("copy", props.selectedItems);
+//       },
+//     },
+//   };
+// });
 
 const spaceExplorerContextMenuItems = computed(() => {
   const menuItems = menuGroupsBuilder<MenuItem>({
@@ -166,16 +163,16 @@ const spaceExplorerContextMenuItems = computed(() => {
         props.selectedItems.length === 1 && props.anchor.item.isOpenableFile,
         showDetails.value,
       ),
-      ...valueOrEmpty(copyShortlink.isVisible.value, copyShortlink.menuItem),
+      // ...valueOrEmpty(copyShortlink.isVisible.value, copyShortlink.menuItem),
     ])
-    .append([
-      ...valueOrEmpty(
-        isVisible.value &&
-          props.selectedItems.length === 1 &&
-          isWorkflow(anchorRepositoryItem.value),
-        editWorkflow.value,
-      ),
-    ])
+    // .append([
+    //   ...valueOrEmpty(
+    //     isVisible.value &&
+    //       props.selectedItems.length === 1 &&
+    //       isWorkflow(anchorRepositoryItem.value),
+    //     editWorkflow.value,
+    //   ),
+    // ])
     .append([
       ...valueOrEmpty(
         props.selectedItems.length === 1 && props.anchor.item.canBeRenamed,
@@ -186,16 +183,16 @@ const spaceExplorerContextMenuItems = computed(() => {
         deleteItem.value,
       ),
     ])
-    .append([
-      ...valueOrEmpty(canMoveItems.value, moveItems.value),
-      ...valueOrEmpty(canCopyItems.value, copyItems.value),
-    ])
+    // .append([
+    //   ...valueOrEmpty(canMoveItems.value, moveItems.value),
+    //   ...valueOrEmpty(canCopyItems.value, copyItems.value),
+    // ])
     .append([
       ...valueOrEmpty(
         props.selectedItems.every((item) =>
-          isDownloadable(item.meta!.repositoryItem!),
+          downloadFeature.isDownloadable(item.meta!.repositoryItem!),
         ),
-        download.menuItem,
+        downloadFeature.toMenuItem(),
       ),
     ])
     .build();
@@ -203,10 +200,16 @@ const spaceExplorerContextMenuItems = computed(() => {
   return menuItems;
 });
 
-const { handleItemClick } = useContextMenuHandlers({
-  closeContextMenu: props.closeContextMenu,
-  onItemClick: props.onItemClick,
-});
+const handleItemClick = (item: MenuItemWithHandler, event: MouseEvent) => {
+  if (item.metadata?.handler) {
+    item.metadata.handler(event);
+    props.closeContextMenu();
+    return;
+  }
+
+  // use file explorer's default behavior
+  props.onItemClick(item);
+};
 </script>
 
 <template>

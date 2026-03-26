@@ -44,6 +44,7 @@ import BaseMenuItem from "./base/MenuItem/BaseMenuItem.vue";
 import BaseMenuItemText from "./base/MenuItem/BaseMenuItemText.vue";
 import BaseMenuItems from "./base/MenuItem/BaseMenuItems.vue";
 import MenuItems from "./base/MenuItem/MenuItems.vue";
+import { menuGroupsBuilder } from "./base/MenuItem/menu-groups-builder";
 import BaseMessage from "./base/Message/BaseMessage.vue";
 import BaseModal from "./base/Modal/BaseModal.vue";
 import NodeFeatureList from "./node/NodeFeatureList.vue";
@@ -87,6 +88,7 @@ export {
   LoadingIcon,
   LocalDateTime,
   MenuItems,
+  menuGroupsBuilder,
   Message,
   MessageLink,
   Messages,

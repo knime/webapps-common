@@ -1,4 +1,5 @@
 import SpaceExplorer from "./SpaceExplorer.vue";
-import { initGlobalContext } from "./config";
 
-export { SpaceExplorer, initGlobalContext };
+export type { GlobalContext } from "./context";
+
+export { SpaceExplorer };

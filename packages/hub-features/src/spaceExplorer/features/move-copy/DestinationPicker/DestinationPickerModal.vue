@@ -62,11 +62,12 @@ const showValidationHint = computed(
       <div class="destination-picker-wrapper">
         <div class="spaced-container">{{ config?.description }}</div>
         <div class="space-tree-container">
+          <!-- FIXME -->
           <!-- <SpaceTree
             class="space-tree"
             auto-expand
             :accounts="
-              [loggedInUser, ...getSortedTeams()] as AccountWithCustomData[]
+              getSortedTeams() as AccountWithCustomData[]
             "
             @select-change="onSpaceTreeSelection"
           /> -->

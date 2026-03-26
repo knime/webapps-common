@@ -1,10 +1,10 @@
 import { ref } from "vue";
 
 import { $httpClient } from "../../../api";
+import { globalContext } from "../../context";
 import { bulkRequests } from "../../utils/bulkRequests";
 import { showFailedToastForBulkRequests } from "../../utils/failToasts";
 import { pluralize } from "../../utils/pluralize";
-import { getToastsProvider } from "../../utils/toasts";
 
 import type { DeleteItem } from "./types";
 
@@ -41,7 +41,7 @@ export const useDeleteFeature = () => {
     );
 
     if (failed.length === 0) {
-      getToastsProvider().show({
+      globalContext.toastService().show({
         headline: `${pluralize(succeeded.length, "item")} ${SUCCESS_MESSAGE_SUFFIX}`,
         type: "success",
       });

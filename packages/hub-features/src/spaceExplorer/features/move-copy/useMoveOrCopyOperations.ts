@@ -9,6 +9,7 @@ import type {
   Space,
   WorkflowGroup,
 } from "../../../api/types";
+import { globalContext } from "../../context";
 import type { HubFileExplorerItem } from "../../types";
 import {
   type BulkRequestFail,
@@ -23,7 +24,6 @@ import {
 } from "../../utils/masonControls";
 import { getBaseName, getParentPath } from "../../utils/paths";
 import { pluralize } from "../../utils/pluralize";
-import { getToastsProvider } from "../../utils/toasts";
 
 import { useDestinationPicker } from "./DestinationPicker/useDestinationPicker";
 import { humanReadableSafeDate } from "./humanReadableSafeDate";
@@ -42,7 +42,7 @@ const showSuccessToast = (
   config?: SuccessToastConfig,
 ) => {
   const isSingleItem = count === 1;
-  return getToastsProvider().show({
+  return globalContext.toastService().show({
     type: "success",
     headline: isSingleItem
       ? `${capitalize(operationText)}`
@@ -212,7 +212,7 @@ export const useMoveOrCopyFeature = (options: Options) => {
     }
 
     if (strategy === "CANCEL" && succeeded.length > 0) {
-      getToastsProvider().show({
+      globalContext.toastService().show({
         headline: `Partial ${operation}`,
         message: `${pluralize(succeeded.length, "item")} ${operationText}, ${pluralize(failed.length, "item")} skipped due to name conflicts.`,
         type: "info",
