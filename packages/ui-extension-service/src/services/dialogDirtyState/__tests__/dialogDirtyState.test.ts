@@ -274,6 +274,78 @@ describe("dialogDirtyState", () => {
     });
   });
 
+  describe("cleanPreserving operations", () => {
+    it("setValue with cleanPreserving does not dirty when currently clean", () => {
+      const setting = addSetting("model")({ initialValue: "foo" });
+      setting.setValue("bar", { cleanPreserving: true });
+      expect(dirtyState).toStrictEqual({ apply: "clean", view: "clean" });
+      // further change from new baseline is detected as dirty
+      setting.setValue("baz");
+      expect(dirtyState).toStrictEqual({
+        apply: "configured",
+        view: "configured",
+      });
+      // reverting to the post-migration baseline is clean again
+      setting.setValue("bar");
+      expect(dirtyState).toStrictEqual({ apply: "clean", view: "clean" });
+    });
+
+    it("setValue with cleanPreserving does dirty when already dirty", () => {
+      const setting = addSetting("model")({ initialValue: "foo" });
+      setting.setValue("bar");
+      expect(dirtyState).toStrictEqual({
+        apply: "configured",
+        view: "configured",
+      });
+      // cleanPreserving is ignored because state was already dirty
+      setting.setValue("baz", { cleanPreserving: true });
+      expect(dirtyState).toStrictEqual({
+        apply: "configured",
+        view: "configured",
+      });
+    });
+
+    it("controlling flow variable set with cleanPreserving does not dirty when currently clean", () => {
+      const setting = addSetting("model")({ initialValue: "foo" });
+      const controllingVariable = setting.addControllingFlowVariable(null);
+      controllingVariable.set("myVar", { cleanPreserving: true });
+      expect(dirtyState).toStrictEqual({ apply: "clean", view: "clean" });
+      // further change from new baseline is detected
+      controllingVariable.set("otherVar");
+      expect(dirtyState).not.toStrictEqual({ apply: "clean", view: "clean" });
+    });
+
+    it("controlling flow variable set with cleanPreserving is ignored when already dirty", () => {
+      const setting = addSetting("model")({ initialValue: "foo" });
+      const controllingVariable = setting.addControllingFlowVariable(null);
+      controllingVariable.set("myVar");
+      expect(dirtyState).not.toStrictEqual({ apply: "clean", view: "clean" });
+      controllingVariable.set("otherVar", { cleanPreserving: true });
+      expect(dirtyState).not.toStrictEqual({ apply: "clean", view: "clean" });
+    });
+
+    it("controlling flow variable unset with cleanPreserving does not dirty when currently clean", () => {
+      const setting = addSetting("model")({ initialValue: "foo" });
+      const controllingVariable = setting.addControllingFlowVariable("myVar");
+      controllingVariable.unset({ cleanPreserving: true });
+      expect(dirtyState).toStrictEqual({ apply: "clean", view: "clean" });
+    });
+
+    it("exposed flow variable set with cleanPreserving does not dirty when currently clean", () => {
+      const setting = addSetting("model")({ initialValue: "foo" });
+      const exposedVariable = setting.addExposedFlowVariable(null);
+      exposedVariable.set("myVar", { cleanPreserving: true });
+      expect(dirtyState).toStrictEqual({ apply: "clean", view: "clean" });
+    });
+
+    it("exposed flow variable unset with cleanPreserving does not dirty when currently clean", () => {
+      const setting = addSetting("model")({ initialValue: "foo" });
+      const exposedVariable = setting.addExposedFlowVariable("myVar");
+      exposedVariable.unset({ cleanPreserving: true });
+      expect(dirtyState).toStrictEqual({ apply: "clean", view: "clean" });
+    });
+  });
+
   describe("model settings", () => {
     let addModelSetting: ReturnType<typeof addSetting>;
 
