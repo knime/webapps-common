@@ -2,4 +2,4 @@
 "@knime/hub-features": patch
 ---
 
-Add more analytic events
+Add more analytics events
