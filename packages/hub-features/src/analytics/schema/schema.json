@@ -25,7 +25,16 @@
         "node_searched",
         "sidepanel_opened",
         "action_undone",
-        "action_redone"
+        "action_redone",
+        "configuration_completed",
+        "version_created",
+        "session_started",
+        "session_ended",
+        "session_interrupted",
+        "session_resumed",
+        "containernode_created",
+        "hint_shown",
+        "hint_closed"
       ],
       "properties": {
         "kai_prompted": {
@@ -41,6 +50,98 @@
             },
             "qam_button_": {
               "$ref": "#/definitions/KaiPromptedPayload"
+            }
+          }
+        },
+        "session_started": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["autotrigger"],
+          "properties": {
+            "autotrigger": {
+              "$ref": "#/definitions/EmptyPayload"
+            }
+          }
+        },
+        "session_ended": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "session_tab_closed",
+            "autotrigger_timedout_",
+            "autotrigger_disconnect_"
+          ],
+          "properties": {
+            "session_tab_closed": {
+              "$ref": "#/definitions/EmptyPayload"
+            },
+            "autotrigger_timedout_": {
+              "$ref": "#/definitions/EmptyPayload"
+            },
+            "autotrigger_disconnect_": {
+              "$ref": "#/definitions/EmptyPayload"
+            }
+          }
+        },
+        "session_interrupted": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["session_tab"],
+          "properties": {
+            "session_tab": {
+              "$ref": "#/definitions/EmptyPayload"
+            }
+          }
+        },
+        "session_resumed": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["session_tab"],
+          "properties": {
+            "session_tab": {
+              "$ref": "#/definitions/EmptyPayload"
+            }
+          }
+        },
+        "containernode_created": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["canvas_ctxmenu_", "keyboard_shortcut_"],
+          "properties": {
+            "canvas_ctxmenu_": {
+              "$ref": "#/definitions/ContainerNodeCreatedPayload"
+            },
+            "keyboard_shortcut_": {
+              "$ref": "#/definitions/ContainerNodeCreatedPayload"
+            }
+          }
+        },
+        "hint_shown": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["autotrigger"],
+          "properties": {
+            "autotrigger": { "$ref": "#/definitions/HintIdPayload" }
+          }
+        },
+        "hint_closed": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["hint_button_"],
+          "properties": {
+            "hint_button_": { "$ref": "#/definitions/HintIdPayload" }
+          }
+        },
+        "configuration_completed": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["nodedialog_button_apply", "nodedialog_click_autoapply"],
+          "properties": {
+            "nodedialog_button_apply": {
+              "$ref": "#/definitions/ConfigurationCompletedPayload"
+            },
+            "nodedialog_click_autoapply": {
+              "$ref": "#/definitions/ConfigurationCompletedPayload"
             }
           }
         },
@@ -263,6 +364,16 @@
               "$ref": "#/definitions/EmptyPayload"
             }
           }
+        },
+        "version_created": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["versionhistorypanel_button_"],
+          "properties": {
+            "versionhistorypanel_button_": {
+              "$ref": "#/definitions/EmptyPayload"
+            }
+          }
         }
       }
     }
@@ -272,6 +383,48 @@
       "type": "null",
       "additionalProperties": false,
       "maxProperties": 0
+    },
+    "ContainerNodeCreatedPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["nodeType", "childrenNodes"],
+      "properties": {
+        "nodeType": {
+          "type": "string",
+          "enum": ["component", "metanode"]
+        },
+        "childrenNodes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["nodeType"],
+            "properties": {
+              "nodeType": {
+                "type": "string",
+                "enum": ["component", "metanode", "node"]
+              },
+              "nodeFactoryId": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "ConfigurationCompletedPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state"],
+      "properties": {
+        "nodeFactoryId": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string",
+          "enum": ["success", "failed_invalid_setting"]
+        }
+      }
     },
     "WorkflowSavedPayload": {
       "type": "object",
@@ -466,6 +619,14 @@
         "keyword": {
           "type": "string"
         }
+      }
+    },
+    "HintIdPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["hintId"],
+      "properties": {
+        "hintId": { "type": "string" }
       }
     }
   }
