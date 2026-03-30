@@ -34,7 +34,7 @@
   "scripts": {
     "type-check": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
     "test:unit": "TZ='Europe/Berlin' vitest",
-    "generate-analytics-events": "json2ts ./src/analyticsEvents/schema/schema.json > ./src/analyticsEvents/schema/schema.d.ts"
+    "generate-analytics-events": "json2ts ./src/analytics/schema/schema.json > ./src/analytics/schema/schema.d.ts"
   },
   "dependencies": {
     "@floating-ui/vue": "catalog:",

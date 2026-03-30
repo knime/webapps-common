@@ -23,6 +23,34 @@ export interface AnalyticsEventSchema {
       kaibuild_button_: EmptyPayload;
       qam_button_: KaiPromptedPayload;
     };
+    session_started: {
+      autotrigger: EmptyPayload;
+    };
+    session_ended: {
+      session_tab_closed: EmptyPayload;
+      autotrigger_timedout_: EmptyPayload;
+      autotrigger_disconnect_: EmptyPayload;
+    };
+    session_interrupted: {
+      session_tab: EmptyPayload;
+    };
+    session_resumed: {
+      session_tab: EmptyPayload;
+    };
+    containernode_created: {
+      canvas_ctxmenu_: ContainerNodeCreatedPayload;
+      keyboard_shortcut_: ContainerNodeCreatedPayload;
+    };
+    hint_shown: {
+      autotrigger: HintIdPayload;
+    };
+    hint_closed: {
+      hint_button_: HintIdPayload;
+    };
+    configuration_completed: {
+      nodedialog_button_apply: ConfigurationCompletedPayload;
+      nodedialog_click_autoapply: ConfigurationCompletedPayload;
+    };
     layouteditor_opened: {
       canvas_ctxmenu_openlayouteditor: EmptyPayload;
       keyboard_shortcut_openlayouteditor: EmptyPayload;
@@ -81,11 +109,28 @@ export interface AnalyticsEventSchema {
       wftoolbar_button_: EmptyPayload;
       keyboard_shortcut_: EmptyPayload;
     };
+    version_created: {
+      versionhistorypanel_button_: EmptyPayload;
+    };
   };
 }
 export interface KaiPromptedPayload {
   nodeFactoryId?: string;
   nodeType?: "node" | "component" | "metanode";
+}
+export interface ContainerNodeCreatedPayload {
+  nodeType: "component" | "metanode";
+  childrenNodes: {
+    nodeType: "component" | "metanode" | "node";
+    nodeFactoryId?: string;
+  }[];
+}
+export interface HintIdPayload {
+  hintId: string;
+}
+export interface ConfigurationCompletedPayload {
+  nodeFactoryId?: string;
+  state: "success" | "failed_invalid_setting";
 }
 export interface WorkflowSavedPayload {
   isAutosyncEnabled: boolean;
