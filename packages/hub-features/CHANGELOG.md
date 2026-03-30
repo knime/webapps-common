@@ -1,5 +1,11 @@
 # @knime/hub-features
 
+## 1.24.2
+
+### Patch Changes
+
+- e3472ce: Add more analytics events
+
 ## 1.24.1
 
 ### Patch Changes
