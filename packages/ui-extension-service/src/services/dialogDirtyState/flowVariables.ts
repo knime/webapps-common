@@ -11,17 +11,25 @@ const createControllingFlowVariable =
 
     const set = (
       flowVar: string,
-      options: { isFlawed: boolean } = { isFlawed: false },
+      options: { isFlawed?: boolean; cleanPreserving?: boolean } = {},
     ) => {
+      const wasClean = !isModified;
       current = flowVar;
-      isFlawed = options.isFlawed;
+      isFlawed = options.isFlawed ?? false;
+      if (options.cleanPreserving && wasClean) {
+        clean = current;
+      }
       updateState();
       onChange();
     };
 
-    const unset = () => {
+    const unset = (options: { cleanPreserving?: boolean } = {}) => {
+      const wasClean = !isModified;
       current = null;
       isFlawed = false;
+      if (options.cleanPreserving && wasClean) {
+        clean = current;
+      }
       updateState();
       onChange();
     };
@@ -57,14 +65,25 @@ const createExposedFlowVariable =
       isSet = current !== null;
     };
 
-    const set = (flowVar: string) => {
+    const set = (
+      flowVar: string,
+      options: { cleanPreserving?: boolean } = {},
+    ) => {
+      const wasClean = !isModified;
       current = flowVar;
+      if (options.cleanPreserving && wasClean) {
+        clean = current;
+      }
       updateState();
       onChange();
     };
 
-    const unset = () => {
+    const unset = (options: { cleanPreserving?: boolean } = {}) => {
+      const wasClean = !isModified;
       current = null;
+      if (options.cleanPreserving && wasClean) {
+        clean = current;
+      }
       updateState();
       onChange();
     };

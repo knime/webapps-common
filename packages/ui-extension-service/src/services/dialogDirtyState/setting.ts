@@ -37,8 +37,12 @@ const useSettingsValue = <T>(
   let currentValue: T = value.initialValue;
   let isModified = false;
 
-  const set = (value: T) => {
+  const set = (value: T, options: { cleanPreserving?: boolean } = {}) => {
+    const wasClean = !isModified;
     currentValue = value;
+    if (options.cleanPreserving && wasClean) {
+      valueComparator.setSettings(currentValue);
+    }
     isModified = valueComparator.isModified(currentValue);
     onChange();
   };
