@@ -1,6 +1,3 @@
 # default owner unless a later match takes precedence
-* @knime/ui-core
 
-/packages/jsonforms @knime/nodevizards
-/packages/ui-extension-renderer @knime/nodevizards
-/packages/ui-extension-service @knime/nodevizards
+- @knime/ui-core @knime/marsupilami @knime/quokkas @knime/ap-next @knime/nodevizards
