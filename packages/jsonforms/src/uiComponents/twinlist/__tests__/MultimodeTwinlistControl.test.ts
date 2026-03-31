@@ -17,7 +17,7 @@ import {
   type VueControlTestProps,
   getControlBase,
   mountJsonFormsControlLabelContent,
-} from "../../../../testUtils/component";
+} from "../../../../testUtils";
 import { mergeDeep } from "../../../utils";
 import TwinlistControl from "../MultimodeTwinlistControl.vue";
 
@@ -282,7 +282,6 @@ describe("TwinlistControl", () => {
     });
 
     it("handles type selection change", () => {
-      props.showTypeFilter = true;
       const { wrapper, changeValue } = mountTwinlistControl();
       const selectedTypes = ["StringValue", "DoubleValue"];
       wrapper
@@ -323,8 +322,7 @@ describe("TwinlistControl", () => {
     ]);
   });
 
-  it("correctly provides filterTypes when showTypeFilter is true", () => {
-    props.showTypeFilter = true;
+  it("correctly provides filterTypes", () => {
     const { wrapper } = mountTwinlistControl();
     const filterTypes = wrapper.findComponent(KdsTwinList).props().filterTypes;
     // Should contain types from possibleValues + previously selected types
