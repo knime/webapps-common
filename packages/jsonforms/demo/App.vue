@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { computed, isRef, ref } from "vue";
+import { computed, defineAsyncComponent, isRef, ref } from "vue";
 import type { JsonSchema } from "@jsonforms/core";
 
-import { KdsDropdown } from "@knime/kds-components";
+import { KdsCheckbox, KdsDropdown } from "@knime/kds-components";
 
 import { JsonFormsDialog, defaultRenderers } from "../src";
 
@@ -30,6 +30,11 @@ function onFormChange({ data }: { data: unknown }) {
     Object.assign(selected.value.data, data);
   }
 }
+
+const forceLoading = ref(false);
+const NeverLoadingComponent = defineAsyncComponent(() => {
+  return new Promise(() => {});
+});
 </script>
 
 <template>
@@ -44,6 +49,10 @@ function onFormChange({ data }: { data: unknown }) {
         placeholder="Select a schema"
         @update:model-value="onSchemaSelect"
       />
+      <KdsCheckbox
+        v-model="forceLoading"
+        label="Force loading state when switching mocks"
+      />
     </div>
 
     <div class="dialog-wrapper">
@@ -55,7 +64,11 @@ function onFormChange({ data }: { data: unknown }) {
         :data="selected.data"
         :renderers="defaultRenderers"
         @change="onFormChange"
-      />
+      >
+        <template #top>
+          <NeverLoadingComponent v-if="forceLoading" />
+        </template>
+      </JsonFormsDialog>
       <p v-else class="placeholder">Select a schema to preview the form.</p>
     </div>
   </div>
@@ -66,18 +79,6 @@ function onFormChange({ data }: { data: unknown }) {
 @import url("../src/assets/main.css");
 @import url("@knime/kds-styles/kds-variables.css");
 @import url("@knime/kds-styles/kds-legacy-theme.css");
-
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  font-family: sans-serif;
-  background: var(--kds-color-background-neutral-initial);
-}
 </style>
 
 <style scoped>
@@ -106,9 +107,9 @@ body {
 }
 
 .dialog-wrapper {
-  flex: 1 1 80%;
   width: 100%;
   max-width: 480px;
+  height: calc(90vh - 100px);
   padding: 0 var(--kds-spacing-container-0-75x);
   background: var(--kds-color-surface-default);
   border-radius: var(--kds-border-radius-container-0-37x);
