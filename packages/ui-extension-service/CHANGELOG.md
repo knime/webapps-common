@@ -1,5 +1,11 @@
 # @knime/ui-extension-service
 
+## 2.8.0
+
+### Minor Changes
+
+- 30c1a3d: Add the possibility to preserve clean setting state with some initial operations
+
 ## 2.7.2
 
 ### Patch Changes
