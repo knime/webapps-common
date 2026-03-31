@@ -1,21 +1,24 @@
 <!-- eslint-disable no-undefined -->
-<!-- eslint-disable class-methods-use-this -->
 <script setup lang="ts">
-import { computed, markRaw, ref, toRef } from "vue";
+import { computed, toRef } from "vue";
 import type { PartialDeep } from "type-fest";
 
-import type { TwinlistModelValue } from "@knime/components";
-import { MultiModeTwinList } from "@knime/components";
-import { KdsDataType } from "@knime/kds-components";
+import {
+  KdsTwinList,
+  type KdsTwinListPossibleType,
+  type KdsTwinListPossibleValue,
+  type KdsTwinListSearchMode,
+  type KdsTypeIconName,
+  kdsTwinListSearchMode,
+} from "@knime/kds-components";
 
-import type { VueControlPropsForLabelContent } from "../../higherOrderComponents/control/withLabel";
+import type { VueControlPropsForLabelContent } from "../../higherOrderComponents";
 import type { IdAndText } from "../../types/ChoicesUiSchema";
 import { mergeDeep } from "../../utils";
 import {
   useIncludedExcludedLabels,
   usePossibleValues,
 } from "../composables/usePossibleValues";
-import TwinlistLoadingInfo from "../loading/TwinlistLoadingInfo.vue";
 
 import useUnknownValuesInTwinlist from "./useUnknownValuesInTwinlist";
 
@@ -41,7 +44,6 @@ export type TwinlistData = {
 const props = withDefaults(
   defineProps<
     VueControlPropsForLabelContent<TwinlistData> & {
-      twinlistSize?: number;
       twinlistLeftLabel?: string;
       showUnknownValues?: boolean;
       twinlistRightLabel?: string;
@@ -49,7 +51,6 @@ const props = withDefaults(
     }
   >(),
   {
-    twinlistSize: 10,
     twinlistLeftLabel: "Excludes",
     showUnknownValues: false,
     twinlistRightLabel: "Includes",
@@ -66,59 +67,30 @@ const onChangeTwinlist = (obj: PartialDeep<TwinlistData>) => {
   props.changeValue(newData);
   setManualFilterOnChange?.(newData.manualFilter);
 };
-const onSelectedChange = (selected: string[]) => {
-  onChangeTwinlist({ selected });
-};
 
-type ManualSelection = TwinlistModelValue<string>;
-
-const onManualSelectionChange = (manualSelection: ManualSelection) => {
-  if (manualSelection === null) {
-    return;
-  }
-  if ("includedValues" in manualSelection) {
-    const { includedValues, excludedValues, includeUnknownValues } =
-      manualSelection;
-    if (!includedValues || !excludedValues) {
-      return;
-    }
-    onChangeTwinlist({
-      manualFilter: {
-        manuallySelected: includedValues,
-        manuallyDeselected: excludedValues,
-        includeUnknownColumns: includeUnknownValues,
-      },
-    });
-  } else {
-    onChangeTwinlist({ manualFilter: { manuallySelected: manualSelection } });
-  }
-};
-
-const onPatternChange = (pattern: string) => {
-  onChangeTwinlist({ patternFilter: { pattern } });
-};
-const onModeChange = (mode: string) => {
-  onChangeTwinlist({ mode: mode.toUpperCase() });
-};
-const onSelectedTypesChange = (
-  selectedTypes: string[],
-  typeDisplays: IdAndText[],
-) => {
-  onChangeTwinlist({ typeFilter: { selectedTypes, typeDisplays } });
-};
-const onInversePatternChange = (isInverted: boolean) => {
-  onChangeTwinlist({ patternFilter: { isInverted } });
-};
-const onCaseSensitiveChange = (isCaseSensitive: boolean) => {
-  onChangeTwinlist({ patternFilter: { isCaseSensitive } });
-};
-
-// Initial updates
+// --- Possible values ---
 
 const { possibleValues } = usePossibleValues<{ type?: IdAndText }>(
   toRef(props, "control"),
 );
-const previouslySelectedTypes = ref<IdAndText[]>([]);
+
+const kdsPossibleValues = computed<KdsTwinListPossibleValue[]>(() =>
+  (possibleValues.value ?? []).map((v) => ({
+    id: v.id,
+    text: v.text,
+    ...(v.type
+      ? {
+          type: v.type.id,
+          accessory: {
+            type: "dataType" as const,
+            name: v.type.id as KdsTypeIconName,
+          },
+        }
+      : {}),
+  })),
+);
+
+// --- Unknown values / manual selection ---
 
 const { selectedAndDeselected, setCurrentManualFilter } =
   useUnknownValuesInTwinlist({
@@ -127,59 +99,183 @@ const { selectedAndDeselected, setCurrentManualFilter } =
       () => possibleValues.value?.map(({ id }) => id) ?? null,
     ),
   });
+
+const isLoading = computed(() => selectedAndDeselected.value.selected === null);
+
 setManualFilterOnChange = setCurrentManualFilter;
 
-const manualSelection = computed<ManualSelection>(() => {
-  const { selected, deselected } = selectedAndDeselected.value;
-  if (props.showUnknownValues) {
-    return {
-      includedValues: selected,
-      excludedValues: deselected,
-      includeUnknownValues:
-        props.control.data.manualFilter.includeUnknownColumns,
-    };
-  }
-  return selected;
-});
+const manuallyIncluded = computed(
+  () => selectedAndDeselected.value.selected ?? [],
+);
+const manuallyExcluded = computed(
+  () => selectedAndDeselected.value.deselected ?? [],
+);
 
-const loadingInfo = computed(() =>
-  selectedAndDeselected.value.selected === null
-    ? markRaw(TwinlistLoadingInfo)
+const includeUnknownValues = computed(() =>
+  props.showUnknownValues
+    ? props.control.data.manualFilter.includeUnknownColumns
     : null,
 );
 
-// Types
+// --- Batched manual filter update ---
+// KdsTwinList emits update:manuallyIncluded and update:manuallyExcluded
+// separately but synchronously. Batch them into a single changeValue call.
 
-const typeDisplaysToMap = (keyValuePairs: IdAndText[] | undefined) => {
-  if (typeof keyValuePairs === "undefined") {
-    return {};
+let pendingManualUpdate: PartialDeep<TwinlistData> | null = null;
+
+const flushManualUpdate = () => {
+  if (pendingManualUpdate !== null) {
+    const update = pendingManualUpdate;
+    pendingManualUpdate = null;
+    onChangeTwinlist(update);
   }
-  return keyValuePairs.reduce(
-    (obj, { id, text }) => ({ ...obj, [id]: text }),
-    {} as Record<string, string>,
-  );
 };
 
-const getPreviouslySelectedTypes = () => {
+const queueManualChange = (partial: PartialDeep<TwinlistData>) => {
+  if (pendingManualUpdate === null) {
+    pendingManualUpdate = partial;
+    queueMicrotask(flushManualUpdate);
+  } else {
+    pendingManualUpdate = mergeDeep(
+      pendingManualUpdate,
+      partial,
+    ) as PartialDeep<TwinlistData>;
+  }
+};
+
+const onManuallyIncludedChange = (included: string[]) => {
+  queueManualChange({
+    manualFilter: { manuallySelected: included },
+    selected: included,
+  });
+};
+
+const onManuallyExcludedChange = (excluded: string[]) => {
+  queueManualChange({
+    manualFilter: { manuallyDeselected: excluded },
+  });
+};
+
+const onIncludeUnknownValuesChange = (include: boolean | null) => {
+  if (include !== null) {
+    // Do not use onChangeTwinlist here: that would call setManualFilterOnChange
+    // which marks the update as internal, causing useUnknownValuesInTwinlist to
+    // skip refreshManualSelection. We need the composable to treat this as an
+    // external change so it redistributes unknown columns between the two sides.
+    const newData = mergeDeep(props.control.data, {
+      manualFilter: { includeUnknownColumns: include },
+    } as PartialDeep<TwinlistData>) as TwinlistData;
+    props.changeValue(newData);
+  }
+};
+
+// --- Mode mapping ---
+// Backend: MANUAL | WILDCARD | REGEX | TYPE
+// KDS:     manual | pattern | type  (+ useRegex flag)
+
+const kdsMode = computed<KdsTwinListSearchMode>(() => {
+  const backendMode = props.control.data.mode.toUpperCase();
+  switch (backendMode) {
+    case "WILDCARD":
+    case "REGEX":
+      return kdsTwinListSearchMode.PATTERN;
+    case "TYPE":
+      return kdsTwinListSearchMode.TYPE;
+    default:
+      return kdsTwinListSearchMode.MANUAL;
+  }
+});
+
+const kdsUseRegex = computed(
+  () => props.control.data.mode.toUpperCase() === "REGEX",
+);
+
+const onModeChange = (mode: KdsTwinListSearchMode) => {
+  let backendMode: string;
+  switch (mode) {
+    case kdsTwinListSearchMode.PATTERN:
+      backendMode = kdsUseRegex.value ? "REGEX" : "WILDCARD";
+      break;
+    case kdsTwinListSearchMode.TYPE:
+      backendMode = "TYPE";
+      break;
+    default:
+      backendMode = "MANUAL";
+  }
+  onChangeTwinlist({ mode: backendMode });
+};
+
+const onUseRegexChange = (useRegex: boolean) => {
+  if (kdsMode.value === kdsTwinListSearchMode.PATTERN) {
+    onChangeTwinlist({ mode: useRegex ? "REGEX" : "WILDCARD" });
+  }
+};
+
+// --- Pattern filter ---
+
+const onPatternChange = (pattern: string) => {
+  onChangeTwinlist({ patternFilter: { pattern } });
+};
+
+const onExcludeMatchesChange = (isInverted: boolean) => {
+  onChangeTwinlist({ patternFilter: { isInverted } });
+};
+
+const onCaseSensitiveChange = (isCaseSensitive: boolean) => {
+  onChangeTwinlist({ patternFilter: { isCaseSensitive } });
+};
+
+// --- Type filter ---
+
+const getPreviouslySelectedTypes = (): IdAndText[] => {
   const typeFilter = props.control.data.typeFilter;
   if (!typeFilter) {
     return [];
   }
   const selectedTypesIds = typeFilter.selectedTypes;
-  const selectedTypesToDisplayedText = typeDisplaysToMap(
-    typeFilter.typeDisplays,
+  const typeDisplaysMap = new Map(
+    (typeFilter.typeDisplays ?? []).map(({ id, text }) => [id, text]),
   );
   return selectedTypesIds.map((id) => ({
     id,
-    text: selectedTypesToDisplayedText[id] || id,
+    text: typeDisplaysMap.get(id) || id,
   }));
 };
 
-previouslySelectedTypes.value = getPreviouslySelectedTypes();
+const filterTypes = computed<KdsTwinListPossibleType[] | undefined>(() => {
+  if (!props.showTypeFilter) {
+    return undefined;
+  }
+  const typeMap = new Map<string, string>();
+  // Types from possible values
+  possibleValues.value?.forEach((v) => {
+    if (v.type) {
+      typeMap.set(v.type.id, v.type.text);
+    }
+  });
+  // Previously selected types not in possibleValues
+  getPreviouslySelectedTypes().forEach(({ id, text }) => {
+    if (!typeMap.has(id)) {
+      typeMap.set(id, text);
+    }
+  });
+  return [...typeMap.entries()].map(([id, text]) => ({
+    id,
+    text,
+    accessory: { type: "dataType" as const, name: id as KdsTypeIconName },
+  }));
+});
 
-const possibleValuesHaveTypes = computed(() =>
-  Boolean(possibleValues.value?.[0]?.hasOwnProperty("type")),
-);
+const onSelectedTypesChange = (newSelectedTypes: string[]) => {
+  const typeDisplays = (filterTypes.value ?? [])
+    .filter((t) => newSelectedTypes.includes(t.id))
+    .map(({ id, text }) => ({ id, text }));
+  onChangeTwinlist({
+    typeFilter: { selectedTypes: newSelectedTypes, typeDisplays },
+  });
+};
+
+// --- Labels ---
 
 const { excludedLabel, includedLabel } = useIncludedExcludedLabels(
   toRef(props, "control"),
@@ -189,80 +285,34 @@ const rightLabel = computed(() => includedLabel ?? props.twinlistRightLabel);
 </script>
 
 <template>
-  <MultiModeTwinList
+  <KdsTwinList
     v-bind="$attrs"
     :id="labelForId"
+    :ariaLabel="control.label"
     :disabled="disabled"
-    :with-types="showTypeFilter"
-    :selected-types="control.data.typeFilter?.selectedTypes"
-    :additional-possible-types="previouslySelectedTypes"
+    :mode="kdsMode"
+    :manually-included="manuallyIncluded"
+    :manually-excluded="manuallyExcluded"
+    :include-unknown-values="includeUnknownValues"
     :pattern="control.data.patternFilter.pattern"
-    :mode="control.data.mode.toLowerCase()"
-    :case-sensitive-pattern="control.data.patternFilter.isCaseSensitive"
-    :empty-state-component="loadingInfo"
-    :inverse-pattern="control.data.patternFilter.isInverted"
-    :manual-selection="manualSelection"
-    :include-unknown-values="control.data.manualFilter.includeUnknownColumns"
-    mode-label="Selection mode"
-    :possible-values="possibleValues ?? []"
-    :size="twinlistSize"
-    :left-label="leftLabel"
-    :right-label="rightLabel"
-    :is-valid
-    compact
-    show-resize-handle
-    @update:selected="onSelectedChange"
-    @update:manual-selection="onManualSelectionChange"
-    @update:pattern="onPatternChange"
+    :case-sensitive="control.data.patternFilter.isCaseSensitive"
+    :exclude-matches="control.data.patternFilter.isInverted"
+    :use-regex="kdsUseRegex"
+    :selected-types="control.data.typeFilter?.selectedTypes ?? []"
+    :possible-values="kdsPossibleValues"
+    :filter-types="filterTypes"
+    :enable-pattern-filter="true"
+    :loading="isLoading"
+    :exclude-label="leftLabel"
+    :include-label="rightLabel"
     @update:mode="onModeChange"
+    @update:manually-included="onManuallyIncludedChange"
+    @update:manually-excluded="onManuallyExcludedChange"
+    @update:include-unknown-values="onIncludeUnknownValuesChange"
+    @update:pattern="onPatternChange"
+    @update:case-sensitive="onCaseSensitiveChange"
+    @update:exclude-matches="onExcludeMatchesChange"
+    @update:use-regex="onUseRegexChange"
     @update:selected-types="onSelectedTypesChange"
-    @update:inverse-pattern="onInversePatternChange"
-    @update:case-sensitive-pattern="onCaseSensitiveChange"
-  >
-    <template v-if="possibleValuesHaveTypes" #option="{ slotItem }">
-      <div :class="['data-type-entry', { invalid: slotItem.invalid }]">
-        <KdsDataType
-          :icon-name="slotItem?.type?.id"
-          :icon-title="slotItem?.type?.text"
-          size="small"
-        />
-        <span>{{ slotItem.text }}</span>
-      </div>
-    </template>
-    <template v-if="showTypeFilter" #type="{ slotItem }">
-      <KdsDataType
-        :icon-name="slotItem.id"
-        :icon-title="slotItem.text"
-        size="small"
-      />
-      <span class="data-type-text">{{ slotItem.text }}</span>
-    </template>
-  </MultiModeTwinList>
+  />
 </template>
-
-<style lang="postcss" scoped>
-.data-type-entry {
-  display: flex;
-  gap: var(--space-4);
-  align-items: center;
-
-  & > span {
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-}
-
-.data-type-text {
-  margin-left: var(--space-4);
-}
-
-.twinlist :deep(.lists .multiselect-list-box [role="listbox"]) {
-  font-size: 13px;
-}
-
-.twinlist :deep(.header .title) {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--knime-dove-gray);
-}
-</style>

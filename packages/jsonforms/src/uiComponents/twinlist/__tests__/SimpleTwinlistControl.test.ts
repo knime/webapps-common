@@ -10,8 +10,7 @@ import {
 import type { VueWrapper } from "@vue/test-utils";
 import { flushPromises } from "@vue/test-utils";
 
-import { Twinlist } from "@knime/components";
-import { KdsDataType } from "@knime/kds-components";
+import { KdsTwinList } from "@knime/kds-components";
 
 import {
   type ProvidedMethods,
@@ -20,7 +19,6 @@ import {
   mountJsonFormsControlLabelContent,
 } from "../../../../testUtils/component";
 import type { IdAndText } from "../../../types/ChoicesUiSchema";
-import TwinlistLoadingInfo from "../../loading/TwinlistLoadingInfo.vue";
 import SimpleTwinlistControl from "../SimpleTwinlistControl.vue";
 
 describe("SimpleTwinlistControl", () => {
@@ -87,10 +85,10 @@ describe("SimpleTwinlistControl", () => {
   });
 
   it("renders", () => {
-    expect(wrapper.findComponent(Twinlist).exists()).toBe(true);
+    expect(wrapper.findComponent(KdsTwinList).exists()).toBe(true);
   });
 
-  it("renders data type icons for typed string choices", async () => {
+  it("renders data type icons via accessory for typed string choices", async () => {
     await wrapper.setProps({
       control: {
         ...props.control,
@@ -112,36 +110,42 @@ describe("SimpleTwinlistControl", () => {
         },
       },
     });
-    expect(wrapper.findAllComponents(KdsDataType)).toHaveLength(2);
+    const possibleValues = wrapper
+      .findComponent(KdsTwinList)
+      .props().possibleValues;
+    expect(possibleValues[0].accessory).toEqual({
+      type: "dataType",
+      name: "string-datatype",
+    });
+    expect(possibleValues[1].accessory).toEqual({
+      type: "dataType",
+      name: "string-datatype",
+    });
   });
 
   it("sets labelForId", () => {
-    expect(wrapper.getComponent(Twinlist).attributes().id).toBe(labelForId);
+    expect(wrapper.getComponent(KdsTwinList).attributes().id).toBe(labelForId);
   });
 
-  it("calls changeValue when twinlist input is changed", async () => {
-    await wrapper
-      .findComponent(Twinlist)
-      .find({ ref: "moveAllRight" })
-      .trigger("click");
-    expect(changeValue).toHaveBeenCalled();
+  it("calls changeValue when twinlist input is changed", () => {
+    const newIncluded = ["test_1", "test_2", "test_3"];
+    wrapper
+      .findComponent(KdsTwinList)
+      .vm.$emit("update:manuallyIncluded", newIncluded);
+    expect(changeValue).toHaveBeenCalledWith(newIncluded);
   });
 
   it("sets correct initial value", () => {
-    expect(wrapper.findComponent(Twinlist).props().modelValue).toStrictEqual(
-      props.control.data,
-    );
+    expect(
+      wrapper.findComponent(KdsTwinList).props().manuallyIncluded,
+    ).toStrictEqual(props.control.data);
   });
 
   it("moves missing values correctly", async () => {
     props.control.data = ["missing"];
     const { wrapper, changeValue } = await mountSimpleTwinlistControl();
     expect((wrapper.vm as any).control.data).toStrictEqual(["missing"]);
-    await wrapper
-      .findComponent(Twinlist)
-      .find({ ref: "moveAllLeft" })
-      .trigger("click");
-    await wrapper.vm.$nextTick();
+    wrapper.findComponent(KdsTwinList).vm.$emit("update:manuallyIncluded", []);
     expect(changeValue).toBeCalledWith([]);
   });
 
@@ -167,12 +171,12 @@ describe("SimpleTwinlistControl", () => {
       },
     ];
     await flushPromises();
-    expect(wrapper.findComponent(TwinlistLoadingInfo).exists()).toBeTruthy();
+    expect(wrapper.findComponent(KdsTwinList).props().loading).toBeTruthy();
     provideChoices!(providedChoices);
     await flushPromises();
     expect(
-      wrapper.findComponent(Twinlist).props().possibleValues,
+      wrapper.findComponent(KdsTwinList).props().possibleValues,
     ).toStrictEqual(providedChoices);
-    expect(wrapper.findComponent(TwinlistLoadingInfo).exists()).toBeFalsy();
+    expect(wrapper.findComponent(KdsTwinList).props().loading).toBeFalsy();
   });
 });

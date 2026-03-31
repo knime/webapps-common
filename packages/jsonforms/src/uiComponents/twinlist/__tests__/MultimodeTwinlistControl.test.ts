@@ -10,8 +10,7 @@ import {
 import type { VueWrapper } from "@vue/test-utils";
 import { flushPromises } from "@vue/test-utils";
 
-import { Checkboxes, MultiModeTwinList, Twinlist } from "@knime/components";
-import { KdsDataType } from "@knime/kds-components";
+import { KdsTwinList } from "@knime/kds-components";
 
 import {
   type ProvidedMethods,
@@ -199,37 +198,28 @@ describe("TwinlistControl", () => {
   });
 
   it("renders", () => {
-    expect(wrapper.findComponent(MultiModeTwinList).exists()).toBe(true);
+    expect(wrapper.findComponent(KdsTwinList).exists()).toBe(true);
   });
 
   it("sets labelForId", () => {
-    expect(wrapper.getComponent(Twinlist).attributes().id).toBe(labelForId);
+    expect(wrapper.getComponent(KdsTwinList).attributes().id).toBe(labelForId);
   });
 
   it("calls changeValue when twinlist input is changed", async () => {
-    await wrapper
-      .findComponent(Twinlist)
-      .find({ ref: "moveAllRight" })
-      .trigger("click");
+    wrapper
+      .findComponent(KdsTwinList)
+      .vm.$emit("update:manuallyIncluded", ["test_1", "test_2", "test_3"]);
+    await flushPromises();
     expect(changeValue).toHaveBeenCalled();
   });
 
   describe("handles changes", () => {
-    it("handles selected values change", async () => {
-      const selected = ["A", "B", "C"];
-      await wrapper
-        .findComponent(MultiModeTwinList)
-        .vm.$emit("update:selected", selected);
-      expect(changeValue).toHaveBeenCalledWith(
-        expect.objectContaining({ selected }),
-      );
-    });
-
-    it("handles array manual selection values change", () => {
+    it("handles manual selection included change", async () => {
       const selected = ["A", "B", "C"];
       wrapper
-        .findComponent(MultiModeTwinList)
-        .vm.$emit("update:manualSelection", selected);
+        .findComponent(KdsTwinList)
+        .vm.$emit("update:manuallyIncluded", selected);
+      await flushPromises();
       expect(changeValue).toHaveBeenCalledWith(
         expect.objectContaining({
           manualFilter: expect.objectContaining({
@@ -239,33 +229,24 @@ describe("TwinlistControl", () => {
       );
     });
 
-    it("handles object manual selection values change", () => {
-      const selected = ["A", "B", "C"];
+    it("handles manual selection excluded change", async () => {
       const deselected = ["E", "F", "G"];
-      const includeUnknownValues = true;
       wrapper
-        .findComponent(MultiModeTwinList)
-        .vm.$emit("update:manualSelection", {
-          includedValues: selected,
-          excludedValues: deselected,
-          includeUnknownValues,
-        });
+        .findComponent(KdsTwinList)
+        .vm.$emit("update:manuallyExcluded", deselected);
+      await flushPromises();
       expect(changeValue).toHaveBeenCalledWith(
         expect.objectContaining({
-          manualFilter: {
-            manuallySelected: selected,
+          manualFilter: expect.objectContaining({
             manuallyDeselected: deselected,
-            includeUnknownColumns: includeUnknownValues,
-          },
+          }),
         }),
       );
     });
 
     it("handles pattern change", () => {
       const pattern = "abc";
-      wrapper
-        .findComponent(MultiModeTwinList)
-        .vm.$emit("update:pattern", pattern);
+      wrapper.findComponent(KdsTwinList).vm.$emit("update:pattern", pattern);
       expect(changeValue).toHaveBeenNthCalledWith(
         1,
         expect.objectContaining({
@@ -274,11 +255,11 @@ describe("TwinlistControl", () => {
       );
     });
 
-    it("handles isInverted change", () => {
+    it("handles excludeMatches (isInverted) change", () => {
       const isInverted = true;
       wrapper
-        .findComponent(MultiModeTwinList)
-        .vm.$emit("update:inversePattern", isInverted);
+        .findComponent(KdsTwinList)
+        .vm.$emit("update:excludeMatches", isInverted);
       expect(changeValue).toHaveBeenNthCalledWith(
         1,
         expect.objectContaining({
@@ -287,11 +268,11 @@ describe("TwinlistControl", () => {
       );
     });
 
-    it("handles isCaseSensitive change", () => {
+    it("handles caseSensitive change", () => {
       const isCaseSensitive = true;
       wrapper
-        .findComponent(MultiModeTwinList)
-        .vm.$emit("update:caseSensitivePattern", isCaseSensitive);
+        .findComponent(KdsTwinList)
+        .vm.$emit("update:caseSensitive", isCaseSensitive);
       expect(changeValue).toHaveBeenNthCalledWith(
         1,
         expect.objectContaining({
@@ -301,68 +282,59 @@ describe("TwinlistControl", () => {
     });
 
     it("handles type selection change", () => {
-      const selectedTypes = ["A", "B", "C"];
-      const typeDisplays = [
-        { id: "A", text: "Text A" },
-        { id: "B", text: "Text B" },
-        { id: "C", text: "Text C" },
-      ];
+      props.showTypeFilter = true;
+      const { wrapper, changeValue } = mountTwinlistControl();
+      const selectedTypes = ["StringValue", "DoubleValue"];
       wrapper
-        .findComponent(MultiModeTwinList)
-        .vm.$emit("update:selectedTypes", selectedTypes, typeDisplays);
+        .findComponent(KdsTwinList)
+        .vm.$emit("update:selectedTypes", selectedTypes);
       expect(changeValue).toHaveBeenNthCalledWith(
         1,
         expect.objectContaining({
-          typeFilter: expect.objectContaining({ selectedTypes, typeDisplays }),
+          typeFilter: expect.objectContaining({ selectedTypes }),
         }),
       );
     });
   });
 
-  it("correctly transforms the data into possible values", () => {
-    expect(
-      wrapper.findComponent(MultiModeTwinList).props().possibleValues,
-    ).toEqual([
+  it("correctly transforms the data into possible values with accessory", () => {
+    const possibleValues = wrapper
+      .findComponent(KdsTwinList)
+      .props().possibleValues;
+    expect(possibleValues).toEqual([
       {
         id: "test_1",
         text: "test_1",
-        type: {
-          id: "StringValue",
-          text: "String",
-        },
+        type: "StringValue",
+        accessory: { type: "dataType", name: "StringValue" },
       },
       {
         id: "test_2",
         text: "test_2",
-        type: {
-          id: "DoubleValue",
-          text: "Double",
-        },
+        type: "DoubleValue",
+        accessory: { type: "dataType", name: "DoubleValue" },
       },
       {
         id: "test_3",
         text: "test_3",
-        type: {
-          id: "StringValue",
-          text: "String",
-        },
+        type: "StringValue",
+        accessory: { type: "dataType", name: "StringValue" },
       },
     ]);
   });
 
-  it("correctly determines previously selected types", () => {
-    expect(
-      wrapper.findComponent(MultiModeTwinList).props().additionalPossibleTypes,
-    ).toEqual([
-      {
-        id: "StringValue",
-        text: "String",
-      },
-      {
-        id: "IntValue",
-        text: "IntValue",
-      },
-    ]);
+  it("correctly provides filterTypes when showTypeFilter is true", () => {
+    props.showTypeFilter = true;
+    const { wrapper } = mountTwinlistControl();
+    const filterTypes = wrapper.findComponent(KdsTwinList).props().filterTypes;
+    // Should contain types from possibleValues + previously selected types
+    expect(filterTypes).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: "StringValue", text: "String" }),
+        expect.objectContaining({ id: "DoubleValue", text: "Double" }),
+        expect.objectContaining({ id: "IntValue", text: "IntValue" }),
+      ]),
+    );
   });
 
   describe("unknown columns", () => {
@@ -394,12 +366,11 @@ describe("TwinlistControl", () => {
       const manuallySelected = ["A", "B"];
       expect(changeValue).not.toHaveBeenCalled();
       expect(
-        wrapper.findComponent(MultiModeTwinList).props().manualSelection,
-      ).toStrictEqual({
-        includedValues: manuallySelected,
-        excludedValues: ["C", "D", "E"],
-        includeUnknownValues: false,
-      });
+        wrapper.findComponent(KdsTwinList).props().manuallyIncluded,
+      ).toStrictEqual(manuallySelected);
+      expect(
+        wrapper.findComponent(KdsTwinList).props().manuallyExcluded,
+      ).toStrictEqual(["C", "D", "E"]);
     });
 
     it("includes unknown columns without emitting an update", async () => {
@@ -428,24 +399,22 @@ describe("TwinlistControl", () => {
       const manuallySelected = ["A", "B", "E"];
       expect(changeValue).not.toHaveBeenCalled();
       expect(
-        wrapper.findComponent(MultiModeTwinList).props().manualSelection,
+        wrapper.findComponent(KdsTwinList).props().manuallyIncluded,
       ).toStrictEqual(manuallySelected);
     });
   });
 
   it("sets correct initial value", () => {
-    expect(wrapper.findComponent(MultiModeTwinList).props().pattern).toBe(
+    expect(wrapper.findComponent(KdsTwinList).props().pattern).toBe(
       props.control.data.patternFilter.pattern,
     );
     expect(
-      wrapper.findComponent(MultiModeTwinList).props().selectedTypes,
+      wrapper.findComponent(KdsTwinList).props().selectedTypes,
     ).toStrictEqual(props.control.data.typeFilter?.selectedTypes);
     expect(
-      wrapper.findComponent(MultiModeTwinList).props().manualSelection,
+      wrapper.findComponent(KdsTwinList).props().manuallyIncluded,
     ).toStrictEqual(props.control.data.manualFilter.manuallySelected);
-    expect(wrapper.findComponent(MultiModeTwinList).props().mode).toBe(
-      "manual",
-    );
+    expect(wrapper.findComponent(KdsTwinList).props().mode).toBe("manual");
   });
 
   it("moves missing values correctly", async () => {
@@ -459,10 +428,11 @@ describe("TwinlistControl", () => {
     expect((wrapper.vm as any).control.data.manualFilter).toMatchObject({
       manuallySelected: ["missing"],
     });
-    await wrapper
-      .findComponent(Twinlist)
-      .find({ ref: "moveAllLeft" })
-      .trigger("click");
+    wrapper.findComponent(KdsTwinList).vm.$emit("update:manuallyIncluded", []);
+    wrapper
+      .findComponent(KdsTwinList)
+      .vm.$emit("update:manuallyExcluded", ["test_1", "test_2", "test_3"]);
+    await flushPromises();
     expect(changeValue).toBeCalledWith(
       expect.objectContaining({
         manualFilter: {
@@ -518,32 +488,25 @@ describe("TwinlistControl", () => {
     provideChoices!(providedChoices);
     await flushPromises();
     expect(
-      wrapper.findComponent(Twinlist).props().possibleValues,
+      wrapper.findComponent(KdsTwinList).props().possibleValues,
     ).toStrictEqual(providedChoices);
   });
 
-  it("renders slot contents to display DataType icons if the possible values have types", async () => {
-    props.control.data.mode = "TYPE";
-    const { wrapper } = await mountTwinlistControl();
-    await flushPromises();
-    const optionItems = wrapper.findAll(".data-type-entry");
-    const expectedOptionResult = [
-      ["test_2", "DoubleValue"],
-      ["test_1", "StringValue"],
-      ["test_3", "StringValue"],
-    ];
-    optionItems.forEach((item, index) => {
-      expect(item.text()).toBe(expectedOptionResult[index][0]);
-      expect(item.findComponent(KdsDataType).props("iconName")).toBe(
-        expectedOptionResult[index][1],
-      );
-    });
+  it("maps mode correctly to KdsTwinList", () => {
+    expect(wrapper.findComponent(KdsTwinList).props().mode).toBe("manual");
 
-    const checkboxes = wrapper.findComponent(Checkboxes);
-    const labelItems = checkboxes.findAllComponents(KdsDataType);
-    const expectedLabelResult = ["IntValue", "StringValue", "DoubleValue"];
-    labelItems.forEach((item, index) => {
-      expect(item.props("iconName")).toBe(expectedLabelResult[index]);
-    });
+    props.control.data.mode = "WILDCARD";
+    const { wrapper: w2 } = mountTwinlistControl();
+    expect(w2.findComponent(KdsTwinList).props().mode).toBe("pattern");
+    expect(w2.findComponent(KdsTwinList).props().useRegex).toBe(false);
+
+    props.control.data.mode = "REGEX";
+    const { wrapper: w3 } = mountTwinlistControl();
+    expect(w3.findComponent(KdsTwinList).props().mode).toBe("pattern");
+    expect(w3.findComponent(KdsTwinList).props().useRegex).toBe(true);
+
+    props.control.data.mode = "TYPE";
+    const { wrapper: w4 } = mountTwinlistControl();
+    expect(w4.findComponent(KdsTwinList).props().mode).toBe("type");
   });
 });
