@@ -283,9 +283,6 @@
     }
   },
   "packages/jsonforms/src/uiComponents/twinlist/ManualTwinlistControl.vue": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 1
-    },
     "prefer-const": {
       "count": 1
     }

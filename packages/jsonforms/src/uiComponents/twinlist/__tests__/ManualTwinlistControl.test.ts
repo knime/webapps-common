@@ -17,7 +17,7 @@ import {
   type VueControlTestProps,
   getControlBase,
   mountJsonFormsControlLabelContent,
-} from "../../../../testUtils/component";
+} from "../../../../testUtils";
 import { mergeDeep } from "../../../utils";
 import ManualTwinlistControl from "../ManualTwinlistControl.vue";
 

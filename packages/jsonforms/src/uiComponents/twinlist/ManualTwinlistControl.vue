@@ -6,9 +6,10 @@ import type { PartialDeep } from "type-fest";
 import {
   KdsTwinList,
   type KdsTwinListPossibleValue,
+  type KdsTypeIconName,
 } from "@knime/kds-components";
 
-import type { VueControlPropsForLabelContent } from "../../higherOrderComponents/control/withLabel";
+import type { VueControlPropsForLabelContent } from "../../higherOrderComponents";
 import type { IdAndText } from "../../types/ChoicesUiSchema";
 import { mergeDeep } from "../../utils";
 import {
@@ -51,7 +52,10 @@ const kdsPossibleValues = computed<KdsTwinListPossibleValue[]>(() =>
     ...(v.type
       ? {
           type: v.type.id,
-          accessory: { type: "dataType" as const, name: v.type.id as any },
+          accessory: {
+            type: "dataType" as const,
+            name: v.type.id as KdsTypeIconName,
+          },
         }
       : {}),
   })),

@@ -305,6 +305,7 @@ const rightLabel = computed(() => includedLabel ?? props.twinlistRightLabel);
     :loading="isLoading"
     :exclude-label="leftLabel"
     :include-label="rightLabel"
+    :error="!props.isValid"
     @update:mode="onModeChange"
     @update:manually-included="onManuallyIncludedChange"
     @update:manually-excluded="onManuallyExcludedChange"
