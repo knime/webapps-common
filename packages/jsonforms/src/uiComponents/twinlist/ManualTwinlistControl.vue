@@ -1,21 +1,19 @@
 <!-- eslint-disable no-undefined -->
-<!-- eslint-disable class-methods-use-this -->
 <script setup lang="ts">
-import { computed, markRaw, toRef } from "vue";
+import { computed, toRef } from "vue";
 import type { PartialDeep } from "type-fest";
 
-import type { TwinlistModelValue } from "@knime/components";
-import { Twinlist } from "@knime/components";
+import { KdsTwinList } from "@knime/kds-components";
 
-import type { VueControlPropsForLabelContent } from "../../higherOrderComponents/control/withLabel";
+import type { VueControlPropsForLabelContent } from "../../higherOrderComponents";
 import type { IdAndText } from "../../types/ChoicesUiSchema";
 import { mergeDeep } from "../../utils";
 import {
   useIncludedExcludedLabels,
   usePossibleValues,
 } from "../composables/usePossibleValues";
-import TwinlistLoadingInfo from "../loading/TwinlistLoadingInfo.vue";
 
+import { toKdsPossibleValues } from "./toKdsPossibleValues";
 import useUnknownValuesInTwinlist from "./useUnknownValuesInTwinlist";
 
 export type ManualTwinlistData = {
@@ -26,42 +24,22 @@ export type ManualTwinlistData = {
 
 const props = defineProps<VueControlPropsForLabelContent<ManualTwinlistData>>();
 
-// TODO: use const instead of let (prefer-const) requires initializing
-let setManualFilterOnChange: (newData: ManualTwinlistData) => void;
+const { excludedLabel, includedLabel } = useIncludedExcludedLabels(
+  toRef(props, "control"),
+);
 
-const onChangeTwinlist = (obj: PartialDeep<ManualTwinlistData>) => {
-  const newData = mergeDeep(props.control.data, obj) as ManualTwinlistData;
-  props.changeValue(newData);
-  setManualFilterOnChange?.(newData);
-};
-
-type ManualSelection = TwinlistModelValue<string>;
-
-const onManualSelectionChange = (manualSelection: ManualSelection) => {
-  if (manualSelection === null) {
-    return;
-  }
-  if ("includedValues" in manualSelection) {
-    const { includedValues, excludedValues, includeUnknownValues } =
-      manualSelection;
-    if (!includedValues || !excludedValues) {
-      return;
-    }
-    onChangeTwinlist({
-      manuallySelected: includedValues,
-      manuallyDeselected: excludedValues,
-      includeUnknownColumns: includeUnknownValues,
-    });
-  } else {
-    onChangeTwinlist({ manuallySelected: manualSelection });
-  }
-};
-
-// Initial updates
+// --- Possible values ---
 
 const { possibleValues } = usePossibleValues<{ type?: IdAndText }>(
   toRef(props, "control"),
 );
+
+const kdsPossibleValues = computed(() =>
+  toKdsPossibleValues(possibleValues.value ?? []),
+);
+
+// --- Unknown values / manual selection ---
+
 const { selectedAndDeselected, setCurrentManualFilter } =
   useUnknownValuesInTwinlist({
     data: computed(() => ({ manualFilter: props.control.data })),
@@ -69,60 +47,70 @@ const { selectedAndDeselected, setCurrentManualFilter } =
       () => possibleValues.value?.map(({ id }) => id) ?? null,
     ),
   });
-setManualFilterOnChange = setCurrentManualFilter;
 
-const manualSelection = computed<ManualSelection>(() => {
-  const { selected, deselected } = selectedAndDeselected.value;
-  return {
-    includedValues: selected,
-    excludedValues: deselected,
-    includeUnknownValues: props.control.data.includeUnknownColumns,
-  };
-});
+const onChangeTwinlist = (obj: PartialDeep<ManualTwinlistData>) => {
+  const newData = mergeDeep(props.control.data, obj) as ManualTwinlistData;
+  props.changeValue(newData);
+  setCurrentManualFilter(newData);
+};
 
-const loadingInfo = computed(() =>
-  selectedAndDeselected.value.selected === null
-    ? (markRaw(TwinlistLoadingInfo) as any)
-    : null,
-);
+// --- Batched manual filter update ---
 
-const { excludedLabel, includedLabel } = useIncludedExcludedLabels(
-  toRef(props, "control"),
-);
-const leftLabel = computed(() => excludedLabel ?? "Excludes");
-const rightLabel = computed(() => includedLabel ?? "Includes");
-const twinlistSize = computed(
-  () => props.control.uischema.options?.twinlistSize,
-);
+let pendingManualUpdate: PartialDeep<ManualTwinlistData> | null = null;
+
+const flushManualUpdate = () => {
+  if (pendingManualUpdate !== null) {
+    const update = pendingManualUpdate;
+    pendingManualUpdate = null;
+    onChangeTwinlist(update);
+  }
+};
+
+const queueManualChange = (partial: PartialDeep<ManualTwinlistData>) => {
+  if (pendingManualUpdate === null) {
+    pendingManualUpdate = partial;
+    queueMicrotask(flushManualUpdate);
+  } else {
+    pendingManualUpdate = mergeDeep(
+      pendingManualUpdate,
+      partial,
+    ) as PartialDeep<ManualTwinlistData>;
+  }
+};
+
+const onManuallyIncludedChange = (included: string[]) => {
+  queueManualChange({ manuallySelected: included });
+};
+
+const onManuallyExcludedChange = (excluded: string[]) => {
+  queueManualChange({ manuallyDeselected: excluded });
+};
+
+const onIncludeUnknownValuesChange = (include: boolean | null) => {
+  if (include !== null) {
+    queueManualChange({ includeUnknownColumns: include });
+  }
+};
+
+// --- Labels ---
 </script>
 
 <template>
-  <Twinlist
+  <KdsTwinList
     v-bind="$attrs"
     :id="labelForId"
-    show-search
+    :ariaLabel="control.label"
     :disabled="disabled"
-    :empty-state-component="loadingInfo"
-    :model-value="manualSelection"
-    :possible-values="possibleValues ?? []"
-    :size="twinlistSize"
-    :left-label="leftLabel"
-    :right-label="rightLabel"
-    :is-valid
-    compact
-    show-resize-handle
-    @update:model-value="onManualSelectionChange"
+    :manually-included="selectedAndDeselected.selected ?? []"
+    :manually-excluded="selectedAndDeselected.deselected ?? []"
+    :include-unknown-values="control.data.includeUnknownColumns"
+    :possible-values="kdsPossibleValues"
+    :loading="selectedAndDeselected.selected === null"
+    :exclude-label="excludedLabel"
+    :include-label="includedLabel"
+    :error="!props.isValid"
+    @update:manually-included="onManuallyIncludedChange"
+    @update:manually-excluded="onManuallyExcludedChange"
+    @update:include-unknown-values="onIncludeUnknownValuesChange"
   />
 </template>
-
-<style lang="postcss" scoped>
-.twinlist :deep(.lists .multiselect-list-box [role="listbox"]) {
-  font-size: 13px;
-}
-
-.twinlist :deep(.header .title) {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--knime-dove-gray);
-}
-</style>

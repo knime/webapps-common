@@ -337,9 +337,6 @@ export const dialogInitialData = {
                 },
               ],
               allowEmptyInclude: true,
-              twinlistSize: 7,
-              twinlistLeftLabel: "Excluded Columns",
-              twinlistRightLabel: "Included Columns",
             },
           },
           {
