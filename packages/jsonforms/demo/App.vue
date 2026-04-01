@@ -36,7 +36,6 @@ function onFormChange({ data }: { data: unknown }) {
   <div class="page">
     <div class="toolbar">
       <KdsDropdown
-        ariaLabel="Schema"
         :model-value="selected?.id"
         :possible-values="
           mockSchemas.map((mock) => ({ id: mock.id, text: mock.name }))
