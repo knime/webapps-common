@@ -15,6 +15,7 @@ import useProvidedState, {
 
 type TextControlOptions = {
   placeholder?: string;
+  suggestions?: string[];
 };
 
 type TextControlUiSchema = UiSchemaWithProvidedOptions<TextControlOptions>;
@@ -47,6 +48,7 @@ useBuiltinValidation<ValidationParameters, string | null>(
 
 const uischema = computed(() => props.control.uischema as TextControlUiSchema);
 const placeholder = useProvidedState(uischema, "placeholder", "");
+const suggestions = useProvidedState(uischema, "suggestions");
 
 const inputField = useTemplateRef("inputField");
 
@@ -59,10 +61,13 @@ defineExpose<VueControlExposed>({
   <KdsTextInput
     :id="labelForId"
     ref="inputField"
+    :ariaLabel="control.label"
     :placeholder="placeholder"
     :model-value="control.data ?? ''"
     :disabled="disabled"
     :error="!isValid"
+    :suggestions="suggestions ?? undefined"
+    suggestions-headline="Suggestions"
     @update:model-value="changeValue"
   />
 </template>

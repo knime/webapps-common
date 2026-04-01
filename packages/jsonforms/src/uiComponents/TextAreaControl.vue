@@ -9,6 +9,7 @@ defineProps<VueControlPropsForLabelContent<string>>();
 <template>
   <KdsTextarea
     :id="labelForId"
+    :ariaLabel="control.label"
     :model-value="control.data"
     :disabled="disabled"
     :rows="control.uischema.options?.rows"

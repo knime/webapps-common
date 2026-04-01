@@ -1,5 +1,24 @@
 # @knime/json-forms
 
+## 1.21.2
+
+### Patch Changes
+
+- 7b0c327: KDS-464: Migrate SortListControl to use KdsSortableListBox
+- d8b5dae: KDS-509: Use KdsLoadingSkeleton
+
+## 1.21.1
+
+### Patch Changes
+
+- fb3e4c1: KDS-808: Migrate Twinlist renderers to KdsTwinList
+
+## 1.21.0
+
+### Minor Changes
+
+- 541b5d1: Introduce suggestions in TextControl, remove them from DropdownControl, and remove the `allowNewValue` prop from DropdownControl entirely.
+
 ## 1.20.2
 
 ### Patch Changes

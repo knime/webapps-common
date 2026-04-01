@@ -20,6 +20,7 @@ const onChange = (value: number) => {
 <template>
   <KdsNumberInput
     :id="labelForId"
+    :ariaLabel="control.label"
     :model-value="control.data"
     :min="min"
     :max="max"
