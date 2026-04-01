@@ -550,4 +550,67 @@ describe("TwinlistControl", () => {
     const { wrapper: w4 } = mountTwinlistControl();
     expect(w4.findComponent(KdsTwinList).props().mode).toBe("type");
   });
+
+  describe("onModeChange", () => {
+    it("emits WILDCARD when switching to pattern mode while useRegex is false", () => {
+      props.control.data.mode = "MANUAL";
+      const { wrapper, changeValue } = mountTwinlistControl();
+      wrapper.findComponent(KdsTwinList).vm.$emit("update:mode", "pattern");
+      expect(changeValue).toHaveBeenCalledWith(
+        expect.objectContaining({ mode: "WILDCARD" }),
+      );
+    });
+
+    it("emits REGEX when switching to pattern mode while useRegex is true", () => {
+      props.control.data.mode = "REGEX";
+      const { wrapper, changeValue } = mountTwinlistControl();
+      wrapper.findComponent(KdsTwinList).vm.$emit("update:mode", "pattern");
+      expect(changeValue).toHaveBeenCalledWith(
+        expect.objectContaining({ mode: "REGEX" }),
+      );
+    });
+
+    it("emits TYPE when switching to type mode", () => {
+      wrapper.findComponent(KdsTwinList).vm.$emit("update:mode", "type");
+      expect(changeValue).toHaveBeenCalledWith(
+        expect.objectContaining({ mode: "TYPE" }),
+      );
+    });
+
+    it("emits MANUAL when switching to manual mode", () => {
+      props.control.data.mode = "WILDCARD";
+      const { wrapper, changeValue } = mountTwinlistControl();
+      wrapper.findComponent(KdsTwinList).vm.$emit("update:mode", "manual");
+      expect(changeValue).toHaveBeenCalledWith(
+        expect.objectContaining({ mode: "MANUAL" }),
+      );
+    });
+  });
+
+  describe("onUseRegexChange", () => {
+    it("emits REGEX when enabling regex in pattern mode", () => {
+      props.control.data.mode = "WILDCARD";
+      const { wrapper, changeValue } = mountTwinlistControl();
+      wrapper.findComponent(KdsTwinList).vm.$emit("update:useRegex", true);
+      expect(changeValue).toHaveBeenCalledWith(
+        expect.objectContaining({ mode: "REGEX" }),
+      );
+    });
+
+    it("emits WILDCARD when disabling regex in pattern mode", () => {
+      props.control.data.mode = "REGEX";
+      const { wrapper, changeValue } = mountTwinlistControl();
+      wrapper.findComponent(KdsTwinList).vm.$emit("update:useRegex", false);
+      expect(changeValue).toHaveBeenCalledWith(
+        expect.objectContaining({ mode: "WILDCARD" }),
+      );
+    });
+
+    it("does not emit when not in pattern mode", () => {
+      props.control.data.mode = "MANUAL";
+      const { wrapper, changeValue } = mountTwinlistControl();
+      wrapper.findComponent(KdsTwinList).vm.$emit("update:useRegex", true);
+      expect(changeValue).not.toHaveBeenCalled();
+    });
+  });
 });
