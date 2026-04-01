@@ -10,15 +10,13 @@ import {
 import type { VueWrapper } from "@vue/test-utils";
 import { flushPromises } from "@vue/test-utils";
 
-import { SortList } from "@knime/components";
-import { KdsButton, KdsDataType } from "@knime/kds-components";
+import { KdsSortableListBox } from "@knime/kds-components";
 
 import {
   type VueControlTestProps,
   getControlBase,
-  mountJsonFormsControl,
+  mountJsonFormsControlLabelContent,
 } from "../../../testUtils/component";
-import LabeledControl from "../../higherOrderComponents/control/LabeledControl.vue";
 import type { IdAndText } from "../../types/ChoicesUiSchema";
 import SortListControl, {
   DEFAULT_ANY_UNKNOWN_VALUES_ID,
@@ -67,9 +65,9 @@ describe("SortListControl", () => {
       },
       disabled: false,
       isValid: false,
-      messages: { errors: [] },
+      labelForId: "test-label-id",
     };
-    const component = mountJsonFormsControl(SortListControl, {
+    const component = mountJsonFormsControlLabelContent(SortListControl, {
       props,
     });
     wrapper = component.wrapper;
@@ -81,27 +79,29 @@ describe("SortListControl", () => {
   });
 
   it("renders", () => {
-    expect(wrapper.findAllComponents(KdsButton).length).toBe(3);
-    expect(wrapper.findComponent(LabeledControl).exists()).toBe(true);
-    expect(wrapper.findComponent(SortList).exists()).toBe(true);
+    expect(wrapper.findComponent(KdsSortableListBox).exists()).toBe(true);
   });
 
   it("sets labelForId", () => {
-    expect(wrapper.getComponent(SortList).props().id).toBeTruthy();
+    expect(wrapper.getComponent(KdsSortableListBox).props().id).toBe(
+      "test-label-id",
+    );
   });
 
-  it("calls onChange when sortList value is changed", async () => {
+  it("calls onChange when sortable list box value is changed", async () => {
     const newSelected = ["test_3", "test_2", "test_1"];
     await wrapper
-      .findComponent(SortList)
+      .findComponent(KdsSortableListBox)
       .vm.$emit("update:modelValue", newSelected);
     expect(changeValue).toBeCalledWith(newSelected);
   });
 
   it("sets correct initial values", () => {
-    const sortListProps = wrapper.findComponent(SortList).props();
-    expect(sortListProps.modelValue).toStrictEqual(props.control.data);
-    expect(sortListProps.possibleValues).toStrictEqual([
+    const sortableListBoxProps = wrapper
+      .findComponent(KdsSortableListBox)
+      .props();
+    expect(sortableListBoxProps.modelValue).toStrictEqual(props.control.data);
+    expect(sortableListBoxProps.possibleValues).toStrictEqual([
       ...possibleValues,
       {
         id: DEFAULT_ANY_UNKNOWN_VALUES_ID,
@@ -113,7 +113,7 @@ describe("SortListControl", () => {
 
   it("sets data if none are present", async () => {
     props.control.data = [];
-    const { changeValue } = mountJsonFormsControl(SortListControl, {
+    const { changeValue } = mountJsonFormsControlLabelContent(SortListControl, {
       props,
     });
     await flushPromises();
@@ -143,10 +143,13 @@ describe("SortListControl", () => {
     const addStateProviderListener = vi.fn((_id, callback) => {
       provideChoices = callback;
     });
-    const { wrapper, changeValue } = mountJsonFormsControl(SortListControl, {
-      props,
-      provide: { addStateProviderListener },
-    });
+    const { wrapper, changeValue } = mountJsonFormsControlLabelContent(
+      SortListControl,
+      {
+        props,
+        provide: { addStateProviderListener },
+      },
+    );
     expect(addStateProviderListener).toHaveBeenCalledWith(
       { providedOptionName: "possibleValues", scope: "#/properties/test" },
       expect.anything(),
@@ -159,8 +162,10 @@ describe("SortListControl", () => {
     ];
     provideChoices!(providedChoices);
     await flushPromises();
-    const sortListProps = wrapper.findComponent(SortList).props();
-    expect(sortListProps.possibleValues).toStrictEqual([
+    const sortableListBoxProps = wrapper
+      .findComponent(KdsSortableListBox)
+      .props();
+    expect(sortableListBoxProps.possibleValues).toStrictEqual([
       ...providedChoices,
       {
         id: DEFAULT_ANY_UNKNOWN_VALUES_ID,
@@ -177,49 +182,6 @@ describe("SortListControl", () => {
     ]);
   });
 
-  it("sets correct label", () => {
-    expect(wrapper.find("label").text()).toBe(props.control.label);
-  });
-
-  describe("buttons", () => {
-    const clickButtonWithText = (text: string) =>
-      wrapper
-        .findAllComponents(KdsButton)
-        .filter((button) => button.text() === text)[0]
-        .trigger("click");
-
-    it("sorts from A to Z", async () => {
-      await clickButtonWithText("A - Z");
-      expect(changeValue).toHaveBeenCalledWith([
-        DEFAULT_ANY_UNKNOWN_VALUES_ID,
-        "test_1",
-        "test_2",
-        "test_3",
-      ]);
-    });
-
-    it("sorts from Z to A", async () => {
-      await clickButtonWithText("Z - A");
-      expect(changeValue).toHaveBeenCalledWith([
-        "test_3",
-        "test_2",
-        "test_1",
-        DEFAULT_ANY_UNKNOWN_VALUES_ID,
-      ]);
-    });
-
-    it("resets to the given possible values", async () => {
-      await clickButtonWithText("Reset all");
-      expect(changeValue).toHaveBeenCalledWith([
-        "test_1",
-        "test_2",
-        "test_3",
-        "unknown",
-        DEFAULT_ANY_UNKNOWN_VALUES_ID,
-      ]);
-    });
-  });
-
   describe("custom uischema options", () => {
     it("uses custom unknownElementId and unknownElementLabel", async () => {
       const customId = "my-custom-unknown-id";
@@ -227,10 +189,14 @@ describe("SortListControl", () => {
       props.control.uischema.options!.unknownElementId = customId;
       props.control.uischema.options!.unknownElementLabel =
         "Custom unknown label";
-      const { wrapper } = mountJsonFormsControl(SortListControl, { props });
+      const { wrapper } = mountJsonFormsControlLabelContent(SortListControl, {
+        props,
+      });
       await flushPromises();
-      const sortListProps = wrapper.findComponent(SortList).props();
-      expect(sortListProps.possibleValues).toStrictEqual([
+      const sortableListBoxProps = wrapper
+        .findComponent(KdsSortableListBox)
+        .props();
+      expect(sortableListBoxProps.possibleValues).toStrictEqual([
         ...possibleValues,
         {
           id: customId,
@@ -239,25 +205,9 @@ describe("SortListControl", () => {
         },
       ]);
     });
-
-    it("uses custom resetSortButtonLabel", () => {
-      props.control.uischema.options!.resetSortButtonLabel = "Reset order";
-      const { wrapper } = mountJsonFormsControl(SortListControl, { props });
-      const resetButton = wrapper
-        .findAllComponents(KdsButton)
-        .filter((button) => button.text() === "Reset order");
-      expect(resetButton.length).toBe(1);
-    });
-
-    it("uses default resetSortButtonLabel when not specified", () => {
-      const resetButton = wrapper
-        .findAllComponents(KdsButton)
-        .filter((button) => button.text() === "Reset all");
-      expect(resetButton.length).toBe(1);
-    });
   });
 
-  describe("slot rendering if types are available", () => {
+  describe("data type accessory rendering", () => {
     beforeEach(async () => {
       props.control.data = [
         "type_1",
@@ -272,7 +222,7 @@ describe("SortListControl", () => {
         },
       ];
 
-      const component = mountJsonFormsControl(SortListControl, {
+      const component = mountJsonFormsControlLabelContent(SortListControl, {
         props,
       });
 
@@ -280,39 +230,28 @@ describe("SortListControl", () => {
       wrapper = component.wrapper;
     });
 
-    it("renders an existing item", () => {
-      expect(wrapper.find(".data-type-entry").exists()).toBeTruthy();
-      const type1ListEntry = wrapper.find("ul").findAll("li")[0];
-      expect(type1ListEntry.find(".data-type-entry").exists()).toBeTruthy();
-      expect(type1ListEntry.text()).toBe("Type 1");
-      const dataTypeComp = type1ListEntry.findComponent(KdsDataType);
-      expect(dataTypeComp.exists()).toBeTruthy();
-      expect(dataTypeComp.props()).toStrictEqual({
-        iconName: "type_1",
-        iconTitle: "Type 1",
-        size: "small",
-        disabled: false,
+    it("passes data type as accessory", () => {
+      const sortableListBoxProps = wrapper
+        .findComponent(KdsSortableListBox)
+        .props();
+      const options = sortableListBoxProps.possibleValues;
+      expect(options[0]).toStrictEqual({
+        id: "type_1",
+        text: "Type 1",
+        accessory: { type: "dataType", name: "type_1" },
       });
     });
 
-    it("renders a special item", () => {
-      expect(wrapper.find(".data-type-entry").exists()).toBeTruthy();
-      const specialListEntry = wrapper.find("ul").findAll("li")[1];
-      expect(specialListEntry.find(".data-type-entry").exists()).toBeTruthy();
-      expect(specialListEntry.text()).toBe("Any unknown column");
-      expect(specialListEntry.findComponent(KdsDataType).exists()).toBeFalsy();
-    });
-
-    it("renders an invalid item", () => {
-      expect(wrapper.find(".data-type-entry").exists()).toBeTruthy();
-      const missingTypeListEntry = wrapper.find("ul").findAll("li")[2];
-      expect(
-        missingTypeListEntry.find(".data-type-entry").exists(),
-      ).toBeTruthy();
-      expect(missingTypeListEntry.text()).toBe("(MISSING) missing_type");
-      expect(
-        missingTypeListEntry.findComponent(KdsDataType).exists(),
-      ).toBeTruthy();
+    it("passes special item without accessory", () => {
+      const sortableListBoxProps = wrapper
+        .findComponent(KdsSortableListBox)
+        .props();
+      const options = sortableListBoxProps.possibleValues;
+      expect(options[1]).toStrictEqual({
+        id: DEFAULT_ANY_UNKNOWN_VALUES_ID,
+        text: "Any unknown column",
+        special: true,
+      });
     });
   });
 });

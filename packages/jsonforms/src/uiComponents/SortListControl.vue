@@ -3,31 +3,38 @@ export const DEFAULT_ANY_UNKNOWN_VALUES_ID = "<any unknown new column>";
 </script>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from "vue";
+import { computed, onMounted, watch } from "vue";
 import { indexOf } from "lodash-es"; // eslint-disable-line depend/ban-dependencies
 
-import { SortList } from "@knime/components";
-import { KdsButton, KdsDataType } from "@knime/kds-components";
+import {
+  KdsSortableListBox,
+  type KdsSortableListBoxOption,
+  type KdsTypeIconName,
+} from "@knime/kds-components";
 
-import LabeledControl from "../higherOrderComponents/control/LabeledControl.vue";
-import ErrorMessages from "../higherOrderComponents/control/errorMessage/ErrorMessages.vue";
-import type { VueControlProps } from "../higherOrderComponents/control/types";
+import type { VueControlPropsForLabelContent } from "../higherOrderComponents";
 
 import useProvidedState, {
   type UiSchemaWithProvidedOptions,
 } from "./composables/useProvidedState";
 
+type PossibleValueOption = {
+  id: string;
+  text: string;
+  special?: true;
+  type?: { id: string; text: string };
+};
+
 type SortListControlOptions = {
-  possibleValues?: { id: string; text: string; special?: true }[];
+  possibleValues?: PossibleValueOption[];
   unknownElementId?: string;
   unknownElementLabel?: string;
-  resetSortButtonLabel?: string;
 };
 
 type SortListControlUiSchema =
   UiSchemaWithProvidedOptions<SortListControlOptions>;
 
-const props = defineProps<VueControlProps<string[]>>();
+const props = defineProps<VueControlPropsForLabelContent<string[]>>();
 
 const data = computed(() => props.control.data);
 const uischema = computed(
@@ -40,9 +47,6 @@ const anyUnknownValuesId = computed(
 const anyUnknownValuesText = computed(
   () => uischema.value.options?.unknownElementLabel ?? "Any unknown column",
 );
-const resetSortButtonLabel = computed(
-  () => uischema.value.options?.resetSortButtonLabel ?? "Reset all",
-);
 
 const possibleValues = useProvidedState(
   uischema,
@@ -50,12 +54,29 @@ const possibleValues = useProvidedState(
   [] as SortListControlOptions["possibleValues"],
 );
 
+const toKdsOption = (option: PossibleValueOption): KdsSortableListBoxOption => {
+  const kdsOption: KdsSortableListBoxOption = {
+    id: option.id,
+    text: option.text,
+    ...(option.special ? { special: true } : {}),
+  };
+  if (option.type?.id) {
+    kdsOption.accessory = {
+      type: "dataType",
+      name: option.type.id as KdsTypeIconName,
+    };
+  }
+  return kdsOption;
+};
+
 const possibleValuesWithUnknownValues = computed(() =>
-  possibleValues.value.concat({
-    id: anyUnknownValuesId.value,
-    text: anyUnknownValuesText.value,
-    special: true,
-  }),
+  possibleValues.value.map(toKdsOption).concat(
+    toKdsOption({
+      id: anyUnknownValuesId.value,
+      text: anyUnknownValuesText.value,
+      special: true,
+    }),
+  ),
 );
 
 const addUnknownValuesToData = (currentPossibleValues: { id: string }[]) => {
@@ -87,124 +108,25 @@ onMounted(() => {
   addUnknownValuesToData(possibleValues.value);
 });
 
-const withTypes = computed(() =>
-  Boolean(possibleValues.value?.[0]?.hasOwnProperty("type")),
-);
-
 watch(() => possibleValues.value, addUnknownValuesToData);
 
-const sortAToZ = () => {
-  props.changeValue(data.value.toSorted((a, b) => a.localeCompare(b)));
-};
-const sortZToA = () => {
-  props.changeValue(data.value.toSorted((a, b) => b.localeCompare(a)));
-};
 const resetAll = () => {
   props.changeValue(possibleValuesWithUnknownValues.value.map(({ id }) => id));
 };
-const controlElement = ref<typeof SortList | null>(null);
+
+const onModelUpdate = (newOrder: string[]) => {
+  props.changeValue(newOrder);
+};
 </script>
 
 <template>
-  <div :class="['flex', 'space-between']">
-    <div class="flex">
-      <KdsButton
-        variant="outlined"
-        size="small"
-        label="A - Z"
-        @click="sortAToZ"
-      />
-      <KdsButton
-        variant="outlined"
-        size="small"
-        label="Z - A"
-        @click="sortZToA"
-      />
-    </div>
-    <KdsButton
-      variant="outlined"
-      size="small"
-      :label="resetSortButtonLabel"
-      @click="resetAll"
-    />
-  </div>
-  <LabeledControl
-    :label="control.label"
-    @controlling-flow-variable-set="changeValue"
-  >
-    <template #default="{ labelForId }">
-      <ErrorMessages :errors="messages.errors">
-        <!--  eslint-disable vue/attribute-hyphenation ariaLabel needs to be given like this for typescript to not complain -->
-        <SortList
-          :id="labelForId ?? undefined"
-          ref="controlElement"
-          :possible-values="possibleValuesWithUnknownValues"
-          :model-value="data"
-          :ariaLabel="control.label"
-          :disabled="disabled"
-          @update:model-value="changeValue"
-          ><template v-if="withTypes" #option="{ slotItem }">
-            <div
-              :class="[
-                'data-type-entry',
-                {
-                  invalid: slotItem.invalid,
-                  'with-type': slotItem.invalid || slotItem.type?.id,
-                  special: slotItem.special,
-                },
-              ]"
-            >
-              <template v-if="slotItem.invalid">
-                <KdsDataType size="small" />
-                <span>{{ slotItem.text }}</span>
-              </template>
-              <template v-else>
-                <template v-if="slotItem.type?.id">
-                  <KdsDataType
-                    :icon-name="slotItem.type.id"
-                    :icon-title="slotItem.type.text"
-                    size="small"
-                  />
-                </template>
-                <span>{{ slotItem.text }}</span>
-              </template>
-            </div>
-          </template>
-        </SortList>
-      </ErrorMessages>
-    </template>
-    <template #icon>
-      <slot name="icon" />
-    </template>
-    <template #buttons="{ hover }">
-      <slot
-        name="buttons"
-        :hover="hover"
-        :control-h-t-m-l-element="controlElement"
-      />
-    </template>
-  </LabeledControl>
+  <KdsSortableListBox
+    :id="labelForId"
+    :ariaLabel="control.label"
+    :possible-values="possibleValuesWithUnknownValues"
+    :model-value="data"
+    :disabled="disabled"
+    :error="!isValid"
+    @update:model-value="onModelUpdate"
+  />
 </template>
-
-<style scoped lang="postcss">
-.flex {
-  display: flex;
-  flex-direction: row;
-  gap: 4px;
-
-  &.space-between {
-    justify-content: space-between;
-  }
-}
-
-.data-type-entry.with-type {
-  display: flex;
-  gap: var(--space-4);
-  align-items: center;
-
-  & > span {
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-}
-</style>
