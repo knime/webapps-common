@@ -487,17 +487,21 @@ describe("TwinlistControl", () => {
       props.control.uischema.options!.includedLabel = includedLabel;
       props.control.uischema.options!.excludedLabel = excludedLabel;
       const { wrapper } = await mountTwinlistControl();
-      // @ts-expect-error Property 'leftLabel' does not exist on type
-      expect(wrapper.vm.leftLabel).toBe(excludedLabel);
-      // @ts-expect-error Property 'rightLabel' does not exist on type
-      expect(wrapper.vm.rightLabel).toBe(includedLabel);
+      expect(wrapper.findComponent(KdsTwinList).props("excludeLabel")).toBe(
+        excludedLabel,
+      );
+      expect(wrapper.findComponent(KdsTwinList).props("includeLabel")).toBe(
+        includedLabel,
+      );
     });
 
     it("passes the labels given by the props if uischema options are not available", () => {
-      // @ts-expect-error Property 'leftLabel' does not exist on type
-      expect(wrapper.vm.leftLabel).toBe("Excludes");
-      // @ts-expect-error Property 'rightLabel' does not exist on type
-      expect(wrapper.vm.rightLabel).toBe("Includes");
+      expect(wrapper.findComponent(KdsTwinList).props("excludeLabel")).toBe(
+        "Excludes",
+      );
+      expect(wrapper.findComponent(KdsTwinList).props("includeLabel")).toBe(
+        "Includes",
+      );
     });
   });
 

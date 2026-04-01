@@ -1,15 +1,13 @@
 <script setup lang="ts">
 import { computed, toRef } from "vue";
 
-import {
-  KdsTwinList,
-  type KdsTwinListPossibleValue,
-  type KdsTypeIconName,
-} from "@knime/kds-components";
+import { KdsTwinList } from "@knime/kds-components";
 
 import type { VueControlPropsForLabelContent } from "../../higherOrderComponents";
 import type { TypedIdAndText } from "../../types/ChoicesUiSchema";
 import { useIncludedExcludedLabels } from "../composables/usePossibleValues";
+
+import { toKdsPossibleValues } from "./toKdsPossibleValues";
 
 const props = defineProps<
   VueControlPropsForLabelContent<string[]> & {
@@ -21,20 +19,8 @@ const { includedLabel, excludedLabel } = useIncludedExcludedLabels(
   toRef(props, "control"),
 );
 
-const kdsPossibleValues = computed<KdsTwinListPossibleValue[]>(() =>
-  (props.possibleValues ?? []).map((v) => ({
-    id: v.id,
-    text: v.text,
-    ...(v.type
-      ? {
-          type: v.type.id,
-          accessory: {
-            type: "dataType" as const,
-            name: v.type.id as KdsTypeIconName,
-          },
-        }
-      : {}),
-  })),
+const kdsPossibleValues = computed(() =>
+  toKdsPossibleValues(props.possibleValues ?? []),
 );
 
 const manuallyExcluded = computed(() => {

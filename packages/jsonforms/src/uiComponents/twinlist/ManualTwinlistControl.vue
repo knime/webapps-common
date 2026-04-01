@@ -3,11 +3,7 @@
 import { computed, toRef } from "vue";
 import type { PartialDeep } from "type-fest";
 
-import {
-  KdsTwinList,
-  type KdsTwinListPossibleValue,
-  type KdsTypeIconName,
-} from "@knime/kds-components";
+import { KdsTwinList } from "@knime/kds-components";
 
 import type { VueControlPropsForLabelContent } from "../../higherOrderComponents";
 import type { IdAndText } from "../../types/ChoicesUiSchema";
@@ -17,6 +13,7 @@ import {
   usePossibleValues,
 } from "../composables/usePossibleValues";
 
+import { toKdsPossibleValues } from "./toKdsPossibleValues";
 import useUnknownValuesInTwinlist from "./useUnknownValuesInTwinlist";
 
 export type ManualTwinlistData = {
@@ -31,34 +28,14 @@ const { excludedLabel, includedLabel } = useIncludedExcludedLabels(
   toRef(props, "control"),
 );
 
-let setManualFilterOnChange: (newData: ManualTwinlistData) => void;
-
-const onChangeTwinlist = (obj: PartialDeep<ManualTwinlistData>) => {
-  const newData = mergeDeep(props.control.data, obj) as ManualTwinlistData;
-  props.changeValue(newData);
-  setManualFilterOnChange?.(newData);
-};
-
 // --- Possible values ---
 
 const { possibleValues } = usePossibleValues<{ type?: IdAndText }>(
   toRef(props, "control"),
 );
 
-const kdsPossibleValues = computed<KdsTwinListPossibleValue[]>(() =>
-  (possibleValues.value ?? []).map((v) => ({
-    id: v.id,
-    text: v.text,
-    ...(v.type
-      ? {
-          type: v.type.id,
-          accessory: {
-            type: "dataType" as const,
-            name: v.type.id as KdsTypeIconName,
-          },
-        }
-      : {}),
-  })),
+const kdsPossibleValues = computed(() =>
+  toKdsPossibleValues(possibleValues.value ?? []),
 );
 
 // --- Unknown values / manual selection ---
@@ -70,7 +47,10 @@ const { selectedAndDeselected, setCurrentManualFilter } =
       () => possibleValues.value?.map(({ id }) => id) ?? null,
     ),
   });
-setManualFilterOnChange = (newData: ManualTwinlistData) => {
+
+const onChangeTwinlist = (obj: PartialDeep<ManualTwinlistData>) => {
+  const newData = mergeDeep(props.control.data, obj) as ManualTwinlistData;
+  props.changeValue(newData);
   setCurrentManualFilter(newData);
 };
 
@@ -126,8 +106,8 @@ const onIncludeUnknownValuesChange = (include: boolean | null) => {
     :include-unknown-values="control.data.includeUnknownColumns"
     :possible-values="kdsPossibleValues"
     :loading="selectedAndDeselected.selected === null"
-    :exclude-label="excludedLabel ?? 'Excludes'"
-    :include-label="includedLabel ?? 'Includes'"
+    :exclude-label="excludedLabel"
+    :include-label="includedLabel"
     :error="!props.isValid"
     @update:manually-included="onManuallyIncludedChange"
     @update:manually-excluded="onManuallyExcludedChange"

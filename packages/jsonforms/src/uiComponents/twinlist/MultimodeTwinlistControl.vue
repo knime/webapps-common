@@ -6,7 +6,6 @@ import type { PartialDeep } from "type-fest";
 import {
   KdsTwinList,
   type KdsTwinListPossibleType,
-  type KdsTwinListPossibleValue,
   type KdsTwinListSearchMode,
   type KdsTypeIconName,
   kdsTwinListSearchMode,
@@ -20,6 +19,7 @@ import {
   usePossibleValues,
 } from "../composables/usePossibleValues";
 
+import { toKdsPossibleValues } from "./toKdsPossibleValues";
 import useUnknownValuesInTwinlist from "./useUnknownValuesInTwinlist";
 
 export type TwinlistData = {
@@ -44,16 +44,12 @@ export type TwinlistData = {
 const props = withDefaults(
   defineProps<
     VueControlPropsForLabelContent<TwinlistData> & {
-      twinlistLeftLabel?: string;
       showUnknownValues?: boolean;
-      twinlistRightLabel?: string;
       showTypeFilter?: boolean;
     }
   >(),
   {
-    twinlistLeftLabel: "Excludes",
     showUnknownValues: false,
-    twinlistRightLabel: "Includes",
     showTypeFilter: false,
   },
 );
@@ -82,20 +78,8 @@ const onChangeTwinlist = (obj: PartialDeep<TwinlistData>) => {
 
 // --- Possible values ---
 
-const kdsPossibleValues = computed<KdsTwinListPossibleValue[]>(() =>
-  (possibleValues.value ?? []).map((v) => ({
-    id: v.id,
-    text: v.text,
-    ...(v.type
-      ? {
-          type: v.type.id,
-          accessory: {
-            type: "dataType" as const,
-            name: v.type.id as KdsTypeIconName,
-          },
-        }
-      : {}),
-  })),
+const kdsPossibleValues = computed(() =>
+  toKdsPossibleValues(possibleValues.value ?? []),
 );
 
 // --- Unknown values / manual selection ---
@@ -277,8 +261,8 @@ const onSelectedTypesChange = (newSelectedTypes: string[]) => {
     :filter-types="filterTypes"
     :enable-pattern-filter="true"
     :loading="selectedAndDeselected.selected === null"
-    :exclude-label="excludedLabel ?? props.twinlistLeftLabel"
-    :include-label="includedLabel ?? props.twinlistRightLabel"
+    :exclude-label="excludedLabel"
+    :include-label="includedLabel"
     :error="!props.isValid"
     @update:mode="onModeChange"
     @update:manually-included="onManuallyIncludedChange"
