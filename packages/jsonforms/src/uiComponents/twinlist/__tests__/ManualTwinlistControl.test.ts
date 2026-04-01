@@ -163,10 +163,11 @@ describe("ManualTwinlistControl", () => {
       );
     });
 
-    it("handles include unknown values change", () => {
+    it("handles include unknown values change", async () => {
       wrapper
         .findComponent(KdsTwinList)
         .vm.$emit("update:includeUnknownValues", false);
+      await flushPromises();
       expect(changeValue).toHaveBeenCalledWith(
         expect.objectContaining({
           includeUnknownColumns: false,
@@ -260,6 +261,46 @@ describe("ManualTwinlistControl", () => {
       expect(
         wrapper.findComponent(KdsTwinList).props().manuallyIncluded,
       ).toStrictEqual(expect.arrayContaining(manuallySelected));
+    });
+
+    it("batches includeUnknownColumns with manual selection changes", async () => {
+      props = mergeDeep(props, {
+        control: {
+          data: {
+            includeUnknownColumns: true,
+            manuallySelected: ["A", "B"],
+            manuallyDeselected: ["C"],
+          },
+          uischema: {
+            options: {
+              possibleValues: [
+                { id: "A", text: "A" },
+                { id: "B", text: "B" },
+                { id: "C", text: "C" },
+              ],
+            },
+          },
+        },
+      });
+      const { wrapper, changeValue } = mountManualTwinlistControl();
+      await flushPromises();
+      expect(changeValue).not.toHaveBeenCalled();
+
+      // Simulate KdsTwinList emitting all three events synchronously
+      // (as happens when the user moves the unknown columns item)
+      const twinList = wrapper.findComponent(KdsTwinList);
+      twinList.vm.$emit("update:manuallyIncluded", ["A"]);
+      twinList.vm.$emit("update:manuallyExcluded", ["B", "C"]);
+      twinList.vm.$emit("update:includeUnknownValues", false);
+      await flushPromises();
+
+      // All changes should arrive as a single batched call
+      expect(changeValue).toHaveBeenCalledTimes(1);
+      expect(changeValue).toHaveBeenCalledWith({
+        manuallySelected: ["A"],
+        manuallyDeselected: ["B", "C"],
+        includeUnknownColumns: false,
+      });
     });
   });
 

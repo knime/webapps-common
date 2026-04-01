@@ -141,14 +141,9 @@ const onManuallyExcludedChange = (excluded: string[]) => {
 
 const onIncludeUnknownValuesChange = (include: boolean | null) => {
   if (include !== null) {
-    // Do not use onChangeTwinlist here: that would call setManualFilterOnChange
-    // which marks the update as internal, causing useUnknownValuesInTwinlist to
-    // skip refreshManualSelection. We need the composable to treat this as an
-    // external change so it redistributes unknown columns between the two sides.
-    const newData = mergeDeep(props.control.data, {
+    queueManualChange({
       manualFilter: { includeUnknownColumns: include },
-    } as PartialDeep<TwinlistData>) as TwinlistData;
-    props.changeValue(newData);
+    });
   }
 };
 

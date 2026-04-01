@@ -400,6 +400,44 @@ describe("TwinlistControl", () => {
         wrapper.findComponent(KdsTwinList).props().manuallyIncluded,
       ).toStrictEqual(manuallySelected);
     });
+
+    it("batches includeUnknownColumns with manual selection changes", async () => {
+      props = mergeDeep(props, {
+        showUnknownValues: true,
+        control: {
+          data: {
+            manualFilter: {
+              includeUnknownColumns: true,
+              manuallySelected: ["test_1", "test_2"],
+              manuallyDeselected: ["test_3"],
+            },
+          },
+        },
+      });
+      const { wrapper, changeValue } = mountTwinlistControl();
+      await flushPromises();
+      expect(changeValue).not.toHaveBeenCalled();
+
+      // Simulate KdsTwinList emitting all three events synchronously
+      // (as happens when the user moves the unknown columns item)
+      const twinList = wrapper.findComponent(KdsTwinList);
+      twinList.vm.$emit("update:manuallyIncluded", ["test_1"]);
+      twinList.vm.$emit("update:manuallyExcluded", ["test_2", "test_3"]);
+      twinList.vm.$emit("update:includeUnknownValues", false);
+      await flushPromises();
+
+      // All changes should arrive as a single batched call
+      expect(changeValue).toHaveBeenCalledTimes(1);
+      expect(changeValue).toHaveBeenCalledWith(
+        expect.objectContaining({
+          manualFilter: {
+            manuallySelected: ["test_1"],
+            manuallyDeselected: ["test_2", "test_3"],
+            includeUnknownColumns: false,
+          },
+        }),
+      );
+    });
   });
 
   it("sets correct initial value", () => {
