@@ -78,7 +78,7 @@ const onUpdateModelValue = (value: string | null) => {
   <KdsDropdown
     v-bind="$attrs"
     :id="props.id"
-    :aria-label="props.ariaLabel"
+    :ariaLabel="props.ariaLabel"
     :model-value="asyncValue"
     :disabled="disabledOrNoOptions"
     :possible-values="possibleValues"

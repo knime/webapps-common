@@ -54,6 +54,7 @@ const unit = computed(() => props.control.uischema.options?.unit ?? "");
   <div>
     <component :is="tooltipOrDiv" :text="disabledTooltip" class="input-wrapper">
       <KdsNumberInput
+        :ariaLabel="control.label"
         :model-value="control.data"
         :min="min"
         :max="max"
