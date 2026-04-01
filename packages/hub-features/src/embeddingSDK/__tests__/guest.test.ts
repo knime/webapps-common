@@ -159,4 +159,28 @@ describe("Embedding SDK::GUEST", () => {
       userIdleTimeout: 1000,
     });
   });
+
+  it("stores httpResourceUri in the context when provided", async () => {
+    guest.waitForContext();
+
+    window.dispatchEvent(
+      createWindowMessage({
+        type: MESSAGES.EMBEDDING_CONTEXT,
+        payload: {
+          wsConnectionUri: "ws://foo.com",
+          restApiBaseUrl: "/api",
+          jobId: "jobId",
+          httpResourceUri: "http://resource.foo.com",
+        },
+      }),
+    );
+
+    await flushPromises();
+    expect(guest.getContext()).toEqual({
+      wsConnectionUri: "ws://foo.com",
+      restApiBaseUrl: "/api",
+      jobId: "jobId",
+      httpResourceUri: "http://resource.foo.com",
+    });
+  });
 });
