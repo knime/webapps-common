@@ -323,6 +323,7 @@ describe("TwinlistControl", () => {
   });
 
   it("correctly provides filterTypes", () => {
+    props.showTypeFilter = true;
     const { wrapper } = mountTwinlistControl();
     const filterTypes = wrapper.findComponent(KdsTwinList).props().filterTypes;
     // Should contain types from possibleValues + previously selected types
