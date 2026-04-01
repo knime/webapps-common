@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.21.0
+
+### Minor Changes
+
+- 541b5d1: Introduce suggestions in TextControl, remove them from DropdownControl, and remove the `allowNewValue` prop from DropdownControl entirely.
+
 ## 1.20.2
 
 ### Patch Changes
