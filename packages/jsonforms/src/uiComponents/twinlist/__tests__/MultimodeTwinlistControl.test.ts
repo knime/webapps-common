@@ -496,7 +496,7 @@ describe("TwinlistControl", () => {
       );
     });
 
-    it("passes the labels given by the props if uischema options are not available", () => {
+    it("uses default labels when uischema options are not available", () => {
       expect(wrapper.findComponent(KdsTwinList).props("excludeLabel")).toBe(
         "Excludes",
       );
