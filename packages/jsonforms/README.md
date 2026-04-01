@@ -79,6 +79,12 @@ pnpm install
 
 and then use the following commands. For detailed explanations see [Vue CLI docs]:
 
+## Demo application with mocks
+
+```sh
+pnpm dev
+```
+
 ## Testing
 
 Run unit- and integration-tests individually by

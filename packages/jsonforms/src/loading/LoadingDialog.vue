@@ -1,6 +1,9 @@
 <!-- The component shown when resolving dynamic imports-->
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
+
+import { KdsLoadingSkeleton } from "@knime/kds-components";
+
 /**
  * The number of milliseconds to wait before showing the loading dialog.
  * Otherwise, the loading dialog would flash for a very short time.
@@ -15,21 +18,29 @@ onMounted(() => {
 </script>
 
 <template>
-  <div v-if="afterDelay" class="loading-dialog skeleton-wrapper">
-    <div class="loading-dialog-content skeleton" />
+  <div v-if="afterDelay" class="loading-dialog">
+    <KdsLoadingSkeleton variant="input-with-label" :repeat="3" />
+    <div class="two-columns">
+      <KdsLoadingSkeleton variant="input-with-label" />
+      <KdsLoadingSkeleton variant="input-with-label" />
+    </div>
+    <KdsLoadingSkeleton variant="input-with-label" :repeat="3" />
   </div>
 </template>
 
 <style lang="postcss" scoped>
-/* TODO UIEXT-2167: Move skeleton to common repo */
-@import url("./skeleton.css");
-
 .loading-dialog {
+  display: flex;
+  flex-direction: column;
+  gap: var(--kds-spacing-container-1x);
   height: 100%;
-  margin: var(--space-16);
-}
+  padding: var(--kds-spacing-container-2x) var(--kds-spacing-container-1x);
 
-.loading-dialog-content {
-  flex-grow: 1;
+  .two-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--kds-spacing-container-1x);
+    margin-bottom: var(--kds-spacing-container-3x);
+  }
 }
 </style>

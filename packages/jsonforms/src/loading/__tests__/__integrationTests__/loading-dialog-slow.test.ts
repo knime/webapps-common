@@ -14,6 +14,6 @@ describe("handling of asynchronous dialog components", () => {
   it("should show the loading dialog if it takes a while to fetch", async () => {
     const wrapper = mountJsonFormsDialog();
     await vi.runOnlyPendingTimers();
-    expect(wrapper.find(".skeleton").exists()).toBeTruthy();
+    expect(wrapper.find(".loading-dialog").exists()).toBeTruthy();
   });
 });

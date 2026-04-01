@@ -15,6 +15,6 @@ describe("handling of asynchronous dialog components", () => {
     const wrapper = mountJsonFormsDialog();
     await vi.dynamicImportSettled();
     await vi.runOnlyPendingTimers();
-    expect(wrapper.find(".skeleton").exists()).toBeFalsy();
+    expect(wrapper.find(".loading-dialog").exists()).toBeFalsy();
   });
 });
