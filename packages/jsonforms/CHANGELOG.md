@@ -1,5 +1,12 @@
 # @knime/json-forms
 
+## 1.21.2
+
+### Patch Changes
+
+- 7b0c327: KDS-464: Migrate SortListControl to use KdsSortableListBox
+- d8b5dae: KDS-509: Use KdsLoadingSkeleton
+
 ## 1.21.1
 
 ### Patch Changes
