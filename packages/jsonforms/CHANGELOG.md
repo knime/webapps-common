@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.21.1
+
+### Patch Changes
+
+- fb3e4c1: KDS-808: Migrate Twinlist renderers to KdsTwinList
+
 ## 1.21.0
 
 ### Minor Changes
