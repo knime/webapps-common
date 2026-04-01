@@ -58,21 +58,29 @@ const props = withDefaults(
   },
 );
 
-let setManualFilterOnChange: (
-  newData: TwinlistData["manualFilter"],
-) => void = () => {};
+const { possibleValues } = usePossibleValues<{ type?: IdAndText }>(
+  toRef(props, "control"),
+);
+
+const { excludedLabel, includedLabel } = useIncludedExcludedLabels(
+  toRef(props, "control"),
+);
+
+const { selectedAndDeselected, setCurrentManualFilter } =
+  useUnknownValuesInTwinlist({
+    data: computed(() => props.control.data),
+    possibleValueIds: computed(
+      () => possibleValues.value?.map(({ id }) => id) ?? null,
+    ),
+  });
 
 const onChangeTwinlist = (obj: PartialDeep<TwinlistData>) => {
   const newData = mergeDeep(props.control.data, obj) as TwinlistData;
   props.changeValue(newData);
-  setManualFilterOnChange?.(newData.manualFilter);
+  setCurrentManualFilter(newData.manualFilter);
 };
 
 // --- Possible values ---
-
-const { possibleValues } = usePossibleValues<{ type?: IdAndText }>(
-  toRef(props, "control"),
-);
 
 const kdsPossibleValues = computed<KdsTwinListPossibleValue[]>(() =>
   (possibleValues.value ?? []).map((v) => ({
@@ -91,31 +99,6 @@ const kdsPossibleValues = computed<KdsTwinListPossibleValue[]>(() =>
 );
 
 // --- Unknown values / manual selection ---
-
-const { selectedAndDeselected, setCurrentManualFilter } =
-  useUnknownValuesInTwinlist({
-    data: computed(() => props.control.data),
-    possibleValueIds: computed(
-      () => possibleValues.value?.map(({ id }) => id) ?? null,
-    ),
-  });
-
-const isLoading = computed(() => selectedAndDeselected.value.selected === null);
-
-setManualFilterOnChange = setCurrentManualFilter;
-
-const manuallyIncluded = computed(
-  () => selectedAndDeselected.value.selected ?? [],
-);
-const manuallyExcluded = computed(
-  () => selectedAndDeselected.value.deselected ?? [],
-);
-
-const includeUnknownValues = computed(() =>
-  props.showUnknownValues
-    ? props.control.data.manualFilter.includeUnknownColumns
-    : null,
-);
 
 // --- Batched manual filter update ---
 // KdsTwinList emits update:manuallyIncluded and update:manuallyExcluded
@@ -274,14 +257,6 @@ const onSelectedTypesChange = (newSelectedTypes: string[]) => {
     typeFilter: { selectedTypes: newSelectedTypes, typeDisplays },
   });
 };
-
-// --- Labels ---
-
-const { excludedLabel, includedLabel } = useIncludedExcludedLabels(
-  toRef(props, "control"),
-);
-const leftLabel = computed(() => excludedLabel ?? props.twinlistLeftLabel);
-const rightLabel = computed(() => includedLabel ?? props.twinlistRightLabel);
 </script>
 
 <template>
@@ -291,9 +266,13 @@ const rightLabel = computed(() => includedLabel ?? props.twinlistRightLabel);
     :ariaLabel="control.label"
     :disabled="disabled"
     :mode="kdsMode"
-    :manually-included="manuallyIncluded"
-    :manually-excluded="manuallyExcluded"
-    :include-unknown-values="includeUnknownValues"
+    :manually-included="selectedAndDeselected.selected ?? []"
+    :manually-excluded="selectedAndDeselected.deselected ?? []"
+    :include-unknown-values="
+      props.showUnknownValues
+        ? props.control.data.manualFilter.includeUnknownColumns
+        : null
+    "
     :pattern="control.data.patternFilter.pattern"
     :case-sensitive="control.data.patternFilter.isCaseSensitive"
     :exclude-matches="control.data.patternFilter.isInverted"
@@ -302,9 +281,9 @@ const rightLabel = computed(() => includedLabel ?? props.twinlistRightLabel);
     :possible-values="kdsPossibleValues"
     :filter-types="filterTypes"
     :enable-pattern-filter="true"
-    :loading="isLoading"
-    :exclude-label="leftLabel"
-    :include-label="rightLabel"
+    :loading="selectedAndDeselected.selected === null"
+    :exclude-label="excludedLabel ?? props.twinlistLeftLabel"
+    :include-label="includedLabel ?? props.twinlistRightLabel"
     :error="!props.isValid"
     @update:mode="onModeChange"
     @update:manually-included="onManuallyIncludedChange"
