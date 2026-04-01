@@ -2,7 +2,7 @@
 import { computed, defineAsyncComponent, isRef, ref } from "vue";
 import type { JsonSchema } from "@jsonforms/core";
 
-import { KdsCheckbox, KdsDropdown } from "@knime/kds-components";
+import { KdsButton, KdsDropdown } from "@knime/kds-components";
 
 import { JsonFormsDialog, defaultRenderers } from "../src";
 
@@ -32,6 +32,10 @@ function onFormChange({ data }: { data: unknown }) {
 }
 
 const forceLoading = ref(false);
+function onForceLoading() {
+  forceLoading.value = true;
+  selected.value = {} as MockSchema;
+}
 const NeverLoadingComponent = defineAsyncComponent(() => {
   return new Promise(() => {});
 });
@@ -49,9 +53,11 @@ const NeverLoadingComponent = defineAsyncComponent(() => {
         placeholder="Select a schema"
         @update:model-value="onSchemaSelect"
       />
-      <KdsCheckbox
-        v-model="forceLoading"
-        label="Force loading state when switching mocks"
+      <KdsButton
+        label="Force loading state"
+        size="xsmall"
+        variant="outlined"
+        @click="onForceLoading"
       />
     </div>
 
