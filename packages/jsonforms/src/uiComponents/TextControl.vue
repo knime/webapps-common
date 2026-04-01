@@ -61,6 +61,7 @@ defineExpose<VueControlExposed>({
   <KdsTextInput
     :id="labelForId"
     ref="inputField"
+    :ariaLabel="control.label"
     :placeholder="placeholder"
     :model-value="control.data ?? ''"
     :disabled="disabled"

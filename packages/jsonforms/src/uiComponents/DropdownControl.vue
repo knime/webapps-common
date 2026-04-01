@@ -12,7 +12,6 @@ const { possibleValues } = usePossibleValues(toRef(props, "control"));
 </script>
 
 <template>
-  <!-- eslint-disable vue/attribute-hyphenation typescript complains with ':aria-label' instead of ':ariaLabel'-->
   <LoadingDropdown
     :id="labelForId ?? ''"
     :ariaLabel="control.label"

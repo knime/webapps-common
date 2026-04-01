@@ -26,6 +26,16 @@ export default [
     },
   },
   {
+    files: ["**/*.vue"],
+    rules: {
+      "vue/attribute-hyphenation": [
+        "error",
+        "always",
+        { ignore: ["ariaLabel"] },
+      ],
+    },
+  },
+  {
     files: ["packages/lint/**/*.js"],
     languageOptions: {
       globals: {

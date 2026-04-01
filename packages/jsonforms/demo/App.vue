@@ -40,6 +40,7 @@ function onFormChange({ data }: { data: unknown }) {
         :possible-values="
           mockSchemas.map((mock) => ({ id: mock.id, text: mock.name }))
         "
+        ariaLabel="Select a schema"
         placeholder="Select a schema"
         @update:model-value="onSchemaSelect"
       />

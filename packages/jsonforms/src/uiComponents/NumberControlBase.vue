@@ -70,6 +70,7 @@ const max = computed<number | undefined>(() => {
 <template>
   <KdsNumberInput
     :id="labelForId"
+    :ariaLabel="control.label"
     class="number-input"
     :disabled="disabled"
     :model-value="control.data"

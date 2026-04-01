@@ -45,6 +45,7 @@ const allBaseFormats = useProvidedState(uischema, "dateTimeFormats", []);
 <template>
   <KdsDateTimeFormatInput
     :id="labelForId"
+    :ariaLabel="control.label"
     :model-value="props.control.data"
     :disabled="disabled"
     :allowed-formats="allowedFormats"
