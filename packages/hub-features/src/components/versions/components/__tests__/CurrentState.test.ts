@@ -147,9 +147,10 @@ describe("CurrentState", () => {
         },
       });
 
-      const discardItem = wrapper.getComponent(SubMenu).props("items").find(
-        (item: { text: string }) => item.text === "Discard",
-      );
+      const discardItem = wrapper
+        .getComponent(SubMenu)
+        .props("items")
+        .find((item: { text: string }) => item.text === "Discard");
       expect(discardItem).toBeDefined();
     });
 

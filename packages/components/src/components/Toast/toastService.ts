@@ -9,7 +9,6 @@ import type {
   UseToastsOptions,
 } from "./types";
 
-
 let uniqueIdCounter = 0;
 const uniqueId = () => `toast-${++uniqueIdCounter}`;
 

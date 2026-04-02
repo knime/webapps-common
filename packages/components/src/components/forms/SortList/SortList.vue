@@ -66,13 +66,15 @@ const partitionByIndices = <T,>(
 ) => {
   const truthy: T[] = [];
   const falsy: T[] = [];
-  array.forEach(withIndex((item, i) => {
-    if (indexPredicate(i)) {
-      truthy.push(item);
-    } else {
-      falsy.push(item);
-    }
-  }));
+  array.forEach(
+    withIndex((item, i) => {
+      if (indexPredicate(i)) {
+        truthy.push(item);
+      } else {
+        falsy.push(item);
+      }
+    }),
+  );
   return [truthy, falsy];
 };
 

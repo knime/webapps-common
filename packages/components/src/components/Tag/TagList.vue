@@ -64,10 +64,12 @@ const mappedTags = computed(() => {
     const activeTagsSet = new Set(activeTags);
     return [
       ...activeTags.map((tag) => ({ name: tag, isActive: true })),
-      ...tags.filter((tag) => !activeTagsSet.has(tag)).map((tag) => ({
-        name: tag,
-        isActive: false,
-      })),
+      ...tags
+        .filter((tag) => !activeTagsSet.has(tag))
+        .map((tag) => ({
+          name: tag,
+          isActive: false,
+        })),
     ];
   }
 
