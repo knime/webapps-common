@@ -46,11 +46,14 @@ defineEmits<{
 
 const labelsEventBus = useEventBus("versionLabels");
 
-const createThrottleWithCancel = (fn: () => void, ms: number) => {
+const createThrottleWithCancel = (
+  fn: () => void,
+  ms: number,
+): (() => void) & { cancel: () => void } => {
   let lastCallTime = 0;
   let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
-  const throttled = () => {
+  const throttled = (() => {
     const now = Date.now();
     const remaining = ms - (now - lastCallTime);
 
@@ -68,7 +71,7 @@ const createThrottleWithCancel = (fn: () => void, ms: number) => {
         fn();
       }, remaining);
     }
-  };
+  }) as (() => void) & { cancel: () => void };
 
   throttled.cancel = () => {
     if (timeoutId) {

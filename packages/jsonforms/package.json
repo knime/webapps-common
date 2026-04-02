@@ -29,7 +29,6 @@
     "@knime/rich-text-editor": "workspace:*",
     "@knime/styles": "workspace:*",
     "@knime/utils": "workspace:*",
-    "@vueuse/core": "catalog:",
     "ajv": "8.18.0",
     "date-fns": "2.30.0",
     "focus-trap-vue": "4.0.3",

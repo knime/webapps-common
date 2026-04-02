@@ -252,9 +252,6 @@
   "packages/jsonforms/src/higherOrderComponents/control/validation/useValidation.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 1
-    },
-    "@typescript-eslint/no-floating-promises": {
-      "count": 1
     }
   },
   "packages/jsonforms/src/layoutComponents/LayoutComponentWrapper.vue": {
