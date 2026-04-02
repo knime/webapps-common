@@ -9,7 +9,6 @@ import {
   setSeconds,
 } from "date-fns";
 import { format, utcToZonedTime, zonedTimeToUtc } from "date-fns-tz";
-import { map } from "lodash-es"; // eslint-disable-line depend/ban-dependencies
 import { DatePicker } from "v-calendar";
 
 import CalendarIcon from "@knime/styles/img/icons/calendar.svg";
@@ -100,7 +99,7 @@ const invalidValue = ref<Date | null>(null);
 // time in the given timezone (default: browser local) for correct display
 const localValue = ref(new Date(""));
 const selectedTimezone = ref(timezone);
-const timezones = map(Intl.supportedValuesOf("timeZone"), (timezone) => ({
+const timezones = Intl.supportedValuesOf("timeZone").map((timezone) => ({
   id: timezone,
   text: timezone,
 }));

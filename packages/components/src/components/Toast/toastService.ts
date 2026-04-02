@@ -1,6 +1,5 @@
 import type { App, Plugin, Ref } from "vue";
 import { computed, getCurrentInstance, inject, provide, ref } from "vue";
-import { cloneDeep, uniqueId } from "lodash-es"; // eslint-disable-line depend/ban-dependencies
 
 import type {
   Toast,
@@ -9,6 +8,9 @@ import type {
   ToastWithId,
   UseToastsOptions,
 } from "./types";
+
+let uniqueIdCounter = 0;
+const uniqueId = () => `toast-${++uniqueIdCounter}`;
 
 export const defaultToastServiceSymbol = Symbol("toast");
 export const defaultGlobalPropertyName = "$toast";
@@ -36,7 +38,7 @@ export class ToastServiceProvider {
   toasts: Ref<ToastWithId[]> = ref<ToastWithId[]>([]);
 
   show = (toast: Toast): string => {
-    const clonedToast = cloneDeep(toast);
+    const clonedToast = { ...toast };
     if (clonedToast.deduplicationKey) {
       const previousToast = this.toasts.value.find(
         (toast) => clonedToast.deduplicationKey === toast.deduplicationKey,

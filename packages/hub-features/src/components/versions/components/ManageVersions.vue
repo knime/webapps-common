@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useEventBus } from "@vueuse/core";
-import { throttle } from "lodash-es"; // eslint-disable-line depend/ban-dependencies
 
 import { FunctionButton } from "@knime/components";
 import CloseIcon from "@knime/styles/img/icons/close.svg";
@@ -47,10 +46,48 @@ defineEmits<{
 
 const labelsEventBus = useEventBus("versionLabels");
 
-const closeLabelPopovers = throttle(() => {
-  labelsEventBus.emit("versionLabelShowPopover");
-  // eslint-disable-next-line no-magic-numbers
-}, 10000); // Arbitrary delay to reduce overhead, is automatically reset @scrollend
+const createThrottleWithCancel = (
+  fn: () => void,
+  ms: number,
+): (() => void) & { cancel: () => void } => {
+  let lastCallTime = 0;
+  let timeoutId: ReturnType<typeof setTimeout> | null = null;
+
+  const throttled = (() => {
+    const now = Date.now();
+    const remaining = ms - (now - lastCallTime);
+
+    if (remaining <= 0) {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+        timeoutId = null;
+      }
+      lastCallTime = now;
+      fn();
+    } else if (!timeoutId) {
+      timeoutId = setTimeout(() => {
+        lastCallTime = Date.now();
+        timeoutId = null;
+        fn();
+      }, remaining);
+    }
+  }) as (() => void) & { cancel: () => void };
+
+  throttled.cancel = () => {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+      timeoutId = null;
+    }
+    lastCallTime = 0;
+  };
+
+  return throttled;
+};
+
+const closeLabelPopovers = createThrottleWithCancel(
+  () => labelsEventBus.emit("versionLabelShowPopover"),
+  10000, // Arbitrary delay to reduce overhead, is automatically reset @scrollend
+);
 </script>
 
 <template>

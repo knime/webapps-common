@@ -49,7 +49,6 @@
     "date-fns-tz": "2.0.0",
     "filesize": "10.0.6",
     "focus-trap-vue": "4.0.2",
-    "lodash-es": "catalog:",
     "motion": "^12.23.12",
     "typescript": "catalog:",
     "uuid": "13.0.0",

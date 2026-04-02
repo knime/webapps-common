@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { compact } from "lodash-es"; // eslint-disable-line depend/ban-dependencies
 
 import { LocalDateTime, SubMenu, Tooltip } from "@knime/components";
 import MenuIcon from "@knime/styles/img/icons/menu-options.svg";
@@ -53,8 +52,9 @@ const toggleVersionSelection = () => {
   emit("select", !props.isSelected);
 };
 
-const menuItems = computed(() =>
-  compact([
+const menuItems = computed(() => {
+  type MenuItem = { text: string; action: () => void };
+  const items: (MenuItem | false)[] = [
     props.hasEditCapability && {
       text: props.isSelected ? "Deselect this version" : "Show this version",
       action: toggleVersionSelection,
@@ -67,8 +67,9 @@ const menuItems = computed(() =>
       text: "Delete this version",
       action: () => emit("delete"),
     },
-  ]),
-);
+  ];
+  return items.filter((item): item is MenuItem => Boolean(item));
+});
 
 const onMenuItemClick = (_: Event, item: (typeof menuItems.value)[number]) => {
   item.action();

@@ -1,7 +1,6 @@
 /* eslint-disable max-lines */
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { flushPromises, mount } from "@vue/test-utils";
-import { cloneDeep, isUndefined } from "lodash-es"; // eslint-disable-line depend/ban-dependencies
 
 import DropdownIcon from "@knime/styles/img/icons/arrow-dropdown.svg";
 
@@ -136,7 +135,7 @@ const doMount = ({
     placeholder,
     name,
     allowNewValue,
-    isValid: isUndefined(isValid) ? true : isValid,
+    isValid: isValid === undefined ? true : isValid,
     useGroupLabels,
   };
   const wrapper = mount(Dropdown, {
@@ -549,7 +548,7 @@ describe("Dropdown", () => {
   describe("slotted Dropdown", () => {
     it("render slots if slotData is given", () => {
       // use a single value to make look-up easier
-      const possibleValues = [cloneDeep(POSSIBLE_SLOTTED_VALUES_MOCK[0])];
+      const possibleValues = [structuredClone(POSSIBLE_SLOTTED_VALUES_MOCK[0])];
       const { wrapper } = doMount({
         modelValue: possibleValues[0].id,
         possibleValues,
@@ -573,7 +572,7 @@ describe("Dropdown", () => {
 
     it("render text slots if slotData is not given", () => {
       // use a single value to make look-up easier
-      const possibleValues = [cloneDeep(POSSIBLE_SLOTTED_VALUES_MOCK[0])];
+      const possibleValues = [structuredClone(POSSIBLE_SLOTTED_VALUES_MOCK[0])];
       delete possibleValues[0].slotData;
       const { wrapper } = doMount({
         modelValue: possibleValues[0].id,
@@ -589,7 +588,7 @@ describe("Dropdown", () => {
     });
 
     it("keeps the height of the slot content when expanding and showing the search", async () => {
-      const possibleValues = [cloneDeep(POSSIBLE_SLOTTED_VALUES_MOCK[0])];
+      const possibleValues = [structuredClone(POSSIBLE_SLOTTED_VALUES_MOCK[0])];
       const { wrapper } = doMount({
         modelValue: possibleValues[0].id,
         possibleValues,

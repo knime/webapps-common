@@ -4,7 +4,6 @@ export const DEFAULT_ANY_UNKNOWN_VALUES_ID = "<any unknown new column>";
 
 <script setup lang="ts">
 import { computed, onMounted, watch } from "vue";
-import { indexOf } from "lodash-es"; // eslint-disable-line depend/ban-dependencies
 
 import {
   KdsSortableListBox,
@@ -87,7 +86,7 @@ const addUnknownValuesToData = (currentPossibleValues: { id: string }[]) => {
     resetAll();
     return;
   }
-  const unknownValuesIndex = indexOf(data.value, anyUnknownValuesId.value);
+  const unknownValuesIndex = data.value.indexOf(anyUnknownValuesId.value);
   if (unknownValuesIndex === -1) {
     throw new Error(
       `SortList data have to contain the value "${anyUnknownValuesId.value}"`,

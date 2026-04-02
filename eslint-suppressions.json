@@ -24,11 +24,6 @@
       "count": 1
     }
   },
-  "packages/components/src/components/FileExplorer/components/FileExplorer.vue": {
-    "depend/ban-dependencies": {
-      "count": 1
-    }
-  },
   "packages/components/src/components/FileExplorer/components/FileExplorerItem.vue": {
     "@typescript-eslint/no-floating-promises": {
       "count": 3
@@ -257,18 +252,10 @@
   "packages/jsonforms/src/higherOrderComponents/control/validation/useValidation.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 1
-    },
-    "@typescript-eslint/no-floating-promises": {
-      "count": 1
     }
   },
   "packages/jsonforms/src/layoutComponents/LayoutComponentWrapper.vue": {
     "vue/block-lang": {
-      "count": 1
-    }
-  },
-  "packages/jsonforms/src/uiComponents/FileUploadControl.vue": {
-    "depend/ban-dependencies": {
       "count": 1
     }
   },

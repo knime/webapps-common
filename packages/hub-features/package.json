@@ -44,7 +44,6 @@
     "@vueuse/components": "catalog:",
     "@vueuse/core": "catalog:",
     "@vueuse/shared": "catalog:",
-    "lodash-es": "catalog:",
     "ofetch": "^1.4.1",
     "typescript": "catalog:"
   },

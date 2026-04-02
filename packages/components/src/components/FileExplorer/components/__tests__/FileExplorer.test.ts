@@ -1,5 +1,13 @@
 /* eslint-disable max-lines */
-import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
 import { nextTick } from "vue";
 import { DOMWrapper, VueWrapper, mount } from "@vue/test-utils";
 
@@ -22,14 +30,6 @@ vi.mock("motion", () => ({
     onComplete();
   },
 }));
-
-vi.mock("lodash-es", async (importOriginal) => {
-  const original = await importOriginal<typeof import("lodash-es")>();
-  return {
-    ...original,
-    debounce: (fn: (...args: never[]) => unknown) => fn, // bypass debounce
-  };
-});
 
 type Props = InstanceType<typeof FileExplorer>["$props"];
 
@@ -232,6 +232,10 @@ describe("FileExplorer", () => {
   });
 
   describe("selection", () => {
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
     it("should select items and emit 'update:selectedItemIds' for selected ones", async () => {
       const { wrapper } = doMount();
       await getRenderedItems(wrapper).at(1)?.trigger("click");
@@ -262,9 +266,11 @@ describe("FileExplorer", () => {
     });
 
     it("should select items on change of selectedItems prop", async () => {
+      vi.useFakeTimers();
       const { wrapper } = doMount({ props: { mode: "mini" } });
 
       await wrapper.setProps({ selectedItemIds: ["2", "3"] });
+      await vi.advanceTimersByTimeAsync(50);
 
       expect(getRenderedItems(wrapper).at(2)?.classes()).toContain("selected");
       expect(getRenderedItems(wrapper).at(3)?.classes()).toContain("selected");
@@ -272,6 +278,7 @@ describe("FileExplorer", () => {
     });
 
     it("should select items on change of items prop", async () => {
+      vi.useFakeTimers();
       const { wrapper } = doMount({
         props: { mode: "mini", selectedItemIds: ["6"] },
       });
@@ -282,6 +289,7 @@ describe("FileExplorer", () => {
           { ...MOCK_DATA[0], id: "6", name: "Some new Folder" },
         ],
       });
+      await vi.advanceTimersByTimeAsync(50);
 
       expect(getRenderedItems(wrapper).at(6)?.classes()).toContain("selected");
       expect(scrollTo).toHaveBeenCalled();
