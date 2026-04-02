@@ -112,6 +112,14 @@ export interface AnalyticsEventSchema {
     version_created: {
       versionhistorypanel_button_: EmptyPayload;
     };
+    component_entered: {
+      component_doubleclick_ctrl: EmptyPayload;
+      component_ctxmenu_: EmptyPayload;
+      keyboard_shortcut_: EmptyPayload;
+    };
+    containernode_left: {
+      wftoolbar_button_workflow: ContainerNodeLeftPayload;
+    };
   };
 }
 export interface KaiPromptedPayload {
@@ -171,4 +179,8 @@ export interface QAMOpened_PartialPayload {
 export interface SearchPayload {
   repoType: "node" | "component";
   keyword: string;
+}
+export interface ContainerNodeLeftPayload {
+  nodeType: "component" | "metanode";
+  nodeHubId?: string;
 }
