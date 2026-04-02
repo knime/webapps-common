@@ -1,5 +1,13 @@
 /* eslint-disable max-lines */
-import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
 import { nextTick } from "vue";
 import { DOMWrapper, VueWrapper, mount } from "@vue/test-utils";
 
@@ -224,6 +232,10 @@ describe("FileExplorer", () => {
   });
 
   describe("selection", () => {
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
     it("should select items and emit 'update:selectedItemIds' for selected ones", async () => {
       const { wrapper } = doMount();
       await getRenderedItems(wrapper).at(1)?.trigger("click");
@@ -263,7 +275,6 @@ describe("FileExplorer", () => {
       expect(getRenderedItems(wrapper).at(2)?.classes()).toContain("selected");
       expect(getRenderedItems(wrapper).at(3)?.classes()).toContain("selected");
       expect(scrollTo).toHaveBeenCalled();
-      vi.useRealTimers();
     });
 
     it("should select items on change of items prop", async () => {
@@ -282,7 +293,6 @@ describe("FileExplorer", () => {
 
       expect(getRenderedItems(wrapper).at(6)?.classes()).toContain("selected");
       expect(scrollTo).toHaveBeenCalled();
-      vi.useRealTimers();
     });
 
     it("should disable multi-selection based on configuration", async () => {
