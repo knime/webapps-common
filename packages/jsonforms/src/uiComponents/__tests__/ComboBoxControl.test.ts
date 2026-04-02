@@ -116,7 +116,7 @@ describe("ComboBoxControl", () => {
     ]);
   });
 
-  it("calls changeValue when ComboBox's value changes", () => {
+  it("calls changeValue when KdsMultiSelectDropdown's value changes", () => {
     const { wrapper, changeValue } = mountComboboxControl();
     const comboBox = wrapper.findComponent(KdsMultiSelectDropdown);
     comboBox.vm.$emit("update:modelValue", ["id_1", "id_2"]);
