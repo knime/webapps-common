@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import { shallowMount } from "@vue/test-utils";
-import clone from "rfdc";
 
 import {
   LocalDateTime,
@@ -20,7 +19,6 @@ import type {
 import LabelList from "../LabelList.vue";
 import VersionItem from "../VersionItem.vue";
 
-const cloneDeep = clone();
 
 const mockVersion: NamedItemVersion & WithAvatar & WithLabels = {
   author: "Mira Mock",
@@ -81,7 +79,7 @@ describe("VersionItem", () => {
         { label: { name: "verified" }, labelId: "1" },
         { label: { name: "deployed" }, labelId: "2" },
       ];
-      const version = cloneDeep(mockVersion);
+      const version = structuredClone(mockVersion);
       version.labels = assignedLabels;
 
       const { findLabelList } = doMount({ mountProps: { version } });
@@ -91,7 +89,7 @@ describe("VersionItem", () => {
 
     describe("description", () => {
       it("rendering", () => {
-        const version = cloneDeep(mockVersion);
+        const version = structuredClone(mockVersion);
         version.description = "First bugfix lorem ipsum";
         const { wrapper } = doMount({
           mountProps: { version },
@@ -101,7 +99,7 @@ describe("VersionItem", () => {
       });
 
       it("truncation", () => {
-        const version = cloneDeep(mockVersion);
+        const version = structuredClone(mockVersion);
         version.description =
           "Funny is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s";
 
@@ -115,7 +113,7 @@ describe("VersionItem", () => {
       });
 
       it("expansion", async () => {
-        const version = cloneDeep(mockVersion);
+        const version = structuredClone(mockVersion);
         version.description =
           "Funny is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s";
 
@@ -221,7 +219,7 @@ describe("VersionItem", () => {
     const assignedLabels = [
       { label: { name: "i hide your tooltip" }, labelId: "1" },
     ];
-    const version = cloneDeep(mockVersion);
+    const version = structuredClone(mockVersion);
     version.labels = assignedLabels;
     const { wrapper, findLabelList } = doMount({
       mountProps: {

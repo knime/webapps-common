@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { cloneDeep } from "lodash-es";
 
 import { KdsButton } from "@knime/kds-components";
 
@@ -12,7 +11,7 @@ defineOptions({
 
 const props = defineProps<VueControlPropsForLabelContent<Array<File>>>();
 
-const files = ref(cloneDeep(props.control.data));
+const files = ref([...props.control.data]);
 
 const acceptedFileTypes = computed(
   () => props.control.uischema.options?.accept ?? "*",

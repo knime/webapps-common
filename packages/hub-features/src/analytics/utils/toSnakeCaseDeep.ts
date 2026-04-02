@@ -1,5 +1,10 @@
-// eslint-disable-next-line depend/ban-dependencies
-import { snakeCase } from "lodash-es";
+const toSnakeCase = (str: string) =>
+  str
+    .replace(/([a-z0-9])([A-Z])/g, "$1_$2")
+    .replace(/([A-Z])([A-Z][a-z])/g, "$1_$2")
+    .replace(/([a-zA-Z])(\d)/g, "$1_$2")
+    .replace(/(\d)([a-zA-Z])/g, "$1_$2")
+    .toLowerCase();
 
 const isPlainObject = (value: unknown): value is Record<string, unknown> => {
   return (
@@ -18,13 +23,13 @@ export const toSnakeCaseDeep = (object: Partial<Record<string, unknown>>) =>
       const key = rawKey.toString();
 
       if (isPlainObject(rawValue)) {
-        acc[snakeCase(key)] = toSnakeCaseDeep(rawValue);
+        acc[toSnakeCase(key)] = toSnakeCaseDeep(rawValue);
       } else if (Array.isArray(rawValue)) {
-        acc[snakeCase(key)] = rawValue.map((v) =>
+        acc[toSnakeCase(key)] = rawValue.map((v) =>
           isPlainObject(v) ? toSnakeCaseDeep(v) : v,
         );
       } else {
-        acc[snakeCase(key)] = rawValue;
+        acc[toSnakeCase(key)] = rawValue;
       }
 
       return acc;
