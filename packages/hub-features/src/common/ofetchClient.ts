@@ -20,8 +20,8 @@ export const getFetchClient = (customOptions?: FetchOptions) => {
     ...otherCustomOptions,
     ...defaultConfig,
     headers: {
-      ...defaultConfig.headers,
       ...(otherCustomOptions.headers || {}),
+      ...defaultConfig.headers,
     },
   });
 };

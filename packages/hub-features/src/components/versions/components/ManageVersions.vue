@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useEventBus, useThrottleFn } from "@vueuse/core";
+import { useEventBus } from "@vueuse/core";
 
 import { FunctionButton } from "@knime/components";
 import CloseIcon from "@knime/styles/img/icons/close.svg";
@@ -46,13 +46,44 @@ defineEmits<{
 
 const labelsEventBus = useEventBus("versionLabels");
 
-const closeLabelPopoversImpl = () => {
-  labelsEventBus.emit("versionLabelShowPopover");
+const createThrottleWithCancel = (fn: () => void, ms: number) => {
+  let lastCallTime = 0;
+  let timeoutId: ReturnType<typeof setTimeout> | null = null;
+
+  const throttled = () => {
+    const now = Date.now();
+    const remaining = ms - (now - lastCallTime);
+
+    if (remaining <= 0) {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+        timeoutId = null;
+      }
+      lastCallTime = now;
+      fn();
+    } else if (!timeoutId) {
+      timeoutId = setTimeout(() => {
+        lastCallTime = Date.now();
+        timeoutId = null;
+        fn();
+      }, remaining);
+    }
+  };
+
+  throttled.cancel = () => {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+      timeoutId = null;
+    }
+    lastCallTime = 0;
+  };
+
+  return throttled;
 };
- 
-const closeLabelPopovers = Object.assign(
-  useThrottleFn(closeLabelPopoversImpl, 10000), // Arbitrary delay to reduce overhead, is automatically reset @scrollend
-  { cancel: () => {} }, // No-op cancel for compatibility
+
+const closeLabelPopovers = createThrottleWithCancel(
+  () => labelsEventBus.emit("versionLabelShowPopover"),
+  10000, // Arbitrary delay to reduce overhead, is automatically reset @scrollend
 );
 </script>
 

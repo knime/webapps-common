@@ -254,17 +254,20 @@ describe("FileExplorer", () => {
     });
 
     it("should select items on change of selectedItems prop", async () => {
+      vi.useFakeTimers();
       const { wrapper } = doMount({ props: { mode: "mini" } });
 
       await wrapper.setProps({ selectedItemIds: ["2", "3"] });
-      await sleep(60); // wait for debounce (50ms + buffer)
+      await vi.advanceTimersByTimeAsync(50);
 
       expect(getRenderedItems(wrapper).at(2)?.classes()).toContain("selected");
       expect(getRenderedItems(wrapper).at(3)?.classes()).toContain("selected");
       expect(scrollTo).toHaveBeenCalled();
+      vi.useRealTimers();
     });
 
     it("should select items on change of items prop", async () => {
+      vi.useFakeTimers();
       const { wrapper } = doMount({
         props: { mode: "mini", selectedItemIds: ["6"] },
       });
@@ -275,10 +278,11 @@ describe("FileExplorer", () => {
           { ...MOCK_DATA[0], id: "6", name: "Some new Folder" },
         ],
       });
-      await sleep(60); // wait for debounce (50ms + buffer)
+      await vi.advanceTimersByTimeAsync(50);
 
       expect(getRenderedItems(wrapper).at(6)?.classes()).toContain("selected");
       expect(scrollTo).toHaveBeenCalled();
+      vi.useRealTimers();
     });
 
     it("should disable multi-selection based on configuration", async () => {
