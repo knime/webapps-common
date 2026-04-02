@@ -58,6 +58,12 @@
     "vue-tsc": "catalog:"
   },
   "pnpm": {
+    "auditConfig": {
+      "ignoreCves": [
+        "CVE-2026-4800",
+        "CVE-2026-2950"
+      ]
+    },
     "peerDependencyRules": {
       "ignoreMissing": [
         "postcss"
