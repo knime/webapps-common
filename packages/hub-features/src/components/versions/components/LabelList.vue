@@ -2,7 +2,6 @@
 import { type Ref, computed, onMounted, ref } from "vue";
 import { useEventBus } from "@vueuse/core";
 import { autoUpdate, offset, useFloating } from "@floating-ui/vue";
-import equal from "fast-deep-equal";
 
 import { FunctionButton } from "@knime/components";
 import { truncateString } from "@knime/utils";
@@ -56,7 +55,10 @@ const { floatingStyles } = useFloating(floatingAnchor, floatingPanel, {
 
 const popoverTopOffset = ref(0);
 const popoverFloatingStyles = computed(() => {
-  const parsedTop = parseInt(floatingStyles.value.top.replace("px", ""), 10);
+  const parsedTop = Number.parseInt(
+    floatingStyles.value.top.replace("px", ""),
+    10,
+  );
   const compensatedTop = `${parsedTop + popoverTopOffset.value}px`;
 
   return {
@@ -85,7 +87,7 @@ const calculateDistanceToUpperBorder = (labelElement: HTMLElement) => {
 };
 
 const isActiveLabel = (label: AssignedLabel) =>
-  equal(activeLabel.value, label);
+  activeLabel.value?.labelId === label.labelId;
 
 const togglePopover = (label: AssignedLabel, labelElement: HTMLElement) => {
   if (isActiveLabel(label)) {

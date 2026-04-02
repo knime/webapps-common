@@ -5,15 +5,13 @@ import {
   onBeforeUpdate,
   ref,
   toRef,
+  useId,
   watch,
 } from "vue";
 import { type Boundary, autoUpdate, flip, useFloating } from "@floating-ui/vue";
 
 import BaseMenuItem from "./BaseMenuItem.vue";
 import type { MenuItem } from "./MenuItems.vue";
-
-let uniqueIdCounter = 0;
-const generateUniqueId = () => `menu-${++uniqueIdCounter}`;
 
 type ElementTemplateRef = HTMLElement | { $el: HTMLElement };
 
@@ -54,7 +52,7 @@ const props = withDefaults(defineProps<Props>(), {
   positionRelativeToElement: null,
 });
 
-const menuId = props.id ?? `__BaseMenuItems-${generateUniqueId()}__`;
+const menuId = props.id ?? `__BaseMenuItems-${useId()}__`;
 
 const emit = defineEmits<{
   "item-click": [MouseEvent, MenuItem, string];
@@ -126,8 +124,6 @@ const updateItem = (el: HTMLElement, index: number) => {
 };
 
 const getEnabledListItems = () => {
-  // const listItems = listItems as Array<HTMLLIElement>;
-
   return (listItems.value as Array<HTMLLIElement>)
     .map((element, index) => {
       const firstChild = element.children[0] as ElementTemplateRef;

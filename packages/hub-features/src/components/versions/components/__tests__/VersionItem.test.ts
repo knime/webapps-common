@@ -19,7 +19,6 @@ import type {
 import LabelList from "../LabelList.vue";
 import VersionItem from "../VersionItem.vue";
 
-
 const mockVersion: NamedItemVersion & WithAvatar & WithLabels = {
   author: "Mira Mock",
   avatar: {

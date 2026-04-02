@@ -1,4 +1,5 @@
 import { type Ref, computed, reactive, unref } from "vue";
+import { useDebounceFn } from "@vueuse/core";
 import { v4 as uuidv4 } from "uuid";
 
 import type {
@@ -8,17 +9,6 @@ import type {
 } from "./types";
 
 const EXTERNAL_VALIDATION_DEBOUNCE = 500;
-
-const createDebounce = <T extends (...args: never[]) => unknown>(
-  fn: T,
-  delay: number,
-): T => {
-  let timeoutId: ReturnType<typeof setTimeout>;
-  return ((...args: Parameters<T>) => {
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => fn(...args), delay);
-  }) as T;
-};
 
 export const useValidation = <T = unknown>({
   data,
@@ -72,7 +62,7 @@ export const useValidation = <T = unknown>({
     }
   };
 
-  const performExternalValidationDebounced = createDebounce((value: T) => {
+  const performExternalValidationDebounced = useDebounceFn((value: T) => {
     performExternalValidationIfAvailable(value);
   }, EXTERNAL_VALIDATION_DEBOUNCE);
 

@@ -1,20 +1,11 @@
 import { type MaybeRef, type Ref, ref, watch } from "vue";
+import { useDebounceFn } from "@vueuse/core";
 
 import { useInternalProvidedState } from "../../../uiComponents/composables/useProvidedState";
 import inject from "../../../utils/inject";
 
 const CUSTOM_VALIDATION_DEBOUNCE = 500;
 
-const createDebounce = <T extends (...args: never[]) => unknown>(
-  fn: T,
-  delay: number,
-): T => {
-  let timeoutId: ReturnType<typeof setTimeout>;
-  return ((...args: Parameters<T>) => {
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => fn(...args), delay);
-  }) as T;
-};
 
 export default ({
   data,
@@ -48,7 +39,7 @@ export default ({
     () => performCustomValidationIfAvailable(data.value),
     { immediate: true },
   );
-  const performCustomValidationDebounced = createDebounce((data: unknown) => {
+  const performCustomValidationDebounced = useDebounceFn((data: unknown) => {
     performCustomValidationIfAvailable(data).catch((_err) => {});
   }, CUSTOM_VALIDATION_DEBOUNCE);
 

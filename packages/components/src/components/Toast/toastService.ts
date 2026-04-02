@@ -1,6 +1,5 @@
 import type { App, Plugin, Ref } from "vue";
 import { computed, getCurrentInstance, inject, provide, ref } from "vue";
-import clone from "rfdc";
 
 import type {
   Toast,
@@ -10,7 +9,6 @@ import type {
   UseToastsOptions,
 } from "./types";
 
-const cloneDeep = clone();
 
 let uniqueIdCounter = 0;
 const uniqueId = () => `toast-${++uniqueIdCounter}`;
@@ -41,7 +39,7 @@ export class ToastServiceProvider {
   toasts: Ref<ToastWithId[]> = ref<ToastWithId[]>([]);
 
   show = (toast: Toast): string => {
-    const clonedToast = cloneDeep(toast);
+    const clonedToast = { ...toast };
     if (clonedToast.deduplicationKey) {
       const previousToast = this.toasts.value.find(
         (toast) => clonedToast.deduplicationKey === toast.deduplicationKey,
