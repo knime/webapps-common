@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.21.3
+
+### Patch Changes
+
+- d36c308: KDS-743: Replace ComboBox with KdsMultiSelectDropdown in ComboBoxControl
+
 ## 1.21.2
 
 ### Patch Changes
