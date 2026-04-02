@@ -46,3 +46,8 @@ catalogs:
 minimumReleaseAge: 1440
 minimumReleaseAgeExclude:
   - "@knime/*"
+
+auditConfig:
+  ignoreCves:
+    - CVE-2026-4800 # lodash vulnerable to Code Injection via `_.template` imports key names - not used by us or any of our dependencies
+    - CVE-2026-2950 # lodash vulnerable to Prototype Pollution via array path bypass in `_.unset` and `_.omit` - unset and omit not used by us, all dependency usages checked as well
