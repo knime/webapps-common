@@ -92,7 +92,7 @@ describe("useValidation", () => {
       onRegisterValidation(invalidatingValidatorWithMessage("Must be true"));
 
       vi.useFakeTimers();
-      performExternalValidationDebounced(false);
+      void performExternalValidationDebounced(false);
       vi.runAllTimers();
 
       await nextTick();
@@ -110,7 +110,7 @@ describe("useValidation", () => {
         performExternalValidation,
       });
 
-      performExternalValidationDebounced(false);
+      void performExternalValidationDebounced(false);
       vi.runAllTimers();
 
       await nextTick();
@@ -118,7 +118,7 @@ describe("useValidation", () => {
         "ExternalVal: Must be true",
       ]);
 
-      performExternalValidationDebounced(true);
+      void performExternalValidationDebounced(true);
       vi.runAllTimers();
       await nextTick();
       expect(messages.value.errors).toStrictEqual([]);
@@ -132,17 +132,17 @@ describe("useValidation", () => {
         performExternalValidation,
       });
 
-      performExternalValidationDebounced(false);
+      void performExternalValidationDebounced(false);
       vi.advanceTimersByTime(200);
       await nextTick();
       expect(messages.value.errors).toStrictEqual([]);
 
-      performExternalValidationDebounced(true);
+      void performExternalValidationDebounced(true);
       vi.advanceTimersByTime(200);
       await nextTick();
       expect(messages.value.errors).toStrictEqual([]);
 
-      performExternalValidationDebounced(false);
+      void performExternalValidationDebounced(false);
       vi.runAllTimers();
       await nextTick();
       expect(messages.value.errors).toStrictEqual([
@@ -161,11 +161,11 @@ describe("useValidation", () => {
         performExternalValidation,
       });
 
-      performExternalValidationDebounced(false);
+      void performExternalValidationDebounced(false);
       vi.runAllTimers();
 
       options.value.externalValidationHandler = "externalValidationHandlerId2";
-      performExternalValidationDebounced(true);
+      void performExternalValidationDebounced(true);
       vi.runAllTimers();
 
       await nextTick();

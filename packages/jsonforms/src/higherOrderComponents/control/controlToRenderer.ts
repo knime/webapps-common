@@ -55,8 +55,8 @@ export const controlToRenderer = ({
       await (asyncSetup || getAsyncSetupMethod(component))?.();
       const handleChange = (path: string, value: unknown) => {
         processedProps.handleChange(path, value);
-        performExternalValidationDebounced(value);
-        performCustomValidationDebounced(value);
+        void performExternalValidationDebounced(value);
+        void performCustomValidationDebounced(value);
       };
       return () =>
         isVisible.value
