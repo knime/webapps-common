@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed, toRef } from "vue";
 
-import { ComboBox } from "@knime/components";
+import { KdsMultiSelectDropdown } from "@knime/kds-components";
 
-import type { VueControlPropsForLabelContent } from "../higherOrderComponents/control/withLabel";
+import type { VueControlPropsForLabelContent } from "../higherOrderComponents";
 
 import { usePossibleValues } from "./composables/usePossibleValues";
 
@@ -29,25 +29,18 @@ const isDisabled = computed(
 </script>
 
 <template>
-  <ComboBox
+  <KdsMultiSelectDropdown
     :id="labelForId"
+    :model-value="control.data"
     :allow-new-values="!willHavePossibleValues"
-    :aria-label="control.label"
+    :ariaLabel="control.label"
     :disabled="isDisabled"
     :possible-values="
       noPossibleValuesPresent
         ? control.data.map((id) => ({ id, text: id }))
         : possibleValues!
     "
-    :model-value="control.data"
-    :is-valid
-    compact
-    @update:model-value="(newValue: any[]) => changeValue(newValue)"
+    :error="!isValid"
+    @update:model-value="changeValue"
   />
 </template>
-
-<style scoped>
-:deep(.multiselect) {
-  background-color: var(--knime-white);
-}
-</style>

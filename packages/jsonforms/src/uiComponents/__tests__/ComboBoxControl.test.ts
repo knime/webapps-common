@@ -10,13 +10,13 @@ import {
 import type { VueWrapper } from "@vue/test-utils";
 import { flushPromises } from "@vue/test-utils";
 
-import { ComboBox } from "@knime/components";
+import { KdsMultiSelectDropdown } from "@knime/kds-components";
 
 import {
   type VueControlTestProps,
   getControlBase,
   mountJsonFormsControlLabelContent,
-} from "../../../testUtils/component";
+} from "../../../testUtils";
 import type { IdAndText } from "../../types/ChoicesUiSchema";
 import ComboBoxControl from "../ComboBoxControl.vue";
 
@@ -77,22 +77,24 @@ describe("ComboBoxControl", () => {
 
   it("renders", () => {
     const { wrapper } = mountComboboxControl();
-    expect(wrapper.findComponent(ComboBox).exists()).toBe(true);
+    expect(wrapper.findComponent(KdsMultiSelectDropdown).exists()).toBe(true);
   });
 
   it("sets labelForId", () => {
     const { wrapper } = mountComboboxControl();
-    expect(wrapper.getComponent(ComboBox).attributes().id).toBe(labelForId);
+    expect(wrapper.getComponent(KdsMultiSelectDropdown).props().id).toBe(
+      labelForId,
+    );
   });
 
   it("sets correct initial value", () => {
     const { wrapper } = mountComboboxControl();
-    expect(wrapper.findComponent(ComboBox).props().modelValue).toStrictEqual(
-      props.control.data,
-    );
-    expect(wrapper.findComponent(ComboBox).props().possibleValues).toEqual(
-      props.control.uischema.options!.possibleValues,
-    );
+    expect(
+      wrapper.findComponent(KdsMultiSelectDropdown).props().modelValue,
+    ).toStrictEqual(props.control.data);
+    expect(
+      wrapper.findComponent(KdsMultiSelectDropdown).props().possibleValues,
+    ).toEqual(props.control.uischema.options!.possibleValues);
   });
 
   it("correctly transforms the data into possible values if none are given", () => {
@@ -100,7 +102,9 @@ describe("ComboBoxControl", () => {
     const { wrapper } = mountJsonFormsControlLabelContent(ComboBoxControl, {
       props,
     });
-    expect(wrapper.findComponent(ComboBox).props().possibleValues).toEqual([
+    expect(
+      wrapper.findComponent(KdsMultiSelectDropdown).props().possibleValues,
+    ).toEqual([
       {
         id: "id_1",
         text: "id_1",
@@ -112,16 +116,16 @@ describe("ComboBoxControl", () => {
     ]);
   });
 
-  it("calls changeValue when ComboBox's value changes", () => {
+  it("calls changeValue when KdsMultiSelectDropdown's value changes", () => {
     const { wrapper, changeValue } = mountComboboxControl();
-    const comboBox = wrapper.findComponent(ComboBox);
+    const comboBox = wrapper.findComponent(KdsMultiSelectDropdown);
     comboBox.vm.$emit("update:modelValue", ["id_1", "id_2"]);
     expect(changeValue).toHaveBeenCalledWith(["id_1", "id_2"]);
   });
 
   it("sets allowNewValues to false when there are possible values defined", () => {
     const { wrapper } = mountComboboxControl();
-    const comboBox = wrapper.findComponent(ComboBox);
+    const comboBox = wrapper.findComponent(KdsMultiSelectDropdown);
     expect(comboBox.props().allowNewValues).toBe(false);
   });
 
@@ -131,7 +135,7 @@ describe("ComboBoxControl", () => {
       props,
     });
     await flushPromises();
-    const comboBox = wrapper.findComponent(ComboBox);
+    const comboBox = wrapper.findComponent(KdsMultiSelectDropdown);
     expect(comboBox.props().allowNewValues).toBe(true);
   });
 
@@ -159,7 +163,7 @@ describe("ComboBoxControl", () => {
     provideChoices!(providedChoices);
     await flushPromises();
     expect(
-      wrapper.findComponent(ComboBox).props().possibleValues,
+      wrapper.findComponent(KdsMultiSelectDropdown).props().possibleValues,
     ).toStrictEqual(providedChoices);
   });
 
@@ -177,7 +181,7 @@ describe("ComboBoxControl", () => {
     });
     await flushPromises();
     expect(
-      wrapper.findComponent(ComboBox).props().possibleValues,
+      wrapper.findComponent(KdsMultiSelectDropdown).props().possibleValues,
     ).toStrictEqual([]);
 
     const providedChoices = [
@@ -189,7 +193,7 @@ describe("ComboBoxControl", () => {
     provideChoices!(providedChoices);
     await flushPromises();
     expect(
-      wrapper.findComponent(ComboBox).vm.$data.allPossibleItems,
+      wrapper.findComponent(KdsMultiSelectDropdown).props().possibleValues,
     ).toStrictEqual(providedChoices);
   });
 });
