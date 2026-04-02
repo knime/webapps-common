@@ -76,6 +76,8 @@ export interface AnalyticsEventSchema {
       noderepo_dragdrop_: NodeCreated_Base;
       noderepo_doubleclick_: NodeCreated_WithOptionalConnectedTo;
       noderepo_keyboard_enter: NodeCreated_WithOptionalConnectedTo;
+      canvas_dragdrop_datafile: NodeCreated_Base;
+      floatingcanvastools_button_addnodebyfile: NodeCreated_Base;
       explorer_dragdrop_: NodeCreated_Base;
       qam_click_: NodeCreated_WithOptionalConnectedToPorts;
       qam_keyboard_enter: NodeCreated_WithOptionalConnectedToPorts;

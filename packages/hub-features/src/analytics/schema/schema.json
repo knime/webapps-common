@@ -233,6 +233,8 @@
             "noderepo_dragdrop_",
             "noderepo_doubleclick_",
             "noderepo_keyboard_enter",
+            "canvas_dragdrop_datafile",
+            "floatingcanvastools_button_addnodebyfile",
             "explorer_dragdrop_",
             "qam_click_",
             "qam_keyboard_enter",
@@ -248,6 +250,12 @@
             },
             "noderepo_keyboard_enter": {
               "$ref": "#/definitions/NodeCreated_WithOptionalConnectedTo"
+            },
+            "canvas_dragdrop_datafile": {
+              "$ref": "#/definitions/NodeCreated_Base"
+            },
+            "floatingcanvastools_button_addnodebyfile": {
+              "$ref": "#/definitions/NodeCreated_Base"
             },
             "explorer_dragdrop_": {
               "$ref": "#/definitions/NodeCreated_Base"
