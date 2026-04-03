@@ -54,6 +54,11 @@ describe("withLabel", () => {
   const mountTestControlRenderer = () =>
     mount(testControlRenderer.control, {
       props,
+      global: {
+        provide: {
+          addStateProviderListener: vi.fn(),
+        },
+      },
     });
 
   const propsWithoutMessages = (props: VueControlProps<string>) => {
@@ -95,6 +100,11 @@ describe("withLabel", () => {
   it("sets slot prop for buttons", async () => {
     const wrapper = mount(addButton(testControlRenderer.control), {
       props,
+      global: {
+        provide: {
+          addStateProviderListener: vi.fn(),
+        },
+      },
     });
     expect(wrapper.findComponent(Button).exists()).toBeTruthy();
     expect(wrapper.findComponent(Button).props()).toMatchObject({
