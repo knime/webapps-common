@@ -531,7 +531,7 @@
     "ConnectedTo_WithPorts": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["nodeType", "nodeFactoryId"],
+      "required": ["nodeType", "nodeFactoryId", "direction"],
       "properties": {
         "nodeType": {
           "type": "string",
@@ -545,6 +545,10 @@
         },
         "nodePortId": {
           "type": "string"
+        },
+        "direction": {
+          "type": "string",
+          "enum": ["forward", "backward"]
         }
       }
     },

@@ -163,6 +163,7 @@ export interface ConnectedTo_WithPorts {
   nodeFactoryId: string;
   nodePortIndex?: number;
   nodePortId?: string;
+  direction: "forward" | "backward";
 }
 export interface QAMOpened_Payload {
   connectedTo: ConnectedTo_WithPorts;
