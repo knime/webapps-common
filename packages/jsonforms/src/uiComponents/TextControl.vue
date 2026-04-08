@@ -16,6 +16,7 @@ import useProvidedState, {
 type TextControlOptions = {
   placeholder?: string;
   suggestions?: string[];
+  suggestionsTitle?: string;
 };
 
 type TextControlUiSchema = UiSchemaWithProvidedOptions<TextControlOptions>;
@@ -49,6 +50,9 @@ useBuiltinValidation<ValidationParameters, string | null>(
 const uischema = computed(() => props.control.uischema as TextControlUiSchema);
 const placeholder = useProvidedState(uischema, "placeholder", "");
 const suggestions = useProvidedState(uischema, "suggestions");
+const suggestionsTitle = computed(
+  () => uischema.value?.options?.suggestionsTitle || "Suggestions",
+);
 
 const inputField = useTemplateRef("inputField");
 
@@ -67,7 +71,7 @@ defineExpose<VueControlExposed>({
     :disabled="disabled"
     :error="!isValid"
     :suggestions="suggestions ?? undefined"
-    suggestions-headline="Suggestions"
+    :suggestions-headline="suggestionsTitle"
     @update:model-value="changeValue"
   />
 </template>
