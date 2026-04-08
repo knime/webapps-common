@@ -51,3 +51,7 @@ auditConfig:
   ignoreCves:
     - CVE-2026-4800 # lodash vulnerable to Code Injection via `_.template` imports key names - not used by us or any of our dependencies
     - CVE-2026-2950 # lodash vulnerable to Prototype Pollution via array path bypass in `_.unset` and `_.omit` - unset and omit not used by us, all dependency usages checked as well
+    # these relate to vite's dev server and accessing files outside the project's root. see more details on the CVE pages
+    - CVE-2026-39363
+    - CVE-2026-39364
+    - CVE-2026-39365
