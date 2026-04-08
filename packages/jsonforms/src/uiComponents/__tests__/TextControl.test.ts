@@ -147,6 +147,22 @@ describe("TextControl", () => {
     ).toBeUndefined();
   });
 
+  it("uses default suggestions headline when suggestionsTitle is not set", () => {
+    expect(
+      wrapper.findComponent(KdsTextInput).props("suggestionsHeadline"),
+    ).toBe("Suggestions");
+  });
+
+  it("uses custom suggestions headline from suggestionsTitle option", () => {
+    props.control.uischema.options!.suggestionsTitle = "Domain values";
+    const { wrapper } = mountJsonFormsControlLabelContent(TextControl, {
+      props,
+    });
+    expect(
+      wrapper.findComponent(KdsTextInput).props("suggestionsHeadline"),
+    ).toBe("Domain values");
+  });
+
   it("validates pattern if given", () => {
     const pattern = ".";
     const patternErrorMessage = `The value has to match the pattern "${pattern}"`;
