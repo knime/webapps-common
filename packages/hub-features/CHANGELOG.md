@@ -1,5 +1,12 @@
 # @knime/hub-features
 
+## 1.24.3
+
+### Patch Changes
+
+- 7d53d49: Add events: node created via datafile drag-drop and via floating canvas actions
+  Adjust event: add direction for quick-action-menu (QAM) related events
+
 ## 1.24.2
 
 ### Patch Changes
