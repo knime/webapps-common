@@ -85,36 +85,97 @@ describe("Embedding SDK::HOST", () => {
     });
   });
 
-  it("can send embedding context message", () => {
-    const mockIframe = document.createElement("iframe");
-    const postMessage = vi.fn();
-    Object.defineProperty(mockIframe, "contentWindow", {
-      value: { postMessage },
+  describe("sendEmbeddingContext", () => {
+    it("can send embedding context message", () => {
+      const mockIframe = document.createElement("iframe");
+      const postMessage = vi.fn();
+      Object.defineProperty(mockIframe, "contentWindow", {
+        value: { postMessage },
+      });
+
+      host.sendEmbeddingContext(mockIframe, "http://foo.com", {
+        jobId: "jobId",
+        restApiBaseUrl: "restApiBaseUrl",
+        sessionId: "sessionId",
+        wsConnectionUri: "wsConnectionUri",
+        userIdleTimeout: 10_000,
+        url: "wsConnectionUri",
+      });
+
+      expect(postMessage).toHaveBeenCalledWith(
+        {
+          type: MESSAGES.EMBEDDING_CONTEXT,
+          payload: {
+            wsConnectionUri: "wsConnectionUri",
+            url: "wsConnectionUri",
+            sessionId: "sessionId",
+            jobId: "jobId",
+            restApiBaseUrl: "restApiBaseUrl",
+            userIdleTimeout: 10_000,
+          },
+        },
+        "http://foo.com",
+      );
     });
 
-    host.sendEmbeddingContext(mockIframe, "http://foo.com", {
-      jobId: "jobId",
-      restApiBaseUrl: "restApiBaseUrl",
-      sessionId: "sessionId",
-      wsConnectionUri: "wsConnectionUri",
-      userIdleTimeout: 10_000,
-      url: "wsConnectionUri",
+    it("includes httpResourceUri in the payload when provided", () => {
+      const mockIframe = document.createElement("iframe");
+      const postMessage = vi.fn();
+      Object.defineProperty(mockIframe, "contentWindow", {
+        value: { postMessage },
+      });
+
+      host.sendEmbeddingContext(mockIframe, "http://foo.com", {
+        jobId: "jobId",
+        restApiBaseUrl: "restApiBaseUrl",
+        wsConnectionUri: "wsConnectionUri",
+        httpResourceUri: "httpResourceUri",
+      });
+
+      expect(postMessage).toHaveBeenCalledWith(
+        {
+          type: MESSAGES.EMBEDDING_CONTEXT,
+          payload: {
+            wsConnectionUri: "wsConnectionUri",
+            url: "wsConnectionUri",
+            jobId: "jobId",
+            restApiBaseUrl: "restApiBaseUrl",
+            httpResourceUri: "httpResourceUri",
+          },
+        },
+        "http://foo.com",
+      );
     });
 
-    expect(postMessage).toHaveBeenCalledWith(
-      {
+    it("omits httpResourceUri from the payload when not provided", () => {
+      const mockIframe = document.createElement("iframe");
+      const postMessage = vi.fn();
+      Object.defineProperty(mockIframe, "contentWindow", {
+        value: { postMessage },
+      });
+
+      host.sendEmbeddingContext(mockIframe, "http://foo.com", {
+        jobId: "jobId",
+        restApiBaseUrl: "restApiBaseUrl",
+        wsConnectionUri: "wsConnectionUri",
+      });
+
+      expect(postMessage).toHaveBeenCalledOnce();
+
+      const [postedMessage, postedTargetOrigin] = postMessage.mock.calls[0];
+
+      expect(postedTargetOrigin).toBe("http://foo.com");
+      expect(postedMessage).toEqual({
         type: MESSAGES.EMBEDDING_CONTEXT,
         payload: {
-          wsConnectionUri: "wsConnectionUri",
-          url: "wsConnectionUri",
-          sessionId: "sessionId",
           jobId: "jobId",
           restApiBaseUrl: "restApiBaseUrl",
-          userIdleTimeout: 10_000,
+          wsConnectionUri: "wsConnectionUri",
+          url: "wsConnectionUri",
         },
-      },
-      "http://foo.com",
-    );
+      });
+      expect("httpResourceUri" in postedMessage.payload).toBe(false);
+    });
   });
 
   it("listens to user activity events", () => {

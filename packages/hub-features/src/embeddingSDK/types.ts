@@ -7,6 +7,11 @@ export type EmbeddingContext = {
    */
   wsConnectionUri: string;
   /**
+   * URI of the HTTP endpoint used by the embedded application to fetch HTTP resources.
+   * Optional for backwards compatibility with older embedders.
+   */
+  httpResourceUri?: string;
+  /**
    * @deprecated URI of the WS used by the embedded application.
    * Last used in AP 5.8.0. From 5.9.0 and onwards `wsConnectionUri` is preferred.
    * Although, the AP still references the url for compatibility with older embedders
