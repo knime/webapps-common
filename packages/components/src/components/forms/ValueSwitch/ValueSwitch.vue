@@ -117,16 +117,16 @@ export default defineComponent({
     width: 0;
     height: 0;
     opacity: 0;
+  }
 
-    & + span:hover {
-      background-color: var(--theme-value-switch-background-color-hover);
-    }
+  & :deep(input + span:hover) {
+    background-color: var(--theme-value-switch-background-color-hover);
+  }
 
-    &:checked + span {
-      color: var(--theme-value-switch-background-color);
-      pointer-events: none;
-      background-color: var(--theme-value-switch-background-color-checked);
-    }
+  & :deep(input:checked + span) {
+    color: var(--theme-value-switch-background-color);
+    pointer-events: none;
+    background-color: var(--theme-value-switch-background-color-checked);
   }
 }
 </style>

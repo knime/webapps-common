@@ -95,42 +95,42 @@ export default defineComponent({
   & :deep(a) {
     color: var(--theme-text-link-foreground-color);
     background-color: var(--theme-text-link-background-color);
+  }
 
-    @supports (mask: url("") no-repeat 50% 50%) {
-      &[href^="http"]::after {
-        display: inline-block;
-        width: 16px;
-        height: 16px;
-        margin-left: 4px;
-        vertical-align: -2px;
-        content: "";
-        background-color: var(--knime-masala); /* defines icon color */
-        mask: url("@knime/styles/img/icons/link-external.svg?data") no-repeat
-          50% 50%;
-        mask-size: cover;
-      }
+  @supports (mask: url("") no-repeat 50% 50%) {
+    & :deep(a[href^="http"]::after) {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      margin-left: 4px;
+      vertical-align: -2px;
+      content: "";
+      background-color: var(--knime-masala); /* defines icon color */
+      mask: url("@knime/styles/img/icons/link-external.svg?data") no-repeat 50%
+        50%;
+      mask-size: cover;
     }
+  }
 
-    &:hover {
-      color: var(--theme-text-link-foreground-color-hover);
-      text-decoration: none;
-      outline: none;
-      background-color: var(--theme-text-link-background-color-hover);
+  & :deep(a:hover) {
+    color: var(--theme-text-link-foreground-color-hover);
+    text-decoration: none;
+    outline: none;
+    background-color: var(--theme-text-link-background-color-hover);
+  }
 
-      &::after {
-        background-color: var(
-          --theme-text-link-foreground-color-hover
-        ); /* defines icon color */
-      }
-    }
+  & :deep(a:hover::after) {
+    background-color: var(
+      --theme-text-link-foreground-color-hover
+    ); /* defines icon color */
   }
 
   & :deep(p) {
     margin: 0;
+  }
 
-    &:not(:last-child) {
-      margin-bottom: 10px;
-    }
+  & :deep(p:not(:last-child)) {
+    margin-bottom: 10px;
   }
 
   & .closer {
@@ -180,19 +180,19 @@ export default defineComponent({
     & :deep(ul) {
       padding: 0 0 0 30px;
       margin: 0;
+    }
 
-      &:not(:last-child) {
-        margin-bottom: 10px;
-      }
+    & :deep(ul:not(:last-child)) {
+      margin-bottom: 10px;
     }
 
     & :deep(li) {
       font-size: 16px;
       line-height: 25px;
+    }
 
-      &:last-child {
-        margin-bottom: 0;
-      }
+    & :deep(li:last-child) {
+      margin-bottom: 0;
     }
   }
 

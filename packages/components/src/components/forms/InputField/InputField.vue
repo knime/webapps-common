@@ -207,14 +207,14 @@ export default {
     --icon-size: 18;
 
     pointer-events: auto; /* otherwise, we won't be able to :hover the button */
+  }
 
-    & svg {
-      width: calc(var(--icon-size) * 1px);
-      height: calc(var(--icon-size) * 1px);
+  & :deep(.function-button svg) {
+    width: calc(var(--icon-size) * 1px);
+    height: calc(var(--icon-size) * 1px);
 
-      /* TODO: See ticket UIEXT-590, the stroke-width mixin should be used here. */
-      stroke-width: calc(32px / var(--icon-size));
-    }
+    /* TODO: See ticket UIEXT-590, the stroke-width mixin should be used here. */
+    stroke-width: calc(32px / var(--icon-size));
   }
 }
 

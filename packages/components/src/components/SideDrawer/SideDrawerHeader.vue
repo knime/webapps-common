@@ -144,10 +144,10 @@ const tooltipOrDiv = computed(() => {
       width: 100%;
       white-space: normal;
       transform: none;
+    }
 
-      &::after {
-        top: -12px;
-      }
+    & :deep(.text::after) {
+      top: -12px;
     }
   }
 }

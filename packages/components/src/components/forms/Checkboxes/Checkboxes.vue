@@ -125,10 +125,10 @@ export default {
 
     & :deep(label) {
       text-overflow: ellipsis;
+    }
 
-      &:not(:last-of-type) {
-        padding-right: 12px;
-      }
+    & :deep(label:not(:last-of-type)) {
+      padding-right: 12px;
     }
   }
 

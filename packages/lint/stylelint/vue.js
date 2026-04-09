@@ -1,5 +1,7 @@
+import noDeepNesting from "./no-deep-nesting.js";
+
 export default {
-  plugins: ["stylelint-value-no-unknown-custom-properties"],
+  plugins: ["stylelint-value-no-unknown-custom-properties", noDeepNesting],
   extends: ["stylelint-config-standard-vue", "stylelint-config-recess-order"],
   rules: {
     "rule-empty-line-before": [
@@ -78,5 +80,6 @@ export default {
       },
     ],
     "csstools/value-no-unknown-custom-properties": true,
+    "knime/no-deep-nesting": true,
   },
 };

@@ -70,86 +70,83 @@ export default {
 <style lang="postcss" scoped>
 .radio-buttons :deep() {
   user-select: none;
+}
 
-  & label {
-    position: relative;
-    display: block;
-    width: max-content;
-    max-width: 100%;
-    padding: 3px 3px 3px 23px;
-    font-size: 13px;
-    font-weight: 300;
-    line-height: 18px;
-    cursor: pointer;
+.radio-buttons :deep(label) {
+  position: relative;
+  display: block;
+  width: max-content;
+  max-width: 100%;
+  padding: 3px 3px 3px 23px;
+  font-size: 13px;
+  font-weight: 300;
+  line-height: 18px;
+  cursor: pointer;
+}
 
-    &.disabled {
-      cursor: default;
-      opacity: 0.5;
-    }
+.radio-buttons :deep(label.disabled) {
+  cursor: default;
+  opacity: 0.5;
+}
 
-    & input {
-      position: absolute;
-      width: 0;
-      height: 0;
-      opacity: 0;
+.radio-buttons :deep(label input) {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+}
 
-      & + span {
-        display: inline-block;
-        width: 100%;
-        min-width: 1em;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        color: var(--knime-masala);
-      }
+.radio-buttons :deep(label input + span) {
+  display: inline-block;
+  width: 100%;
+  min-width: 1em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--knime-masala);
+}
 
-      /* ◯ */
-      & + span::before {
-        position: absolute;
-        top: 5px;
-        left: 0;
-        display: inline-block;
-        width: 14px;
-        height: 14px;
-        vertical-align: top;
-        text-align: center;
-        content: "";
-        background: var(--theme-radio-background-color);
-        border: 1px solid var(--theme-radio-border-color);
-        border-radius: 100%;
-      }
+/* ◯ */
+.radio-buttons :deep(label input + span::before) {
+  position: absolute;
+  top: 5px;
+  left: 0;
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  vertical-align: top;
+  text-align: center;
+  content: "";
+  background: var(--theme-radio-background-color);
+  border: 1px solid var(--theme-radio-border-color);
+  border-radius: 100%;
+}
 
-      &:enabled:hover + span::before {
-        cursor: pointer;
-        background: var(--theme-radio-background-color-hover);
-        border: 1px solid var(--theme-radio-border-color-hover);
-      }
+.radio-buttons :deep(label input:enabled:hover + span::before) {
+  cursor: pointer;
+  background: var(--theme-radio-background-color-hover);
+  border: 1px solid var(--theme-radio-border-color-hover);
+}
 
-      /* 🔘 */
-      &:checked {
-        /* stylelint-disable no-descending-specificity */
-        & + span::before {
-          content: "";
-          background: var(--theme-radio-foreground-color-selected);
-          border-color: var(--theme-radio-border-color-selected);
-          box-shadow: inset 0 0 0 4px
-            var(--theme-radio-background-color-selected);
-        }
-        /* stylelint-enable no-descending-specificity */
+/* 🔘 */
+/* stylelint-disable no-descending-specificity */
+.radio-buttons :deep(label input:checked + span::before) {
+  content: "";
+  background: var(--theme-radio-foreground-color-selected);
+  border-color: var(--theme-radio-border-color-selected);
+  box-shadow: inset 0 0 0 4px var(--theme-radio-background-color-selected);
+}
+/* stylelint-enable no-descending-specificity */
 
-        &:enabled:hover + span::before {
-          background: radial-gradient(
-            ellipse at center,
-            var(--theme-radio-foreground-color-selected-hover) 0%,
-            var(--theme-radio-foreground-color-selected-hover) 25%,
-            var(--theme-radio-background-color-selected-hover) 26%,
-            var(--theme-radio-background-color-selected-hover) 100%
-          );
-          border-color: var(--theme-radio-border-color-selected-hover);
-          box-shadow: unset;
-        }
-      }
-    }
-  }
+.radio-buttons :deep(label input:checked:enabled:hover + span::before) {
+  background: radial-gradient(
+    ellipse at center,
+    var(--theme-radio-foreground-color-selected-hover) 0%,
+    var(--theme-radio-foreground-color-selected-hover) 25%,
+    var(--theme-radio-background-color-selected-hover) 26%,
+    var(--theme-radio-background-color-selected-hover) 100%
+  );
+  border-color: var(--theme-radio-border-color-selected-hover);
+  box-shadow: unset;
 }
 
 .radio-buttons:focus-within :deep(label input:not(:disabled) + span::before) {
@@ -159,13 +156,13 @@ export default {
 .horizontal :deep() {
   display: flex;
   flex-wrap: wrap;
+}
 
-  & label {
-    min-width: 0; /* sizing and text overflow with flexbox - see https://stackoverflow.com/a/26535469 */
+.horizontal :deep(label) {
+  min-width: 0; /* sizing and text overflow with flexbox - see https://stackoverflow.com/a/26535469 */
+}
 
-    &:not(:last-of-type) {
-      padding-right: 12px;
-    }
-  }
+.horizontal :deep(label:not(:last-of-type)) {
+  padding-right: 12px;
 }
 </style>
