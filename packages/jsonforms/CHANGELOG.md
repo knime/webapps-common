@@ -1,5 +1,11 @@
 # @knime/json-forms
 
+## 1.21.5
+
+### Patch Changes
+
+- 06f7773: Add possibility to set the headline for suggestions
+
 ## 1.21.4
 
 ### Patch Changes
