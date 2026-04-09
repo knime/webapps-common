@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.46.1
+
+### Patch Changes
+
+- 02cbf26: Inlined problematic CSS nestings inside :deep() selectors. See also https://github.com/vuejs/core/issues/13159
+
 ## 1.46.0
 
 ### Minor Changes
