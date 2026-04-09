@@ -1,5 +1,13 @@
 # @knime/rich-text-editor
 
+## 1.8.18
+
+### Patch Changes
+
+- 02cbf26: Inlined problematic CSS nestings inside :deep() selectors. See also https://github.com/vuejs/core/issues/13159
+- Updated dependencies [02cbf26]
+  - @knime/components@1.46.1
+
 ## 1.8.17
 
 ### Patch Changes

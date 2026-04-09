@@ -1,5 +1,11 @@
 # @knime/eslint-config
 
+## 9.6.0
+
+### Minor Changes
+
+- 02cbf26: Add custom stylelint rule to check for problematic CSS nesting in :deep() selectors. See also https://github.com/vuejs/core/issues/13159 for the issue.
+
 ## 9.5.5
 
 ### Patch Changes

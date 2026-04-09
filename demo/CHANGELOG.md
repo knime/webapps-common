@@ -1,5 +1,16 @@
 # demo
 
+## 1.8.27
+
+### Patch Changes
+
+- 02cbf26: Inlined problematic CSS nestings inside :deep() selectors. See also https://github.com/vuejs/core/issues/13159
+- Updated dependencies [02cbf26]
+  - @knime/rich-text-editor@1.8.18
+  - @knime/components@1.46.1
+  - @knime/hub-features@1.24.4
+  - @knime/virtual-tree@1.7.18
+
 ## 1.8.26
 
 ### Patch Changes
