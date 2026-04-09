@@ -575,22 +575,7 @@ defineExpose({
       --masala-800: var(--theme-date-input-accent-800);
       --masala-900: var(--theme-date-input-accent-900);
 
-      & .vc-masala {
-        --vc-accent-100: var(--masala-100);
-        --vc-accent-200: var(--masala-200);
-        --vc-accent-300: var(--masala-300);
-        --vc-accent-400: var(--masala-400);
-        --vc-accent-500: var(--masala-500);
-        --vc-accent-600: var(--masala-600);
-        --vc-accent-700: var(--masala-700);
-        --vc-accent-800: var(--masala-800);
-        --vc-accent-900: var(--masala-900);
-      }
-
       /* not themed items */
-      & .vc-day-content:hover {
-        background: var(--theme-date-input-day-content-background);
-      }
 
       /* non "color" prop colors which are used regardless of color prop value */
       --vc-white: var(--theme-date-input-white);
@@ -605,6 +590,22 @@ defineExpose({
       --vc-gray-700: var(--theme-date-input-gray-700);
       --vc-gray-800: var(--theme-date-input-gray-800);
       --vc-gray-900: var(--theme-date-input-gray-900);
+    }
+
+    & :deep(.vc-container .vc-masala) {
+      --vc-accent-100: var(--masala-100);
+      --vc-accent-200: var(--masala-200);
+      --vc-accent-300: var(--masala-300);
+      --vc-accent-400: var(--masala-400);
+      --vc-accent-500: var(--masala-500);
+      --vc-accent-600: var(--masala-600);
+      --vc-accent-700: var(--masala-700);
+      --vc-accent-800: var(--masala-800);
+      --vc-accent-900: var(--masala-900);
+    }
+
+    & :deep(.vc-container .vc-day-content:hover) {
+      background: var(--theme-date-input-day-content-background);
     }
 
     position: relative;

@@ -283,58 +283,58 @@ watch(
   /** touch zone / hover area */
   & :deep(> .splitter) {
     position: relative;
+  }
 
-    &::before {
-      position: absolute;
-      top: 0;
-      left: 0;
-      z-index: var(--z-index-common-splitter, 20);
-      content: "";
-      opacity: 0;
-    }
+  & :deep(> .splitter::before) {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: var(--z-index-common-splitter, 20);
+    content: "";
+    opacity: 0;
   }
 
   &.direction-up {
     & :deep(> .splitter) {
       border-bottom: var(--splitter-border);
+    }
 
-      &::before {
-        top: var(--splitter-touch-zone);
-        width: 100%;
-      }
+    & :deep(> .splitter::before) {
+      top: var(--splitter-touch-zone);
+      width: 100%;
     }
   }
 
   &.direction-down {
     & :deep(> .splitter) {
       border-top: var(--splitter-border);
+    }
 
-      &::before {
-        bottom: var(--splitter-touch-zone);
-        width: 100%;
-      }
+    & :deep(> .splitter::before) {
+      bottom: var(--splitter-touch-zone);
+      width: 100%;
     }
   }
 
   &.direction-left {
     & :deep(> .splitter) {
       border-right: var(--splitter-border);
+    }
 
-      &::before {
-        left: var(--splitter-touch-zone);
-        height: 100%;
-      }
+    & :deep(> .splitter::before) {
+      left: var(--splitter-touch-zone);
+      height: 100%;
     }
   }
 
   &.direction-right {
     & :deep(> .splitter) {
       border-left: var(--splitter-border);
+    }
 
-      &::before {
-        right: var(--splitter-touch-zone);
-        height: 100%;
-      }
+    & :deep(> .splitter::before) {
+      right: var(--splitter-touch-zone);
+      height: 100%;
     }
   }
 

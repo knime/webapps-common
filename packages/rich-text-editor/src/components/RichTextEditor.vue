@@ -429,13 +429,15 @@ const hasTools = computed(() => Object.keys(props.baseExtensions).length);
   & :deep(.ProseMirror) {
     height: 100%;
 
-    &:focus-visible,
-    &:focus {
-      outline: transparent;
-    }
-
     @mixin rich-text-editor-styles;
   }
+
+  /* stylelint-disable selector-class-pattern */
+  & :deep(.ProseMirror:focus-visible),
+  & :deep(.ProseMirror:focus) {
+    outline: transparent;
+  }
+  /* stylelint-enable selector-class-pattern */
 
   & :deep(.small-text) {
     font-size: var(--rich-text-editor-small-font-size);

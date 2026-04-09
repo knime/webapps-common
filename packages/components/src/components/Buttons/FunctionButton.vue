@@ -113,14 +113,12 @@ export default {
   /*
   Add margin to first children, using last-child and first-child to avoid problems in build
   */
-  & :deep(> *) {
-    &:first-child {
-      margin-right: 8px;
-    }
+  & :deep(> *:first-child) {
+    margin-right: 8px;
+  }
 
-    &:last-child {
-      margin-right: 0;
-    }
+  & :deep(> *:last-child) {
+    margin-right: 0;
   }
 
   &.single {

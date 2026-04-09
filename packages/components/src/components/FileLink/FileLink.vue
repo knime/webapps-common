@@ -152,11 +152,11 @@ export default {
 
       & :deep(svg) {
         stroke: var(--theme-text-link-foreground-color-hover);
+      }
 
-        /* text on file icons use fill in path with class text */
-        & path.text {
-          fill: var(--theme-text-link-foreground-color-hover);
-        }
+      /* text on file icons use fill in path with class text */
+      & :deep(svg path.text) {
+        fill: var(--theme-text-link-foreground-color-hover);
       }
     }
 
@@ -166,11 +166,11 @@ export default {
 
       & :deep(svg) {
         stroke: var(--theme-text-link-foreground-color-focus);
+      }
 
-        /* text on file icons use fill in path with class text */
-        & path.text {
-          fill: var(--theme-text-link-foreground-color-focus);
-        }
+      /* text on file icons use fill in path with class text */
+      & :deep(svg path.text) {
+        fill: var(--theme-text-link-foreground-color-focus);
       }
     }
   }

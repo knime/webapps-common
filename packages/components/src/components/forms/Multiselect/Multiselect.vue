@@ -466,14 +466,14 @@ export default {
 
     & :deep(span) {
       padding-left: 5px;
+    }
 
-      &::before {
-        left: 10px;
-      }
+    & :deep(span::before) {
+      left: 10px;
+    }
 
-      &::after {
-        left: 9px !important;
-      }
+    & :deep(span::after) {
+      left: 9px !important;
     }
 
     & .boxes {

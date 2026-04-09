@@ -468,11 +468,11 @@ const onOpenFile = (item: object) => {
     & :deep(li) {
       padding: 6px 10px;
       cursor: pointer;
+    }
 
-      &:hover {
-        color: white;
-        background: var(--knime-masala);
-      }
+    & :deep(li:hover) {
+      color: white;
+      background: var(--knime-masala);
     }
 
     & :deep(li[disabled="true"]) {

@@ -98,10 +98,10 @@ h2 {
 
 :deep(.tooltip) {
   line-height: 1.44;
+}
 
-  & > .text {
-    top: -8px;
-    z-index: 2;
-  }
+:deep(.tooltip > .text) {
+  top: -8px;
+  z-index: 2;
 }
 </style>
