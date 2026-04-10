@@ -34,7 +34,7 @@
         "session_resumed",
         "containernode_created",
         "component_entered",
-        "containernode_left",
+        "containernode_exited",
         "hint_shown",
         "hint_closed"
       ],
@@ -405,12 +405,15 @@
             }
           }
         },
-        "containernode_left": {
+        "containernode_exited": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["wftoolbar_button_workflow"],
+          "required": ["wftoolbar_button_workflow", "keyboard_shortcut_"],
           "properties": {
             "wftoolbar_button_workflow": {
+              "$ref": "#/definitions/ContainerNodeLeftPayload"
+            },
+            "keyboard_shortcut_": {
               "$ref": "#/definitions/ContainerNodeLeftPayload"
             }
           }
