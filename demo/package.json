@@ -14,7 +14,7 @@
     "postinstall": "license-check -o licenses/used-packages.json"
   },
   "dependencies": {
-    "@fontsource/roboto": "^5.2.6",
+    "@fontsource/roboto": "^5.2.10",
     "@fontsource/roboto-mono": "^5.2.6",
     "@knime/components": "workspace:*",
     "@knime/hub-features": "workspace:*",
