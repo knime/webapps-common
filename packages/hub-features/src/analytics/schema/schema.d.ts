@@ -119,7 +119,7 @@ export interface AnalyticsEventSchema {
       component_ctxmenu_: EmptyPayload;
       keyboard_shortcut_: EmptyPayload;
     };
-    containernode_exited: {
+    containernode_left: {
       wftoolbar_button_workflow: ContainerNodeLeftPayload;
       keyboard_shortcut_: ContainerNodeLeftPayload;
     };

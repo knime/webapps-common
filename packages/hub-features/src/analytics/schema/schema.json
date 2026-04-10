@@ -34,7 +34,7 @@
         "session_resumed",
         "containernode_created",
         "component_entered",
-        "containernode_exited",
+        "containernode_left",
         "hint_shown",
         "hint_closed"
       ],
@@ -405,7 +405,7 @@
             }
           }
         },
-        "containernode_exited": {
+        "containernode_left": {
           "type": "object",
           "additionalProperties": false,
           "required": ["wftoolbar_button_workflow", "keyboard_shortcut_"],
