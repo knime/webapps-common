@@ -33,6 +33,8 @@
         "session_interrupted",
         "session_resumed",
         "containernode_created",
+        "component_entered",
+        "containernode_left",
         "hint_shown",
         "hint_closed"
       ],
@@ -382,6 +384,39 @@
               "$ref": "#/definitions/EmptyPayload"
             }
           }
+        },
+        "component_entered": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "component_doubleclick_ctrl",
+            "component_ctxmenu_",
+            "keyboard_shortcut_"
+          ],
+          "properties": {
+            "component_doubleclick_ctrl": {
+              "$ref": "#/definitions/EmptyPayload"
+            },
+            "component_ctxmenu_": {
+              "$ref": "#/definitions/EmptyPayload"
+            },
+            "keyboard_shortcut_": {
+              "$ref": "#/definitions/EmptyPayload"
+            }
+          }
+        },
+        "containernode_left": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["wftoolbar_button_workflow", "keyboard_shortcut_"],
+          "properties": {
+            "wftoolbar_button_workflow": {
+              "$ref": "#/definitions/ContainerNodeLeftPayload"
+            },
+            "keyboard_shortcut_": {
+              "$ref": "#/definitions/ContainerNodeLeftPayload"
+            }
+          }
         }
       }
     }
@@ -639,6 +674,20 @@
       "required": ["hintId"],
       "properties": {
         "hintId": { "type": "string" }
+      }
+    },
+    "ContainerNodeLeftPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["nodeType"],
+      "properties": {
+        "nodeType": {
+          "type": "string",
+          "enum": ["component", "metanode"]
+        },
+        "nodeHubId": {
+          "type": "string"
+        }
       }
     }
   }
