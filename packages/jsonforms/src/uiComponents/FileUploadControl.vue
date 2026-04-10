@@ -55,6 +55,7 @@ const onSelect = (event: Event) => {
       leading-icon="search"
       variant="outlined"
       :disabled="disabled"
+      size="small"
       @click="openFileSelector"
     />
     <span class="filename">{{ displayedFilename }}</span>

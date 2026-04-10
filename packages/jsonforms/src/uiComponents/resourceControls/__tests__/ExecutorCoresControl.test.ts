@@ -34,6 +34,7 @@ describe("ExecutorCoresControl", () => {
           options: {
             donutTitle: "vCore Tokens",
             donutMax: 20,
+            currentUsage: 4,
           },
         },
       },
@@ -92,8 +93,8 @@ describe("ExecutorCoresControl", () => {
     expect(description).toContain("of unlimited vCore tokens");
   });
 
-  it("calculates total use from data and secondaryValue", () => {
-    // data = 4, secondaryValue = 2, total = 6
+  it("calculates total use from currentUsage and secondaryValue", () => {
+    // currentUsage = 4, secondaryValue = 2, total = 6
     const description = wrapper.find(".chart-description").text();
     expect(description).toContain("In total, 6 of");
   });
@@ -107,7 +108,7 @@ describe("ExecutorCoresControl", () => {
       },
     );
     const description = wrapper.find(".chart-description").text();
-    // data = 4, secondaryValue = 0, total = 4
+    // currentUsage = 4, secondaryValue = 0, total = 4
     expect(description).toContain(
       "This execution context will use 0 vCore tokens.",
     );

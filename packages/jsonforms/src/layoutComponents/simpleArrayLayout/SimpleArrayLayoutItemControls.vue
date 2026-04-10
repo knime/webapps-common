@@ -57,5 +57,6 @@ defineEmits<{
 <style lang="postcss" scoped>
 .item-controls {
   display: flex;
+  margin-bottom: var(--kds-spacing-container-0-12x);
 }
 </style>
