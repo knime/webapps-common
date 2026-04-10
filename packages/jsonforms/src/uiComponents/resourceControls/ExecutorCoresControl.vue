@@ -12,6 +12,9 @@ const donutTitle = computed(
   () => props.control.uischema.options?.donutTitle || "",
 );
 
+const currentUsage = computed(
+  () => props.control.uischema.options?.currentUsage ?? 0,
+);
 const secondaryValue = computed(
   () =>
     (props.control.schema as JsonSchema & { secondaryValue?: number })
@@ -28,7 +31,7 @@ const isSharedContext = computed(
   () => props.control.uischema.options?.isSharedContext ?? false,
 );
 
-const totalUse = computed(() => props.control.data + secondaryValue.value);
+const totalUse = computed(() => currentUsage.value + secondaryValue.value);
 
 const infoText = computed(
   () =>

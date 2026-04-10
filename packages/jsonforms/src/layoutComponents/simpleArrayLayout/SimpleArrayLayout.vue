@@ -75,7 +75,7 @@ const returnLabel = (index: number) =>
 </script>
 
 <template>
-  <div class="simple-array">
+  <div v-if="control.visible" class="simple-array">
     <div
       v-for="(_obj, objIndex) in control.data"
       :key="`${control.path}-${objIndex}`"
@@ -143,10 +143,6 @@ const returnLabel = (index: number) =>
     gap: var(--kds-spacing-container-0-25x);
     align-items: end;
     margin-bottom: var(--kds-spacing-container-1x);
-
-    & .horizontal + .item-controls {
-      margin-bottom: var(--kds-spacing-container-0-25x);
-    }
 
     & .form-component {
       flex-grow: 1;
