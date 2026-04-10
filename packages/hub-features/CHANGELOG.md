@@ -1,5 +1,11 @@
 # @knime/hub-features
 
+## 1.25.0
+
+### Minor Changes
+
+- 838b5fb: add optional httpResourceUri to EmbeddingContext with tests
+
 ## 1.24.4
 
 ### Patch Changes
